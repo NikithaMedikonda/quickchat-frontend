@@ -1,0 +1,44 @@
+name: QuickChat-frontend
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  PetBuddy:
+    name: Build and Test
+    runs-on: macos-latest
+
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install CocoaPods
+        run: sudo gem install cocoapods
+
+      - name: Install Pod dependencies
+        run: |
+          cd ios
+          pod install
+          cd ..
+
+      - name: Lint code
+        run: npm run lint
+
+      - name: Build Android
+        run : npm run build-android
+
+      - name: Build IOS
+        run : npm run build-ios
+
+      - name: Run tests
+        run: npm test how we write jenkins file
