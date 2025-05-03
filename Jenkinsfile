@@ -12,15 +12,15 @@ pipeline {
 
         stage('Set Up Node.js') {
             steps {
-                sh '''
-          source ~/.nvm/nvm.sh
-          nvm install $NODE_VERSION
-          nvm use $NODE_VERSION
-          node -v
-        '''
+                sh """
+                    source ~/.nvm/nvm.sh
+                    nvm install ${NODE_VERSION}
+                    nvm use ${NODE_VERSION}
+                    node -v
+                """
             }
         }
-
+        
         stage('Install Dependencies') {
             steps {
                 sh 'npm install'
@@ -69,14 +69,14 @@ pipeline {
     }
 
     post {
-    always {
-      echo 'Pipeline finished.'
+        always {
+            echo 'Pipeline finished.'
+        }
+        failure {
+            echo 'Pipeline failed.'
+        }
+        success {
+            echo 'Pipeline succeeded.'
+        }
     }
-    failure {
-      echo 'Pipeline failed.'
-    }
-    success {
-      echo 'Pipeline succeeded.'
-    }
-  }
 }
