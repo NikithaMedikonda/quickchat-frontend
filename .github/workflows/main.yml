@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  PetBuddy:
+  QuickChat-frontend:
     name: Build and Test
     runs-on: macos-latest
 
@@ -41,4 +41,4 @@ jobs:
         run : npm run build-ios
 
       - name: Run tests
-        run: npm test how we write jenkins file
+        run: npm test 
