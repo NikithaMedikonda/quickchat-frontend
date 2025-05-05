@@ -7,4 +7,9 @@ describe('Welcome Screen', () => {
       const image = getByTestId('logo-image');
       expect(image).toBeTruthy();
     });
+    
+    it('renders the Get Started button', () => {
+        const { getByText } = render(<WelcomeScreen />);
+        expect(getByText('Get Started')).toBeTruthy();
+      });
 })
