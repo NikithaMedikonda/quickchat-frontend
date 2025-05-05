@@ -1,14 +1,18 @@
-import { View, StyleSheet, Image, Button } from 'react-native'
+import { View, StyleSheet, Image } from 'react-native'
 import React from 'react'
+import { useNavigate } from 'react-router-native';
+import { Button } from '../../components/Button';
 
 const WelcomeScreen = () => {
+    const navigate = useNavigate();
+
     return (
         <View style={styles.container}>
             <Image style={styles.image} source={require('../../assets/images/quickchat_logo.png')}
                 testID="logo-image"
             />
             <View>
-                <Button title="Get Started" />
+                <Button title="Get Started" onPress={() => navigate('/register')}/>
             </View>
         </View>
     )
