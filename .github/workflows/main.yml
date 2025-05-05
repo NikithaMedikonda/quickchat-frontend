@@ -37,8 +37,30 @@ jobs:
       - name: Build Android
         run : npm run build-android
 
-      - name: Build IOS
-        run : npm run build-ios
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
+
+      - name: Grant Permission to Gradle
+        run: chmod +x ./gradlew
+
+      - name: Build APK
+        run: ./gradlew assembleRelease
+
+      - name: Upload APK to Firebase
+        env:
+          FIREBASE_APP_ID: "1:48594502350:android:0ff2c7216ab9548d9dc69f"
+          FIREBASE_TOKEN: "1//0gP2ZxUv4H4GFCgYIARAAGBASNwF-L9IrwendV6tMewsWo2LhgmWgEDiihQ7-uRkp1m8yPM3ZsBUh1t07H0keFSuVdmHLvCKbgwI"
+        run: |
+          firebase appdistribution:distribute app/build/outputs/apk/release/app-release.apk \
+            --app $FIREBASE_APP_ID \
+            --token $FIREBASE_TOKEN \
+            --groups testers
+
+      - name: Clean up
+        run: ./gradlew clean
+
+      # - name: Build IOS
+      #   run : npm run build-ios
 
       - name: Run tests
         run: npm test 
