@@ -54,7 +54,7 @@ jobs:
           FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
         run: |
-          firebase appdistribution:distribute app/build/outputs/apk/release/app-release.apk \
+          firebase appdistribution:distribute ./android/app/build/outputs/apk/release/app-release.apk \
             --app $FIREBASE_APP_ID \
             --token $FIREBASE_TOKEN \
             --groups testers
