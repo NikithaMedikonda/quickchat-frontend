@@ -31,6 +31,11 @@ const getStyles = (colors: any) =>
         backgroundColor: colors.primaryBlue,
         marginVertical: 5,
       },
+      text: {
+        fontSize: 13,
+        fontWeight: '600',
+        color: colors.white,
+      },
     })
 
     export default Button
