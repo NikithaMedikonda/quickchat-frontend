@@ -1,11 +1,16 @@
-import { View, Text } from 'react-native'
+import { TouchableOpacity, Text } from 'react-native'
 import React from 'react'
 
-const Button = () => {
+type ButtonProps = {
+    title: string;
+    onPress?: () => void;
+  };
+  
+const Button = ({title, onPress} : ButtonProps) => {
   return (
-    <View>
-      <Text>Button</Text>
-    </View>
+    <TouchableOpacity onPress={onPress}>
+      <Text>{title}</Text>
+    </TouchableOpacity>
   )
 }
 
