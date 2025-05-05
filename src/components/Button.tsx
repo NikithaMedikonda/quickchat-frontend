@@ -1,6 +1,8 @@
 import { TouchableOpacity, Text,  StyleSheet, Dimensions} from 'react-native'
 import React from 'react'
 
+const { width } = Dimensions.get('window');
+
 type ButtonProps = {
     title: string;
     onPress?: () => void;
