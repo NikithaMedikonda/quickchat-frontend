@@ -1,10 +1,12 @@
-import { View, Text, StyleSheet } from 'react-native'
+import { View, StyleSheet, Image} from 'react-native'
 import React from 'react'
 
 const WelcomeScreen = () => {
   return (
     <View style={styles.container}>
-      <Text>WelcomeScreen</Text>
+      <Image style={styles.image} source={require('../../assets/images/quickchat_logo.png')}
+      testID="logo-image"
+      />
     </View>
   )
 }
@@ -15,5 +17,11 @@ const styles = StyleSheet.create({
       backgroundColor:"black",
       flex:1
     },
+    image: {
+        position: "relative",
+        width: 270,
+        height: 270,
+        top: 150
+      },
 })
 export default WelcomeScreen
