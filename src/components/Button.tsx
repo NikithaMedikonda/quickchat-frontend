@@ -1,11 +1,12 @@
 import { TouchableOpacity, Text,  StyleSheet, Dimensions} from 'react-native'
 import React from 'react'
+import { useThemeColors } from '../constants/color';
 
 const { width } = Dimensions.get('window');
 
 type ButtonProps = {
     title: string;
-    onPress?: () => void;
+    onPress: () => void;
   };
   
 const Button = ({title, onPress} : ButtonProps) => {
@@ -17,8 +18,6 @@ const Button = ({title, onPress} : ButtonProps) => {
     </TouchableOpacity>
   )
 }
-
-export default Button
 
 const getStyles = (colors: any) =>
     StyleSheet.create({
@@ -33,3 +32,5 @@ const getStyles = (colors: any) =>
         marginVertical: 5,
       },
     })
+
+    export default Button
