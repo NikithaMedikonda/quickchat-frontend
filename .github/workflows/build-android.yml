@@ -47,6 +47,7 @@ jobs:
           firebase appdistribution:distribute ./android/app/build/outputs/apk/release/app-release.apk \
             --app $FIREBASE_APP_ID \
             --token $FIREBASE_TOKEN \
+            --groups testers
 
       - name: Clean up
         run: |
