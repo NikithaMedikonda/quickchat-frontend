@@ -5,7 +5,7 @@ const App = () => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#f2f2f2" />
-      <Text style={styles.text}>QuickChat</Text>
+      <Text style={styles.text}>QuickChat App</Text>
     </SafeAreaView>
   );
 };
