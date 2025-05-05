@@ -1,15 +1,27 @@
-import { render } from '@testing-library/react-native';
+import { fireEvent, render } from '@testing-library/react-native';
 import WelcomeScreen from './WelcomeScreen';
+
+const mockNavigate = jest.fn();
+jest.mock('react-router-native', () => ({
+  useNavigate: () => mockNavigate,
+}));
 
 describe('Welcome Screen', () => {
     it('renders the logo image', () => {
-      const { getByTestId } = render(<WelcomeScreen />);
-      const image = getByTestId('logo-image');
-      expect(image).toBeTruthy();
+        const { getByTestId } = render(<WelcomeScreen />);
+        const image = getByTestId('logo-image');
+        expect(image).toBeTruthy();
     });
-    
+
     it('renders the Get Started button', () => {
         const { getByText } = render(<WelcomeScreen />);
         expect(getByText('Get Started')).toBeTruthy();
-      });
+    });
+
+    it('navigates to register screen on button press', () => {
+        const { getByText } = render(<WelcomeScreen />);
+        const button = getByText('Get Started');
+        fireEvent.press(button);
+        expect(mockNavigate).toHaveBeenCalledWith('/register');
+    });
 })
