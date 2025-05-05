@@ -34,8 +34,8 @@ jobs:
       - name: Lint code
         run: npm run lint
 
-      - name: Build Android
-        run : npm run build-android
+      # - name: Build Android
+      #   run : npm run build-android
 
       - name: Install Firebase CLI
         run: npm install -g firebase-tools
@@ -44,7 +44,10 @@ jobs:
         run: chmod +x ./android/gradlew
 
       - name: Build APK
-        run: ./android/gradlew assembleRelease
+        run: |
+          cd android
+          ./gradlew assembleRelease
+          cd ..
 
       - name: Upload APK to Firebase
         env:
@@ -57,7 +60,10 @@ jobs:
             --groups testers
 
       - name: Clean up
-        run: ./android/gradlew clean
+        run: |
+          cd android
+          ./gradlew clean
+          cd ..
 
       # - name: Build IOS
       #   run : npm run build-ios
