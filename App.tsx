@@ -4,6 +4,7 @@ import { NativeRouter, Routes, Route } from 'react-router-native';
 import {WelcomeScreen} from './src/screens/WelcomeScreen/WelcomeScreen';
 import RegisterScreen from './src/screens/RegisterScreen/RegisterScreen';
 
+
 const App = () => {
   useEffect(() => {
     SplashScreen.hide();
