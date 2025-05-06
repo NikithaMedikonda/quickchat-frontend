@@ -17,7 +17,7 @@ describe('Welcome Screen', () => {
     it('renders the logo image', () => {
         render(<WelcomeScreen />);
         const image = screen.getByA11yHint('logo-image');
-        expect(image.props.source).toEqual({'testUri':'../../../assets/quickchat_logo.png'});
+        expect(image.props.source).toEqual({'testUri':'../../../assets/quickchat.png'});
     });
 
     it('renders the Get Started button', () => {
