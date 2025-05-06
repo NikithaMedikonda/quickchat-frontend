@@ -3,5 +3,5 @@ import RegisterScreen from './RegisterScreen';
 
 test('basic test', () => {
   render(<RegisterScreen />);
-  expect(screen.getByText("Register screen")).toBeOnTheScreen();
+  expect(screen.getByText("RegisterScreen")).toBeOnTheScreen();
 });
