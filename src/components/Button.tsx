@@ -9,7 +9,7 @@ type ButtonProps = {
     onPress: () => void;
   };
   
-const Button = ({title, onPress} : ButtonProps) => {
+export const Button = ({title, onPress} : ButtonProps) => {
     const colors = useThemeColors();
     const styles = getStyles(colors);
   return (
@@ -37,5 +37,3 @@ const getStyles = (colors: any) =>
         color: colors.white,
       },
     })
-
-    export default Button
