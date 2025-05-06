@@ -1,12 +1,13 @@
 import React from 'react';
-import { SafeAreaView, Text, StyleSheet, StatusBar } from 'react-native';
+import { View, Text, StyleSheet} from 'react-native';
+import ImagePickerModal from './src/components/ImagePickerModal/ImagePickerModal';
 
 const App = () => {
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#f2f2f2" />
+    <View style={styles.container}>
       <Text style={styles.text}>QuickChat</Text>
-    </SafeAreaView>
+      <ImagePickerModal/>
+    </View>
   );
 };
 
