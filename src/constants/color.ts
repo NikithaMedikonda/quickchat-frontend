@@ -7,3 +7,11 @@ export const useThemeColors = () => {
       text:'#FFFFFF',
     };
   };
+
+  export type colors =   {
+    primaryBlue: string;
+    gray: string;
+    background: string;
+    white: string;
+    text: string;
+}
