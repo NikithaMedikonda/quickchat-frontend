@@ -1,5 +1,5 @@
-import { TouchableOpacity, Text,  StyleSheet, Dimensions} from 'react-native'
-import React from 'react'
+import React from 'react';
+import { TouchableOpacity, Text, StyleSheet, Dimensions } from 'react-native';
 import { useThemeColors } from '../constants/color';
 
 const { width } = Dimensions.get('window');
@@ -8,7 +8,6 @@ type ButtonProps = {
     title: string;
     onPress: () => void;
   };
-  
 export const Button = ({title, onPress} : ButtonProps) => {
     const colors = useThemeColors();
     const styles = getStyles(colors);
@@ -16,8 +15,8 @@ export const Button = ({title, onPress} : ButtonProps) => {
     <TouchableOpacity style={styles.button} onPress={onPress}>
       <Text style={styles.text}>{title}</Text>
     </TouchableOpacity>
-  )
-}
+  );
+};
 
 const getStyles = (colors: any) =>
     StyleSheet.create({
@@ -35,4 +34,4 @@ const getStyles = (colors: any) =>
         fontWeight: '600',
         color: colors.white,
       },
-    })
+    });
