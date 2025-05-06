@@ -4,6 +4,6 @@ export const useThemeColors = () => {
       gray: '#898989',
       background: '#000000' ,
       white: '#FFFFFF',
-      text:'#FFFFFF'
+      text:'#FFFFFF',
     };
   };
