@@ -3,6 +3,7 @@ export const useThemeColors = () => {
       primaryBlue: 'blue',
       gray: '#898989',
       background: '#000000' ,
-      white: '#FFFFFF'
+      white: '#FFFFFF',
+      text:'#FFFFFF'
     };
   };
