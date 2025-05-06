@@ -26,7 +26,6 @@ const getStyles = (colors: any) =>
         width: width * 0.45,
         borderRadius: 4,
         justifyContent: 'center',
-        top: 300,
         alignItems: 'center',
         backgroundColor: colors.primaryBlue,
         marginVertical: 5,
