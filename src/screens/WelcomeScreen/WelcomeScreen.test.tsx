@@ -1,4 +1,4 @@
-import { fireEvent, render } from '@testing-library/react-native';
+import { fireEvent, render,screen } from '@testing-library/react-native';
 import { WelcomeScreen } from './WelcomeScreen';
 
 const mockNavigate = jest.fn();
@@ -15,9 +15,9 @@ jest.mock('../../components/Button', () => {
   });
 describe('Welcome Screen', () => {
     it('renders the logo image', () => {
-        const { getByTestId } = render(<WelcomeScreen />);
-        const image = getByTestId('logo-image');
-        expect(image).toBeTruthy();
+        render(<WelcomeScreen />);
+        const image = screen.getByA11yHint('logo-image');
+        expect(image.props.source).toEqual({'testUri':'../../../src/assets/images/quickchat_logo.png'});
     });
 
     it('renders the Get Started button', () => {
