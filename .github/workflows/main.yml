@@ -3,7 +3,7 @@ name: QuickChat-frontend CI/CD
 on:
   push:
     branches:
-      - main
+      - feature/profile-modal
   
 jobs:
   lint-and-test:
