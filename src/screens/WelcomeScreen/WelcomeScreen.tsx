@@ -1,7 +1,7 @@
 import { View, StyleSheet, Image } from 'react-native'
 import React from 'react'
 import { useNavigate } from 'react-router-native';
-import Button  from '../../components/Button';
+import {Button}  from '../../components/Button';
 
 
 const WelcomeScreen = () => {
