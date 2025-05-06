@@ -1,5 +1,3 @@
-import { useColorScheme } from 'react-native';
-
 // export const useThemeColors = () => {
 //   const scheme = useColorScheme();
 //   return {
