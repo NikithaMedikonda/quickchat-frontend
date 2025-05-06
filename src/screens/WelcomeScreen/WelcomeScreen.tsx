@@ -1,35 +1,53 @@
-import { View, StyleSheet, Image } from 'react-native'
+import { View, StyleSheet, Image, Dimensions } from 'react-native'
 import React from 'react'
 import { useNavigate } from 'react-router-native';
 import {Button}  from '../../components/Button';
+import { useThemeColors } from '../../constants/color';
+const { width,height } = Dimensions.get('window');
 
 
-const WelcomeScreen = () => {
+export const WelcomeScreen = () => {
     const navigate = useNavigate();
+    const colors = useThemeColors();
+    const styles = getStyles(colors);
+
 
     return (
         <View style={styles.container}>
+            <View style={styles.imageContainer}>
             <Image style={styles.image} source={require('../../assets/images/quickchat_logo.png')}
                 testID="logo-image"
             />
-            <View>
-                <Button title="Get Started" onPress={() => navigate('/register')}/>
             </View>
+            <View >
+            <Button title="Get Started" onPress={() => navigate('/register')}/>
+            </View>
+         
         </View>
     )
 }
 
-const styles = StyleSheet.create({
+export const getStyles = (colors: any) =>
+  StyleSheet.create({
     container: {
+        display:"flex",
+        justifyContent:"center",
         alignItems: "center",
-        backgroundColor: "black",
-        flex: 1
+        backgroundColor:colors.background,
+        height:height,
+        width:width,
+
     },
     image: {
-        position: "relative",
-        width: 270,
-        height: 270,
-        top: 150
+        width: width*0.5,
+        height: height*0.3,
     },
-})
-export default WelcomeScreen
+
+    imageContainer:{
+        height:height*0.6,
+        width:width*0.9,
+        display:"flex",
+        justifyContent:"center",
+        alignItems:"center"
+    }
+  });
