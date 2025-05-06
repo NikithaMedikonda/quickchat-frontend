@@ -45,9 +45,7 @@ export const Registration = () => {
       cropping: true,
     });
     const source: string = pickedImage.path;
-      const base64Image: string = await RNFS.readFile(source, 'base64');
-      const hello = `data:image/jpeg;base64,${base64Image}`;
-      setUserImage(hello);
+      setUserImage(source)
 
   };
 
