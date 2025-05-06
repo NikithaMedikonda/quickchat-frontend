@@ -6,6 +6,14 @@ jest.mock('react-router-native', () => ({
   useNavigate: () => mockNavigate,
 }));
 
+jest.mock('../../components/Button', () => {
+    const React = require('react');
+    const { Text } = require('react-native');
+    return {
+      Button: ({ title }: { title: string }) => <Text>{title}</Text>,
+    };
+  });
+  
 describe('Welcome Screen', () => {
     it('renders the logo image', () => {
         const { getByTestId } = render(<WelcomeScreen />);
