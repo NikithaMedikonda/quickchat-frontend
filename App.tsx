@@ -1,31 +1,22 @@
 import React, { useEffect } from 'react';
-import { SafeAreaView, Text, StyleSheet, StatusBar } from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
+import { NativeRouter, Routes, Route } from 'react-router-native';
+import {WelcomeScreen} from './src/screens/WelcomeScreen/WelcomeScreen';
+import RegisterScreen from './src/screens/RegisterScreen/RegisterScreen';
 
 const App = () => {
   useEffect(() => {
     SplashScreen.hide();
   }, []);
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#f2f2f2" />
-      <Text style={styles.text}>QuickChat</Text>
-    </SafeAreaView>
+    <NativeRouter>
+      <Routes>
+        <Route path="/" element={<WelcomeScreen />} />
+        <Route path="register" element={<RegisterScreen />} />
+      </Routes>
+    </NativeRouter>
   );
 };
 
 export default App;
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  text: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#1E90FF',
-  },
-});

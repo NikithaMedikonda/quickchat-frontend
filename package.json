@@ -10,9 +10,11 @@
     "test": "jest"
   },
   "dependencies": {
+    "@testing-library/react-native": "^13.2.0",
     "react": "19.0.0",
     "react-native": "0.79.2",
-    "react-native-splash-screen": "^3.3.0"
+    "react-native-splash-screen": "^3.3.0",
+    "react-router-native": "^6.30.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
