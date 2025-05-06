@@ -15,7 +15,7 @@ export const WelcomeScreen = () => {
     return (
         <View style={styles.container}>
             <View style={styles.imageContainer}>
-                <Image style={styles.image} source={require('../../assets/quickchat_logo.png')} accessibilityHint='logo-image'/>
+                <Image style={styles.image} source={require('./../../../assets/quickchat_logo.png')} accessibilityHint='logo-image'/>
             </View>
             <View >
                 <Button title="Get Started" onPress={() => navigate('/register')} />
