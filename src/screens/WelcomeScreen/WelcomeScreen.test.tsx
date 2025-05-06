@@ -1,5 +1,5 @@
 import { fireEvent, render } from '@testing-library/react-native';
-import {WelcomeScreen} from './WelcomeScreen';
+import { WelcomeScreen } from './WelcomeScreen';
 
 const mockNavigate = jest.fn();
 jest.mock('react-router-native', () => ({
@@ -13,7 +13,6 @@ jest.mock('../../components/Button', () => {
       Button: ({ title }: { title: string }) => <Text>{title}</Text>,
     };
   });
-  
 describe('Welcome Screen', () => {
     it('renders the logo image', () => {
         const { getByTestId } = render(<WelcomeScreen />);
@@ -32,4 +31,4 @@ describe('Welcome Screen', () => {
         fireEvent.press(button);
         expect(mockNavigate).toHaveBeenCalledWith('/register');
     });
-})
+});
