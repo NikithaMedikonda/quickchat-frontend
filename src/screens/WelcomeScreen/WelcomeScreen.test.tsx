@@ -1,5 +1,5 @@
 import { fireEvent, render } from '@testing-library/react-native';
-import WelcomeScreen from './WelcomeScreen';
+import {WelcomeScreen} from './WelcomeScreen';
 
 const mockNavigate = jest.fn();
 jest.mock('react-router-native', () => ({
