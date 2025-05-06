@@ -6,6 +6,7 @@
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
 	<string>QuickChat</string>
+
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -46,6 +47,16 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+
+
+<key>NSCameraUsageDescription</key>
+  <string>QuickChat needs camera permission</string>
+   <key>NSPhotoLibraryUsageDescription</key>
+  <string>QuickChat needs files</string>
+  <key>NSPhotoLibraryAddUsageDescription</key>
+  <string>QuickChat needs files</string>
+
+  
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 </dict>
