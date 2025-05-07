@@ -7,17 +7,16 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {Button} from '../../components/Button.tsx';
-import {getStyles} from './Registration.ts';
-import {Placeholder} from '../../components/InputField.tsx';
+import {Button} from '../../components/Button/Button.tsx';
+import {getStyles} from './styles.ts';
+import {Placeholder} from '../../components/InputFiled/InputField.tsx';
 import {useThemeColors} from '../../constants/colors.ts';
 import {requestPermissions} from '../../permissions/ImagePermissions.ts';
 import ImageCropPicker from 'react-native-image-crop-picker';
-import RNFS from 'react-native-fs';
 
 export const Registration = () => {
   const [userImage, setUserImage] = useState(require('../../assets/image.png'));
-
+  const [imageUri, setImageUri] = useState('');
   const handleOpenGallery = async () => {
     const hasPermission = await requestPermissions();
     if (Platform.OS === 'android') {
@@ -29,7 +28,7 @@ export const Registration = () => {
         return;
       }
     }
-    if (Platform.OS === 'ios' ) {
+    if (Platform.OS === 'ios') {
       if (hasPermission) {
         Alert.alert(
           'Permission Denied',
@@ -41,15 +40,23 @@ export const Registration = () => {
 
     const pickedImage = await ImageCropPicker.openPicker({
       width: 300,
-      height: 400,
+      height: 300,
       cropping: true,
     });
     const source: string = pickedImage.path;
-      setUserImage(source)
-
+    setUserImage({uri: source});
+    setImageUri(source);
   };
 
   const [form, setForm] = useState({
+    firstName: '',
+    lastName: '',
+    phoneNumber: '',
+    password: '',
+    confirmPassword: '',
+    email: '',
+  });
+  const [formErrors, setFormErrors] = useState({
     firstName: '',
     lastName: '',
     phoneNumber: '',
@@ -66,7 +73,6 @@ export const Registration = () => {
   };
 
   const onPress = () => {
-    console.log(form);
     setForm({
       firstName: '',
       lastName: '',
@@ -75,6 +81,15 @@ export const Registration = () => {
       confirmPassword: '',
       email: '',
     });
+    setFormErrors({
+      firstName: '',
+      lastName: '',
+      phoneNumber: '',
+      password: '',
+      confirmPassword: '',
+      email: '',
+    });
+    validateForm();
   };
 
   const inputFields = [
@@ -86,20 +101,67 @@ export const Registration = () => {
     {key: 'email', title: 'Email (Optional)'},
   ];
 
+  const validateEmail = (email: string) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+  };
+
+  const validateForm = () => {
+    let isValid = true;
+    const errors: typeof formErrors = {
+      firstName: '',
+      lastName: '',
+      phoneNumber: '',
+      password: '',
+      confirmPassword: '',
+      email: '',
+    };
+
+    if (!form.password) {
+      errors.password = 'Password is required';
+      isValid = false;
+    }
+    if (form.password !== form.confirmPassword) {
+      errors.confirmPassword = 'Passwords do not match';
+      isValid = false;
+    }
+    if (!form.phoneNumber || form.phoneNumber.length !== 10) {
+      errors.phoneNumber = 'Invalid phone number';
+      isValid = false;
+    }
+    if (form.email && !validateEmail(form.email)) {
+      errors.email = 'Invalid email format';
+      isValid = false;
+    }
+
+    setFormErrors(errors);
+    return isValid;
+  };
+
   return (
     <View style={styles.registrationMainContainer}>
       <TouchableOpacity onPress={handleOpenGallery}>
-        <Image style={styles.logo} source={userImage} resizeMode="contain"  testID = "logo"/>
+        <Image
+          style={styles.logo}
+          source={userImage}
+          resizeMode="contain"
+          testID="logo"
+        />
       </TouchableOpacity>
 
       {inputFields.map(field => (
-        <Placeholder
-          key={field.key}
-          title={field.title}
-          value={form[field.key as keyof typeof form]}
-          onChange={(text: string) => handleInputChange(field.key, text)}
-
-        />
+        <View key={field.key}>
+          <Placeholder
+            title={field.title}
+            value={form[field.key as keyof typeof form]}
+            onChange={(text: string) => handleInputChange(field.key, text)}
+          />
+          {formErrors[field.key as keyof typeof formErrors] ? (
+            <Text style={{color: 'red', fontSize: 12}}>
+              {formErrors[field.key as keyof typeof formErrors]}
+            </Text>
+          ) : null}
+        </View>
       ))}
 
       <View style={styles.registerButtonContainer}>
