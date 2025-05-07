@@ -1,23 +1,15 @@
-import React, { useEffect } from 'react';
+import React, {useEffect} from 'react';
 import SplashScreen from 'react-native-splash-screen';
-import { NativeRouter, Routes, Route } from 'react-router-native';
-import {WelcomeScreen} from './src/screens/WelcomeScreen/WelcomeScreen';
-import RegisterScreen from './src/screens/RegisterScreen/RegisterScreen';
+import {InitialStacks} from './src/navigation/stack/InitialStacks';
+import { NavigationContainer } from '@react-navigation/native';
 
-
-const App = () => {
+export const App = () => {
   useEffect(() => {
     SplashScreen.hide();
   }, []);
   return (
-    <NativeRouter>
-      <Routes>
-        <Route path="/" element={<WelcomeScreen />} />
-        <Route path="register" element={<RegisterScreen />} />
-      </Routes>
-    </NativeRouter>
+    <NavigationContainer>
+      <InitialStacks />
+    </NavigationContainer>
   );
 };
-
-export default App;
-
