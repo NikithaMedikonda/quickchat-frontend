@@ -19,16 +19,8 @@ export const Registration = () => {
   const [imageUri, setImageUri] = useState('');
   const handleOpenGallery = async () => {
     const hasPermission = await requestPermissions();
-    if (Platform.OS === 'android') {
-      if (!hasPermission) {
-        Alert.alert(
-          'Permission Denied',
-          'We need access to your photos to select an image.',
-        );
-        return;
-      }
-    }
-    if (Platform.OS === 'ios') {
+
+    if (Platform.OS === 'ios'||Platform.OS=== 'android') {
       if (hasPermission) {
         Alert.alert(
           'Permission Denied',

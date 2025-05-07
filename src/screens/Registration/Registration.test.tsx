@@ -53,7 +53,7 @@ describe('Registration Screen', () => {
   it('triggers image picker on logo press if permission granted (Android)', async () => {
     Platform.OS = 'android';
     const {requestPermissions} = require('../../permissions/ImagePermissions');
-    requestPermissions.mockResolvedValue(true);
+    requestPermissions.mockResolvedValue(false);
 
     const {getByTestId} = render(<Registration />);
     fireEvent.press(getByTestId('logo'));
@@ -82,7 +82,7 @@ describe('Registration Screen', () => {
   it('alerts if permission denied (Android)', async () => {
     Platform.OS = 'android';
     const {requestPermissions} = require('../../permissions/ImagePermissions');
-    requestPermissions.mockResolvedValue(false);
+    requestPermissions.mockResolvedValue(true);
 
     const {getByTestId} = render(<Registration />);
     fireEvent.press(getByTestId('logo'));
