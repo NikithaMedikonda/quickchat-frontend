@@ -6,7 +6,7 @@ import {Placeholder} from '../../components/InputField/InputField';
 
 import {loginStyles} from './Login.styles';
 import {useThemeColors} from '../../constants/color';
-import {useNavigate} from 'react-router-native';
+
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
