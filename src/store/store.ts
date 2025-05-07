@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { loadingReducer } from './loading/loading.reducer';
+import loadingReducer from './slices/loadingSlice';
 
 export const store = configureStore({
   reducer: {
@@ -7,3 +7,4 @@ export const store = configureStore({
   },
 });
 
+export type RootState = ReturnType<typeof store.getState>;
