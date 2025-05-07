@@ -1,11 +1,11 @@
 import React from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { LoadingState } from '../../store/loading/LoadingState';
+import { RootState } from '../../store/store';
 import { loadingComponentStyles } from './LoadingComponent.styles';
 
 const LoadingComponent = () => {
-  const loadingState = useSelector((state: { loading: LoadingState }) => state.loading);
+  const loadingState = useSelector((state: RootState) => state.loading);
 
   if (!loadingState.show) {
     return null;
