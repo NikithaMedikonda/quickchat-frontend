@@ -20,7 +20,7 @@ export const Registration = () => {
   const handleOpenGallery = async () => {
     const hasPermission = await requestPermissions();
 
-    if (Platform.OS === 'ios'||Platform.OS=== 'android') {
+    if (Platform.OS === 'ios' || Platform.OS === 'android') {
       if (hasPermission) {
         Alert.alert(
           'Permission Denied',
@@ -65,14 +65,6 @@ export const Registration = () => {
   };
 
   const onPress = () => {
-    setForm({
-      firstName: '',
-      lastName: '',
-      phoneNumber: '',
-      password: '',
-      confirmPassword: '',
-      email: '',
-    });
     setFormErrors({
       firstName: '',
       lastName: '',
@@ -113,6 +105,14 @@ export const Registration = () => {
       errors.password = 'Password is required';
       isValid = false;
     }
+    if (!form.firstName) {
+      errors.firstName = 'First name is required';
+      isValid = false;
+    }
+    if (!form.lastName) {
+      errors.lastName = 'Last name is required';
+      isValid = false;
+    }
     if (form.password !== form.confirmPassword) {
       errors.confirmPassword = 'Passwords do not match';
       isValid = false;
@@ -147,6 +147,9 @@ export const Registration = () => {
             title={field.title}
             value={form[field.key as keyof typeof form]}
             onChange={(text: string) => handleInputChange(field.key, text)}
+            secureTextEntry={
+              field.key === 'password' || field.key === 'confirmPassword'
+            }
           />
           {formErrors[field.key as keyof typeof formErrors] ? (
             <Text style={{color: 'red', fontSize: 12}}>
