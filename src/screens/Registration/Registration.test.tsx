@@ -2,6 +2,8 @@ import React from 'react';
 import {render, fireEvent, waitFor} from '@testing-library/react-native';
 import {Registration} from './Registration';
 import {Alert, Platform} from 'react-native';
+import { store } from '../../store/store';
+import { Provider } from 'react-redux';
 
 jest.mock('react-native-image-crop-picker', () => ({
   openPicker: jest.fn().mockResolvedValue({path: 'mocked/image/path.jpg'}),
@@ -19,7 +21,7 @@ describe('Registration Screen', () => {
   });
 
   it('renders all input fields and buttons', () => {
-    const {getByPlaceholderText, getByText} = render(<Registration />);
+    const {getByPlaceholderText, getByText} = render(<Provider store={store}><Registration /></Provider>);
     expect(getByPlaceholderText('First Name')).toBeTruthy();
     expect(getByPlaceholderText('Last Name')).toBeTruthy();
     expect(getByPlaceholderText('Phone Number')).toBeTruthy();
@@ -36,7 +38,7 @@ describe('Registration Screen', () => {
     const {requestPermissions} = require('../../permissions/ImagePermissions');
     requestPermissions.mockResolvedValue(false);
 
-    const {getByTestId} = render(<Registration />);
+    const {getByTestId} = render(<Provider store={store}><Registration /></Provider>);
     fireEvent.press(getByTestId('logo'));
 
     await waitFor(() => {
@@ -50,7 +52,7 @@ describe('Registration Screen', () => {
     const {requestPermissions} = require('../../permissions/ImagePermissions');
     requestPermissions.mockResolvedValue(false);
 
-    const {getByTestId} = render(<Registration />);
+    const {getByTestId} = render(<Provider store={store}><Registration /></Provider>);
     fireEvent.press(getByTestId('logo'));
 
     await waitFor(() => {
@@ -65,7 +67,7 @@ describe('Registration Screen', () => {
     const {requestPermissions} = require('../../permissions/ImagePermissions');
     requestPermissions.mockResolvedValue(true);
 
-    const {getByTestId} = render(<Registration />);
+    const {getByTestId} = render(<Provider store={store}><Registration /></Provider>);
     fireEvent.press(getByTestId('logo'));
 
     await waitFor(() => {
@@ -81,7 +83,7 @@ describe('Registration Screen', () => {
     const {requestPermissions} = require('../../permissions/ImagePermissions');
     requestPermissions.mockResolvedValue(true);
 
-    const {getByTestId} = render(<Registration />);
+    const {getByTestId} = render(<Provider store={store}><Registration /></Provider>);
     fireEvent.press(getByTestId('logo'));
 
     await waitFor(() => {
