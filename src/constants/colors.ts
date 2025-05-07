@@ -1,13 +1,3 @@
-// export const useThemeColors = () => {
-//   const scheme = useColorScheme();
-//   return {
-//     primaryBlue: '#1877F2',
-//     gray: '#898989',
-//     background: scheme === 'dark' ? '#000000' : '#FFFFFF',
-//     text: scheme === 'dark' ? '#FFFFFF' : '#000000',
-//   };
-// };
-
 export const useThemeColors = () => {
   return {
     primaryBlue: '#1877F2',
@@ -17,3 +7,10 @@ export const useThemeColors = () => {
     text: '#FFFFFF',
   };
 };
+export type colors =   {
+  primaryBlue: string;
+  gray: string;
+  background: string;
+  white: string;
+  text: string;
+}
