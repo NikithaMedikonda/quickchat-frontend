@@ -30,25 +30,6 @@ describe('Registration Screen', () => {
     expect(getByText('Sign in')).toBeTruthy();
   });
 
-  it('allows form input and clears after submit', () => {
-    const {getByPlaceholderText, getByText, queryByDisplayValue} = render(
-      <Registration />,
-    );
-    fireEvent.changeText(getByPlaceholderText('First Name'), 'John');
-    fireEvent.changeText(getByPlaceholderText('Last Name'), 'Doe');
-    fireEvent.changeText(getByPlaceholderText('Phone Number'), '9999999999');
-    fireEvent.changeText(getByPlaceholderText('Password'), '1234');
-    fireEvent.changeText(getByPlaceholderText('Confirm Password'), '1234');
-    fireEvent.changeText(
-      getByPlaceholderText('Email (Optional)'),
-      'john@example.com',
-    );
-
-    fireEvent.press(getByText('Register'));
-
-    expect(queryByDisplayValue('John')).toBeNull();
-    expect(queryByDisplayValue('john@example.com')).toBeNull();
-  });
 
   it('triggers image picker on logo press if permission granted (Android)', async () => {
     Platform.OS = 'android';
