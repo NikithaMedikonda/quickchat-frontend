@@ -4,6 +4,7 @@ on:
   push:
     branches:
      - main
+     - feature/loading-screen
   
 jobs:
   lint-and-test:
