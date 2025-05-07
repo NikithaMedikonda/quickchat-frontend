@@ -3,6 +3,7 @@ name: QuickChat-frontend CI/CD
 on:
   push:
     branches:
+      - main
       - feature-registration
   
 jobs:
