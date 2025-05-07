@@ -1,16 +1,13 @@
-import {Platform} from 'react-native';
+import {Alert, Platform} from 'react-native';
 import {check, PERMISSIONS, request, RESULTS} from 'react-native-permissions';
 
 export const requestPermissions = async () => {
   if (Platform.OS === 'android') {
     try {
-      // Check the status of each permission
       const checkCamera = await check(PERMISSIONS.ANDROID.CAMERA);
       const checkExternalRead = await check(
         PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE,
       );
-
-      // If any permission is denied, request the denied permissions
       let permissionsDenied = false;
 
       if (checkCamera === RESULTS.DENIED) {
@@ -30,7 +27,7 @@ export const requestPermissions = async () => {
       }
       return permissionsDenied;
     } catch (e) {
-      console.log(e);
+      Alert.alert('Something went wrong while getting permission');
     }
   } else if (Platform.OS === 'ios') {
     try {
@@ -64,8 +61,8 @@ export const requestPermissions = async () => {
         }
       }
       return permissionsDenied;
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (e) {
+        Alert.alert('Something went wrong while getting permission');
+      }
   }
 };
