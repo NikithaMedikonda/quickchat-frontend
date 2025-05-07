@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {
   Alert,
   Image,
@@ -13,10 +13,23 @@ import {Placeholder} from '../../components/InputFiled/InputField.tsx';
 import {useThemeColors} from '../../constants/colors.ts';
 import {requestPermissions} from '../../permissions/ImagePermissions.ts';
 import ImageCropPicker from 'react-native-image-crop-picker';
+import {useDispatch, useSelector} from 'react-redux';
+import {
+  setFormField,
+  setErrors,
+  setImageUri,
+} from '../../store/slices/registrationSlice.ts';
+import {RootState} from '../../store/store.ts';
+import { resetForm } from '../../store/slices/registrationSlice.ts';
 
 export const Registration = () => {
-  const [userImage, setUserImage] = useState(require('../../assets/image.png'));
-  const [imageUri, setImageUri] = useState('');
+  const dispatch = useDispatch();
+  const {form, errors, imageUri} = useSelector(
+    (state: RootState) => state.registration,
+  );
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
+
   const handleOpenGallery = async () => {
     const hasPermission = await requestPermissions();
 
@@ -35,45 +48,57 @@ export const Registration = () => {
       height: 300,
       cropping: true,
     });
-    const source: string = pickedImage.path;
-    setUserImage({uri: source});
-    setImageUri(source);
+    dispatch(setImageUri(pickedImage.path));
   };
 
-  const [form, setForm] = useState({
-    firstName: '',
-    lastName: '',
-    phoneNumber: '',
-    password: '',
-    confirmPassword: '',
-    email: '',
-  });
-  const [formErrors, setFormErrors] = useState({
-    firstName: '',
-    lastName: '',
-    phoneNumber: '',
-    password: '',
-    confirmPassword: '',
-    email: '',
-  });
-
-  const colors = useThemeColors();
-  const styles = getStyles(colors);
-
   const handleInputChange = (key: string, value: string) => {
-    setForm(prev => ({...prev, [key]: value}));
+    dispatch(setFormField({key: key as any, value}));
+  };
+
+  const validateEmail = (email: string) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+  };
+
+  const validateForm = () => {
+    let isValid = true;
+    const newErrors: Partial<typeof form> = {};
+
+    if (!form.firstName) {
+      newErrors.firstName = 'First name is required';
+      isValid = false;
+    }
+    if (!form.lastName) {
+      newErrors.lastName = 'Last name is required';
+      isValid = false;
+    }
+    if (!form.password) {
+      newErrors.password = 'Password is required';
+      isValid = false;
+    }
+    if (form.password !== form.confirmPassword) {
+      newErrors.confirmPassword = 'Passwords do not match';
+      isValid = false;
+    }
+    if (!form.phoneNumber || form.phoneNumber.length !== 10) {
+      newErrors.phoneNumber = 'Invalid phone number';
+      isValid = false;
+    }
+    if (form.email && !validateEmail(form.email)) {
+      newErrors.email = 'Invalid email format';
+      isValid = false;
+    }
+
+    dispatch(setErrors(newErrors));
+    return isValid;
   };
 
   const onPress = () => {
-    setFormErrors({
-      firstName: '',
-      lastName: '',
-      phoneNumber: '',
-      password: '',
-      confirmPassword: '',
-      email: '',
-    });
-    validateForm();
+    dispatch(setErrors({}));
+    if (validateForm()) {
+      Alert.alert('Success', 'Form submitted successfully!');
+      dispatch(resetForm());
+    }
   };
 
   const inputFields = [
@@ -85,57 +110,16 @@ export const Registration = () => {
     {key: 'email', title: 'Email (Optional)'},
   ];
 
-  const validateEmail = (email: string) => {
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return regex.test(email);
-  };
-
-  const validateForm = () => {
-    let isValid = true;
-    const errors: typeof formErrors = {
-      firstName: '',
-      lastName: '',
-      phoneNumber: '',
-      password: '',
-      confirmPassword: '',
-      email: '',
-    };
-
-    if (!form.password) {
-      errors.password = 'Password is required';
-      isValid = false;
-    }
-    if (!form.firstName) {
-      errors.firstName = 'First name is required';
-      isValid = false;
-    }
-    if (!form.lastName) {
-      errors.lastName = 'Last name is required';
-      isValid = false;
-    }
-    if (form.password !== form.confirmPassword) {
-      errors.confirmPassword = 'Passwords do not match';
-      isValid = false;
-    }
-    if (!form.phoneNumber || form.phoneNumber.length !== 10) {
-      errors.phoneNumber = 'Invalid phone number';
-      isValid = false;
-    }
-    if (form.email && !validateEmail(form.email)) {
-      errors.email = 'Invalid email format';
-      isValid = false;
-    }
-
-    setFormErrors(errors);
-    return isValid;
-  };
-
   return (
     <View style={styles.registrationMainContainer}>
-      <TouchableOpacity onPress={handleOpenGallery}>
+       <TouchableOpacity onPress={handleOpenGallery}>
         <Image
           style={styles.logo}
-          source={userImage}
+          source={
+            imageUri
+              ? {uri: imageUri}
+              : require('../../assets/image.png')
+          }
           resizeMode="contain"
           testID="logo"
         />
@@ -151,9 +135,10 @@ export const Registration = () => {
               field.key === 'password' || field.key === 'confirmPassword'
             }
           />
-          {formErrors[field.key as keyof typeof formErrors] ? (
+          {errors[field.key as keyof typeof errors] ? (
+            // eslint-disable-next-line react-native/no-inline-styles
             <Text style={{color: 'red', fontSize: 12}}>
-              {formErrors[field.key as keyof typeof formErrors]}
+              {errors[field.key as keyof typeof errors]}
             </Text>
           ) : null}
         </View>
