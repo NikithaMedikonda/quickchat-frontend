@@ -1,6 +1,6 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, Dimensions } from 'react-native';
-import { useThemeColors } from '../constants/color';
+import { useThemeColors } from '../constants/colors';
 
 const { width } = Dimensions.get('window');
 
