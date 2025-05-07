@@ -1,5 +1,5 @@
-import {render, screen} from '@testing-library/react-native';
 import { HomeScreen } from './HomeScreen';
+import {render, screen} from '@testing-library/react-native';
 
 describe('Profile Screen', () => {
   it('renders the logo image', () => {

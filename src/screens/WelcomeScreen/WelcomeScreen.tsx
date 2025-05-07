@@ -1,10 +1,10 @@
-import React from 'react';
-import {View, StyleSheet, Image, Dimensions} from 'react-native';
 import {Button} from '../../components/Button';
-import {useThemeColors} from '../../constants/colors';
 import {colors} from '../../constants/colors';
-import {useNavigation} from '@react-navigation/native';
+import React from 'react';
 import {RegisterScreenNavigationProp} from '../../types/usenavigation.type';
+import {useThemeColors} from '../../constants/colors';
+import {useNavigation} from '@react-navigation/native';
+import {View, StyleSheet, Image, Dimensions} from 'react-native';
 
 const {width, height} = Dimensions.get('window');
 

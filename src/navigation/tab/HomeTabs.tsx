@@ -1,10 +1,10 @@
-import {View, Image} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {useThemeColors} from '../../constants/colors';
 import {HomeScreen} from '../../screens/HomeScreen/HomeScreen';
-import {UnreadScreen} from '../../screens/UnreadScreen/UnreadScreen';
 import {ProfileScreen} from '../../screens/ProfileScreen/ProfileScreen';
 import {styles} from './HomeTabs.styles';
+import {useThemeColors} from '../../constants/colors';
+import {UnreadScreen} from '../../screens/UnreadScreen/UnreadScreen';
+import {View, Image} from 'react-native';
 
 export const HomeTabs = () => {
   const Tab = createBottomTabNavigator();
