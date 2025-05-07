@@ -7,10 +7,12 @@ export const Placeholder = ({
   title,
   value,
   onChange,
+  secureTextEntry = false,
 }: {
   title: string;
   value: string;
   onChange: (text: string) => void;
+  secureTextEntry: boolean;
 }) => {
   const colors = useThemeColors();
   const styles = getStyles(colors);
@@ -23,6 +25,7 @@ export const Placeholder = ({
       onChangeText={onChange}
       placeholderTextColor={styles.placeholder.color}
       testID="inputField"
+      secureTextEntry={secureTextEntry}
     />
   );
 };
@@ -39,7 +42,7 @@ const getStyles = (colors: any) =>
       margin: height * 0.012,
       backgroundColor: colors.white,
     },
-    placeholder:{
-      color:colors.gray,
+    placeholder: {
+      color: colors.gray,
     },
   });
