@@ -3,7 +3,7 @@ name: QuickChat-frontend CI/CD
 on:
   push:
     branches:
-     - multi-laguage-support
+     - main
   
 jobs:
   lint-and-test:
