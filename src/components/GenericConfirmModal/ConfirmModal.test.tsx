@@ -18,33 +18,33 @@ describe('ConfirmModal renders and behaves correctly', () => {
     jest.clearAllMocks();
   });
 
-  test('renders the modal with message and buttons', () => {
+  test('Should renders the modal with message and buttons', () => {
     const {getByText} = render(<ConfirmModal {...defaultProps} />);
     expect(getByText('Are you sure?')).toBeTruthy();
     expect(getByText('Cancel')).toBeTruthy();
     expect(getByText('Confirm')).toBeTruthy();
   });
 
-  test('calls setVisible(false) when "Cancel" is pressed', () => {
+  test('Should calls setVisible(false) when "Cancel" is pressed', () => {
     const {getByText} = render(<ConfirmModal {...defaultProps} />);
     fireEvent.press(getByText('Cancel'));
     expect(mockSetVisible).toHaveBeenCalledWith(false);
   });
 
-  test('calls onConfirm when "Confirm" is pressed', () => {
+  test('Should calls onConfirm when "Confirm" is pressed', () => {
     const {getByText} = render(<ConfirmModal {...defaultProps} />);
     fireEvent.press(getByText('Confirm'));
     expect(mockOnConfirm).toHaveBeenCalled();
   });
 
-  test('uses default confirmText "Yes" if not provided', () => {
+  test('Should uses default confirmText "Yes" if not provided', () => {
     const {getByText} = render(
       <ConfirmModal {...defaultProps} confirmText={undefined} />,
     );
     expect(getByText('Yes')).toBeTruthy();
   });
 
-  test('does not render the modal when visible is false', () => {
+  test('Should does not render the modal when visible is false', () => {
     const {queryByText} = render(
       <ConfirmModal {...defaultProps} visible={false} />,
     );
@@ -53,7 +53,7 @@ describe('ConfirmModal renders and behaves correctly', () => {
     expect(queryByText('Confirm')).toBeNull();
   });
 
-  test('renders the modal when visible is true', () => {
+  test('Should renders the modal when visible is true', () => {
     const {getByText} = render(
       <ConfirmModal {...defaultProps} visible={true} />,
     );
