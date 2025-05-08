@@ -1,14 +1,12 @@
 import React, {useState} from 'react';
 import {Image, Text, TouchableOpacity, View} from 'react-native';
-
+import {useNavigation} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {Button} from '../../components/Button/Button';
 import {Placeholder} from '../../components/InputField/InputField';
-
 import {loginStyles} from './Login.styles';
 import {useThemeColors} from '../../constants/color';
 
-import {useNavigation} from '@react-navigation/native';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
 type RootStackParamList = {
   register: undefined;
@@ -23,7 +21,7 @@ function LoginScreen() {
   const styles = loginStyles(colors);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
-  const naviagte = useNavigation<RegisterScreenNavigationProp>();
+  const navigate = useNavigation<RegisterScreenNavigationProp>();
   return (
     <View style={styles.container}>
       <Image
@@ -58,7 +56,7 @@ function LoginScreen() {
         <TouchableOpacity
           style={styles.signUpContainer}
           onPress={() => {
-            naviagte.navigate('register');
+            navigate.navigate('register');
           }}>
           <Text style={styles.validationText}>Sign up</Text>
         </TouchableOpacity>
