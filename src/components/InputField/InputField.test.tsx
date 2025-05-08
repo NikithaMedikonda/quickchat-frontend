@@ -1,9 +1,9 @@
 import React from 'react';
 import {render} from '@testing-library/react-native';
 import {Placeholder} from './InputField';
-describe('Registration Screen', () => {
-  it('renders all input fields and buttons', () => {
-    const {getByTestId} = render(
+describe('Input Field', () => {
+  it('renders input fields', () => {
+    const {getByPlaceholderText, getByDisplayValue} = render(
       <Placeholder
         title="First Name"
         value="TestUser"
@@ -11,6 +11,7 @@ describe('Registration Screen', () => {
         onChange={() => {}}
       />,
     );
-    expect(getByTestId('inputField')).toBeTruthy();
+    expect(getByPlaceholderText('First Name')).toBeTruthy();
+    expect(getByDisplayValue('TestUser')).toBeTruthy();
   });
 });
