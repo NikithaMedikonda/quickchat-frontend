@@ -1,6 +1,6 @@
 import React from 'react';
 import {TouchableOpacity, Text, StyleSheet, Dimensions} from 'react-native';
-import {useThemeColors} from '../../constants/color';
+import {colors, useThemeColors} from '../../constants/color';
 const {width} = Dimensions.get('window');
 
 export const Button = ({
@@ -10,19 +10,21 @@ export const Button = ({
   title: string;
   onPress: () => void;
 }) => {
+  // eslint-disable-next-line @typescript-eslint/no-shadow
   const colors = useThemeColors();
   const styles = getStyles(colors);
 
   return (
     <TouchableOpacity style={styles.button} onPress={onPress}>
-      <Text style={styles.text} testID="button">
+      <Text style={styles.text}>
         {title}
       </Text>
     </TouchableOpacity>
   );
 };
 
-const getStyles = (colors: any) =>
+// eslint-disable-next-line @typescript-eslint/no-shadow
+const getStyles = (colors: colors) =>
   StyleSheet.create({
     button: {
       paddingVertical: 12,
