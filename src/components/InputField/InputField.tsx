@@ -1,19 +1,20 @@
 import React from 'react';
 import {StyleSheet, Dimensions, TextInput} from 'react-native';
-import {useThemeColors} from '../../constants/color.ts';
+import {colors, useThemeColors} from '../../constants/color.ts';
 const {width, height} = Dimensions.get('window');
 
 export const Placeholder = ({
   title,
   value,
   onChange,
-  secureTextEntry 
+  secureTextEntry,
 }: {
   title: string;
   value: string;
   onChange: (text: string) => void;
   secureTextEntry: boolean;
 }) => {
+  // eslint-disable-next-line @typescript-eslint/no-shadow
   const colors = useThemeColors();
   const styles = getStyles(colors);
 
@@ -24,13 +25,13 @@ export const Placeholder = ({
       placeholder={title}
       onChangeText={onChange}
       placeholderTextColor={styles.placeholder.color}
-      testID="inputField"
       secureTextEntry={secureTextEntry}
     />
   );
 };
 
-const getStyles = (colors: any) =>
+// eslint-disable-next-line @typescript-eslint/no-shadow
+const getStyles = (colors: colors) =>
   StyleSheet.create({
     input: {
       height: height * 0.055,
