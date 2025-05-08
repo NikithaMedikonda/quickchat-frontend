@@ -1,14 +1,12 @@
 import React, {useEffect} from 'react';
 import SplashScreen from 'react-native-splash-screen';
-import {NativeRouter, Routes, Route} from 'react-router-native';
-import './src/i18n/i18n.config'
+import {InitialStacks} from './src/navigation/stack/InitialStacks';
+import { NavigationContainer } from '@react-navigation/native';
 import * as RNLocalize from 'react-native-localize';
 import {i18next} from './src/i18n/i18n.config';
 import {Provider} from 'react-redux';
 import {store} from './src/store/store';
-import {WelcomeScreen} from './src/screens/WelcomeScreen/WelcomeScreen';
-import RegisterScreen from './src/screens/RegisterScreen/RegisterScreen';
-
+import LoadingComponent from './src/components/LoadingComponent/LoadingComponent'; // Adjust the path as needed
 
 export const App = () => {
   useEffect(() => {
@@ -19,12 +17,10 @@ export const App = () => {
 
   return (
     <Provider store={store}>
-      <NativeRouter>
-        <Routes>
-          <Route path="/" element={<WelcomeScreen />} />
-          <Route path="register" element={<RegisterScreen />} />
-        </Routes>
-      </NativeRouter>
+      <NavigationContainer>
+      <InitialStacks />
+        <LoadingComponent />
+    </NavigationContainer>
     </Provider>
   );
 };
