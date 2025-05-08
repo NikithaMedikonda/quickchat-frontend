@@ -4,8 +4,6 @@ on:
   push:
     branches:
      - main
-     - feature/loading-screen
-     - feature/ios-splash-screen-image
   
 jobs:
   lint-and-test:
