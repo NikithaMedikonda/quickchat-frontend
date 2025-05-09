@@ -22,6 +22,8 @@ jobs:
       - name: Install CocoaPods
         run: sudo gem install cocoapods
 
+      - name: Remove Derived Data
+        run: rm -rf ~/Library/Developer/Xcode/DerivedData
       - name: Install Pod dependencies
         run: |
           cd ios
