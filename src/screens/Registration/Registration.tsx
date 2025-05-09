@@ -1,69 +1,50 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React from 'react';
+import { Alert, Image, Text, TouchableOpacity, View } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-native';
+import { Button } from '../../components/Button/Button';
+import { ImagePickerModal } from '../../components/ImagePickerModal/ImagePickerModal';
+import { Placeholder } from '../../components/InputField/InputField';
+import { useThemeColors } from '../../constants/colors';
+import { registerUser } from '../../services/RegisterUser';
+import { show } from '../../store/slices/loadingSlice';
+import { setLoginSuccess } from '../../store/slices/loginSlice';
 import {
-  Alert,
-  Image,
-  Platform,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import {Button} from '../../components/Button/Button.tsx';
-import {getStyles} from './styles.ts';
-import {Placeholder} from '../../components/InputFiled/InputField.tsx';
-import {useThemeColors} from '../../constants/colors.ts';
-import {requestPermissions} from '../../permissions/ImagePermissions.ts';
-import ImageCropPicker from 'react-native-image-crop-picker';
-import {useDispatch, useSelector} from 'react-redux';
-import {
-  setFormField,
+  resetForm,
   setErrors,
-  setImageUri,
-} from '../../store/slices/registrationSlice.ts';
-import {RootState} from '../../store/store.ts';
-import { resetForm } from '../../store/slices/registrationSlice.ts';
+  setFormField,
+  setIsVisible,
+} from '../../store/slices/registrationSlice';
+import { RootState } from '../../store/store';
+import { getStyles } from './Registration.styles';
 
 export const Registration = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
-  const {form, errors, imageUri} = useSelector(
+  const {form, errors, imageUri, image, isVisible} = useSelector(
     (state: RootState) => state.registration,
   );
   const colors = useThemeColors();
   const styles = getStyles(colors);
 
-  const handleOpenGallery = async () => {
-    const hasPermission = await requestPermissions();
-
-    if (Platform.OS === 'ios' || Platform.OS === 'android') {
-      if (hasPermission) {
-        Alert.alert(
-          'Permission Denied',
-          'We need access to your photos to select an image.',
-        );
-        return;
-      }
-    }
-
-    const pickedImage = await ImageCropPicker.openPicker({
-      width: 300,
-      height: 300,
-      cropping: true,
-    });
-    dispatch(setImageUri(pickedImage.path));
+  const handleOpenImageSelector = async () => {
+    dispatch(setIsVisible(true));
   };
 
-  const handleInputChange = (key: string, value: string) => {
-    dispatch(setFormField({key: key as any, value}));
+  const handleInputChange = (key: keyof typeof form, value: string) => {
+    dispatch(setFormField({key, value}));
   };
 
-  const validateEmail = (email: string) => {
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return regex.test(email);
-  };
+  const validateEmail = (email: string) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  const validatePassword = (password: string) =>
+    /^(?=.*[A-Z])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/.test(password);
 
   const validateForm = () => {
-    let isValid = true;
     const newErrors: Partial<typeof form> = {};
-
+    let isValid = true;
     if (!form.firstName) {
       newErrors.firstName = 'First name is required';
       isValid = false;
@@ -72,8 +53,8 @@ export const Registration = () => {
       newErrors.lastName = 'Last name is required';
       isValid = false;
     }
-    if (!form.password) {
-      newErrors.password = 'Password is required';
+    if (!form.password || !validatePassword(form.password)) {
+      newErrors.password = 'Invalid password';
       isValid = false;
     }
     if (form.password !== form.confirmPassword) {
@@ -88,16 +69,36 @@ export const Registration = () => {
       newErrors.email = 'Invalid email format';
       isValid = false;
     }
-
     dispatch(setErrors(newErrors));
     return isValid;
   };
 
-  const onPress = () => {
+  const handleRegister = async () => {
     dispatch(setErrors({}));
-    if (validateForm()) {
-      Alert.alert('Success', 'Form submitted successfully!');
-      dispatch(resetForm());
+    dispatch(show());
+    if (!validateForm()) {
+      return;
+    }
+    try {
+      const result = await registerUser({...form, image});
+      if (result.status === 409) {
+        Alert.alert('User already exist with this number');
+      } else if (result.status === 200) {
+        dispatch(
+          setLoginSuccess({
+            accessToken: result.data.accessToken,
+            refreshToken: result.data.refreshToken,
+          })
+        );
+        await AsyncStorage.setItem('authToken', result.data.accessToken);
+        await AsyncStorage.setItem('refreshToken', result.data.refreshToken);
+        Alert.alert('Success', 'Form submitted successfully!');
+        dispatch(resetForm());
+      } else {
+        Alert.alert('Something went wrong while registering');
+      }
+    } catch (e: any) {
+      Alert.alert(e.message || 'Something went wrong');
     }
   };
 
@@ -105,55 +106,54 @@ export const Registration = () => {
     {key: 'firstName', title: 'First Name'},
     {key: 'lastName', title: 'Last Name'},
     {key: 'phoneNumber', title: 'Phone Number'},
-    {key: 'password', title: 'Password'},
-    {key: 'confirmPassword', title: 'Confirm Password'},
+    {key: 'password', title: 'Password', secure: true},
+    {key: 'confirmPassword', title: 'Confirm Password', secure: true},
     {key: 'email', title: 'Email (Optional)'},
-  ];
+  ] as const;
 
   return (
     <View style={styles.registrationMainContainer}>
-       <TouchableOpacity onPress={handleOpenGallery}>
+      <TouchableOpacity onPress={handleOpenImageSelector}>
         <Image
           style={styles.logo}
           source={
-            imageUri
-              ? {uri: imageUri}
-              : require('../../assets/image.png')
+            imageUri ? {uri: imageUri} : require('../../assets/image.png')
           }
           resizeMode="contain"
-          testID="logo"
+           accessibilityHint="logo"
         />
       </TouchableOpacity>
-
       {inputFields.map(field => (
         <View key={field.key}>
           <Placeholder
             title={field.title}
-            value={form[field.key as keyof typeof form]}
+            value={form[field.key]}
             onChange={(text: string) => handleInputChange(field.key, text)}
             secureTextEntry={
               field.key === 'password' || field.key === 'confirmPassword'
             }
           />
-          {errors[field.key as keyof typeof errors] ? (
+          {errors[field.key] && (
             // eslint-disable-next-line react-native/no-inline-styles
             <Text style={{color: 'red', fontSize: 12}}>
-              {errors[field.key as keyof typeof errors]}
+              {errors[field.key]}
             </Text>
-          ) : null}
+          )}
         </View>
       ))}
-
       <View style={styles.registerButtonContainer}>
-        <Button title="Register" onPress={onPress} />
+        <Button title="Register" onPress={handleRegister} />
       </View>
-
       <View style={styles.loginButtonContainer}>
         <Text style={styles.loginButtontext}>Already have an account? </Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigate('/login')}>
           <Text style={styles.loginButtonSignInText}>Sign in</Text>
         </TouchableOpacity>
       </View>
+      {isVisible && <ImagePickerModal />}
     </View>
   );
 };
+
+
+// export const Registration  = Registrationn;
