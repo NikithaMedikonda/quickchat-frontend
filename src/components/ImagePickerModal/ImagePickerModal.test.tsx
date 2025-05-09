@@ -14,7 +14,7 @@ import {
   setImage,
   setIsVisible,
 } from '../../store/slices/registrationSlice';
-import {Alert} from 'react-native';
+import {Alert, Platform} from 'react-native';
 
 jest.mock('react-native-fs', () => ({
   readFile: jest.fn().mockResolvedValue('mocked-base64-string'),
@@ -69,9 +69,55 @@ describe('ImagePickerModal', () => {
     expect(mockDispatch).toHaveBeenCalledWith(setIsVisible(false));
   });
 
-  it('handles image picking from camera', async () => {
+  it('handles image picking from gallery', async () => {
+    Platform.OS = 'android';
+    const { requestPermissions } = require('../../permissions/ImagePermissions');
+    requestPermissions.mockResolvedValue(false);
     render(<ImagePickerModal />);
+    const galleryButton = screen.getByA11yHint('gallery-image');
+    fireEvent.press(galleryButton);
+    await waitFor(() => {
+      expect(ImageCropPicker.openPicker).toHaveBeenCalledWith({
+        width: 300,
+        height: 300,
+        cropping: true,
+        includeBase64: false,
+      });
+      expect(RNFS.readFile).toHaveBeenCalledWith(
+        'mocked/image/path.jpg',
+        'base64',
+      );
+      expect(mockDispatch).toHaveBeenCalledWith(
+        setImageUri('mocked/image/path.jpg'),
+      );
+      expect(mockDispatch).toHaveBeenCalledWith(
+        setImage('data:image/jpeg;base64,mocked-base64-string'),
+      );
+    });
+  });
 
+
+  it('should give alert when permission is denied from gallery in iOS', async () => {
+    Platform.OS = 'ios';
+    const { requestPermissions } = require('../../permissions/ImagePermissions');
+    requestPermissions.mockResolvedValue(false);
+    render(<ImagePickerModal />);
+    const galleryButton = screen.getByA11yHint('gallery-image');
+    fireEvent.press(galleryButton);
+    await waitFor(() => {
+      expect(Alert.alert).toHaveBeenCalledWith(
+        'Permission Denied',
+        'We need access to your photos to continue.',
+      );
+    });
+  });
+  
+
+  it('handles image picking from camera in ios', async () => {
+    render(<ImagePickerModal />);
+    Platform.OS === 'ios';
+    const {requestPermissions} = require('../../permissions/ImagePermissions');
+    requestPermissions.mockResolvedValue(true);
     const cameraButton = screen.getByA11yHint('camera-image');
     fireEvent.press(cameraButton);
 
