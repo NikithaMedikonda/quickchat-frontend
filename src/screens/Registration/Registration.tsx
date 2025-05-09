@@ -1,23 +1,32 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React from 'react';
-import { Alert, Image, Text, TouchableOpacity, View } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-native';
-import { Button } from '../../components/Button/Button';
-import { ImagePickerModal } from '../../components/ImagePickerModal/ImagePickerModal';
-import { Placeholder } from '../../components/InputField/InputField';
-import { useThemeColors } from '../../constants/colors';
-import { registerUser } from '../../services/RegisterUser';
-import { show } from '../../store/slices/loadingSlice';
-import { setLoginSuccess } from '../../store/slices/loginSlice';
+import {
+  Alert,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import {useDispatch, useSelector} from 'react-redux';
+import {useNavigate} from 'react-router-native';
+import {Button} from '../../components/Button/Button';
+import {ImagePickerModal} from '../../components/ImagePickerModal/ImagePickerModal';
+import {Placeholder} from '../../components/InputField/InputField';
+import {useThemeColors} from '../../constants/colors';
+import {registerUser} from '../../services/RegisterUser';
+import {show} from '../../store/slices/loadingSlice';
+import {setLoginSuccess} from '../../store/slices/loginSlice';
 import {
   resetForm,
   setErrors,
   setFormField,
   setIsVisible,
 } from '../../store/slices/registrationSlice';
-import { RootState } from '../../store/store';
-import { getStyles } from './Registration.styles';
+import {RootState} from '../../store/store';
+import {getStyles} from './Registration.styles';
 
 export const Registration = () => {
   const navigate = useNavigate();
@@ -88,7 +97,7 @@ export const Registration = () => {
           setLoginSuccess({
             accessToken: result.data.accessToken,
             refreshToken: result.data.refreshToken,
-          })
+          }),
         );
         await AsyncStorage.setItem('authToken', result.data.accessToken);
         await AsyncStorage.setItem('refreshToken', result.data.refreshToken);
@@ -112,48 +121,54 @@ export const Registration = () => {
   ] as const;
 
   return (
-    <View style={styles.registrationMainContainer}>
-      <TouchableOpacity onPress={handleOpenImageSelector}>
-        <Image
-          style={styles.logo}
-          source={
-            imageUri ? {uri: imageUri} : require('../../assets/image.png')
-          }
-          resizeMode="contain"
-           accessibilityHint="logo"
-        />
-      </TouchableOpacity>
-      {inputFields.map(field => (
-        <View key={field.key}>
-          <Placeholder
-            title={field.title}
-            value={form[field.key]}
-            onChange={(text: string) => handleInputChange(field.key, text)}
-            secureTextEntry={
-              field.key === 'password' || field.key === 'confirmPassword'
+    <KeyboardAvoidingView
+      style={{flex: 1}}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}
+    >
+      <ScrollView
+        contentContainerStyle={styles.registrationMainContainer}
+        keyboardShouldPersistTaps="handled">
+        <TouchableOpacity onPress={handleOpenImageSelector}>
+          <Image
+            style={styles.logo}
+            source={
+              imageUri ? {uri: imageUri} : require('../../assets/image.png')
             }
+            resizeMode="contain"
+            accessibilityHint="logo"
           />
-          {errors[field.key] && (
-            // eslint-disable-next-line react-native/no-inline-styles
-            <Text style={{color: 'red', fontSize: 12}}>
-              {errors[field.key]}
-            </Text>
-          )}
-        </View>
-      ))}
-      <View style={styles.registerButtonContainer}>
-        <Button title="Register" onPress={handleRegister} />
-      </View>
-      <View style={styles.loginButtonContainer}>
-        <Text style={styles.loginButtontext}>Already have an account? </Text>
-        <TouchableOpacity onPress={() => navigate('/login')}>
-          <Text style={styles.loginButtonSignInText}>Sign in</Text>
         </TouchableOpacity>
-      </View>
-      {isVisible && <ImagePickerModal />}
-    </View>
+        {inputFields.map(field => (
+          <View key={field.key}>
+            <Placeholder
+              title={field.title}
+              value={form[field.key]}
+              onChange={(text: string) => handleInputChange(field.key, text)}
+              secureTextEntry={
+                field.key === 'password' || field.key === 'confirmPassword'
+              }
+            />
+            {errors[field.key] && (
+              <Text style={{color: 'red', fontSize: 12}}>
+                {errors[field.key]}
+              </Text>
+            )}
+          </View>
+        ))}
+        <View style={styles.registerButtonContainer}>
+          <Button title="Register" onPress={handleRegister} />
+        </View>
+        <View style={styles.loginButtonContainer}>
+          <Text style={styles.loginButtontext}>Already have an account? </Text>
+          <TouchableOpacity onPress={() => navigate('/login')}>
+            <Text style={styles.loginButtonSignInText}>Sign in</Text>
+          </TouchableOpacity>
+        </View>
+        {isVisible && <ImagePickerModal />}
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
-
 
 // export const Registration  = Registrationn;
