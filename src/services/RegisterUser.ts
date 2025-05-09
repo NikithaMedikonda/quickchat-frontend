@@ -1,4 +1,4 @@
-import { API_URL } from '../../api';
+import {API_URL} from '../../api';
 
 export const registerUser = async (payload: {
   image: string;
@@ -23,7 +23,6 @@ export const registerUser = async (payload: {
     },
     body: JSON.stringify(userData),
   });
- console.log(response)
   const data = await response.json();
   console.log(data);
   return {

@@ -29,6 +29,7 @@ export function ImagePickerModal() {
   };
 
   const handlePickImage = async (from: 'camera' | 'gallery') => {
+    dispatch(setIsVisible(false));
     const permissionDenied = await requestPermissions();
     if (permissionDenied) {
       Alert.alert(
@@ -36,30 +37,33 @@ export function ImagePickerModal() {
         'We need access to your photos to continue.',
       );
     }
-    try {
-      const pickedImage =
-        from === 'camera'
-          ? await ImageCropPicker.openCamera({
-              width: 300,
-              height: 300,
-              cropping: true,
-              includeBase64: false,
-            })
-          : await ImageCropPicker.openPicker({
-              width: 300,
-              height: 300,
-              cropping: true,
-              includeBase64: false,
-            });
-
-      const base64Image = await RNFS.readFile(pickedImage.path, 'base64');
-      const imageData = `data:image/jpeg;base64,${base64Image}`;
-
-      dispatch(setImageUri(pickedImage.path));
-      dispatch(setImage(imageData));
-    } catch (error: any) {
-      Alert.alert(error);
+    else{
+      try {
+        const pickedImage =
+          from === 'camera'
+            ? await ImageCropPicker.openCamera({
+                width: 300,
+                height: 300,
+                cropping: true,
+                includeBase64: false,
+              })
+            : await ImageCropPicker.openPicker({
+                width: 300,
+                height: 300,
+                cropping: true,
+                includeBase64: false,
+              });
+  
+        const base64Image = await RNFS.readFile(pickedImage.path, 'base64');
+        const imageData = `data:image/jpeg;base64,${base64Image}`;
+  
+        dispatch(setImageUri(pickedImage.path));
+        dispatch(setImage(imageData));
+      } catch (error: any) {
+        Alert.alert(error);
+      }
     }
+
   };
 
   return (
