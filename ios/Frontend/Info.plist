@@ -56,7 +56,8 @@
   <string>QuickChat needs files</string>
   <key>NSPhotoLibraryAddUsageDescription</key>
   <string>QuickChat needs files</string>
-
+ <key>NSContactsUsageDescription</key>
+  <string>QuickChat needs access to your contacts to connect with friends.</string>
   
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
