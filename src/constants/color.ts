@@ -1,6 +1,6 @@
 export const useThemeColors = () => {
     return {
-      primaryBlue: 'blue',
+      primaryBlue: '#1877F2',
       gray: '#898989',
       background: '#000000' ,
       white: '#FFFFFF',
