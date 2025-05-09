@@ -1,20 +1,28 @@
 import React from 'react';
 import {TouchableOpacity, Text, StyleSheet, Dimensions} from 'react-native';
-import {useThemeColors} from '../../constants/colors';
+import {useThemeColors, colors} from '../../constants/colors';
 const {width} = Dimensions.get('window');
 
-export const Button = ({title,onPress}: {title: string,onPress: () => void}) => {
+export const Button = ({
+  title,
+  onPress,
+}: {
+  title: string;
+  onPress: () => void;
+}) => {
+  // eslint-disable-next-line @typescript-eslint/no-shadow
   const colors = useThemeColors();
   const styles = getStyles(colors);
 
   return (
     <TouchableOpacity style={styles.button} onPress={onPress}>
-      <Text style={styles.text} testID="button">{title}</Text>
+      <Text style={styles.text}>{title}</Text>
     </TouchableOpacity>
   );
 };
 
-const getStyles = (colors: any) =>
+// eslint-disable-next-line @typescript-eslint/no-shadow
+const getStyles = (colors: colors) =>
   StyleSheet.create({
     button: {
       paddingVertical: 12,
