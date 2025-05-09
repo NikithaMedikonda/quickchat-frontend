@@ -1,12 +1,10 @@
+import React from 'react';
 import {render} from '@testing-library/react-native';
 import {Button} from './Button';
-import React from 'react';
 
-describe('Registration Screen', () => {
-  it('renders all input fields and buttons', () => {
-    const {getByTestId} = render(
-      <Button title="Register" onPress={() => {}} />,
-    );
-    expect(getByTestId('button')).toBeTruthy();
+describe('Button Component', () => {
+  it('renders correctly with given title', () => {
+    const { getByText } = render(<Button title="Click Me" onPress={() => {}} />);
+    expect(getByText('Click Me')).toBeTruthy();
   });
 });
