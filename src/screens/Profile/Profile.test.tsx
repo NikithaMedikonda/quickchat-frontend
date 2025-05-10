@@ -1,9 +1,9 @@
 import {render, screen} from '@testing-library/react-native';
-import {ProfileScreen} from './ProfileScreen';
+import { Profile } from './Profile';
 
 describe('Profile Screen', () => {
   it('renders the logo image', () => {
-    render(<ProfileScreen />);
+    render(<Profile />);
     expect(screen.getByText('Hello profile')).toBeTruthy();
   });
 });
