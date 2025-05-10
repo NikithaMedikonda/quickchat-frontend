@@ -1,6 +1,6 @@
 import {Text, View} from 'react-native';
 
-export const ProfileScreen = () => {
+export const Profile = () => {
   return (
     <View>
       <Text>Hello profile</Text>
