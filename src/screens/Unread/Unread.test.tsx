@@ -1,9 +1,9 @@
 import {render, screen} from '@testing-library/react-native';
-import {UnreadScreen} from './UnreadScreen';
+import { Unread } from './Unread';
 
 describe('Profile Screen', () => {
   it('renders the logo image', () => {
-    render(<UnreadScreen />);
+    render(<Unread />);
     expect(screen.getByText('Hello unread')).toBeTruthy();
   });
 });
