@@ -1,13 +1,12 @@
+import {Alert, Platform} from 'react-native';
 import {
   fireEvent,
   render,
   screen,
   waitFor,
 } from '@testing-library/react-native';
-import React from 'react';
-import {Alert, Platform} from 'react-native';
-import RNFS from 'react-native-fs';
 import ImageCropPicker from 'react-native-image-crop-picker';
+import RNFS from 'react-native-fs';
 import {useDispatch, useSelector} from 'react-redux';
 import {
   setImage,

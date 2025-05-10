@@ -1,16 +1,13 @@
-import React, {useEffect} from 'react';
-import SplashScreen from 'react-native-splash-screen';
-import {InitialStacks} from './src/navigation/stack/InitialStacks';
-import { NavigationContainer } from '@react-navigation/native';
+import {useEffect} from 'react';
+import {NavigationContainer} from '@react-navigation/native';
 import * as RNLocalize from 'react-native-localize';
+import SplashScreen from 'react-native-splash-screen';
 import {i18next} from './src/i18n/i18n.config';
+import {InitialStacks} from './src/navigation/stack/InitialStacks';
+import {LoadingComponent} from './src/components/Loading/Loading';
 import {Provider} from 'react-redux';
-import { WelcomeScreen } from './src/screens/Welcome/Welcome';
-import { Registration } from './src/screens/Registration/Registration';
 import {store} from './src/store/store';
-import LoadingComponent from './src/components/LoadingComponent/LoadingComponent'; // Adjust the path as needed
 
-export const App = () => {
 export const App = () => {
   useEffect(() => {
     SplashScreen.hide();
@@ -21,9 +18,9 @@ export const App = () => {
   return (
     <Provider store={store}>
       <NavigationContainer>
-      <InitialStacks />
         <LoadingComponent />
-    </NavigationContainer>
+        <InitialStacks />
+      </NavigationContainer>
     </Provider>
   );
 };

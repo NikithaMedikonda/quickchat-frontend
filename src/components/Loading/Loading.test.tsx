@@ -1,8 +1,7 @@
-import React from 'react';
-import { render } from '@testing-library/react-native';
-import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
-import {loadingReducer} from '../../store/slices/loadingSlice';
+import { Provider } from 'react-redux';
+import { render } from '@testing-library/react-native';
+import { loadingReducer } from '../../store/slices/loadingSlice';
 import { LoadingComponent } from './Loading';
 
 const renderWithRedux = (initialState: any) => {
