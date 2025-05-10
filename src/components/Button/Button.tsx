@@ -1,7 +1,6 @@
-import React from 'react';
-import {TouchableOpacity, Text, StyleSheet, Dimensions} from 'react-native';
-import {useThemeColors, colors} from '../../constants/colors';
-const {width} = Dimensions.get('window');
+import {getStyles} from './Button.styles';
+import {TouchableOpacity, Text} from 'react-native';
+import {useThemeColors} from '../../constants/colors';
 
 export const Button = ({
   title,
@@ -21,25 +20,3 @@ export const Button = ({
   );
 };
 
-// eslint-disable-next-line @typescript-eslint/no-shadow
-const getStyles = (colors: colors) =>
-  StyleSheet.create({
-    button: {
-      paddingVertical: 12,
-      height: 50,
-      width: width * 0.55,
-      display: 'flex',
-      justifyContent: 'center',
-      alignContent: 'center',
-      paddingHorizontal: 20,
-      borderRadius: 8,
-      alignItems: 'center',
-      backgroundColor: colors.primaryBlue,
-      marginVertical: 5,
-    },
-    text: {
-      fontSize: 16,
-      fontWeight: '600',
-      color: colors.text,
-    },
-  });
