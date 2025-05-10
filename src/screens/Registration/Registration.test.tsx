@@ -1,8 +1,8 @@
-import React from 'react';
-import {render, fireEvent, waitFor} from '@testing-library/react-native';
 import {Alert} from 'react-native';
-import { Registration } from './Registration';
-import  {Provider} from 'react-redux';
+import {render, fireEvent, waitFor} from '@testing-library/react-native';
+import {NavigationContainer} from '@react-navigation/native';
+import {Provider} from 'react-redux';
+import {Registration} from './Registration';
 import {store} from '../../store/store';
 
 jest.mock('react-native-image-crop-picker', () => ({
@@ -18,9 +18,17 @@ jest.mock('react-native-fs', () => ({
 }));
 
 const mockNavigate = jest.fn();
-jest.mock('react-router-native', () => ({
-  useNavigate: () => mockNavigate,
-}));
+const mockReplace = jest.fn();
+jest.mock('@react-navigation/native', () => {
+  const actualNav = jest.requireActual('@react-navigation/native');
+  return {
+    ...actualNav,
+    useNavigation: () => ({
+      navigate: mockNavigate, 
+      replace:mockReplace
+    }),
+  };
+});
 
 jest.mock('../../permissions/ImagePermissions', () => ({
   requestPermissions: jest.fn(),
@@ -34,13 +42,15 @@ jest.spyOn(Alert, 'alert');
 
 describe('Registration Screen', () => {
   afterEach(() => {
-    jest.resetAllMocks(); 
+    jest.resetAllMocks();
   });
 
   const renderComponent = () =>
     render(
       <Provider store={store}>
-        <Registration />
+        <NavigationContainer>
+          <Registration />
+        </NavigationContainer>
       </Provider>,
     );
 
@@ -80,10 +90,7 @@ describe('Registration Screen', () => {
   });
   it('shows invalid pass error', async () => {
     const {getByPlaceholderText, getByText} = renderComponent();
-    fireEvent.changeText(
-      getByPlaceholderText('Password'),
-      '12345678',
-    );
+    fireEvent.changeText(getByPlaceholderText('Password'), '12345678');
     fireEvent.press(getByText('Register'));
     await waitFor(() => {
       expect(getByText('Invalid password')).toBeTruthy();
@@ -103,15 +110,18 @@ describe('Registration Screen', () => {
   });
 
   it('should navigate to login screen', async () => {
-    const { getByText} = renderComponent();
+    const {getByText} = renderComponent();
     fireEvent.press(getByText('Sign in'));
     await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith('/login');
+      expect(mockNavigate).toHaveBeenCalledWith('login');
     });
   });
   it('successfully submits form with valid data', async () => {
     const {registerUser} = require('../../services/RegisterUser.ts');
-    registerUser.mockResolvedValue({status:200,data:{accessToken: 'mockedToken',refreshToken:'refreshToken'}});
+    registerUser.mockResolvedValue({
+      status: 200,
+      data: {accessToken: 'mockedToken', refreshToken: 'refreshToken'},
+    });
     const {getByPlaceholderText, getByText} = renderComponent();
     fireEvent.changeText(getByPlaceholderText('First Name'), 'testuser');
     fireEvent.changeText(getByPlaceholderText('Last Name'), 'testuser');
@@ -127,16 +137,15 @@ describe('Registration Screen', () => {
     );
     fireEvent.press(getByText('Register'));
     await waitFor(() => {
-      expect(registerUser).toHaveBeenCalled();
-      expect(Alert.alert).toHaveBeenCalledWith(
-        'Success',
-        'Form submitted successfully!',
-      );
+      expect(mockReplace).toHaveBeenCalledWith('hometabs');
     });
   });
   it('User already exist with this number', async () => {
     const {registerUser} = require('../../services/RegisterUser.ts');
-    registerUser.mockResolvedValue({status:409,data:{accessToken: 'mockedToken',refreshToken:'refreshToken'}});
+    registerUser.mockResolvedValue({
+      status: 409,
+      data: {accessToken: 'mockedToken', refreshToken: 'refreshToken'},
+    });
     const {getByPlaceholderText, getByText} = renderComponent();
     fireEvent.changeText(getByPlaceholderText('First Name'), 'testuser');
     fireEvent.changeText(getByPlaceholderText('Last Name'), 'testuser');
@@ -160,7 +169,10 @@ describe('Registration Screen', () => {
   });
   it('should check failed statements', async () => {
     const {registerUser} = require('../../services/RegisterUser.ts');
-    registerUser.mockResolvedValue({status:500,data:{accessToken: 'mockedToken',refreshToken:'refreshToken'}});
+    registerUser.mockResolvedValue({
+      status: 500,
+      data: {accessToken: 'mockedToken', refreshToken: 'refreshToken'},
+    });
     const {getByPlaceholderText, getByText} = renderComponent();
     fireEvent.changeText(getByPlaceholderText('First Name'), 'testuser');
     fireEvent.changeText(getByPlaceholderText('Last Name'), 'testuser');
