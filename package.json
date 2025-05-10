@@ -28,7 +28,8 @@
     "react-native-localize": "^3.4.1",
     "react-native-splash-screen": "^3.3.0",
     "react-redux": "^9.2.0",
-    "react-router-native": "^6.30.0"
+    "react-router-native": "^6.30.0",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

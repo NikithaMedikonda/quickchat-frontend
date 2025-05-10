@@ -8,7 +8,7 @@ export const useThemeColors = () => {
   };
 };
 
-export type colors = {
+export type Colors = {
   primaryBlue: string;
   gray: string;
   background: string;
