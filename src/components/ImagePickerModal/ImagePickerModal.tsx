@@ -30,7 +30,7 @@ export function ImagePickerModal() {
   };
 
   const handlePickImage = async (from: 'camera' | 'gallery') => {
-    const permissionsGranted = await requestPermissions();
+    const permissionsGranted = await requestPermissions(from);
     if (Platform.OS === 'android' && permissionsGranted) {
       Alert.alert(
         'Permission Denied',
@@ -69,6 +69,7 @@ export function ImagePickerModal() {
       dispatch(setImage(imageData));
       dispatch(setIsVisible(false));
     } catch (error: any) {
+      handleClose();
       Alert.alert('Error', error?.message || 'Image selection failed.');
     }
   };
