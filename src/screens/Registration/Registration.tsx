@@ -1,5 +1,4 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import React from 'react';
 import {
   Alert,
   Image,
@@ -11,14 +10,12 @@ import {
   View,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
-import {useNavigate} from 'react-router-native';
 import {Button} from '../../components/Button/Button';
+import {getStyles} from './Registration.styles';
 import {ImagePickerModal} from '../../components/ImagePickerModal/ImagePickerModal';
+import {HomeTabsProps, NavigationProps} from '../../types/usenavigation.type';
 import {Placeholder} from '../../components/InputField/InputField';
-import {useThemeColors} from '../../constants/colors';
 import {registerUser} from '../../services/RegisterUser';
-import {show} from '../../store/slices/loadingSlice';
-import {setLoginSuccess} from '../../store/slices/loginSlice';
 import {
   resetForm,
   setErrors,
@@ -26,10 +23,14 @@ import {
   setIsVisible,
 } from '../../store/slices/registrationSlice';
 import {RootState} from '../../store/store';
-import {getStyles} from './Registration.styles';
+import {hide, show} from '../../store/slices/loadingSlice';
+import {setLoginSuccess} from '../../store/slices/loginSlice';
+import {useNavigation} from '@react-navigation/native';
+import {useThemeColors} from '../../constants/colors';
 
 export const Registration = () => {
-  const navigate = useNavigate();
+  const navigation = useNavigation<NavigationProps>();
+  const homeNavigation=useNavigation<HomeTabsProps>();
   const dispatch = useDispatch();
   const {form, errors, imageUri, image, isVisible} = useSelector(
     (state: RootState) => state.registration,
@@ -91,8 +92,10 @@ export const Registration = () => {
     try {
       const result = await registerUser({...form, image});
       if (result.status === 409) {
+        dispatch(hide());
         Alert.alert('User already exist with this number');
       } else if (result.status === 200) {
+        dispatch(hide());
         dispatch(
           setLoginSuccess({
             accessToken: result.data.accessToken,
@@ -101,7 +104,7 @@ export const Registration = () => {
         );
         await AsyncStorage.setItem('authToken', result.data.accessToken);
         await AsyncStorage.setItem('refreshToken', result.data.refreshToken);
-        Alert.alert('Success', 'Form submitted successfully!');
+        homeNavigation.replace('hometabs')
         dispatch(resetForm());
       } else {
         Alert.alert('Something went wrong while registering');
@@ -125,7 +128,7 @@ export const Registration = () => {
       style={{flex: 1}}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}
-    >
+      >
       <ScrollView
         contentContainerStyle={styles.registrationMainContainer}
         keyboardShouldPersistTaps="handled">
@@ -161,7 +164,7 @@ export const Registration = () => {
         </View>
         <View style={styles.loginButtonContainer}>
           <Text style={styles.loginButtontext}>Already have an account? </Text>
-          <TouchableOpacity onPress={() => navigate('/login')}>
+          <TouchableOpacity onPress={() => navigation.navigate('login')}>
             <Text style={styles.loginButtonSignInText}>Sign in</Text>
           </TouchableOpacity>
         </View>
@@ -170,5 +173,3 @@ export const Registration = () => {
     </KeyboardAvoidingView>
   );
 };
-
-// export const Registration  = Registrationn;
