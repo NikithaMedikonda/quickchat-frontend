@@ -1,10 +1,10 @@
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {HomeScreen} from '../../screens/HomeScreen/HomeScreen';
-import {ProfileScreen} from '../../screens/ProfileScreen/ProfileScreen';
-import {styles} from './HomeTabs.styles';
-import {useThemeColors} from '../../constants/colors';
-import {UnreadScreen} from '../../screens/UnreadScreen/UnreadScreen';
-import {View, Image} from 'react-native';
+import { Image, View } from 'react-native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Home } from '../../screens/Home/Home';
+import { Profile } from '../../screens/Profile/Profile';
+import { styles } from './HomeTabs.styles';
+import { Unread } from '../../screens/Unread/Unread';
+import { useThemeColors } from '../../constants/colors';
 
 export const HomeTabs = () => {
   const Tab = createBottomTabNavigator();
@@ -18,7 +18,7 @@ export const HomeTabs = () => {
       }}>
       <Tab.Screen
         name="home"
-        component={HomeScreen}
+        component={Home}
         options={{
           // eslint-disable-next-line react/no-unstable-nested-components
           tabBarIcon: ({focused}) => (
@@ -50,7 +50,7 @@ export const HomeTabs = () => {
       />
       <Tab.Screen
         name="unread"
-        component={UnreadScreen}
+        component={Unread}
         options={{
           // eslint-disable-next-line react/no-unstable-nested-components
           tabBarIcon: ({focused}) => (
@@ -82,7 +82,7 @@ export const HomeTabs = () => {
       />
       <Tab.Screen
         name="profile"
-        component={ProfileScreen}
+        component={Profile}
         options={{
           // eslint-disable-next-line react/no-unstable-nested-components
           tabBarIcon: ({focused}) => (
