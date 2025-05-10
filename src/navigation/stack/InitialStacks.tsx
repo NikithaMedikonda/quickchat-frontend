@@ -1,8 +1,7 @@
-import * as React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {WelcomeScreen} from '../../screens/WelcomeScreen/WelcomeScreen';
-import RegisterScreen from '../../screens/RegisterScreen/RegisterScreen';
 import {HomeTabs} from '../tab/HomeTabs';
+import {Registration} from '../../screens/Registration/Registration';
+import {Welcome} from '../../screens/Welcome/Welcome';
 
 const Stack = createNativeStackNavigator();
 
@@ -11,7 +10,7 @@ export const InitialStacks = () => {
     <Stack.Navigator initialRouteName="welcome">
       <Stack.Screen
         name="welcome"
-        component={WelcomeScreen}
+        component={Welcome}
         options={{headerShown: false}}
       />
       <Stack.Screen
@@ -21,7 +20,12 @@ export const InitialStacks = () => {
       />
       <Stack.Screen
         name="register"
-        component={RegisterScreen}
+        component={Registration}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="login"
+        component={Welcome}
         options={{headerShown: false}}
       />
     </Stack.Navigator>
