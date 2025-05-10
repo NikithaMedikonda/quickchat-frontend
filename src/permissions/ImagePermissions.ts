@@ -32,7 +32,7 @@ export const requestPermissions = async (from: string) => {
       Alert.alert('Error', 'Something went wrong while accessing permissions');
       return false;
     }
-  } else {
+  } else{
     try {
       if (from === 'camera') {
         const cameraStatus = await check(PERMISSIONS.IOS.CAMERA);
