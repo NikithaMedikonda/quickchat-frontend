@@ -19,11 +19,9 @@ export const requestPermissions = async (from: string) => {
         );
 
         if (checkExternalRead === RESULTS.DENIED) {
-          console.log('HELLO', checkExternalRead);
           const grantedExternalRead = await request(
             PERMISSIONS.ANDROID.READ_MEDIA_IMAGES,
           );
-          console.log('checking', grantedExternalRead);
           if (grantedExternalRead !== RESULTS.GRANTED) {
             permissionsDenied = true;
           }
