@@ -1,6 +1,6 @@
 import {Text, View} from 'react-native';
 
-export const UnreadScreen = () => {
+export const Unread = () => {
   return (
     <View>
       <Text>Hello unread</Text>
