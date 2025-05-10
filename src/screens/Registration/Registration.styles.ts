@@ -1,10 +1,10 @@
 import {Dimensions, StyleSheet} from 'react-native';
-import {colors} from '../../constants/colors';
+import {Colors} from '../../constants/colors';
 
 const {width, height} = Dimensions.get('window');
 
 // eslint-disable-next-line @typescript-eslint/no-shadow
-export const getStyles = (colors: colors) =>
+export const getStyles = (colors: Colors) =>
   StyleSheet.create({
     logo: {
       height: height * 0.14,
