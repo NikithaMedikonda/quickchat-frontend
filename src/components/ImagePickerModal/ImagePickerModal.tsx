@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   View,
   Text,
@@ -9,21 +8,24 @@ import {
   TouchableWithoutFeedback,
   Platform,
 } from 'react-native';
-import RNFS from 'react-native-fs';
 import ImageCropPicker from 'react-native-image-crop-picker';
+import RNFS from 'react-native-fs';
 import {useDispatch, useSelector} from 'react-redux';
 import {
   setImageUri,
   setImage,
   setIsVisible,
 } from '../../store/slices/registrationSlice';
+import {getStyles} from './ImagePickerModal.styles';
 import {requestPermissions} from '../../permissions/ImagePermissions';
-import {imagePickerModalStyles} from './ImagePickerModal.styles';
 import {RootState} from '../../store/store';
+import {useThemeColors} from '../../constants/colors';
 
 export function ImagePickerModal() {
   const dispatch = useDispatch();
   const {isVisible} = useSelector((state: RootState) => state.registration);
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
 
   const handleClose = () => {
     dispatch(setIsVisible(false));
@@ -77,27 +79,27 @@ export function ImagePickerModal() {
   return (
     <Modal animationType="slide" transparent={true} visible={isVisible}>
       <TouchableWithoutFeedback onPress={handleClose}>
-        <View style={imagePickerModalStyles.centeredView}>
-          <View style={imagePickerModalStyles.modalView}>
-            <View style={imagePickerModalStyles.textContainer}>
-              <Text style={imagePickerModalStyles.profileText}>
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <View style={styles.textContainer}>
+              <Text style={styles.profileText}>
                 Choose Profile
               </Text>
               <TouchableOpacity onPress={handleClose}>
                 <Image
-                  style={imagePickerModalStyles.cancel}
+                  style={styles.cancel}
                   source={require('../../assets/cross.png')}
                   accessibilityHint="cross-icon"
                 />
               </TouchableOpacity>
             </View>
 
-            <View style={imagePickerModalStyles.innerContainer}>
+            <View style={styles.innerContainer}>
               <TouchableOpacity
                 accessibilityHint="camera-image-clicker"
                 onPress={() => handlePickImage('camera')}>
                 <Image
-                  style={imagePickerModalStyles.camera}
+                  style={styles.camera}
                   accessibilityHint="camera-image"
                   source={require('../../assets/camera.png')}
                 />
@@ -105,7 +107,7 @@ export function ImagePickerModal() {
               <TouchableOpacity onPress={() => handlePickImage('gallery')}>
                 <Image
                   accessibilityHint="gallery-image"
-                  style={imagePickerModalStyles.gallery}
+                  style={styles.gallery}
                   source={require('../../assets/gallery.png')}
                 />
               </TouchableOpacity>
