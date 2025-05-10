@@ -1,12 +1,14 @@
-import { StyleSheet } from 'react-native';
+import {StyleSheet} from 'react-native';
+import {Colors} from '../../constants/colors';
 
-export const imagePickerModalStyles = StyleSheet.create({
+export const getStyles = (colors: Colors) =>
+  StyleSheet.create({
     centeredView: {
       flex: 1,
       justifyContent: 'flex-end',
     },
     modalView: {
-      backgroundColor: '#898989',
+      backgroundColor: colors.gray,
       borderRadius: 20,
       padding: 35,
       shadowColor: '#000',
@@ -44,7 +46,7 @@ export const imagePickerModalStyles = StyleSheet.create({
       fontWeight: 'bold',
     },
     cancel: {
-      height:20,
-      width:20,
+      height: 20,
+      width: 20,
     },
   });
