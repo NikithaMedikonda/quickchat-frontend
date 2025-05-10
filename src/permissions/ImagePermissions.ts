@@ -1,5 +1,5 @@
-import {Platform, Alert} from 'react-native';
-import {request, PERMISSIONS, RESULTS, check} from 'react-native-permissions';
+import { Alert, Platform } from 'react-native';
+import { PERMISSIONS, RESULTS, check, request } from 'react-native-permissions';
 
 export const requestPermissions = async () => {
   let permissionsDenied = false;
@@ -40,7 +40,7 @@ export const requestPermissions = async () => {
       }
 
       return !permissionsDenied;
-    } catch (e: any) {
+    } catch (error: any) {
       Alert.alert('Error', 'Something went wrong while accessing permissions');
       return false;
     }
@@ -76,7 +76,7 @@ export const requestPermissions = async () => {
       }
 
       return !permissionsDenied;
-    } catch (err: any) {
+    } catch (error: any) {
       Alert.alert('Error', 'Something went wrong while accessing permissions');
       return false;
     }

@@ -1,20 +1,20 @@
-import React from 'react';
 import {
-  render,
   fireEvent,
+  render,
   screen,
   waitFor,
 } from '@testing-library/react-native';
-import {ImagePickerModal} from './ImagePickerModal';
-import {useDispatch, useSelector} from 'react-redux';
+import React from 'react';
+import {Alert, Platform} from 'react-native';
 import RNFS from 'react-native-fs';
 import ImageCropPicker from 'react-native-image-crop-picker';
+import {useDispatch, useSelector} from 'react-redux';
 import {
-  setImageUri,
   setImage,
+  setImageUri,
   setIsVisible,
 } from '../../store/slices/registrationSlice';
-import {Alert, Platform} from 'react-native';
+import {ImagePickerModal} from './ImagePickerModal';
 
 jest.mock('react-native-fs', () => ({
   readFile: jest.fn().mockResolvedValue('mocked-base64-string'),
@@ -71,7 +71,7 @@ describe('ImagePickerModal', () => {
 
   it('handles image picking from gallery', async () => {
     Platform.OS = 'android';
-    const { requestPermissions } = require('../../permissions/ImagePermissions');
+    const {requestPermissions} = require('../../permissions/ImagePermissions');
     requestPermissions.mockResolvedValue(false);
     render(<ImagePickerModal />);
     const galleryButton = screen.getByA11yHint('gallery-image');
@@ -96,10 +96,9 @@ describe('ImagePickerModal', () => {
     });
   });
 
-
   it('should give alert when permission is denied from gallery in iOS', async () => {
     Platform.OS = 'ios';
-    const { requestPermissions } = require('../../permissions/ImagePermissions');
+    const {requestPermissions} = require('../../permissions/ImagePermissions');
     requestPermissions.mockResolvedValue(false);
     render(<ImagePickerModal />);
     const galleryButton = screen.getByA11yHint('gallery-image');
@@ -111,7 +110,6 @@ describe('ImagePickerModal', () => {
       );
     });
   });
-  
 
   it('handles image picking from camera in ios', async () => {
     render(<ImagePickerModal />);
