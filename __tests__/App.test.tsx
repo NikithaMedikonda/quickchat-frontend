@@ -1,4 +1,3 @@
-import {NavigationContainer} from '@react-navigation/native';
 import {App} from '../App';
 import {render} from '@testing-library/react-native';
 import i18next from 'i18next';

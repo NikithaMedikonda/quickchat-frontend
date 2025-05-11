@@ -1,5 +1,5 @@
 import {Platform, Alert} from 'react-native';
-import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
+import {check, request, RESULTS} from 'react-native-permissions';
 import {requestPermissions} from '../ImagePermissions';
 
 jest.mock('react-native-permissions', () => ({
