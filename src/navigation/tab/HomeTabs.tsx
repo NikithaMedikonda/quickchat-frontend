@@ -5,10 +5,13 @@ import { Profile } from '../../screens/Profile/Profile';
 import { styles } from './HomeTabs.styles';
 import { Unread } from '../../screens/Unread/Unread';
 import { useThemeColors } from '../../constants/colors';
+import { useTranslation } from 'react-i18next';
+// import { namespace } from '../../constants/namespace';
 
 export const HomeTabs = () => {
   const Tab = createBottomTabNavigator();
   const colors = useThemeColors();
+  const { t } = useTranslation('home');
   return (
     <Tab.Navigator
       screenOptions={{
@@ -37,12 +40,12 @@ export const HomeTabs = () => {
               )}
             </View>
           ),
-          tabBarLabel: 'Chats',
+          tabBarLabel: t('All Chats'),
           headerStyle: {
             backgroundColor: colors.background,
           },
           headerTitleAlign: 'center',
-          headerTitle: 'Quick Chat',
+          headerTitle: t('Quick Chat'),
           headerTitleStyle: {
             color: colors.white,
           },
@@ -69,12 +72,12 @@ export const HomeTabs = () => {
               )}
             </View>
           ),
-          tabBarLabel: 'Unread Chats',
+          tabBarLabel: t('Unread Chats'),
           headerStyle: {
             backgroundColor: colors.background,
           },
           headerTitleAlign: 'center',
-          headerTitle: 'Quick Chat',
+          headerTitle: t('Quick Chat'),
           headerTitleStyle: {
             color: colors.white,
           },
@@ -101,12 +104,12 @@ export const HomeTabs = () => {
               )}
             </View>
           ),
-          tabBarLabel: 'Profile',
+          tabBarLabel: t('Profile'),
           headerStyle: {
             backgroundColor: colors.background,
           },
           headerTitleAlign: 'center',
-          headerTitle: 'Profile',
+          headerTitle: t('Profile'),
           headerTitleStyle: {
             color: colors.white,
           },

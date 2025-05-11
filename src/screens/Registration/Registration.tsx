@@ -27,6 +27,7 @@ import {hide, show} from '../../store/slices/loadingSlice';
 import {setLoginSuccess} from '../../store/slices/loginSlice';
 import {useNavigation} from '@react-navigation/native';
 import {useThemeColors} from '../../constants/colors';
+import {useTranslation} from 'react-i18next';
 
 export const Registration = () => {
   const navigation = useNavigation<NavigationProps>();
@@ -37,6 +38,8 @@ export const Registration = () => {
   );
   const colors = useThemeColors();
   const styles = getStyles(colors);
+  const { t } = useTranslation('auth');
+
 
   const handleOpenImageSelector = async () => {
     dispatch(setIsVisible(true));
@@ -92,10 +95,9 @@ export const Registration = () => {
     }
     try {
       const result = await registerUser({...form, image});
-      // dispatch(hide());
       if (result.status === 409) {
         dispatch(hide());
-        Alert.alert('User already exist with this number');
+        Alert.alert(t('User already exist with this number'));
       } else if (result.status === 200) {
         dispatch(hide());
         dispatch(
@@ -112,11 +114,11 @@ export const Registration = () => {
         dispatch(resetForm());
       } else {
         dispatch(hide());
-        Alert.alert('Something went wrong while registering');
+        Alert.alert(t('Something went wrong while registering'));
       }
     } catch (e: any) {
       dispatch(hide());
-      Alert.alert(e.message || 'Something went wrong');
+      Alert.alert(t(`${e.message}`) || t('Something went wrong'));
     }
   };
 
@@ -162,7 +164,7 @@ export const Registration = () => {
             {errors[field.key] && (
               // eslint-disable-next-line react-native/no-inline-styles
               <Text style={{color: 'red', fontSize: 12}}>
-                {errors[field.key]}
+                {t(`${errors[field.key]}`)}
               </Text>
             )}
           </View>
@@ -171,9 +173,9 @@ export const Registration = () => {
           <Button title="Register" onPress={handleRegister} />
         </View>
         <View style={styles.loginButtonContainer}>
-          <Text style={styles.loginButtontext}>Already have an account? </Text>
+          <Text style={styles.loginButtontext}>{t('Already have an account?')} </Text>
           <TouchableOpacity onPress={() => navigation.navigate('login')}>
-            <Text style={styles.loginButtonSignInText}>Sign in</Text>
+            <Text style={styles.loginButtonSignInText}>{t('Sign in')}</Text>
           </TouchableOpacity>
         </View>
         {isVisible && <ImagePickerModal />}
