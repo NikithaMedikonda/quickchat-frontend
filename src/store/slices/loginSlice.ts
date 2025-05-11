@@ -1,8 +1,18 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
+import { UUIDTypes } from 'uuid';
 
 interface LoginForm {
   phoneNumber: string;
   password: string;
+}
+
+interface User {
+  id?: UUIDTypes;
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
+  email: string;
+  profilePicture: string;
 }
 
 interface LoginState {
@@ -11,6 +21,7 @@ interface LoginState {
   isLoggedIn: boolean;
   accessToken: string | null;
   refreshToken: string | null;
+  user: User | null;
 }
 
 const initialState: LoginState = {
@@ -22,6 +33,7 @@ const initialState: LoginState = {
   isLoggedIn: false,
   accessToken: null,
   refreshToken: null,
+  user: null,
 };
 
 const loginSlice = createSlice({
@@ -39,11 +51,12 @@ const loginSlice = createSlice({
     },
     setLoginSuccess: (
       state,
-      action: PayloadAction<{ accessToken: string; refreshToken: string }>
+      action: PayloadAction<{ accessToken: string; refreshToken: string; user: User }>
     ) => {
       state.isLoggedIn = true;
       state.accessToken = action.payload.accessToken;
       state.refreshToken = action.payload.refreshToken;
+      state.user = action.payload.user;
     },
     logout: state => {
       state.isLoggedIn = false;
@@ -60,4 +73,4 @@ const loginSlice = createSlice({
 
 export const {setLoginField, setLoginErrors, setLoginSuccess, logout, resetLoginForm} =
   loginSlice.actions;
-export const loginReducer = loginSlice.reducer
+export const loginReducer = loginSlice.reducer;
