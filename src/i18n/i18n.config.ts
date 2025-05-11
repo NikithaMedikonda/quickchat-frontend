@@ -1,23 +1,23 @@
 import i18next from 'i18next';
 import {initReactI18next} from 'react-i18next';
 import * as RNLocalize from 'react-native-localize';
-import * as enStart from './translations/english/start.json'
-import * as teStart from './translations/telugu/start.json'
-import * as knStart from './translations/kannada/start.json'
-import * as hiStart from './translations/hindi/start.json'
-import * as enAuth from './translations/english/auth.json'
-import * as teAuth from './translations/telugu/auth.json'
-import * as knAuth from './translations/kannada/auth.json'
-import * as hiAuth from './translations/hindi/auth.json'
+import * as enStart from './translations/english/start.json';
+import * as teStart from './translations/telugu/start.json';
+import * as knStart from './translations/kannada/start.json';
+import * as hiStart from './translations/hindi/start.json';
+import * as enAuth from './translations/english/auth.json';
+import * as teAuth from './translations/telugu/auth.json';
+import * as knAuth from './translations/kannada/auth.json';
+import * as hiAuth from './translations/hindi/auth.json';
 
 export const resources = {
   en: {
     start: enStart,
-    auth:enAuth
+    auth:enAuth,
   },
   te: {
     start: teStart,
-    auth:teAuth
+    auth:teAuth,
   },
   kn:{
     start:knStart,
@@ -25,8 +25,8 @@ export const resources = {
   },
   hi:{
     start:hiStart,
-    auth:hiAuth
-  }
+    auth:hiAuth,
+  },
 };
 
 

@@ -13,7 +13,6 @@ export const Placeholder = ({
   onChange: (text: string) => void;
   secureTextEntry: boolean;
 }) => {
-  // eslint-disable-next-line @typescript-eslint/no-shadow
   const colors = useThemeColors();
   const styles = getStyles(colors);
 

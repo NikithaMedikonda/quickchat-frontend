@@ -30,7 +30,7 @@ import {useThemeColors} from '../../constants/colors';
 
 export const Registration = () => {
   const navigation = useNavigation<NavigationProps>();
-  const homeNavigation=useNavigation<HomeTabsProps>();
+  const homeNavigation = useNavigation<HomeTabsProps>();
   const dispatch = useDispatch();
   const {form, errors, imageUri, image, isVisible} = useSelector(
     (state: RootState) => state.registration,
@@ -87,10 +87,12 @@ export const Registration = () => {
     dispatch(setErrors({}));
     dispatch(show());
     if (!validateForm()) {
+      dispatch(hide());
       return;
     }
     try {
       const result = await registerUser({...form, image});
+      // dispatch(hide());
       if (result.status === 409) {
         dispatch(hide());
         Alert.alert('User already exist with this number');
@@ -100,16 +102,20 @@ export const Registration = () => {
           setLoginSuccess({
             accessToken: result.data.accessToken,
             refreshToken: result.data.refreshToken,
+            user: result.data.user,
           }),
         );
         await AsyncStorage.setItem('authToken', result.data.accessToken);
         await AsyncStorage.setItem('refreshToken', result.data.refreshToken);
-        homeNavigation.replace('hometabs')
+        await AsyncStorage.setItem('user', JSON.stringify(result.data.user));
+        homeNavigation.replace('hometabs');
         dispatch(resetForm());
       } else {
+        dispatch(hide());
         Alert.alert('Something went wrong while registering');
       }
     } catch (e: any) {
+      dispatch(hide());
       Alert.alert(e.message || 'Something went wrong');
     }
   };
@@ -125,7 +131,8 @@ export const Registration = () => {
 
   return (
     <KeyboardAvoidingView
-      style={{flex: 1}}
+      // eslint-disable-next-line react-native/no-inline-styles
+      style={{ flex: 1 }}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}
       >
@@ -153,6 +160,7 @@ export const Registration = () => {
               }
             />
             {errors[field.key] && (
+              // eslint-disable-next-line react-native/no-inline-styles
               <Text style={{color: 'red', fontSize: 12}}>
                 {errors[field.key]}
               </Text>

@@ -68,7 +68,7 @@ describe('ImagePickerModal', () => {
     expect(mockDispatch).toHaveBeenCalledWith(setIsVisible(false));
   });
 
-  it('handles image picking from gallery', async () => {
+  it('handles image picking from gallery for android', async () => {
     Platform.OS = 'android';
     const {requestPermissions} = require('../../permissions/ImagePermissions');
     requestPermissions.mockResolvedValue(false);

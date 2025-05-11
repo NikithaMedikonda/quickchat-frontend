@@ -6,7 +6,7 @@ import  {
   setImageBase64,
   setIsVisible,
   resetForm,
-  registrationReducer
+  registrationReducer,
 } from '../slices/registrationSlice';
 
 const initialState = {
@@ -64,7 +64,7 @@ describe('registration slice', () => {
     expect(newState.imageUri).toBe(uri);
   });
   it('should handle isVisible', () => {
-    const isVisible=true;
+    const isVisible = true;
     const newState = registrationReducer(initialState, setIsVisible(true));
     expect(newState.isVisible).toBe(isVisible);
   });
@@ -95,7 +95,7 @@ describe('registration slice', () => {
       imageUri: 'img.jpg',
       image: '',
       imageBase64: '',
-      isVisible:false
+      isVisible:false,
     };
     const newState = registrationReducer(modifiedState, resetForm());
     expect(newState).toEqual(initialState);

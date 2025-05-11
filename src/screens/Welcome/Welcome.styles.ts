@@ -2,7 +2,7 @@ import {StyleSheet, Dimensions} from 'react-native';
 import {Colors} from '../../constants/colors.ts';
 
 const {width, height} = Dimensions.get('window');
-// eslint-disable-next-line @typescript-eslint/no-shadow
+
 export const getStyles = (colors: Colors) =>
   StyleSheet.create({
     container: {

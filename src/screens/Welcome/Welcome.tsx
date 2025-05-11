@@ -5,8 +5,6 @@ import { NavigationProps } from '../../types/usenavigation.type.ts';
 import { useThemeColors } from '../../constants/colors.ts';
 import { useNavigation } from '@react-navigation/native';
 
-
-
 export const Welcome = () => {
      const navigation = useNavigation<NavigationProps>();
     const colors = useThemeColors();

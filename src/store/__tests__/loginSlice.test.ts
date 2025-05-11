@@ -16,6 +16,7 @@ const initialState = {
   isLoggedIn: false,
   accessToken: null,
   refreshToken: null,
+  user: null,
 };
 
 describe('login slice', () => {
@@ -57,6 +58,13 @@ describe('login slice', () => {
       setLoginSuccess({
         accessToken: 'accesToken1',
         refreshToken: 'refreshToken1',
+        user: {
+          firstName: 'Test',
+          lastName: 'User',
+          phoneNumber: '1234567890',
+          email: 'example@gmail.com',
+          profilePicture: '',
+        },
       }),
     );
     expect(newState.isLoggedIn).toEqual(true);

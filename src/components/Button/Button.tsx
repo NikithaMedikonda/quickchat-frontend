@@ -9,7 +9,7 @@ export const Button = ({
   title: string;
   onPress: () => void;
 }) => {
-  // eslint-disable-next-line @typescript-eslint/no-shadow
+
   const colors = useThemeColors();
   const styles = getStyles(colors);
 
