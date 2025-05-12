@@ -91,17 +91,20 @@ export const Profile = () => {
             <Text style={styles.detailsText}>{userData?.lastName}</Text>
           </View>
         </View>
-        <View style={styles.dataContainer}>
-          <Image
-            source={require('../../assets/email.png')}
-            style={styles.iconEmail}
-            accessibilityHint="email-image"
-          />
-          <View style={styles.details}>
-            <Text style={styles.headerText}>{t('Email')}</Text>
-            <Text style={styles.detailsText}>{userData?.email}</Text>
+        {userData?.email && (
+          <View style={styles.dataContainer}>
+            <Image
+              source={require('../../assets/email.png')}
+              style={styles.iconEmail}
+              accessibilityHint="email-image"
+            />
+            <View style={styles.details}>
+              <Text style={styles.headerText}>{t('Email')}</Text>
+              <Text style={styles.detailsText}>{userData?.email}</Text>
+            </View>
           </View>
-        </View>
+        )}
+
         <View style={styles.dataContainer}>
           <Image
             source={require('../../assets/phone.png')}
