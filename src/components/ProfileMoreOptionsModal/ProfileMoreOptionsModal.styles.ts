@@ -1,15 +1,15 @@
 import {Dimensions, StyleSheet} from 'react-native';
-import {colors} from '../../constants/color';
+import { Colors } from '../../constants/colors';
 
 const {height} = Dimensions.get('window');
 
-export const getStyles = (color: colors) =>
+export const getStyles = (color: Colors) =>
   StyleSheet.create({
     centeredView: {
       flex: 1,
       justifyContent: 'flex-start',
       alignItems: 'flex-end',
-      paddingTop: height * 0.19,
+      paddingTop: height * 0.15,
       paddingRight: height * 0.02,
     },
 
