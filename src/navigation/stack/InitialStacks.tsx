@@ -11,7 +11,7 @@ import { LoadingComponent } from '../../components/Loading/Loading';
 const Stack = createNativeStackNavigator();
 
 export const InitialStacks = () => {
-  const [initialRoute, setInitialRoute] = useState<string | null>('welcome');
+  const [initialRoute, setInitialRoute] = useState<string | null>(null);
   const dispatch = useDispatch();
   useEffect(() => {
     const getUser = async () => {
