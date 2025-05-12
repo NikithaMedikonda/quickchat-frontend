@@ -4,6 +4,7 @@ on:
   push:
     branches:
      - main
+     - implement-badge-component
   
 jobs:
   lint-and-test:
