@@ -1,19 +1,32 @@
-import React from 'react';
 import {View, Text, Modal, TouchableOpacity, Image} from 'react-native';
 import {getStyles} from './ProfileMoreOptionsModal.styles';
-import {useThemeColors} from '../../constants/color';
+import {useThemeColors} from '../../constants/colors';
 
-export const ProfileMoreOptionsModal = ({visible, onClose}:{visible:boolean,onClose:()=>void}) => {
+export const ProfileMoreOptionsModal = ({
+  visible,
+  onClose,
+}: {
+  visible: boolean;
+  onClose: () => void;
+}) => {
   const colors = useThemeColors();
   const styles = getStyles(colors);
-
+  const handleDeleteAccount = () => {
+    onClose();
+  };
+  const handleLogout = () => {
+    onClose();
+  };
+  const handleEditProfile = () => {
+    onClose();
+  };
   return (
     <Modal animationType="slide" transparent={true} visible={visible}>
       <View style={styles.centeredView}>
         <View style={styles.modalView}>
           <View style={styles.textContainer}>
             <TouchableOpacity
-              onPress={onClose}
+              onPress={handleDeleteAccount}
               style={[styles.binOptionsView, styles.optionsView]}>
               <Text style={styles.modalText}>Delete Account</Text>
               <Image
@@ -23,7 +36,7 @@ export const ProfileMoreOptionsModal = ({visible, onClose}:{visible:boolean,onCl
               />
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={onClose}
+              onPress={handleLogout}
               style={[styles.logoutOptionsView, styles.optionsView]}>
               <Text style={styles.modalText}>Logout</Text>
               <Image
@@ -33,7 +46,7 @@ export const ProfileMoreOptionsModal = ({visible, onClose}:{visible:boolean,onCl
               />
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={onClose}
+              onPress={handleEditProfile}
               style={[styles.editOptionsView, styles.optionsView]}>
               <Text style={styles.modalText}>Edit Profile</Text>
               <Image
