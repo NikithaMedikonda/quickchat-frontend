@@ -26,25 +26,32 @@ export const loginStyles = (colors: colors) =>
     validationText: {
       color: colors.primaryBlue,
       alignSelf: 'flex-start',
-   
     },
     validationView: {
       height: height * 0.055,
       width: width * 0.8,
     },
-    messageText:{
-      color:colors.white,
-      
+    messageText: {
+      color: colors.white,
     },
-    messageView:{
-      display:'flex',
-      justifyContent:'center',
-      flexDirection:'row',
-      alignItems:'center',
-      padding:20
-     
+    messageView: {
+      display: 'flex',
+      justifyContent: 'center',
+      flexDirection: 'row',
+      alignItems: 'center',
+      padding: 20,
     },
-    signUpContainer:{
-      alignSelf:'center'
-    }
+    signUpContainer: {
+      alignSelf: 'center',
+    },
+    phoneNumber: {
+      height: height * 0.055,
+      fontSize: 20,
+      borderRadius: 10,
+      width: width * 0.8,
+      padding: 10,
+      color: colors.gray,
+      margin: height * 0.012,
+      backgroundColor: colors.white,
+    },
   });
