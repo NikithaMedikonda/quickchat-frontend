@@ -1,13 +1,13 @@
-import {useNavigation} from '@react-navigation/native';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {phone} from 'phone';
 import React, {useState} from 'react';
 import {Image, Text, TouchableOpacity, View} from 'react-native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {phone} from 'phone';
 import PhoneInput from 'react-native-phone-input';
+import {useNavigation} from '@react-navigation/native';
 import {Button} from '../../components/Button/Button';
+import {loginStyles} from './Login.styles';
 import {Placeholder} from '../../components/InputField/InputField';
 import {useThemeColors} from '../../constants/color';
-import {loginStyles} from './Login.styles';
 
 type RootStackParamList = {
   register: undefined;
@@ -17,7 +17,7 @@ export type RegisterScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
   'register'
 >;
-function LoginScreen() {
+function Login() {
   const colors = useThemeColors();
   const styles = loginStyles(colors);
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -72,4 +72,4 @@ function LoginScreen() {
   );
 }
 
-export default LoginScreen;
+export default Login;

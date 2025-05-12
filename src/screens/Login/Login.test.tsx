@@ -5,7 +5,7 @@ import {
   waitFor,
 } from '@testing-library/react-native';
 import React from 'react';
-import LoginScreen from './LoginScreen';
+import Login from './Login';
 
 jest.mock('@react-navigation/native', () => ({
   useNavigation: () => ({
@@ -18,7 +18,7 @@ jest.mock('react-native-phone-input');
 
 describe('Login Screen', () => {
   beforeEach(() => {
-    render(<LoginScreen />);
+    render(<Login />);
   });
   test('should render the elements correctly', () => {
     expect(screen.getByPlaceholderText('Password')).toBeOnTheScreen();
