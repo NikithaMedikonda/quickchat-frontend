@@ -1,5 +1,5 @@
 import {Dimensions, StyleSheet} from 'react-native';
-import {Colors} from '../../constants/color';
+import {Colors} from '../../constants/colors';
 const {width, height} = Dimensions.get('window');
 export const getStyles = (color: Colors) =>
   StyleSheet.create({
@@ -8,7 +8,7 @@ export const getStyles = (color: Colors) =>
       height: height,
       width: width,
       backgroundColor: color.background,
-      paddingTop: height * 0.19,
+      paddingTop: height * 0.05,
     },
     dotsImage: {
       height: 30,
@@ -49,9 +49,11 @@ export const getStyles = (color: Colors) =>
     headerText: {
       color: color.text,
       fontWeight: '600',
+      fontSize: 18,
     },
     detailsText: {
       color: color.gray,
+      fontSize: 15,
     },
     innerContainer: {
       display: 'flex',
@@ -67,11 +69,11 @@ export const getStyles = (color: Colors) =>
       display: 'flex',
       flexDirection: 'row',
       justifyContent: 'flex-start',
-      gap: 40,
+      gap: 50,
       padding: 15,
     },
     details: {
       display: 'flex',
-      gap: 2,
+      gap: 4,
     },
   });
