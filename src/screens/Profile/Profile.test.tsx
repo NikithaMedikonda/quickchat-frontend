@@ -1,6 +1,12 @@
-import {render, screen, waitFor} from '@testing-library/react-native';
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Profile} from './Profile';
+import {ProfileMoreOptionsModal} from '../../components/ProfileMoreOptionsModal/ProfileMoreOptionsModal';
 
 jest.mock('@react-native-async-storage/async-storage', () => ({
   getItem: jest.fn(),
@@ -97,5 +103,40 @@ describe('Profile Screen', () => {
     const image = await waitFor(() => getByA11yHint('profile-image'));
 
     expect(image).toBeTruthy();
+  });
+});
+
+
+describe('Profile Modal Interaction', () => {
+  beforeEach(() => {
+    (AsyncStorage.getItem as jest.Mock).mockResolvedValue(
+      JSON.stringify(mockUserData),
+    );
+    jest.clearAllMocks();
+  });
+
+  it('opens the modal when dots image is pressed', async () => {
+    render(<Profile />);
+    const headerRight = mockNavigate.mock.calls[0][0].headerRight();
+    const {getByA11yHint} = render(headerRight);
+
+    const dotsButton = getByA11yHint('dots-image');
+    fireEvent.press(dotsButton);
+
+    const {getByText} = render(
+      <ProfileMoreOptionsModal visible={true} onClose={() => {}} />,
+    );
+    const modal = await waitFor(() => getByText('Delete Account'));
+    expect(modal).toBeTruthy();
+  });
+
+  it('calls onClose when bin is pressed', () => {
+    const onClose = jest.fn();
+
+    render(<ProfileMoreOptionsModal visible={true} onClose={onClose} />);
+    const binButton = screen.getByA11yHint('bin-image');
+    fireEvent.press(binButton);
+
+    expect(onClose).toHaveBeenCalled();
   });
 });
