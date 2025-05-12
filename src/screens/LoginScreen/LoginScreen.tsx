@@ -1,12 +1,13 @@
-import React, {useState} from 'react';
-import {Image, Text, TouchableOpacity, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {phone} from 'phone';
+import React, {useState} from 'react';
+import {Image, Text, TouchableOpacity, View} from 'react-native';
+import PhoneInput from 'react-native-phone-input';
 import {Button} from '../../components/Button/Button';
 import {Placeholder} from '../../components/InputField/InputField';
-import {loginStyles} from './Login.styles';
 import {useThemeColors} from '../../constants/color';
-
+import {loginStyles} from './Login.styles';
 
 type RootStackParamList = {
   register: undefined;
@@ -21,7 +22,9 @@ function LoginScreen() {
   const styles = loginStyles(colors);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
+
   const navigate = useNavigation<RegisterScreenNavigationProp>();
+
   return (
     <View style={styles.container}>
       <Image
@@ -29,17 +32,21 @@ function LoginScreen() {
         source={require('./../../../assets/quickchat.png')}
         accessibilityHint="logo-image"
       />
-      <Placeholder
-        title="Phone number"
-        value={phoneNumber}
-        onChange={value => {
-          setPhoneNumber(value);
+      <PhoneInput
+        style={styles.phoneNumber}
+        initialCountry={'in'}
+        textProps={{
+          placeholder: 'Phone number',
         }}
-        secureTextEntry={false}
+        onChangePhoneNumber={text => {
+          setPhoneNumber(text);
+        }}
+        onPressFlag={() => {}}
       />
-      {phoneNumber !== '' && phoneNumber.length !== 10 && (
+
+      {phoneNumber !== '' && !phone(phoneNumber).isValid && (
         <View style={styles.validationView}>
-          <Text style={styles.validationText}>Phone number not exists!</Text>
+          <Text style={styles.validationText}>Phone number is not valid!</Text>
         </View>
       )}
       <Placeholder
