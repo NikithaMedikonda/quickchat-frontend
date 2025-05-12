@@ -31,20 +31,24 @@ export const getStyles = (color: Colors) =>
     icons: {
       height: 30,
       width: 30,
+      marginTop:10
     },
     iconLast: {
       height: 35,
       width: 31,
+      marginTop:10
     },
     iconEmail: {
       height: 25,
       width: 25,
       marginLeft: 6,
+      marginTop:10
     },
     iconPhone: {
       height: 25,
       width: 25,
       marginLeft: 6,
+      marginTop:10
     },
     headerText: {
       color: color.text,
