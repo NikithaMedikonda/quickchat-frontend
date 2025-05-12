@@ -63,7 +63,7 @@ export const getStyles = (color: Colors) =>
     contentContainer: {
       padding: 30,
       display: 'flex',
-      paddingTop: 30,
+      paddingTop: 50,
     },
     dataContainer: {
       display: 'flex',
