@@ -24,7 +24,6 @@ export const registerUser = async (payload: {
     body: JSON.stringify(userData),
   });
   const data = await response.json();
-  console.log(data);
   return {
     status: response.status,
     data,
