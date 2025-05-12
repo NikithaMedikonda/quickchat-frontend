@@ -5,6 +5,7 @@ import {useThemeColors} from '../../constants/colors';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useEffect, useLayoutEffect, useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
+import {ProfileMoreOptionsModal} from '../../components/ProfileMoreOptionsModal/ProfileMoreOptionsModal';
 
 interface User {
   firstName: string;
@@ -19,8 +20,14 @@ export const Profile = () => {
   const styles = getStyles(colors);
   const {t} = useTranslation('auth');
   const [userData, setUserData] = useState<User | null>(null);
+  const [modalVisible, setModalVisible] = useState(false);
   const navigation = useNavigation();
-  const handleMoreOptionsModal = () => {};
+  const handleMoreOptionsModal = () => {
+    setModalVisible(true);
+  };
+  const onClose = () => {
+    setModalVisible(false);
+  };
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitleAlign: 'center',
@@ -117,6 +124,7 @@ export const Profile = () => {
           </View>
         </View>
       </View>
+      <ProfileMoreOptionsModal visible={modalVisible} onClose={onClose} />
     </View>
   );
 };
