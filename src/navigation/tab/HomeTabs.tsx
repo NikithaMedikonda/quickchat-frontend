@@ -1,7 +1,6 @@
 import {Image, View} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {Home} from '../../screens/Home/Home';
-import {Profile} from '../../screens/Profile/Profile';
 import {ProfileStack} from '../stack/ProfileStacks';
 import {styles} from './HomeTabs.styles';
 import {Unread} from '../../screens/Unread/Unread';

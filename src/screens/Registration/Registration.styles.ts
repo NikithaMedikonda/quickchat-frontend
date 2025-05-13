@@ -47,5 +47,5 @@ export const getStyles = (colors: Colors) =>
       color: colors.gray,
       margin: height * 0.012,
       backgroundColor: colors.white,
-    }
+    },
   });

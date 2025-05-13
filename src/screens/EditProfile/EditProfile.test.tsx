@@ -16,7 +16,7 @@ jest.mock('react-redux', () => ({
 
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (key: string) => key, 
+    t: (key: string) => key,
   }),
 }));
 
@@ -111,7 +111,7 @@ describe('EditProfile Screen', () => {
   it('opens ImagePickerModal on image press', () => {
     const {getAllByRole} = renderComponent();
 
-    fireEvent.press(getAllByRole('button')[0]); 
+    fireEvent.press(getAllByRole('button')[0]);
 
     expect(dispatch).toHaveBeenCalledWith({
       type: 'registration/setIsVisible',
@@ -141,7 +141,7 @@ it('allows saving when all inputs are valid', async () => {
 
   await waitFor(() => {
     expect(Alert.alert).not.toHaveBeenCalled();
-   
+
   });
 });
 

@@ -32,7 +32,7 @@ export const EditProfile = () => {
   const firstName = user?.firstName || '';
   const lastName = user?.lastName || '';
   const email = user?.email || '';
-  const imageUrl = user?.profilePicture||'';
+  const imageUrl = user?.profilePicture || '';
 
   const [inputFirstName, setInputFirstName] = useState(firstName);
   const [inputLastName, setInputLastName] = useState(lastName);
@@ -52,6 +52,7 @@ export const EditProfile = () => {
     setInputEmail(email);
   }, [firstName, lastName, email, imageUri]);
 
+  // eslint-disable-next-line @typescript-eslint/no-shadow
   const validateEmail = (email: string) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
@@ -100,6 +101,7 @@ export const EditProfile = () => {
 
   return (
     <KeyboardAvoidingView
+      // eslint-disable-next-line react-native/no-inline-styles
       style={{flex: 1}}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}>
