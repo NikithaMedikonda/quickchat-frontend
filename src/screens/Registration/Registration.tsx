@@ -39,8 +39,7 @@ export const Registration = () => {
   );
   const colors = useThemeColors();
   const styles = getStyles(colors);
-  const { t } = useTranslation('auth');
-
+  const {t} = useTranslation('auth');
 
   const handleOpenImageSelector = async () => {
     dispatch(setIsVisible(true));
@@ -73,10 +72,6 @@ export const Registration = () => {
     }
     if (form.password !== form.confirmPassword) {
       newErrors.confirmPassword = 'Passwords do not match';
-      isValid = false;
-    }
-    if (!form.phoneNumber || form.phoneNumber.length !== 10) {
-      newErrors.phoneNumber = 'Invalid phone number';
       isValid = false;
     }
     if (form.email && !validateEmail(form.email)) {
@@ -134,10 +129,9 @@ export const Registration = () => {
   return (
     <KeyboardAvoidingView
       // eslint-disable-next-line react-native/no-inline-styles
-      style={{ flex: 1 }}
+      style={{flex: 1}}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}
-      >
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}>
       <ScrollView
         contentContainerStyle={styles.registrationMainContainer}
         keyboardShouldPersistTaps="handled">
@@ -151,17 +145,17 @@ export const Registration = () => {
             accessibilityHint="logo"
           />
         </TouchableOpacity>
-               <PhoneInput
-        style={styles.phoneNumber}
-        initialCountry={'in'}
-        textProps={{
-          placeholder: 'Phone number',
-        }}
-        onChangePhoneNumber={text => {
-          dispatch(setFormField({ key: 'phoneNumber', value: text }));
-        }}
-        onPressFlag={() => {}}
-      />
+        <PhoneInput
+          style={styles.phoneNumber}
+          initialCountry={'in'}
+          textProps={{
+            placeholder: 'Phone number',
+          }}
+          onChangePhoneNumber={(text: string) => {
+            dispatch(setFormField({key: 'phoneNumber', value: text}));
+          }}
+          onPressFlag={() => {}}
+        />
         {inputFields.map(field => (
           <View key={field.key}>
             <Placeholder
@@ -184,7 +178,9 @@ export const Registration = () => {
           <Button title="Register" onPress={handleRegister} />
         </View>
         <View style={styles.loginButtonContainer}>
-          <Text style={styles.loginButtontext}>{t('Already have an account?')} </Text>
+          <Text style={styles.loginButtontext}>
+            {t('Already have an account?')}{' '}
+          </Text>
           <TouchableOpacity onPress={() => navigation.navigate('login')}>
             <Text style={styles.loginButtonSignInText}>{t('Sign in')}</Text>
           </TouchableOpacity>
