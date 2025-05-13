@@ -8,7 +8,6 @@ module.exports = {
   ],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   moduleNameMapper: {
-    // eslint-disable-next-line no-useless-escape
     '/.(png|jpg|jpeg|svg)$/': '<rootDir>/__mocks__/fileMock.js',
   },
 };

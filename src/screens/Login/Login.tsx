@@ -7,7 +7,7 @@ import {useNavigation} from '@react-navigation/native';
 import {Button} from '../../components/Button/Button';
 import {loginStyles} from './Login.styles';
 import {Placeholder} from '../../components/InputField/InputField';
-import {useThemeColors} from '../../constants/color';
+import {useThemeColors} from '../../constants/colors';
 
 type RootStackParamList = {
   register: undefined;
@@ -29,7 +29,7 @@ function Login() {
     <View style={styles.container}>
       <Image
         style={styles.image}
-        source={require('./../../../assets/quickchat.png')}
+        source={require('../../assets/quickchat.png')}
         accessibilityHint="logo-image"
       />
       <PhoneInput
