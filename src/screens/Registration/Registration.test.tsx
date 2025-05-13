@@ -13,6 +13,23 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
   setItem: jest.fn(),
 }));
 
+jest.mock('react-native-phone-input', () => {
+  const React = require('react');
+  const { TextInput } = require('react-native');
+  const MockPhoneInput = React.forwardRef((props: { value: any; onChangePhoneNumber: any; }, ref: any) => {
+    return (
+      <TextInput
+        ref={ref}
+        placeholder="Phone number"
+        value={props.value}
+        onChangeText={props.onChangePhoneNumber}
+        testID="mock-phone-input"
+      />
+    );
+  });
+  return MockPhoneInput;
+});
+
 jest.mock('react-native-fs', () => ({
   readFile: jest.fn().mockResolvedValue('mockedBase64Image'),
 }));

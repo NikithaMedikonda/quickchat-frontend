@@ -10,6 +10,7 @@ import {
   View,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
+import PhoneInput from 'react-native-phone-input';
 import {Button} from '../../components/Button/Button';
 import {getStyles} from './Registration.styles';
 import {ImagePickerModal} from '../../components/ImagePickerModal/ImagePickerModal';
@@ -125,7 +126,6 @@ export const Registration = () => {
   const inputFields = [
     {key: 'firstName', title: 'First Name'},
     {key: 'lastName', title: 'Last Name'},
-    {key: 'phoneNumber', title: 'Phone Number'},
     {key: 'password', title: 'Password', secure: true},
     {key: 'confirmPassword', title: 'Confirm Password', secure: true},
     {key: 'email', title: 'Email (Optional)'},
@@ -151,6 +151,17 @@ export const Registration = () => {
             accessibilityHint="logo"
           />
         </TouchableOpacity>
+               <PhoneInput
+        style={styles.phoneNumber}
+        initialCountry={'in'}
+        textProps={{
+          placeholder: 'Phone number',
+        }}
+        onChangePhoneNumber={text => {
+          dispatch(setFormField({ key: 'phoneNumber', value: text }));
+        }}
+        onPressFlag={() => {}}
+      />
         {inputFields.map(field => (
           <View key={field.key}>
             <Placeholder
