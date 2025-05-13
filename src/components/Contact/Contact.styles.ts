@@ -8,7 +8,7 @@ export const getStyles = (colors: Colors) =>
     contactContainer:{
         flex:1,
         backgroundColor:colors.background,
-        left:0.05*width,
+        left:0.05 * width,
         display:'flex',
         flexDirection:'row',
         justifyContent:'flex-start',
@@ -21,23 +21,29 @@ export const getStyles = (colors: Colors) =>
       flex:1,
     },
     loadingContactsText:{
-        color:colors.white
+        color:colors.white,
+    },
+    nameNumberContainer:{
+        display:'flex',
+        flexDirection: 'column',
+        gap:0.004 * height,
     },
     text:{
         color:colors.white,
-        left:0.05*width,
-        fontWeight:'bold'
+        left:0.05 * width,
+        fontWeight:'bold',
     },
     image:{
         height:35,
-        width:35
+        width:35,
+        borderRadius:30,
     },
     invitationContainer:{
         display:'flex',
         justifyContent:'center',
-        left:0.4*width,
+        left:0.4 * width,
     },
     inviteText:{
-        color:colors.primaryBlue
-    }
+        color:colors.primaryBlue,
+    },
   });
