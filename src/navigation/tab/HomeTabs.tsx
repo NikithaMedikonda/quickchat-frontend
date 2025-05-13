@@ -6,7 +6,6 @@ import {styles} from './HomeTabs.styles';
 import {Unread} from '../../screens/Unread/Unread';
 import {useThemeColors} from '../../constants/colors';
 import {useTranslation} from 'react-i18next';
-// import { namespace } from '../../constants/namespace';
 
 export const HomeTabs = () => {
   const Tab = createBottomTabNavigator();
