@@ -179,7 +179,7 @@ describe('Registration Screen', () => {
     await waitFor(() => {
       expect(registerUser).toHaveBeenCalled();
       expect(Alert.alert).toHaveBeenCalledWith(
-        'User already exist with this number',
+        'User already exists with this number or email',
       );
     });
   });
@@ -213,7 +213,7 @@ describe('Registration Screen', () => {
 
   it('shows error alert if API call fails', async () => {
     const {registerUser} = require('../../services/RegisterUser.ts');
-    registerUser.mockRejectedValue(new Error('Registration failed'));
+    registerUser.mockRejectedValue(new Error('Network error or something unexpected happened'));
     const {getByPlaceholderText, getByText} = renderComponent();
     fireEvent.changeText(getByPlaceholderText('First Name'), 'testuser');
     fireEvent.changeText(getByPlaceholderText('Last Name'), 'testuser');
@@ -226,7 +226,7 @@ describe('Registration Screen', () => {
     fireEvent.press(getByText('Register'));
     expect(registerUser).toHaveBeenCalled();
     await waitFor(() => {
-      expect(Alert.alert).toHaveBeenCalledWith('Registration failed');
+      expect(Alert.alert).toHaveBeenCalledWith('Network error or something unexpected happened');
     });
   });
 });

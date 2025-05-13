@@ -85,37 +85,39 @@ export const Registration = () => {
   const handleRegister = async () => {
     dispatch(setErrors({}));
     dispatch(show());
+
     if (!validateForm()) {
       dispatch(hide());
       return;
     }
-    try {
-      const result = await registerUser({...form, image});
-      if (result.status === 409) {
-        dispatch(hide());
-        Alert.alert(t('User already exist with this number'));
-      } else if (result.status === 200) {
-        dispatch(hide());
-        dispatch(
-          setLoginSuccess({
-            accessToken: result.data.accessToken,
-            refreshToken: result.data.refreshToken,
-            user: result.data.user,
-          }),
-        );
-        await AsyncStorage.setItem('authToken', result.data.accessToken);
-        await AsyncStorage.setItem('refreshToken', result.data.refreshToken);
-        await AsyncStorage.setItem('user', JSON.stringify(result.data.user));
-        homeNavigation.replace('hometabs');
-        dispatch(resetForm());
-      } else {
-        dispatch(hide());
-        Alert.alert(t('Something went wrong while registering'));
-      }
-    } catch (e: any) {
-      dispatch(hide());
-      Alert.alert(t(`${e.message}`) || t('Something went wrong'));
-    }
+
+try {
+  const result = await registerUser({ ...form, image });
+  if (result.status === 409) {
+    dispatch(hide());
+    Alert.alert(t('User already exists with this number or email'));
+  } else if (result.status === 200) {
+    dispatch(hide());
+    dispatch(
+      setLoginSuccess({
+        accessToken: result.data.accessToken,
+        refreshToken: result.data.refreshToken,
+        user: result.data.user,
+      }),
+    );
+    await AsyncStorage.setItem('authToken', result.data.accessToken);
+    await AsyncStorage.setItem('refreshToken', result.data.refreshToken);
+    await AsyncStorage.setItem('user', JSON.stringify(result.data.user));
+    homeNavigation.replace('hometabs');
+    dispatch(resetForm());
+  } else {
+    dispatch(hide());
+    Alert.alert(t('Something went wrong while registering'));
+  }
+} catch (e) {
+  dispatch(hide());
+  Alert.alert(t('Network error or something unexpected happened'));
+}
   };
 
   const inputFields = [
