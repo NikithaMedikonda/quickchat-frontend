@@ -180,9 +180,9 @@ describe('KeyboardAvoidingView platform behavior', () => {
       </Provider>,
     );
 
-    const kav = UNSAFE_getByType(KeyboardAvoidingView);
-    expect(kav.props.behavior).toBe('padding');
-    expect(kav.props.keyboardVerticalOffset).toBe(60);
+    const keyboardSafeArea = UNSAFE_getByType(KeyboardAvoidingView);
+    expect(keyboardSafeArea.props.behavior).toBe('padding');
+    expect(keyboardSafeArea.props.keyboardVerticalOffset).toBe(60);
   });
 
   it('sets correct behavior and offset for Android', () => {
