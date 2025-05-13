@@ -118,6 +118,7 @@ export const Registration = () => {
       }
     } catch (e: any) {
       dispatch(hide());
+      console.log(e)
       Alert.alert(t(`${e.message}`) || t('Something went wrong'));
     }
   };
