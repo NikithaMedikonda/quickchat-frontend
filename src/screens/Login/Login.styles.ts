@@ -1,7 +1,7 @@
 import {Dimensions, StyleSheet} from 'react-native';
-import {colors} from '../../constants/color';
+import {Colors} from '../../constants/colors';
 const {width, height} = Dimensions.get('window');
-export const loginStyles = (colors: colors) =>
+export const loginStyles = (colors: Colors) =>
   StyleSheet.create({
     container: {
       display: 'flex',
