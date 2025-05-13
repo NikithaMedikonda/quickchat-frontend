@@ -1,1 +1,2 @@
-export const API_URL = `https://quickchat-backend-qxh4.onrender.com`
+export const API_URL = 'https://quickchat-backend-qxh4.onrender.com';
+
