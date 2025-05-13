@@ -34,7 +34,7 @@ export const InitialStacks = () => {
       }
 
       try {
-        const response = await fetch(`${API_URL}/api/checkAuth`, {
+        const response = await fetch(`${API_URL}/api/auth/validate`, {
           method: 'POST',
           headers: {
             authorization: `Bearer ${accessToken}`,
