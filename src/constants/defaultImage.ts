@@ -1,0 +1,1 @@
+export const DEFAULT_PROFILE_IMAGE = 'https://sdjetntpocezxjoelxgb.supabase.co/storage/v1/object/public/quick-chat/images/profile-pics/image.png'
