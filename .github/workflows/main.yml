@@ -4,8 +4,8 @@ on:
   push:
     branches:
      - main
-     - feature/profile-more-options-modal
-  
+     - token-verification
+ 
 jobs:
   lint-and-test:
     uses: ./.github/workflows/lint-and-test.yml
