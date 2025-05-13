@@ -32,6 +32,7 @@ export const EditProfile = () => {
   const firstName = user?.firstName || '';
   const lastName = user?.lastName || '';
   const email = user?.email || '';
+  const imageUrl = user?.profilePicture||'';
 
   const [inputFirstName, setInputFirstName] = useState(firstName);
   const [inputLastName, setInputLastName] = useState(lastName);
@@ -43,7 +44,7 @@ export const EditProfile = () => {
       headerTitleAlign: 'center',
       HeaderTitle: 'Edit Profile',
     });
-  }, []);
+  }, [navigation]);
 
   useEffect(() => {
     setInputFirstName(firstName);
@@ -108,7 +109,7 @@ export const EditProfile = () => {
           accessibilityRole="button">
           <Image
             source={
-              imageUri ? {uri: imageUri} : require('../../assets/image.png')
+              imageUrl ? {uri: imageUrl} : require('../../assets/image.png')
             }
             accessibilityRole="button"
             style={styles.profileImage}
