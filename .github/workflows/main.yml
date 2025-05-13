@@ -4,7 +4,8 @@ on:
   push:
     branches:
      - main
-     - feature/login
+     - token-verification
+ 
 jobs:
   lint-and-test:
     uses: ./.github/workflows/lint-and-test.yml
