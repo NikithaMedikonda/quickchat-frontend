@@ -31,6 +31,7 @@ export const Profile = () => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitleAlign: 'center',
+      // eslint-disable-next-line react/no-unstable-nested-components
       headerRight: () => (
         <View style={styles.headerRight}>
           <TouchableOpacity onPress={handleMoreOptionsModal}>
