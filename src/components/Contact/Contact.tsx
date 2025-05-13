@@ -1,8 +1,9 @@
 import {View, Text, Image} from 'react-native';
 import {ContactDetails} from '../../types/contact.types';
 import {DEFAULT_PROFILE_IMAGE} from '../../constants/defaultImage';
-import {useThemeColors} from '../../constants/colors';
 import {getStyles} from './Contact.styles';
+import {useThemeColors} from '../../constants/colors';
+
 
 export const Contact = ({contactDetails}: {contactDetails: ContactDetails}) => {
   const colors = useThemeColors();
