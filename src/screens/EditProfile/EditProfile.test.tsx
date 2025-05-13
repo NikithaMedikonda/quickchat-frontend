@@ -1,13 +1,12 @@
 import React from 'react';
 import {Alert} from 'react-native';
-import {render, fireEvent, waitFor,screen} from '@testing-library/react-native';
+import {render, fireEvent, waitFor} from '@testing-library/react-native';
+import { Platform, KeyboardAvoidingView } from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
+import * as redux from 'react-redux';
 import {Provider} from 'react-redux';
 import {EditProfile} from './EditProfile';
 import {store} from '../../store/store';
-import { Platform, KeyboardAvoidingView } from 'react-native';
-import * as redux from 'react-redux';
-
 
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
