@@ -8,12 +8,12 @@ export const confirmModalStyles = () => {
   return StyleSheet.create({
     overlay: {
       flex: 1,
-      backgroundColor: 'rgba(0, 0, 0, 0.6)',
+      backgroundColor: colors.background,
       justifyContent: 'center',
       alignItems: 'center',
     },
     modal: {
-      backgroundColor: 'rgba(137, 137, 137, 1)',
+      backgroundColor: colors.gray,
       padding: 20,
       borderRadius: 10,
       width: '80%',
