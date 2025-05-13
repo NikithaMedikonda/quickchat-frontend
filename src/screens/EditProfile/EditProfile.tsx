@@ -32,7 +32,7 @@ export const EditProfile = () => {
   const firstName = user?.firstName || '';
   const lastName = user?.lastName || '';
   const email = user?.email || '';
- 
+
   const [inputFirstName, setInputFirstName] = useState(firstName);
   const [inputLastName, setInputLastName] = useState(lastName);
   const [inputEmail, setInputEmail] = useState(email);
@@ -49,7 +49,7 @@ export const EditProfile = () => {
     setInputFirstName(firstName);
     setInputLastName(lastName);
     setInputEmail(email);
-  }, [firstName, lastName, email,imageUri]);
+  }, [firstName, lastName, email, imageUri]);
 
   const validateEmail = (email: string) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -109,7 +109,6 @@ export const EditProfile = () => {
           <Image
             source={
               imageUri ? {uri: imageUri} : require('../../assets/image.png')
-              
             }
             accessibilityRole="button"
             style={styles.profileImage}
