@@ -24,8 +24,8 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      # - name: Run Android build command
-      #   run: npm run build-android
+      - name: Run Android build command
+        run: npm run build-android
 
       - name: Install Firebase CLI
         run: npm install -g firebase-tools

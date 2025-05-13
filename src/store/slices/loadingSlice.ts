@@ -22,5 +22,4 @@ const loadingSlice = createSlice({
 });
 
 export const { show, hide } = loadingSlice.actions;
-
-export default loadingSlice.reducer;
+export const loadingReducer = loadingSlice.reducer;

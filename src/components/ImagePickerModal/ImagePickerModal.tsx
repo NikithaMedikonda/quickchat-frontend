@@ -1,90 +1,120 @@
 import {
   View,
   Text,
-  StyleSheet,
   Modal,
   TouchableOpacity,
   Image,
+  Alert,
+  TouchableWithoutFeedback,
+  Platform,
 } from 'react-native';
-import React, {useState} from 'react';
+import ImageCropPicker from 'react-native-image-crop-picker';
+import RNFS from 'react-native-fs';
+import {useDispatch, useSelector} from 'react-redux';
+import {
+  setImageUri,
+  setImage,
+  setIsVisible,
+} from '../../store/slices/registrationSlice';
+import {getStyles} from './ImagePickerModal.styles';
+import {requestPermissions} from '../../permissions/ImagePermissions';
+import {RootState} from '../../store/store';
+import {useThemeColors} from '../../constants/colors';
 
-export default function ImagePickerModal() {
-  const [modalVisible, setModalVisible] = useState(true);
-  const handleModal = () => {
-    setModalVisible(false);
+export function ImagePickerModal() {
+  const dispatch = useDispatch();
+  const {isVisible} = useSelector((state: RootState) => state.registration);
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
+
+  const handleClose = () => {
+    dispatch(setIsVisible(false));
   };
-  return (
-    <Modal animationType="slide" transparent={true} visible={modalVisible}>
-      <View style={styles.centeredView}>
-        <View style={styles.modalView}>
-          <View style={styles.textContainer}>
-            <Text style={styles.profileText}>Choose profile</Text>
-            <TouchableOpacity onPress={handleModal}>
-              <Text style={styles.cancel}>X</Text>
-            </TouchableOpacity>
-          </View>
 
-          <View style={styles.innerContainer}>
-            <Image
-              style={styles.camera} accessibilityHint="camera-image"
-              source={require('../../assets/camera.png')}
-            />
-            <Image accessibilityHint="gallery-image"
-              style={styles.gallery}
-              source={require('../../assets/gallery.png')}
-            />
+  const handlePickImage = async (from: 'camera' | 'gallery') => {
+    const permissionsGranted = await requestPermissions(from);
+    if (Platform.OS === 'android' && permissionsGranted) {
+      Alert.alert(
+        'Permission Denied',
+        'We need access to your photos to continue.',
+      );
+      return;
+    }
+    if (Platform.OS === 'ios' && !permissionsGranted) {
+      Alert.alert(
+        'Permission Denied',
+        'We need access to your photos to continue.',
+      );
+      return;
+    }
+
+    try {
+      const pickedImage =
+        from === 'camera'
+          ? await ImageCropPicker.openCamera({
+              width: 300,
+              height: 300,
+              cropping: true,
+              includeBase64: false,
+            })
+          : await ImageCropPicker.openPicker({
+              width: 300,
+              height: 300,
+              cropping: true,
+              includeBase64: false,
+            });
+
+      const base64Image = await RNFS.readFile(pickedImage.path, 'base64');
+      const imageData = `data:image/jpeg;base64,${base64Image}`;
+
+      dispatch(setImageUri(pickedImage.path));
+      dispatch(setImage(imageData));
+      dispatch(setIsVisible(false));
+    } catch (error: any) {
+      handleClose();
+      Alert.alert('Error', error?.message || 'Image selection failed.');
+    }
+  };
+
+  return (
+    <Modal animationType="slide" transparent={true} visible={isVisible}>
+      <TouchableWithoutFeedback onPress={handleClose}>
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <View style={styles.textContainer}>
+              <Text style={styles.profileText}>
+                Choose Profile
+              </Text>
+              <TouchableOpacity onPress={handleClose}>
+                <Image
+                  style={styles.cancel}
+                  source={require('../../assets/cross.png')}
+                  accessibilityHint="cross-icon"
+                />
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.innerContainer}>
+              <TouchableOpacity
+                accessibilityHint="camera-image-clicker"
+                onPress={() => handlePickImage('camera')}>
+                <Image
+                  style={styles.camera}
+                  accessibilityHint="camera-image"
+                  source={require('../../assets/camera.png')}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => handlePickImage('gallery')}>
+                <Image
+                  accessibilityHint="gallery-image"
+                  style={styles.gallery}
+                  source={require('../../assets/gallery.png')}
+                />
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
-      </View>
+      </TouchableWithoutFeedback>
     </Modal>
   );
 }
-const styles = StyleSheet.create({
-  centeredView: {
-    flex: 1,
-    justifyContent: 'flex-end',
-  },
-  modalView: {
-    backgroundColor: '#898989',
-    borderRadius: 20,
-    padding: 35,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  camera: {
-    height: 50,
-    width: 50,
-  },
-  gallery: {
-    height: 50,
-    width: 50,
-  },
-  innerContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    gap: 30,
-    padding: 30,
-  },
-
-  textContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  profileText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  cancel: {
-    fontSize: 24,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-  },
-});

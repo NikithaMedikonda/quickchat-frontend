@@ -4,8 +4,6 @@ on:
   push:
     branches:
      - main
-     - feature/loading-screen
-     - feature/generic-confirmation-modal
   
 jobs:
   lint-and-test:
