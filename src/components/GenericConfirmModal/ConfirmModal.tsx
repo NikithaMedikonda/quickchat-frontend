@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {Modal, View, Text, TouchableOpacity} from 'react-native';
 import {confirmModalStyles} from './ConfirmModal.styles';
 
@@ -24,7 +24,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
 
   const styles = confirmModalStyles();
 
-  if (!visible) return null;
+  if (!visible) {return null;}
 
   return (
     <Modal transparent visible={visible} animationType="fade">

@@ -1,19 +1,19 @@
-
 import { StyleSheet } from 'react-native';
-import { useThemeColors } from '../../constants/color'; 
+import { useThemeColors } from '../../constants/colors';
 
 export const confirmModalStyles = () => {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const colors = useThemeColors();
 
   return StyleSheet.create({
     overlay: {
       flex: 1,
-      backgroundColor: 'rgba(0, 0, 0, 0.6)', 
+      backgroundColor: 'rgba(0, 0, 0, 0.6)',
       justifyContent: 'center',
       alignItems: 'center',
     },
     modal: {
-      backgroundColor: 'rgba(137, 137, 137, 1)', 
+      backgroundColor: 'rgba(137, 137, 137, 1)',
       padding: 20,
       borderRadius: 10,
       width: '80%',
@@ -27,7 +27,7 @@ export const confirmModalStyles = () => {
       fontSize: 16,
       textAlign: 'center',
       marginBottom: 20,
-      color: colors.text, 
+      color: colors.text,
       fontWeight: '500',
     },
     buttonContainer: {
@@ -36,7 +36,7 @@ export const confirmModalStyles = () => {
       gap: 10,
     },
     cancelButton: {
-      backgroundColor: colors.white, 
+      backgroundColor: colors.white,
       paddingVertical: 10,
       paddingHorizontal: 20,
       borderRadius: 5,
@@ -45,7 +45,7 @@ export const confirmModalStyles = () => {
       marginRight: 10,
     },
     confirmButton: {
-      backgroundColor: colors.primaryBlue, 
+      backgroundColor: colors.primaryBlue,
       paddingVertical: 10,
       paddingHorizontal: 20,
       borderRadius: 5,
@@ -53,10 +53,10 @@ export const confirmModalStyles = () => {
       alignItems: 'center',
     },
     cancelText: {
-      color: 'black', 
+      color: 'black',
     },
     confirmText: {
-      color: colors.white, 
+      color: colors.white,
     },
   });
 };

@@ -15,7 +15,6 @@ const Stack = createNativeStackNavigator();
 export const InitialStacks = () => {
   const [initialRoute, setInitialRoute] = useState<string | null>(null);
   const dispatch = useDispatch();
-
   useEffect(() => {
     const getUser = async () => {
       dispatch(show());
@@ -80,8 +79,10 @@ export const InitialStacks = () => {
     getUser();
   }, [dispatch]);
 
-  if (initialRoute === null) {
-    return <LoadingComponent />;
+  if(initialRoute === null){
+    return (
+      <LoadingComponent/>
+    );
   }
 
   return (
