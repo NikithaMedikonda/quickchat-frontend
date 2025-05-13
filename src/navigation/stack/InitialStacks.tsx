@@ -1,14 +1,14 @@
-import { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import {useEffect, useState} from 'react';
+import {useDispatch} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { LoadingComponent } from '../../components/Loading/Loading';
-import { API_URL } from '../../constants/api';
-import { Registration } from '../../screens/Registration/Registration';
-import { Welcome } from '../../screens/Welcome/Welcome';
-import { hide, show } from '../../store/slices/loadingSlice';
-import { setLoginSuccess } from '../../store/slices/loginSlice';
-import { HomeTabs } from '../tab/HomeTabs';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {LoadingComponent} from '../../components/Loading/Loading';
+import {API_URL} from '../../constants/api';
+import {Registration} from '../../screens/Registration/Registration';
+import {Welcome} from '../../screens/Welcome/Welcome';
+import {hide, show} from '../../store/slices/loadingSlice';
+import {setLoginSuccess} from '../../store/slices/loginSlice';
+import {HomeTabs} from '../tab/HomeTabs';
 
 const Stack = createNativeStackNavigator();
 
@@ -25,7 +25,6 @@ export const InitialStacks = () => {
       const refreshToken = await AsyncStorage.getItem('refreshToken');
 
       const user = userString ? JSON.parse(userString) : null;
-
 
       if (!accessToken || !refreshToken || !user) {
         setInitialRoute('welcome');
@@ -53,7 +52,7 @@ export const InitialStacks = () => {
           return;
         }
 
-        if(result.message === 'Access token valid') {
+        if (result.message === 'Access token valid') {
           setInitialRoute('hometabs');
           dispatch(hide());
         }
@@ -63,21 +62,20 @@ export const InitialStacks = () => {
           await AsyncStorage.setItem('refreshToken', result.refreshToken);
         }
 
-          dispatch(
-            setLoginSuccess({
-              accessToken: result.accessToken,
-              refreshToken: result.refreshToken,
-              user,
-            }),
-          );
-          setInitialRoute('hometabs');
-          dispatch(hide());
-        }
-       catch (error) {
+        dispatch(
+          setLoginSuccess({
+            accessToken: result.accessToken,
+            refreshToken: result.refreshToken,
+            user,
+          }),
+        );
+        setInitialRoute('hometabs');
+        dispatch(hide());
+      } catch (error) {
         setInitialRoute('welcome');
       } finally {
-      dispatch(hide());
-    }
+        dispatch(hide());
+      }
     };
     getUser();
   }, [dispatch]);
