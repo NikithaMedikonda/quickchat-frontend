@@ -16,8 +16,63 @@ export const InitialStacks = () => {
   useEffect(() => {
     const getUser = async () => {
       dispatch(show());
-      const user = await AsyncStorage.getItem('user');
-      setInitialRoute(user ? 'hometabs' : 'welcome');
+
+      const userString = await AsyncStorage.getItem('user');
+      const accessToken = await AsyncStorage.getItem('authToken');
+      const refreshToken = await AsyncStorage.getItem('refreshToken');
+
+      const user = userString ? JSON.parse(userString) : null;
+
+
+      if (!accessToken || !refreshToken || !user) {
+        setInitialRoute('welcome');
+        dispatch(hide());
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_URL}/api/auth/validate`, {
+          method: 'POST',
+          headers: {
+            authorization: `Bearer ${accessToken}`,
+            'x-refresh-token': refreshToken,
+          },
+        });
+
+        const result = await response.json();
+        if (
+          result.message === 'Invalid access token' ||
+          result.message === 'Invalid refresh token'
+        ) {
+          await AsyncStorage.multiRemove(['user', 'authToken', 'refreshToken']);
+          setInitialRoute('welcome');
+          dispatch(hide());
+          return;
+        }
+
+        if(result.message === 'Access token valid') {
+          setInitialRoute('hometabs');
+          dispatch(hide());
+        }
+
+        if (result.message === 'New access token issued') {
+          await AsyncStorage.setItem('authToken', result.accessToken);
+          await AsyncStorage.setItem('refreshToken', result.refreshToken);
+        }
+
+          dispatch(
+            setLoginSuccess({
+              accessToken: result.accessToken,
+              refreshToken: result.refreshToken,
+              user,
+            }),
+          );
+          setInitialRoute('hometabs');
+          dispatch(hide());
+        }
+       catch (error) {
+        setInitialRoute('welcome');
+      } finally {
       dispatch(hide());
     };
     getUser();
