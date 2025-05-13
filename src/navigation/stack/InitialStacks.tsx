@@ -1,7 +1,7 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { LoadingComponent } from '../../components/Loading/Loading';
 import { API_URL } from '../../constants/api';
 import { Registration } from '../../screens/Registration/Registration';
