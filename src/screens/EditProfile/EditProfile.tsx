@@ -32,9 +32,7 @@ export const EditProfile = () => {
   const firstName = user?.firstName || '';
   const lastName = user?.lastName || '';
   const email = user?.email || '';
-  // const image = user?.profilePhoto||'';
  
-
   const [inputFirstName, setInputFirstName] = useState(firstName);
   const [inputLastName, setInputLastName] = useState(lastName);
   const [inputEmail, setInputEmail] = useState(email);
@@ -51,7 +49,7 @@ export const EditProfile = () => {
     setInputFirstName(firstName);
     setInputLastName(lastName);
     setInputEmail(email);
-  }, [firstName, lastName, email]);
+  }, [firstName, lastName, email,imageUri]);
 
   const validateEmail = (email: string) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
