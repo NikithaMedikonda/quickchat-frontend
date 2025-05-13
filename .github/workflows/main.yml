@@ -4,7 +4,6 @@ on:
   push:
     branches:
      - main
-     - feature/profile-more-options-modal
   
 jobs:
   lint-and-test:
