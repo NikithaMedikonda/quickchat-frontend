@@ -11,6 +11,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Set up xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '16.2'
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -22,10 +27,12 @@ jobs:
       - name: Install CocoaPods
         run: sudo gem install cocoapods
 
+      - name: Remove Derived Data
+        run: rm -rf ~/Library/Developer/Xcode/DerivedData
       - name: Install Pod dependencies
         run: |
           cd ios
-          pod install
+          pod install --repo-update
           cd ..
 
       - name: Run custom iOS build command

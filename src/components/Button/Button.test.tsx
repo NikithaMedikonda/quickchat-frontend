@@ -1,6 +1,5 @@
 import {render} from '@testing-library/react-native';
 import {Button} from './Button';
-import React from 'react';
 
 describe('Button Component', () => {
   it('renders correctly with given title', () => {

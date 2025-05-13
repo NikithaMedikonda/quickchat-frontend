@@ -1,49 +1,32 @@
-import React from 'react';
-import {StyleSheet, Dimensions, TextInput} from 'react-native';
-import {colors, useThemeColors} from '../../constants/color.ts';
-const {width, height} = Dimensions.get('window');
+import {TextInput} from 'react-native';
+import {getStyles} from './InputField.styles.ts';
+import {useThemeColors} from '../../constants/colors.ts';
+import { useTranslation } from 'react-i18next';
 
 export const Placeholder = ({
   title,
   value,
   onChange,
-  secureTextEntry,
+  secureTextEntry = false,
 }: {
   title: string;
   value: string;
   onChange: (text: string) => void;
   secureTextEntry: boolean;
 }) => {
-  // eslint-disable-next-line @typescript-eslint/no-shadow
+
   const colors = useThemeColors();
   const styles = getStyles(colors);
+  const { t } = useTranslation('auth');
 
   return (
     <TextInput
       style={styles.input}
       value={value}
-      placeholder={title}
+      placeholder={t(`${title}`)}
       onChangeText={onChange}
       placeholderTextColor={styles.placeholder.color}
       secureTextEntry={secureTextEntry}
     />
   );
 };
-
-// eslint-disable-next-line @typescript-eslint/no-shadow
-const getStyles = (colors: colors) =>
-  StyleSheet.create({
-    input: {
-      height: height * 0.055,
-      fontSize: 20,
-      borderRadius: 10,
-      width: width * 0.8,
-      padding: 10,
-      color: colors.gray,
-      margin: height * 0.012,
-      backgroundColor: colors.white,
-    },
-    placeholder: {
-      color: colors.gray,
-    },
-  });
