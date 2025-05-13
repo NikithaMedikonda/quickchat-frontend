@@ -6,7 +6,6 @@ import {Provider} from 'react-redux';
 import {EditProfile} from './EditProfile';
 import {store} from '../../store/store';
 import { Platform, KeyboardAvoidingView } from 'react-native';
-import renderer from 'react-test-renderer';
 import * as redux from 'react-redux';
 
 
@@ -164,23 +163,41 @@ it('uses empty string defaults when user is undefined', () => {
   expect(getByPlaceholderText('Email').props.value).toBe('');
 });
 
-describe('EditProfile Screen', () => {
-  it('sets correct KeyboardAvoidingView behavior for iOS', () => {
+describe('KeyboardAvoidingView platform behavior', () => {
+  const originalPlatform = Platform.OS;
+
+  afterEach(() => {
+    Platform.OS = originalPlatform;
+  });
+
+  it('sets correct behavior and offset for iOS', () => {
     Platform.OS = 'ios';
 
-    const tree = renderer.create(<EditProfile />).root;
+    const {UNSAFE_getByType} = render(
+      <Provider store={store}>
+        <NavigationContainer>
+          <EditProfile />
+        </NavigationContainer>
+      </Provider>,
+    );
 
-    const kav = tree.findByType(KeyboardAvoidingView);
+    const kav = UNSAFE_getByType(KeyboardAvoidingView);
     expect(kav.props.behavior).toBe('padding');
     expect(kav.props.keyboardVerticalOffset).toBe(60);
   });
 
-  it('sets correct KeyboardAvoidingView behavior for Android', () => {
+  it('sets correct behavior and offset for Android', () => {
     Platform.OS = 'android';
 
-    const tree = renderer.create(<EditProfile />).root;
+    const {UNSAFE_getByType} = render(
+      <Provider store={store}>
+        <NavigationContainer>
+          <EditProfile />
+        </NavigationContainer>
+      </Provider>,
+    );
 
-    const kav = tree.findByType(KeyboardAvoidingView);
+    const kav = UNSAFE_getByType(KeyboardAvoidingView);
     expect(kav.props.behavior).toBe('height');
     expect(kav.props.keyboardVerticalOffset).toBe(0);
   });
