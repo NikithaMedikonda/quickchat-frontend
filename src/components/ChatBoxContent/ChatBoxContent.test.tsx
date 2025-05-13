@@ -1,5 +1,5 @@
-import { ChatBoxContent } from './ChatBoxContent';
 import { render, screen } from '@testing-library/react-native';
+import { ChatBoxContent } from './ChatBoxContent';
 
 describe('ChatBoxContent', () => {
     it('renders the profile image', () => {
