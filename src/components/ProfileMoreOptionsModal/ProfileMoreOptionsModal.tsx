@@ -1,6 +1,11 @@
 import {View, Text, Modal, TouchableOpacity, Image} from 'react-native';
 import {getStyles} from './ProfileMoreOptionsModal.styles';
 import {useThemeColors} from '../../constants/colors';
+import {useDispatch} from 'react-redux';
+import {logout} from '../../store/slices/loginSlice';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useNavigation} from '@react-navigation/native';
+import {NavigationProps} from '../../types/usenavigation.type';
 
 export const ProfileMoreOptionsModal = ({
   visible,
@@ -11,11 +16,17 @@ export const ProfileMoreOptionsModal = ({
 }) => {
   const colors = useThemeColors();
   const styles = getStyles(colors);
+  const dispatch = useDispatch();
+  const navigation: NavigationProps = useNavigation();
   const handleDeleteAccount = () => {
     onClose();
   };
-  const handleLogout = () => {
+  const handleLogout = async () => {
     onClose();
+    dispatch(logout());
+    const removeItems = ['user', 'authToken', 'refreshToken'];
+    await AsyncStorage.multiRemove(removeItems);
+    navigation.replace('login');
   };
   const handleEditProfile = () => {
     onClose();
