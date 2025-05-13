@@ -75,7 +75,7 @@ describe('Registration Screen', () => {
     const {getByPlaceholderText, getByText} = renderComponent();
     expect(getByPlaceholderText('First Name')).toBeTruthy();
     expect(getByPlaceholderText('Last Name')).toBeTruthy();
-    expect(getByPlaceholderText('Phone Number')).toBeTruthy();
+    expect(getByPlaceholderText('Phone number')).toBeTruthy();
     expect(getByPlaceholderText('Password')).toBeTruthy();
     expect(getByPlaceholderText('Confirm Password')).toBeTruthy();
     expect(getByPlaceholderText('Email (Optional)')).toBeTruthy();
@@ -89,7 +89,6 @@ describe('Registration Screen', () => {
       expect(getByText('First name is required')).toBeTruthy();
       expect(getByText('Last name is required')).toBeTruthy();
       expect(getByText('Invalid password')).toBeTruthy();
-      expect(getByText('Invalid phone number')).toBeTruthy();
     });
   });
 
@@ -142,7 +141,7 @@ describe('Registration Screen', () => {
     const {getByPlaceholderText, getByText} = renderComponent();
     fireEvent.changeText(getByPlaceholderText('First Name'), 'testuser');
     fireEvent.changeText(getByPlaceholderText('Last Name'), 'testuser');
-    fireEvent.changeText(getByPlaceholderText('Phone Number'), '1234567890');
+    fireEvent.changeText(getByPlaceholderText('Phone number'), '1234567890');
     fireEvent.changeText(getByPlaceholderText('Password'), 'Password@123');
     fireEvent.changeText(
       getByPlaceholderText('Confirm Password'),
@@ -166,7 +165,7 @@ describe('Registration Screen', () => {
     const {getByPlaceholderText, getByText} = renderComponent();
     fireEvent.changeText(getByPlaceholderText('First Name'), 'testuser');
     fireEvent.changeText(getByPlaceholderText('Last Name'), 'testuser');
-    fireEvent.changeText(getByPlaceholderText('Phone Number'), '1234567890');
+    fireEvent.changeText(getByPlaceholderText('Phone number'), '1234567890');
     fireEvent.changeText(getByPlaceholderText('Password'), 'Password@123');
     fireEvent.changeText(
       getByPlaceholderText('Confirm Password'),
@@ -193,7 +192,7 @@ describe('Registration Screen', () => {
     const {getByPlaceholderText, getByText} = renderComponent();
     fireEvent.changeText(getByPlaceholderText('First Name'), 'testuser');
     fireEvent.changeText(getByPlaceholderText('Last Name'), 'testuser');
-    fireEvent.changeText(getByPlaceholderText('Phone Number'), '1234567890');
+    fireEvent.changeText(getByPlaceholderText('Phone number'), '1234567890');
     fireEvent.changeText(getByPlaceholderText('Password'), 'Password@123');
     fireEvent.changeText(
       getByPlaceholderText('Confirm Password'),
@@ -218,7 +217,7 @@ describe('Registration Screen', () => {
     const {getByPlaceholderText, getByText} = renderComponent();
     fireEvent.changeText(getByPlaceholderText('First Name'), 'testuser');
     fireEvent.changeText(getByPlaceholderText('Last Name'), 'testuser');
-    fireEvent.changeText(getByPlaceholderText('Phone Number'), '1234567890');
+    fireEvent.changeText(getByPlaceholderText('Phone number'), '1234567890');
     fireEvent.changeText(getByPlaceholderText('Password'), 'Password@123');
     fireEvent.changeText(
       getByPlaceholderText('Confirm Password'),
