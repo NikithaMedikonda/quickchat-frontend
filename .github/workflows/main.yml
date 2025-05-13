@@ -4,6 +4,7 @@ on:
   push:
     branches:
      - main
+     - component/time-stamp
   
 jobs:
   lint-and-test:
