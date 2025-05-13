@@ -34,9 +34,7 @@ export const getStyles = (colors: Colors) =>
     },
     invitationContainer:{
         display:'flex',
-        // flexDirection:'column',
         justifyContent:'center',
-        // alignSelf:'flex-end',
         left:0.4*width,
     },
     inviteText:{
