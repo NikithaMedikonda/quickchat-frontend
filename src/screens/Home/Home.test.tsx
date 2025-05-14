@@ -1,4 +1,4 @@
-import {render, screen} from '@testing-library/react-native';
+import {fireEvent, render, screen, waitFor} from '@testing-library/react-native';
 import {Home} from './Home';
 import {Provider} from 'react-redux';
 import {store} from '../../store/store';
@@ -32,13 +32,37 @@ describe('Home Screen Tests', () => {
         });
   });
 
-   it('sets the header options using useLayoutEffect', () => {
+  it('sets the header options using useLayoutEffect', () => {
     render(
       <Provider store={store}>
         <Home />
       </Provider>,
     );
 
+
+
+    expect(mockSetOptions).toHaveBeenCalledWith({
+      headerTitle: 'Quick Chat',
+      headerTitleAlign: 'center',
+      headerStyle: {
+        backgroundColor: useThemeColors().background,
+      },
+      headerTitleStyle: {
+        color: useThemeColors().white,
+      },
+    });
+  });
+
+  it('should navigate to contacts screen', async () => {
+    render(
+      <Provider store={store}>
+        <Home />
+      </Provider>,
+    );
+    fireEvent.press(screen.getByA11yHint('plus-image'));
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith('contacts');
+    });
     expect(mockSetOptions).toHaveBeenCalledWith({
       headerTitle: 'Quick Chat',
       headerTitleAlign: 'center',

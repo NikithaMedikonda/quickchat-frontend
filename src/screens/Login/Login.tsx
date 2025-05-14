@@ -1,13 +1,11 @@
 
 import {Alert, Image, Text, TouchableOpacity, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {phone} from 'phone';
 import PhoneInput from 'react-native-phone-input';
 import {useDispatch, useSelector} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useTranslation} from 'react-i18next';
-import phone from 'phone';
 import {Button} from '../../components/Button/Button';
 import {Placeholder} from '../../components/InputField/InputField';
 import {RootState} from '../../store/store';
@@ -19,23 +17,14 @@ import {
 } from '../../store/slices/loginSlice';
 import {hide, show} from '../../store/slices/loadingSlice';
 import {loginUser} from '../../services/LoginUser';
-import {HomeTabsProps} from '../../types/usenavigation.type';
+import {HomeTabsProps, NavigationProps} from '../../types/usenavigation.type';
 import {useThemeColors} from '../../constants/colors';
 
 import {loginStyles} from './Login.styles';
 
-type RootStackParamList = {
-  register: undefined;
-};
-
-export type RegisterScreenNavigationProp = NativeStackNavigationProp<
-  RootStackParamList,
-  'register'
->;
-
-
 function Login() {
   const homeNavigation = useNavigation<HomeTabsProps>();
+  const navigate = useNavigation<NavigationProps>();
   const dispatch = useDispatch();
   const colors = useThemeColors();
   const styles = loginStyles(colors);
@@ -97,9 +86,6 @@ function Login() {
       Alert.alert(t('Something went wrong'));
     }
   }
-
-  const navigate = useNavigation<NavigationProps>();
-
   return (
     <View style={styles.container}>
       <Image

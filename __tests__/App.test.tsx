@@ -13,7 +13,9 @@ jest.mock('react-native-image-crop-picker', () => ({
   openCamera: jest.fn().mockResolvedValue({path: 'mocked/path.jpg'}),
   openPicker: jest.fn().mockResolvedValue({path: 'mocked/path.jpg'}),
 }));
-
+jest.mock('react-native-contacts', () => ({
+  getContactsByPhoneNumber: jest.fn(),
+}));
 jest.mock('react-native-phone-input', () => {
   const React = require('react');
   const { TextInput } = require('react-native');

@@ -1,5 +1,5 @@
 import { useLayoutEffect } from 'react';
-import { Image, Text, View } from 'react-native';
+import { Image, Text, TouchableOpacity, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { HomeTabsProps } from '../../types/usenavigation.type';
@@ -27,15 +27,17 @@ export const Home = () => {
   return (
     <View style={styles.container}>
       <View>
-        <Text style={styles.description}>{t('You have no chats. Start Messaging!')}</Text>
+        <Text style={styles.description}>
+          {t('You have no chats. Start Messaging!')}
+        </Text>
       </View>
-      <View style={styles.innerContainer}>
-       <Image
-        style={styles.plusImage}
-        source={require('../../assets/plus-icon.png')}
-        accessibilityHint="plus-image"
-       />
-      </View>
+      <TouchableOpacity style={styles.innerContainer} onPress={()=>navigation.navigate('contacts')}>
+        <Image
+          style={styles.plusImage}
+          source={require('../../assets/plus-icon.png')}
+          accessibilityHint="plus-image"
+        />
+      </TouchableOpacity>
     </View>
   );
 };
