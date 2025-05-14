@@ -10,6 +10,7 @@ import {
   View,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
+import PhoneInput from 'react-native-phone-input';
 import {Button} from '../../components/Button/Button';
 import {getStyles} from './Registration.styles';
 import {ImagePickerModal} from '../../components/ImagePickerModal/ImagePickerModal';
@@ -38,8 +39,7 @@ export const Registration = () => {
   );
   const colors = useThemeColors();
   const styles = getStyles(colors);
-  const { t } = useTranslation('auth');
-
+  const {t} = useTranslation('auth');
 
   const handleOpenImageSelector = async () => {
     dispatch(setIsVisible(true));
@@ -74,10 +74,6 @@ export const Registration = () => {
       newErrors.confirmPassword = 'Passwords do not match';
       isValid = false;
     }
-    if (!form.phoneNumber || form.phoneNumber.length !== 10) {
-      newErrors.phoneNumber = 'Invalid phone number';
-      isValid = false;
-    }
     if (form.email && !validateEmail(form.email)) {
       newErrors.email = 'Invalid email format';
       isValid = false;
@@ -89,43 +85,44 @@ export const Registration = () => {
   const handleRegister = async () => {
     dispatch(setErrors({}));
     dispatch(show());
+
     if (!validateForm()) {
       dispatch(hide());
       return;
     }
-    try {
-      const result = await registerUser({...form, image});
-      if (result.status === 409) {
-        dispatch(hide());
-        Alert.alert(t('User already exist with this number'));
-      } else if (result.status === 200) {
-        dispatch(hide());
-        dispatch(
-          setLoginSuccess({
-            accessToken: result.data.accessToken,
-            refreshToken: result.data.refreshToken,
-            user: result.data.user,
-          }),
-        );
-        await AsyncStorage.setItem('authToken', result.data.accessToken);
-        await AsyncStorage.setItem('refreshToken', result.data.refreshToken);
-        await AsyncStorage.setItem('user', JSON.stringify(result.data.user));
-        homeNavigation.replace('hometabs');
-        dispatch(resetForm());
-      } else {
-        dispatch(hide());
-        Alert.alert(t('Something went wrong while registering'));
-      }
-    } catch (e: any) {
-      dispatch(hide());
-      Alert.alert(t(`${e.message}`) || t('Something went wrong'));
-    }
+
+try {
+  const result = await registerUser({ ...form, image });
+  if (result.status === 409) {
+    dispatch(hide());
+    Alert.alert(t('User already exists with this number or email'));
+  } else if (result.status === 200) {
+    dispatch(hide());
+    dispatch(
+      setLoginSuccess({
+        accessToken: result.data.accessToken,
+        refreshToken: result.data.refreshToken,
+        user: result.data.user,
+      }),
+    );
+    await AsyncStorage.setItem('authToken', result.data.accessToken);
+    await AsyncStorage.setItem('refreshToken', result.data.refreshToken);
+    await AsyncStorage.setItem('user', JSON.stringify(result.data.user));
+    homeNavigation.replace('hometabs');
+    dispatch(resetForm());
+  } else {
+    dispatch(hide());
+    Alert.alert(t('Something went wrong while registering'));
+  }
+} catch (e) {
+  dispatch(hide());
+  Alert.alert(t('Network error or something unexpected happened'));
+}
   };
 
   const inputFields = [
     {key: 'firstName', title: 'First Name'},
     {key: 'lastName', title: 'Last Name'},
-    {key: 'phoneNumber', title: 'Phone Number'},
     {key: 'password', title: 'Password', secure: true},
     {key: 'confirmPassword', title: 'Confirm Password', secure: true},
     {key: 'email', title: 'Email (Optional)'},
@@ -134,10 +131,9 @@ export const Registration = () => {
   return (
     <KeyboardAvoidingView
       // eslint-disable-next-line react-native/no-inline-styles
-      style={{ flex: 1 }}
+      style={{flex: 1}}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}
-      >
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}>
       <ScrollView
         contentContainerStyle={styles.registrationMainContainer}
         keyboardShouldPersistTaps="handled">
@@ -151,6 +147,17 @@ export const Registration = () => {
             accessibilityHint="logo"
           />
         </TouchableOpacity>
+        <PhoneInput
+          style={styles.phoneNumber}
+          initialCountry={'in'}
+          textProps={{
+            placeholder: 'Phone number',
+          }}
+          onChangePhoneNumber={(text: string) => {
+            dispatch(setFormField({key: 'phoneNumber', value: text}));
+          }}
+          onPressFlag={() => {}}
+        />
         {inputFields.map(field => (
           <View key={field.key}>
             <Placeholder
@@ -173,7 +180,9 @@ export const Registration = () => {
           <Button title="Register" onPress={handleRegister} />
         </View>
         <View style={styles.loginButtonContainer}>
-          <Text style={styles.loginButtontext}>{t('Already have an account?')} </Text>
+          <Text style={styles.loginButtontext}>
+            {t('Already have an account?')}{' '}
+          </Text>
           <TouchableOpacity onPress={() => navigation.navigate('login')}>
             <Text style={styles.loginButtonSignInText}>{t('Sign in')}</Text>
           </TouchableOpacity>

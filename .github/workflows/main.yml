@@ -4,8 +4,7 @@ on:
   push:
     branches:
      - main
-     - component/time-stamp
-  
+
 jobs:
   lint-and-test:
     uses: ./.github/workflows/lint-and-test.yml

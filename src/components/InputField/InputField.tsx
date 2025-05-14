@@ -14,6 +14,7 @@ export const Placeholder = ({
   onChange: (text: string) => void;
   secureTextEntry: boolean;
 }) => {
+
   const colors = useThemeColors();
   const styles = getStyles(colors);
   const { t } = useTranslation('auth');

@@ -66,7 +66,6 @@ export function ImagePickerModal() {
 
       const base64Image = await RNFS.readFile(pickedImage.path, 'base64');
       const imageData = `data:image/jpeg;base64,${base64Image}`;
-
       dispatch(setImageUri(pickedImage.path));
       dispatch(setImage(imageData));
       dispatch(setIsVisible(false));

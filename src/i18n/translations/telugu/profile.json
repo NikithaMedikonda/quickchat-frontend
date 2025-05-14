@@ -1,0 +1,13 @@
+{
+  "Are you sure want to logout from this device?": "మీరు ఖచ్చితంగా ఈ పరికరం నుండి లాగ్ అవుట్ చేయాలనుకుంటున్నారా?",
+  "Logout": "లాగ్అవుట్",
+  "Cancel": "రద్దు",
+  "Are you sure want to delete this account?": "మీరు ఈ ఖాతాను ఖచ్చితంగా తొలగించాలనుకుంటున్నారా?",
+  "Delete": "తొలగించు",
+  "Invalid Phone number": "చెల్లని ఫోన్ నంబర్",
+  "Invalid secret key": "చెల్లని రహస్య కీ",
+  "Invalid token": "చెల్లని టోకెన్",
+  "Authentication failed": "ప్రమాణీకరణ విఫలమైంది",
+  "Something went wrong while deleting": "తొలగిస్తున్నప్పుడు ఏదో తప్పు జరిగింది",
+  "Something went wrong": "ఏదో తప్పు జరిగింది"
+}
