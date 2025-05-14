@@ -1,0 +1,1769 @@
+diff --git a/node_modules/react-native-contacts/android/build/.transforms/5852e531f94ca8c2e3adfadc7ce8d87e/results.bin b/node_modules/react-native-contacts/android/build/.transforms/5852e531f94ca8c2e3adfadc7ce8d87e/results.bin
+new file mode 100644
+index 0000000..0d259dd
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/.transforms/5852e531f94ca8c2e3adfadc7ce8d87e/results.bin
+@@ -0,0 +1 @@
++o/classes
+diff --git a/node_modules/react-native-contacts/android/build/.transforms/5852e531f94ca8c2e3adfadc7ce8d87e/transformed/classes/classes_dex/classes.dex b/node_modules/react-native-contacts/android/build/.transforms/5852e531f94ca8c2e3adfadc7ce8d87e/transformed/classes/classes_dex/classes.dex
+new file mode 100644
+index 0000000..b23f355
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/.transforms/5852e531f94ca8c2e3adfadc7ce8d87e/transformed/classes/classes_dex/classes.dex differ
+diff --git a/node_modules/react-native-contacts/android/build/.transforms/f753deaf556ea52a9ffe00dbd2930f7f/results.bin b/node_modules/react-native-contacts/android/build/.transforms/f753deaf556ea52a9ffe00dbd2930f7f/results.bin
+new file mode 100644
+index 0000000..7ed749e
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/.transforms/f753deaf556ea52a9ffe00dbd2930f7f/results.bin
+@@ -0,0 +1 @@
++o/bundleLibRuntimeToDirDebug
+diff --git a/node_modules/react-native-contacts/android/build/.transforms/f753deaf556ea52a9ffe00dbd2930f7f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/rt2zz/reactnativecontacts/BuildConfig.dex b/node_modules/react-native-contacts/android/build/.transforms/f753deaf556ea52a9ffe00dbd2930f7f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/rt2zz/reactnativecontacts/BuildConfig.dex
+new file mode 100644
+index 0000000..e648677
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/.transforms/f753deaf556ea52a9ffe00dbd2930f7f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/rt2zz/reactnativecontacts/BuildConfig.dex differ
+diff --git a/node_modules/react-native-contacts/android/build/.transforms/f753deaf556ea52a9ffe00dbd2930f7f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/rt2zz/reactnativecontacts/ContactsManager.dex b/node_modules/react-native-contacts/android/build/.transforms/f753deaf556ea52a9ffe00dbd2930f7f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/rt2zz/reactnativecontacts/ContactsManager.dex
+new file mode 100644
+index 0000000..a7f9bd8
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/.transforms/f753deaf556ea52a9ffe00dbd2930f7f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/rt2zz/reactnativecontacts/ContactsManager.dex differ
+diff --git a/node_modules/react-native-contacts/android/build/.transforms/f753deaf556ea52a9ffe00dbd2930f7f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/rt2zz/reactnativecontacts/ContactsProvider$1.dex b/node_modules/react-native-contacts/android/build/.transforms/f753deaf556ea52a9ffe00dbd2930f7f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/rt2zz/reactnativecontacts/ContactsProvider$1.dex
+new file mode 100644
+index 0000000..a6b381c
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/.transforms/f753deaf556ea52a9ffe00dbd2930f7f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/rt2zz/reactnativecontacts/ContactsProvider$1.dex differ
+diff --git a/node_modules/react-native-contacts/android/build/.transforms/f753deaf556ea52a9ffe00dbd2930f7f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/rt2zz/reactnativecontacts/ContactsProvider$2.dex b/node_modules/react-native-contacts/android/build/.transforms/f753deaf556ea52a9ffe00dbd2930f7f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/rt2zz/reactnativecontacts/ContactsProvider$2.dex
+new file mode 100644
+index 0000000..df379ba
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/.transforms/f753deaf556ea52a9ffe00dbd2930f7f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/rt2zz/reactnativecontacts/ContactsProvider$2.dex differ
+diff --git a/node_modules/react-native-contacts/android/build/.transforms/f753deaf556ea52a9ffe00dbd2930f7f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/rt2zz/reactnativecontacts/ContactsProvider$3.dex b/node_modules/react-native-contacts/android/build/.transforms/f753deaf556ea52a9ffe00dbd2930f7f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/rt2zz/reactnativecontacts/ContactsProvider$3.dex
+new file mode 100644
+index 0000000..6a857a9
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/.transforms/f753deaf556ea52a9ffe00dbd2930f7f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/rt2zz/reactnativecontacts/ContactsProvider$3.dex differ
+diff --git a/node_modules/react-native-contacts/android/build/.transforms/f753deaf556ea52a9ffe00dbd2930f7f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/rt2zz/reactnativecontacts/ContactsProvider$Contact$Birthday.dex b/node_modules/react-native-contacts/android/build/.transforms/f753deaf556ea52a9ffe00dbd2930f7f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/rt2zz/reactnativecontacts/ContactsProvider$Contact$Birthday.dex
+new file mode 100644
+index 0000000..5e3ae76
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/.transforms/f753deaf556ea52a9ffe00dbd2930f7f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/rt2zz/reactnativecontacts/ContactsProvider$Contact$Birthday.dex differ
+diff --git a/node_modules/react-native-contacts/android/build/.transforms/f753deaf556ea52a9ffe00dbd2930f7f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/rt2zz/reactnativecontacts/ContactsProvider$Contact$Item.dex b/node_modules/react-native-contacts/android/build/.transforms/f753deaf556ea52a9ffe00dbd2930f7f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/rt2zz/reactnativecontacts/ContactsProvider$Contact$Item.dex
+new file mode 100644
+index 0000000..9276803
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/.transforms/f753deaf556ea52a9ffe00dbd2930f7f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/rt2zz/reactnativecontacts/ContactsProvider$Contact$Item.dex differ
+diff --git a/node_modules/react-native-contacts/android/build/.transforms/f753deaf556ea52a9ffe00dbd2930f7f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/rt2zz/reactnativecontacts/ContactsProvider$Contact$PostalAddressItem.dex b/node_modules/react-native-contacts/android/build/.transforms/f753deaf556ea52a9ffe00dbd2930f7f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/rt2zz/reactnativecontacts/ContactsProvider$Contact$PostalAddressItem.dex
+new file mode 100644
+index 0000000..1ce08e4
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/.transforms/f753deaf556ea52a9ffe00dbd2930f7f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/rt2zz/reactnativecontacts/ContactsProvider$Contact$PostalAddressItem.dex differ
+diff --git a/node_modules/react-native-contacts/android/build/.transforms/f753deaf556ea52a9ffe00dbd2930f7f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/rt2zz/reactnativecontacts/ContactsProvider$Contact.dex b/node_modules/react-native-contacts/android/build/.transforms/f753deaf556ea52a9ffe00dbd2930f7f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/rt2zz/reactnativecontacts/ContactsProvider$Contact.dex
+new file mode 100644
+index 0000000..0d883bd
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/.transforms/f753deaf556ea52a9ffe00dbd2930f7f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/rt2zz/reactnativecontacts/ContactsProvider$Contact.dex differ
+diff --git a/node_modules/react-native-contacts/android/build/.transforms/f753deaf556ea52a9ffe00dbd2930f7f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/rt2zz/reactnativecontacts/ContactsProvider.dex b/node_modules/react-native-contacts/android/build/.transforms/f753deaf556ea52a9ffe00dbd2930f7f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/rt2zz/reactnativecontacts/ContactsProvider.dex
+new file mode 100644
+index 0000000..33606a5
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/.transforms/f753deaf556ea52a9ffe00dbd2930f7f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/rt2zz/reactnativecontacts/ContactsProvider.dex differ
+diff --git a/node_modules/react-native-contacts/android/build/.transforms/f753deaf556ea52a9ffe00dbd2930f7f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/rt2zz/reactnativecontacts/NativeContactsSpec.dex b/node_modules/react-native-contacts/android/build/.transforms/f753deaf556ea52a9ffe00dbd2930f7f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/rt2zz/reactnativecontacts/NativeContactsSpec.dex
+new file mode 100644
+index 0000000..6a2eb4e
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/.transforms/f753deaf556ea52a9ffe00dbd2930f7f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/rt2zz/reactnativecontacts/NativeContactsSpec.dex differ
+diff --git a/node_modules/react-native-contacts/android/build/.transforms/f753deaf556ea52a9ffe00dbd2930f7f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/rt2zz/reactnativecontacts/ReactNativeContacts.dex b/node_modules/react-native-contacts/android/build/.transforms/f753deaf556ea52a9ffe00dbd2930f7f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/rt2zz/reactnativecontacts/ReactNativeContacts.dex
+new file mode 100644
+index 0000000..35a2dd0
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/.transforms/f753deaf556ea52a9ffe00dbd2930f7f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/rt2zz/reactnativecontacts/ReactNativeContacts.dex differ
+diff --git a/node_modules/react-native-contacts/android/build/.transforms/f753deaf556ea52a9ffe00dbd2930f7f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/rt2zz/reactnativecontacts/impl/ContactsManagerImpl$1.dex b/node_modules/react-native-contacts/android/build/.transforms/f753deaf556ea52a9ffe00dbd2930f7f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/rt2zz/reactnativecontacts/impl/ContactsManagerImpl$1.dex
+new file mode 100644
+index 0000000..2547e1a
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/.transforms/f753deaf556ea52a9ffe00dbd2930f7f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/rt2zz/reactnativecontacts/impl/ContactsManagerImpl$1.dex differ
+diff --git a/node_modules/react-native-contacts/android/build/.transforms/f753deaf556ea52a9ffe00dbd2930f7f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/rt2zz/reactnativecontacts/impl/ContactsManagerImpl.dex b/node_modules/react-native-contacts/android/build/.transforms/f753deaf556ea52a9ffe00dbd2930f7f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/rt2zz/reactnativecontacts/impl/ContactsManagerImpl.dex
+new file mode 100644
+index 0000000..f9d968a
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/.transforms/f753deaf556ea52a9ffe00dbd2930f7f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/rt2zz/reactnativecontacts/impl/ContactsManagerImpl.dex differ
+diff --git a/node_modules/react-native-contacts/android/build/.transforms/f753deaf556ea52a9ffe00dbd2930f7f/transformed/bundleLibRuntimeToDirDebug/desugar_graph.bin b/node_modules/react-native-contacts/android/build/.transforms/f753deaf556ea52a9ffe00dbd2930f7f/transformed/bundleLibRuntimeToDirDebug/desugar_graph.bin
+new file mode 100644
+index 0000000..d17d770
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/.transforms/f753deaf556ea52a9ffe00dbd2930f7f/transformed/bundleLibRuntimeToDirDebug/desugar_graph.bin differ
+diff --git a/node_modules/react-native-contacts/android/build/generated/source/buildConfig/debug/com/rt2zz/reactnativecontacts/BuildConfig.java b/node_modules/react-native-contacts/android/build/generated/source/buildConfig/debug/com/rt2zz/reactnativecontacts/BuildConfig.java
+new file mode 100644
+index 0000000..07a20e2
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/generated/source/buildConfig/debug/com/rt2zz/reactnativecontacts/BuildConfig.java
+@@ -0,0 +1,12 @@
++/**
++ * Automatically generated file. DO NOT MODIFY
++ */
++package com.rt2zz.reactnativecontacts;
++
++public final class BuildConfig {
++  public static final boolean DEBUG = Boolean.parseBoolean("true");
++  public static final String LIBRARY_PACKAGE_NAME = "com.rt2zz.reactnativecontacts";
++  public static final String BUILD_TYPE = "debug";
++  // Field from default config.
++  public static final boolean IS_NEW_ARCHITECTURE_ENABLED = true;
++}
+diff --git a/node_modules/react-native-contacts/android/build/generated/source/codegen/java/com/rt2zz/reactnativecontacts/NativeContactsSpec.java b/node_modules/react-native-contacts/android/build/generated/source/codegen/java/com/rt2zz/reactnativecontacts/NativeContactsSpec.java
+new file mode 100644
+index 0000000..dafd5ee
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/generated/source/codegen/java/com/rt2zz/reactnativecontacts/NativeContactsSpec.java
+@@ -0,0 +1,144 @@
++
++/**
++ * This code was generated by [react-native-codegen](https://www.npmjs.com/package/react-native-codegen).
++ *
++ * Do not edit this file as changes may cause incorrect behavior and will be lost
++ * once the code is regenerated.
++ *
++ * @generated by codegen project: GenerateModuleJavaSpec.js
++ *
++ * @nolint
++ */
++
++package com.rt2zz.reactnativecontacts;
++
++import com.facebook.proguard.annotations.DoNotStrip;
++import com.facebook.react.bridge.Promise;
++import com.facebook.react.bridge.ReactApplicationContext;
++import com.facebook.react.bridge.ReactContextBaseJavaModule;
++import com.facebook.react.bridge.ReactMethod;
++import com.facebook.react.bridge.ReadableArray;
++import com.facebook.react.bridge.ReadableMap;
++import com.facebook.react.turbomodule.core.interfaces.TurboModule;
++import javax.annotation.Nonnull;
++
++public abstract class NativeContactsSpec extends ReactContextBaseJavaModule implements TurboModule {
++  public static final String NAME = "RCTContacts";
++
++  public NativeContactsSpec(ReactApplicationContext reactContext) {
++    super(reactContext);
++  }
++
++  @Override
++  public @Nonnull String getName() {
++    return NAME;
++  }
++
++  @ReactMethod
++  @DoNotStrip
++  public abstract void getAll(Promise promise);
++
++  @ReactMethod
++  @DoNotStrip
++  public abstract void getAllWithoutPhotos(Promise promise);
++
++  @ReactMethod
++  @DoNotStrip
++  public abstract void getContactById(String contactId, Promise promise);
++
++  @ReactMethod
++  @DoNotStrip
++  public abstract void getCount(Promise promise);
++
++  @ReactMethod
++  @DoNotStrip
++  public abstract void getPhotoForId(String contactId, Promise promise);
++
++  @ReactMethod
++  @DoNotStrip
++  public abstract void addContact(ReadableMap contact, Promise promise);
++
++  @ReactMethod
++  @DoNotStrip
++  public abstract void openContactForm(ReadableMap contact, Promise promise);
++
++  @ReactMethod
++  @DoNotStrip
++  public abstract void openExistingContact(ReadableMap contact, Promise promise);
++
++  @ReactMethod
++  @DoNotStrip
++  public abstract void viewExistingContact(ReadableMap contact, Promise promise);
++
++  @ReactMethod
++  @DoNotStrip
++  public abstract void editExistingContact(ReadableMap contact, Promise promise);
++
++  @ReactMethod
++  @DoNotStrip
++  public abstract void updateContact(ReadableMap contact, Promise promise);
++
++  @ReactMethod
++  @DoNotStrip
++  public abstract void deleteContact(ReadableMap contact, Promise promise);
++
++  @ReactMethod
++  @DoNotStrip
++  public abstract void getContactsMatchingString(String str, Promise promise);
++
++  @ReactMethod
++  @DoNotStrip
++  public abstract void getContactsByPhoneNumber(String phoneNumber, Promise promise);
++
++  @ReactMethod
++  @DoNotStrip
++  public abstract void getContactsByEmailAddress(String emailAddress, Promise promise);
++
++  @ReactMethod
++  @DoNotStrip
++  public abstract void checkPermission(Promise promise);
++
++  @ReactMethod
++  @DoNotStrip
++  public abstract void requestPermission(Promise promise);
++
++  @ReactMethod
++  @DoNotStrip
++  public abstract void writePhotoToPath(String contactId, String file, Promise promise);
++
++  @ReactMethod
++  @DoNotStrip
++  public abstract void iosEnableNotesUsage(boolean enabled);
++
++  @ReactMethod
++  @DoNotStrip
++  public abstract void getGroups(Promise promise);
++
++  @ReactMethod
++  @DoNotStrip
++  public abstract void getGroup(String identifier, Promise promise);
++
++  @ReactMethod
++  @DoNotStrip
++  public abstract void deleteGroup(String identifier, Promise promise);
++
++  @ReactMethod
++  @DoNotStrip
++  public abstract void updateGroup(String identifier, ReadableMap groupData, Promise promise);
++
++  @ReactMethod
++  @DoNotStrip
++  public abstract void addGroup(ReadableMap group, Promise promise);
++
++  @ReactMethod
++  @DoNotStrip
++  public abstract void contactsInGroup(String identifier, Promise promise);
++
++  @ReactMethod
++  @DoNotStrip
++  public abstract void addContactsToGroup(String groupIdentifier, ReadableArray contactIdentifiers, Promise promise);
++
++  @ReactMethod
++  @DoNotStrip
++  public abstract void removeContactsFromGroup(String groupIdentifier, ReadableArray contactIdentifiers, Promise promise);
++}
+diff --git a/node_modules/react-native-contacts/android/build/generated/source/codegen/jni/CMakeLists.txt b/node_modules/react-native-contacts/android/build/generated/source/codegen/jni/CMakeLists.txt
+new file mode 100644
+index 0000000..37ae371
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/generated/source/codegen/jni/CMakeLists.txt
+@@ -0,0 +1,36 @@
++# Copyright (c) Meta Platforms, Inc. and affiliates.
++#
++# This source code is licensed under the MIT license found in the
++# LICENSE file in the root directory of this source tree.
++
++cmake_minimum_required(VERSION 3.13)
++set(CMAKE_VERBOSE_MAKEFILE on)
++
++file(GLOB react_codegen_SRCS CONFIGURE_DEPENDS *.cpp react/renderer/components/RNContactsSpec/*.cpp)
++
++add_library(
++  react_codegen_RNContactsSpec
++  OBJECT
++  ${react_codegen_SRCS}
++)
++
++target_include_directories(react_codegen_RNContactsSpec PUBLIC . react/renderer/components/RNContactsSpec)
++
++target_link_libraries(
++  react_codegen_RNContactsSpec
++  fbjni
++  jsi
++  # We need to link different libraries based on whether we are building rncore or not, that's necessary
++  # because we want to break a circular dependency between react_codegen_rncore and reactnative
++  reactnative
++)
++
++target_compile_options(
++  react_codegen_RNContactsSpec
++  PRIVATE
++  -DLOG_TAG=\"ReactNative\"
++  -fexceptions
++  -frtti
++  -std=c++20
++  -Wall
++)
+diff --git a/node_modules/react-native-contacts/android/build/generated/source/codegen/jni/RNContactsSpec-generated.cpp b/node_modules/react-native-contacts/android/build/generated/source/codegen/jni/RNContactsSpec-generated.cpp
+new file mode 100644
+index 0000000..fd5f092
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/generated/source/codegen/jni/RNContactsSpec-generated.cpp
+@@ -0,0 +1,188 @@
++
++/**
++ * This code was generated by [react-native-codegen](https://www.npmjs.com/package/react-native-codegen).
++ *
++ * Do not edit this file as changes may cause incorrect behavior and will be lost
++ * once the code is regenerated.
++ *
++ * @generated by codegen project: GenerateModuleJniCpp.js
++ */
++
++#include "RNContactsSpec.h"
++
++namespace facebook::react {
++
++static facebook::jsi::Value __hostFunction_NativeContactsSpecJSI_getAll(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
++  static jmethodID cachedMethodId = nullptr;
++  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "getAll", "(Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
++}
++
++static facebook::jsi::Value __hostFunction_NativeContactsSpecJSI_getAllWithoutPhotos(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
++  static jmethodID cachedMethodId = nullptr;
++  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "getAllWithoutPhotos", "(Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
++}
++
++static facebook::jsi::Value __hostFunction_NativeContactsSpecJSI_getContactById(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
++  static jmethodID cachedMethodId = nullptr;
++  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "getContactById", "(Ljava/lang/String;Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
++}
++
++static facebook::jsi::Value __hostFunction_NativeContactsSpecJSI_getCount(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
++  static jmethodID cachedMethodId = nullptr;
++  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "getCount", "(Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
++}
++
++static facebook::jsi::Value __hostFunction_NativeContactsSpecJSI_getPhotoForId(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
++  static jmethodID cachedMethodId = nullptr;
++  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "getPhotoForId", "(Ljava/lang/String;Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
++}
++
++static facebook::jsi::Value __hostFunction_NativeContactsSpecJSI_addContact(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
++  static jmethodID cachedMethodId = nullptr;
++  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "addContact", "(Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
++}
++
++static facebook::jsi::Value __hostFunction_NativeContactsSpecJSI_openContactForm(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
++  static jmethodID cachedMethodId = nullptr;
++  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "openContactForm", "(Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
++}
++
++static facebook::jsi::Value __hostFunction_NativeContactsSpecJSI_openExistingContact(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
++  static jmethodID cachedMethodId = nullptr;
++  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "openExistingContact", "(Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
++}
++
++static facebook::jsi::Value __hostFunction_NativeContactsSpecJSI_viewExistingContact(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
++  static jmethodID cachedMethodId = nullptr;
++  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "viewExistingContact", "(Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
++}
++
++static facebook::jsi::Value __hostFunction_NativeContactsSpecJSI_editExistingContact(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
++  static jmethodID cachedMethodId = nullptr;
++  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "editExistingContact", "(Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
++}
++
++static facebook::jsi::Value __hostFunction_NativeContactsSpecJSI_updateContact(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
++  static jmethodID cachedMethodId = nullptr;
++  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "updateContact", "(Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
++}
++
++static facebook::jsi::Value __hostFunction_NativeContactsSpecJSI_deleteContact(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
++  static jmethodID cachedMethodId = nullptr;
++  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "deleteContact", "(Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
++}
++
++static facebook::jsi::Value __hostFunction_NativeContactsSpecJSI_getContactsMatchingString(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
++  static jmethodID cachedMethodId = nullptr;
++  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "getContactsMatchingString", "(Ljava/lang/String;Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
++}
++
++static facebook::jsi::Value __hostFunction_NativeContactsSpecJSI_getContactsByPhoneNumber(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
++  static jmethodID cachedMethodId = nullptr;
++  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "getContactsByPhoneNumber", "(Ljava/lang/String;Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
++}
++
++static facebook::jsi::Value __hostFunction_NativeContactsSpecJSI_getContactsByEmailAddress(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
++  static jmethodID cachedMethodId = nullptr;
++  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "getContactsByEmailAddress", "(Ljava/lang/String;Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
++}
++
++static facebook::jsi::Value __hostFunction_NativeContactsSpecJSI_checkPermission(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
++  static jmethodID cachedMethodId = nullptr;
++  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "checkPermission", "(Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
++}
++
++static facebook::jsi::Value __hostFunction_NativeContactsSpecJSI_requestPermission(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
++  static jmethodID cachedMethodId = nullptr;
++  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "requestPermission", "(Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
++}
++
++static facebook::jsi::Value __hostFunction_NativeContactsSpecJSI_writePhotoToPath(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
++  static jmethodID cachedMethodId = nullptr;
++  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "writePhotoToPath", "(Ljava/lang/String;Ljava/lang/String;Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
++}
++
++static facebook::jsi::Value __hostFunction_NativeContactsSpecJSI_iosEnableNotesUsage(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
++  static jmethodID cachedMethodId = nullptr;
++  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "iosEnableNotesUsage", "(Z)V", args, count, cachedMethodId);
++}
++
++static facebook::jsi::Value __hostFunction_NativeContactsSpecJSI_getGroups(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
++  static jmethodID cachedMethodId = nullptr;
++  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "getGroups", "(Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
++}
++
++static facebook::jsi::Value __hostFunction_NativeContactsSpecJSI_getGroup(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
++  static jmethodID cachedMethodId = nullptr;
++  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "getGroup", "(Ljava/lang/String;Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
++}
++
++static facebook::jsi::Value __hostFunction_NativeContactsSpecJSI_deleteGroup(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
++  static jmethodID cachedMethodId = nullptr;
++  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "deleteGroup", "(Ljava/lang/String;Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
++}
++
++static facebook::jsi::Value __hostFunction_NativeContactsSpecJSI_updateGroup(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
++  static jmethodID cachedMethodId = nullptr;
++  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "updateGroup", "(Ljava/lang/String;Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
++}
++
++static facebook::jsi::Value __hostFunction_NativeContactsSpecJSI_addGroup(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
++  static jmethodID cachedMethodId = nullptr;
++  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "addGroup", "(Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
++}
++
++static facebook::jsi::Value __hostFunction_NativeContactsSpecJSI_contactsInGroup(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
++  static jmethodID cachedMethodId = nullptr;
++  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "contactsInGroup", "(Ljava/lang/String;Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
++}
++
++static facebook::jsi::Value __hostFunction_NativeContactsSpecJSI_addContactsToGroup(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
++  static jmethodID cachedMethodId = nullptr;
++  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "addContactsToGroup", "(Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
++}
++
++static facebook::jsi::Value __hostFunction_NativeContactsSpecJSI_removeContactsFromGroup(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
++  static jmethodID cachedMethodId = nullptr;
++  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "removeContactsFromGroup", "(Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
++}
++
++NativeContactsSpecJSI::NativeContactsSpecJSI(const JavaTurboModule::InitParams &params)
++  : JavaTurboModule(params) {
++  methodMap_["getAll"] = MethodMetadata {0, __hostFunction_NativeContactsSpecJSI_getAll};
++  methodMap_["getAllWithoutPhotos"] = MethodMetadata {0, __hostFunction_NativeContactsSpecJSI_getAllWithoutPhotos};
++  methodMap_["getContactById"] = MethodMetadata {1, __hostFunction_NativeContactsSpecJSI_getContactById};
++  methodMap_["getCount"] = MethodMetadata {0, __hostFunction_NativeContactsSpecJSI_getCount};
++  methodMap_["getPhotoForId"] = MethodMetadata {1, __hostFunction_NativeContactsSpecJSI_getPhotoForId};
++  methodMap_["addContact"] = MethodMetadata {1, __hostFunction_NativeContactsSpecJSI_addContact};
++  methodMap_["openContactForm"] = MethodMetadata {1, __hostFunction_NativeContactsSpecJSI_openContactForm};
++  methodMap_["openExistingContact"] = MethodMetadata {1, __hostFunction_NativeContactsSpecJSI_openExistingContact};
++  methodMap_["viewExistingContact"] = MethodMetadata {1, __hostFunction_NativeContactsSpecJSI_viewExistingContact};
++  methodMap_["editExistingContact"] = MethodMetadata {1, __hostFunction_NativeContactsSpecJSI_editExistingContact};
++  methodMap_["updateContact"] = MethodMetadata {1, __hostFunction_NativeContactsSpecJSI_updateContact};
++  methodMap_["deleteContact"] = MethodMetadata {1, __hostFunction_NativeContactsSpecJSI_deleteContact};
++  methodMap_["getContactsMatchingString"] = MethodMetadata {1, __hostFunction_NativeContactsSpecJSI_getContactsMatchingString};
++  methodMap_["getContactsByPhoneNumber"] = MethodMetadata {1, __hostFunction_NativeContactsSpecJSI_getContactsByPhoneNumber};
++  methodMap_["getContactsByEmailAddress"] = MethodMetadata {1, __hostFunction_NativeContactsSpecJSI_getContactsByEmailAddress};
++  methodMap_["checkPermission"] = MethodMetadata {0, __hostFunction_NativeContactsSpecJSI_checkPermission};
++  methodMap_["requestPermission"] = MethodMetadata {0, __hostFunction_NativeContactsSpecJSI_requestPermission};
++  methodMap_["writePhotoToPath"] = MethodMetadata {2, __hostFunction_NativeContactsSpecJSI_writePhotoToPath};
++  methodMap_["iosEnableNotesUsage"] = MethodMetadata {1, __hostFunction_NativeContactsSpecJSI_iosEnableNotesUsage};
++  methodMap_["getGroups"] = MethodMetadata {0, __hostFunction_NativeContactsSpecJSI_getGroups};
++  methodMap_["getGroup"] = MethodMetadata {1, __hostFunction_NativeContactsSpecJSI_getGroup};
++  methodMap_["deleteGroup"] = MethodMetadata {1, __hostFunction_NativeContactsSpecJSI_deleteGroup};
++  methodMap_["updateGroup"] = MethodMetadata {2, __hostFunction_NativeContactsSpecJSI_updateGroup};
++  methodMap_["addGroup"] = MethodMetadata {1, __hostFunction_NativeContactsSpecJSI_addGroup};
++  methodMap_["contactsInGroup"] = MethodMetadata {1, __hostFunction_NativeContactsSpecJSI_contactsInGroup};
++  methodMap_["addContactsToGroup"] = MethodMetadata {2, __hostFunction_NativeContactsSpecJSI_addContactsToGroup};
++  methodMap_["removeContactsFromGroup"] = MethodMetadata {2, __hostFunction_NativeContactsSpecJSI_removeContactsFromGroup};
++}
++
++std::shared_ptr<TurboModule> RNContactsSpec_ModuleProvider(const std::string &moduleName, const JavaTurboModule::InitParams &params) {
++  if (moduleName == "RCTContacts") {
++    return std::make_shared<NativeContactsSpecJSI>(params);
++  }
++  return nullptr;
++}
++
++} // namespace facebook::react
+diff --git a/node_modules/react-native-contacts/android/build/generated/source/codegen/jni/RNContactsSpec.h b/node_modules/react-native-contacts/android/build/generated/source/codegen/jni/RNContactsSpec.h
+new file mode 100644
+index 0000000..cecdf20
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/generated/source/codegen/jni/RNContactsSpec.h
+@@ -0,0 +1,31 @@
++
++/**
++ * This code was generated by [react-native-codegen](https://www.npmjs.com/package/react-native-codegen).
++ *
++ * Do not edit this file as changes may cause incorrect behavior and will be lost
++ * once the code is regenerated.
++ *
++ * @generated by codegen project: GenerateModuleJniH.js
++ */
++
++#pragma once
++
++#include <ReactCommon/JavaTurboModule.h>
++#include <ReactCommon/TurboModule.h>
++#include <jsi/jsi.h>
++
++namespace facebook::react {
++
++/**
++ * JNI C++ class for module 'NativeContacts'
++ */
++class JSI_EXPORT NativeContactsSpecJSI : public JavaTurboModule {
++public:
++  NativeContactsSpecJSI(const JavaTurboModule::InitParams &params);
++};
++
++
++JSI_EXPORT
++std::shared_ptr<TurboModule> RNContactsSpec_ModuleProvider(const std::string &moduleName, const JavaTurboModule::InitParams &params);
++
++} // namespace facebook::react
+diff --git a/node_modules/react-native-contacts/android/build/generated/source/codegen/jni/react/renderer/components/RNContactsSpec/ComponentDescriptors.cpp b/node_modules/react-native-contacts/android/build/generated/source/codegen/jni/react/renderer/components/RNContactsSpec/ComponentDescriptors.cpp
+new file mode 100644
+index 0000000..4fe5453
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/generated/source/codegen/jni/react/renderer/components/RNContactsSpec/ComponentDescriptors.cpp
+@@ -0,0 +1,22 @@
++
++/**
++ * This code was generated by [react-native-codegen](https://www.npmjs.com/package/react-native-codegen).
++ *
++ * Do not edit this file as changes may cause incorrect behavior and will be lost
++ * once the code is regenerated.
++ *
++ * @generated by codegen project: GenerateComponentDescriptorCpp.js
++ */
++
++#include <react/renderer/components/RNContactsSpec/ComponentDescriptors.h>
++#include <react/renderer/core/ConcreteComponentDescriptor.h>
++#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
++
++namespace facebook::react {
++
++void RNContactsSpec_registerComponentDescriptorsFromCodegen(
++  std::shared_ptr<const ComponentDescriptorProviderRegistry> registry) {
++
++}
++
++} // namespace facebook::react
+diff --git a/node_modules/react-native-contacts/android/build/generated/source/codegen/jni/react/renderer/components/RNContactsSpec/ComponentDescriptors.h b/node_modules/react-native-contacts/android/build/generated/source/codegen/jni/react/renderer/components/RNContactsSpec/ComponentDescriptors.h
+new file mode 100644
+index 0000000..4743029
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/generated/source/codegen/jni/react/renderer/components/RNContactsSpec/ComponentDescriptors.h
+@@ -0,0 +1,24 @@
++
++/**
++ * This code was generated by [react-native-codegen](https://www.npmjs.com/package/react-native-codegen).
++ *
++ * Do not edit this file as changes may cause incorrect behavior and will be lost
++ * once the code is regenerated.
++ *
++ * @generated by codegen project: GenerateComponentDescriptorH.js
++ */
++
++#pragma once
++
++#include <react/renderer/components/RNContactsSpec/ShadowNodes.h>
++#include <react/renderer/core/ConcreteComponentDescriptor.h>
++#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
++
++namespace facebook::react {
++
++
++
++void RNContactsSpec_registerComponentDescriptorsFromCodegen(
++  std::shared_ptr<const ComponentDescriptorProviderRegistry> registry);
++
++} // namespace facebook::react
+diff --git a/node_modules/react-native-contacts/android/build/generated/source/codegen/jni/react/renderer/components/RNContactsSpec/EventEmitters.cpp b/node_modules/react-native-contacts/android/build/generated/source/codegen/jni/react/renderer/components/RNContactsSpec/EventEmitters.cpp
+new file mode 100644
+index 0000000..dc2a16d
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/generated/source/codegen/jni/react/renderer/components/RNContactsSpec/EventEmitters.cpp
+@@ -0,0 +1,16 @@
++
++/**
++ * This code was generated by [react-native-codegen](https://www.npmjs.com/package/react-native-codegen).
++ *
++ * Do not edit this file as changes may cause incorrect behavior and will be lost
++ * once the code is regenerated.
++ *
++ * @generated by codegen project: GenerateEventEmitterCpp.js
++ */
++
++#include <react/renderer/components/RNContactsSpec/EventEmitters.h>
++
++
++namespace facebook::react {
++
++} // namespace facebook::react
+diff --git a/node_modules/react-native-contacts/android/build/generated/source/codegen/jni/react/renderer/components/RNContactsSpec/EventEmitters.h b/node_modules/react-native-contacts/android/build/generated/source/codegen/jni/react/renderer/components/RNContactsSpec/EventEmitters.h
+new file mode 100644
+index 0000000..2845a63
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/generated/source/codegen/jni/react/renderer/components/RNContactsSpec/EventEmitters.h
+@@ -0,0 +1,17 @@
++
++/**
++ * This code was generated by [react-native-codegen](https://www.npmjs.com/package/react-native-codegen).
++ *
++ * Do not edit this file as changes may cause incorrect behavior and will be lost
++ * once the code is regenerated.
++ *
++ * @generated by codegen project: GenerateEventEmitterH.js
++ */
++#pragma once
++
++#include <react/renderer/components/view/ViewEventEmitter.h>
++
++
++namespace facebook::react {
++
++} // namespace facebook::react
+diff --git a/node_modules/react-native-contacts/android/build/generated/source/codegen/jni/react/renderer/components/RNContactsSpec/Props.cpp b/node_modules/react-native-contacts/android/build/generated/source/codegen/jni/react/renderer/components/RNContactsSpec/Props.cpp
+new file mode 100644
+index 0000000..75af0f6
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/generated/source/codegen/jni/react/renderer/components/RNContactsSpec/Props.cpp
+@@ -0,0 +1,19 @@
++
++/**
++ * This code was generated by [react-native-codegen](https://www.npmjs.com/package/react-native-codegen).
++ *
++ * Do not edit this file as changes may cause incorrect behavior and will be lost
++ * once the code is regenerated.
++ *
++ * @generated by codegen project: GeneratePropsCpp.js
++ */
++
++#include <react/renderer/components/RNContactsSpec/Props.h>
++#include <react/renderer/core/PropsParserContext.h>
++#include <react/renderer/core/propsConversions.h>
++
++namespace facebook::react {
++
++
++
++} // namespace facebook::react
+diff --git a/node_modules/react-native-contacts/android/build/generated/source/codegen/jni/react/renderer/components/RNContactsSpec/Props.h b/node_modules/react-native-contacts/android/build/generated/source/codegen/jni/react/renderer/components/RNContactsSpec/Props.h
+new file mode 100644
+index 0000000..870864b
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/generated/source/codegen/jni/react/renderer/components/RNContactsSpec/Props.h
+@@ -0,0 +1,18 @@
++
++/**
++ * This code was generated by [react-native-codegen](https://www.npmjs.com/package/react-native-codegen).
++ *
++ * Do not edit this file as changes may cause incorrect behavior and will be lost
++ * once the code is regenerated.
++ *
++ * @generated by codegen project: GeneratePropsH.js
++ */
++#pragma once
++
++
++
++namespace facebook::react {
++
++
++
++} // namespace facebook::react
+diff --git a/node_modules/react-native-contacts/android/build/generated/source/codegen/jni/react/renderer/components/RNContactsSpec/RNContactsSpecJSI-generated.cpp b/node_modules/react-native-contacts/android/build/generated/source/codegen/jni/react/renderer/components/RNContactsSpec/RNContactsSpecJSI-generated.cpp
+new file mode 100644
+index 0000000..5db8f3a
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/generated/source/codegen/jni/react/renderer/components/RNContactsSpec/RNContactsSpecJSI-generated.cpp
+@@ -0,0 +1,208 @@
++/**
++ * This code was generated by [react-native-codegen](https://www.npmjs.com/package/react-native-codegen).
++ *
++ * Do not edit this file as changes may cause incorrect behavior and will be lost
++ * once the code is regenerated.
++ *
++ * @generated by codegen project: GenerateModuleCpp.js
++ */
++
++#include "RNContactsSpecJSI.h"
++
++namespace facebook::react {
++
++static jsi::Value __hostFunction_NativeContactsCxxSpecJSI_getAll(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
++  return static_cast<NativeContactsCxxSpecJSI *>(&turboModule)->getAll(
++    rt
++  );
++}
++static jsi::Value __hostFunction_NativeContactsCxxSpecJSI_getAllWithoutPhotos(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
++  return static_cast<NativeContactsCxxSpecJSI *>(&turboModule)->getAllWithoutPhotos(
++    rt
++  );
++}
++static jsi::Value __hostFunction_NativeContactsCxxSpecJSI_getContactById(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
++  return static_cast<NativeContactsCxxSpecJSI *>(&turboModule)->getContactById(
++    rt,
++    count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt)
++  );
++}
++static jsi::Value __hostFunction_NativeContactsCxxSpecJSI_getCount(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
++  return static_cast<NativeContactsCxxSpecJSI *>(&turboModule)->getCount(
++    rt
++  );
++}
++static jsi::Value __hostFunction_NativeContactsCxxSpecJSI_getPhotoForId(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
++  return static_cast<NativeContactsCxxSpecJSI *>(&turboModule)->getPhotoForId(
++    rt,
++    count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt)
++  );
++}
++static jsi::Value __hostFunction_NativeContactsCxxSpecJSI_addContact(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
++  return static_cast<NativeContactsCxxSpecJSI *>(&turboModule)->addContact(
++    rt,
++    count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asObject(rt)
++  );
++}
++static jsi::Value __hostFunction_NativeContactsCxxSpecJSI_openContactForm(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
++  return static_cast<NativeContactsCxxSpecJSI *>(&turboModule)->openContactForm(
++    rt,
++    count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asObject(rt)
++  );
++}
++static jsi::Value __hostFunction_NativeContactsCxxSpecJSI_openExistingContact(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
++  return static_cast<NativeContactsCxxSpecJSI *>(&turboModule)->openExistingContact(
++    rt,
++    count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asObject(rt)
++  );
++}
++static jsi::Value __hostFunction_NativeContactsCxxSpecJSI_viewExistingContact(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
++  return static_cast<NativeContactsCxxSpecJSI *>(&turboModule)->viewExistingContact(
++    rt,
++    count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asObject(rt)
++  );
++}
++static jsi::Value __hostFunction_NativeContactsCxxSpecJSI_editExistingContact(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
++  return static_cast<NativeContactsCxxSpecJSI *>(&turboModule)->editExistingContact(
++    rt,
++    count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asObject(rt)
++  );
++}
++static jsi::Value __hostFunction_NativeContactsCxxSpecJSI_updateContact(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
++  return static_cast<NativeContactsCxxSpecJSI *>(&turboModule)->updateContact(
++    rt,
++    count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asObject(rt)
++  );
++}
++static jsi::Value __hostFunction_NativeContactsCxxSpecJSI_deleteContact(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
++  return static_cast<NativeContactsCxxSpecJSI *>(&turboModule)->deleteContact(
++    rt,
++    count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asObject(rt)
++  );
++}
++static jsi::Value __hostFunction_NativeContactsCxxSpecJSI_getContactsMatchingString(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
++  return static_cast<NativeContactsCxxSpecJSI *>(&turboModule)->getContactsMatchingString(
++    rt,
++    count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt)
++  );
++}
++static jsi::Value __hostFunction_NativeContactsCxxSpecJSI_getContactsByPhoneNumber(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
++  return static_cast<NativeContactsCxxSpecJSI *>(&turboModule)->getContactsByPhoneNumber(
++    rt,
++    count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt)
++  );
++}
++static jsi::Value __hostFunction_NativeContactsCxxSpecJSI_getContactsByEmailAddress(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
++  return static_cast<NativeContactsCxxSpecJSI *>(&turboModule)->getContactsByEmailAddress(
++    rt,
++    count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt)
++  );
++}
++static jsi::Value __hostFunction_NativeContactsCxxSpecJSI_checkPermission(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
++  return static_cast<NativeContactsCxxSpecJSI *>(&turboModule)->checkPermission(
++    rt
++  );
++}
++static jsi::Value __hostFunction_NativeContactsCxxSpecJSI_requestPermission(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
++  return static_cast<NativeContactsCxxSpecJSI *>(&turboModule)->requestPermission(
++    rt
++  );
++}
++static jsi::Value __hostFunction_NativeContactsCxxSpecJSI_writePhotoToPath(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
++  return static_cast<NativeContactsCxxSpecJSI *>(&turboModule)->writePhotoToPath(
++    rt,
++    count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
++    count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt)
++  );
++}
++static jsi::Value __hostFunction_NativeContactsCxxSpecJSI_iosEnableNotesUsage(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
++  static_cast<NativeContactsCxxSpecJSI *>(&turboModule)->iosEnableNotesUsage(
++    rt,
++    count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asBool()
++  );
++  return jsi::Value::undefined();
++}
++static jsi::Value __hostFunction_NativeContactsCxxSpecJSI_getGroups(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
++  return static_cast<NativeContactsCxxSpecJSI *>(&turboModule)->getGroups(
++    rt
++  );
++}
++static jsi::Value __hostFunction_NativeContactsCxxSpecJSI_getGroup(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
++  return static_cast<NativeContactsCxxSpecJSI *>(&turboModule)->getGroup(
++    rt,
++    count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt)
++  );
++}
++static jsi::Value __hostFunction_NativeContactsCxxSpecJSI_deleteGroup(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
++  return static_cast<NativeContactsCxxSpecJSI *>(&turboModule)->deleteGroup(
++    rt,
++    count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt)
++  );
++}
++static jsi::Value __hostFunction_NativeContactsCxxSpecJSI_updateGroup(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
++  return static_cast<NativeContactsCxxSpecJSI *>(&turboModule)->updateGroup(
++    rt,
++    count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
++    count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asObject(rt)
++  );
++}
++static jsi::Value __hostFunction_NativeContactsCxxSpecJSI_addGroup(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
++  return static_cast<NativeContactsCxxSpecJSI *>(&turboModule)->addGroup(
++    rt,
++    count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asObject(rt)
++  );
++}
++static jsi::Value __hostFunction_NativeContactsCxxSpecJSI_contactsInGroup(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
++  return static_cast<NativeContactsCxxSpecJSI *>(&turboModule)->contactsInGroup(
++    rt,
++    count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt)
++  );
++}
++static jsi::Value __hostFunction_NativeContactsCxxSpecJSI_addContactsToGroup(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
++  return static_cast<NativeContactsCxxSpecJSI *>(&turboModule)->addContactsToGroup(
++    rt,
++    count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
++    count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asObject(rt).asArray(rt)
++  );
++}
++static jsi::Value __hostFunction_NativeContactsCxxSpecJSI_removeContactsFromGroup(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
++  return static_cast<NativeContactsCxxSpecJSI *>(&turboModule)->removeContactsFromGroup(
++    rt,
++    count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
++    count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asObject(rt).asArray(rt)
++  );
++}
++
++NativeContactsCxxSpecJSI::NativeContactsCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker)
++  : TurboModule("RCTContacts", jsInvoker) {
++  methodMap_["getAll"] = MethodMetadata {0, __hostFunction_NativeContactsCxxSpecJSI_getAll};
++  methodMap_["getAllWithoutPhotos"] = MethodMetadata {0, __hostFunction_NativeContactsCxxSpecJSI_getAllWithoutPhotos};
++  methodMap_["getContactById"] = MethodMetadata {1, __hostFunction_NativeContactsCxxSpecJSI_getContactById};
++  methodMap_["getCount"] = MethodMetadata {0, __hostFunction_NativeContactsCxxSpecJSI_getCount};
++  methodMap_["getPhotoForId"] = MethodMetadata {1, __hostFunction_NativeContactsCxxSpecJSI_getPhotoForId};
++  methodMap_["addContact"] = MethodMetadata {1, __hostFunction_NativeContactsCxxSpecJSI_addContact};
++  methodMap_["openContactForm"] = MethodMetadata {1, __hostFunction_NativeContactsCxxSpecJSI_openContactForm};
++  methodMap_["openExistingContact"] = MethodMetadata {1, __hostFunction_NativeContactsCxxSpecJSI_openExistingContact};
++  methodMap_["viewExistingContact"] = MethodMetadata {1, __hostFunction_NativeContactsCxxSpecJSI_viewExistingContact};
++  methodMap_["editExistingContact"] = MethodMetadata {1, __hostFunction_NativeContactsCxxSpecJSI_editExistingContact};
++  methodMap_["updateContact"] = MethodMetadata {1, __hostFunction_NativeContactsCxxSpecJSI_updateContact};
++  methodMap_["deleteContact"] = MethodMetadata {1, __hostFunction_NativeContactsCxxSpecJSI_deleteContact};
++  methodMap_["getContactsMatchingString"] = MethodMetadata {1, __hostFunction_NativeContactsCxxSpecJSI_getContactsMatchingString};
++  methodMap_["getContactsByPhoneNumber"] = MethodMetadata {1, __hostFunction_NativeContactsCxxSpecJSI_getContactsByPhoneNumber};
++  methodMap_["getContactsByEmailAddress"] = MethodMetadata {1, __hostFunction_NativeContactsCxxSpecJSI_getContactsByEmailAddress};
++  methodMap_["checkPermission"] = MethodMetadata {0, __hostFunction_NativeContactsCxxSpecJSI_checkPermission};
++  methodMap_["requestPermission"] = MethodMetadata {0, __hostFunction_NativeContactsCxxSpecJSI_requestPermission};
++  methodMap_["writePhotoToPath"] = MethodMetadata {2, __hostFunction_NativeContactsCxxSpecJSI_writePhotoToPath};
++  methodMap_["iosEnableNotesUsage"] = MethodMetadata {1, __hostFunction_NativeContactsCxxSpecJSI_iosEnableNotesUsage};
++  methodMap_["getGroups"] = MethodMetadata {0, __hostFunction_NativeContactsCxxSpecJSI_getGroups};
++  methodMap_["getGroup"] = MethodMetadata {1, __hostFunction_NativeContactsCxxSpecJSI_getGroup};
++  methodMap_["deleteGroup"] = MethodMetadata {1, __hostFunction_NativeContactsCxxSpecJSI_deleteGroup};
++  methodMap_["updateGroup"] = MethodMetadata {2, __hostFunction_NativeContactsCxxSpecJSI_updateGroup};
++  methodMap_["addGroup"] = MethodMetadata {1, __hostFunction_NativeContactsCxxSpecJSI_addGroup};
++  methodMap_["contactsInGroup"] = MethodMetadata {1, __hostFunction_NativeContactsCxxSpecJSI_contactsInGroup};
++  methodMap_["addContactsToGroup"] = MethodMetadata {2, __hostFunction_NativeContactsCxxSpecJSI_addContactsToGroup};
++  methodMap_["removeContactsFromGroup"] = MethodMetadata {2, __hostFunction_NativeContactsCxxSpecJSI_removeContactsFromGroup};
++}
++
++
++} // namespace facebook::react
+diff --git a/node_modules/react-native-contacts/android/build/generated/source/codegen/jni/react/renderer/components/RNContactsSpec/RNContactsSpecJSI.h b/node_modules/react-native-contacts/android/build/generated/source/codegen/jni/react/renderer/components/RNContactsSpec/RNContactsSpecJSI.h
+new file mode 100644
+index 0000000..0e203d8
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/generated/source/codegen/jni/react/renderer/components/RNContactsSpec/RNContactsSpecJSI.h
+@@ -0,0 +1,305 @@
++/**
++ * This code was generated by [react-native-codegen](https://www.npmjs.com/package/react-native-codegen).
++ *
++ * Do not edit this file as changes may cause incorrect behavior and will be lost
++ * once the code is regenerated.
++ *
++ * @generated by codegen project: GenerateModuleH.js
++ */
++
++#pragma once
++
++#include <ReactCommon/TurboModule.h>
++#include <react/bridging/Bridging.h>
++
++namespace facebook::react {
++
++
++  class JSI_EXPORT NativeContactsCxxSpecJSI : public TurboModule {
++protected:
++  NativeContactsCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
++
++public:
++  virtual jsi::Value getAll(jsi::Runtime &rt) = 0;
++  virtual jsi::Value getAllWithoutPhotos(jsi::Runtime &rt) = 0;
++  virtual jsi::Value getContactById(jsi::Runtime &rt, jsi::String contactId) = 0;
++  virtual jsi::Value getCount(jsi::Runtime &rt) = 0;
++  virtual jsi::Value getPhotoForId(jsi::Runtime &rt, jsi::String contactId) = 0;
++  virtual jsi::Value addContact(jsi::Runtime &rt, jsi::Object contact) = 0;
++  virtual jsi::Value openContactForm(jsi::Runtime &rt, jsi::Object contact) = 0;
++  virtual jsi::Value openExistingContact(jsi::Runtime &rt, jsi::Object contact) = 0;
++  virtual jsi::Value viewExistingContact(jsi::Runtime &rt, jsi::Object contact) = 0;
++  virtual jsi::Value editExistingContact(jsi::Runtime &rt, jsi::Object contact) = 0;
++  virtual jsi::Value updateContact(jsi::Runtime &rt, jsi::Object contact) = 0;
++  virtual jsi::Value deleteContact(jsi::Runtime &rt, jsi::Object contact) = 0;
++  virtual jsi::Value getContactsMatchingString(jsi::Runtime &rt, jsi::String str) = 0;
++  virtual jsi::Value getContactsByPhoneNumber(jsi::Runtime &rt, jsi::String phoneNumber) = 0;
++  virtual jsi::Value getContactsByEmailAddress(jsi::Runtime &rt, jsi::String emailAddress) = 0;
++  virtual jsi::Value checkPermission(jsi::Runtime &rt) = 0;
++  virtual jsi::Value requestPermission(jsi::Runtime &rt) = 0;
++  virtual jsi::Value writePhotoToPath(jsi::Runtime &rt, jsi::String contactId, jsi::String file) = 0;
++  virtual void iosEnableNotesUsage(jsi::Runtime &rt, bool enabled) = 0;
++  virtual jsi::Value getGroups(jsi::Runtime &rt) = 0;
++  virtual jsi::Value getGroup(jsi::Runtime &rt, jsi::String identifier) = 0;
++  virtual jsi::Value deleteGroup(jsi::Runtime &rt, jsi::String identifier) = 0;
++  virtual jsi::Value updateGroup(jsi::Runtime &rt, jsi::String identifier, jsi::Object groupData) = 0;
++  virtual jsi::Value addGroup(jsi::Runtime &rt, jsi::Object group) = 0;
++  virtual jsi::Value contactsInGroup(jsi::Runtime &rt, jsi::String identifier) = 0;
++  virtual jsi::Value addContactsToGroup(jsi::Runtime &rt, jsi::String groupIdentifier, jsi::Array contactIdentifiers) = 0;
++  virtual jsi::Value removeContactsFromGroup(jsi::Runtime &rt, jsi::String groupIdentifier, jsi::Array contactIdentifiers) = 0;
++
++};
++
++template <typename T>
++class JSI_EXPORT NativeContactsCxxSpec : public TurboModule {
++public:
++  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
++    return delegate_.create(rt, propName);
++  }
++
++  std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime& runtime) override {
++    return delegate_.getPropertyNames(runtime);
++  }
++
++  static constexpr std::string_view kModuleName = "RCTContacts";
++
++protected:
++  NativeContactsCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
++    : TurboModule(std::string{NativeContactsCxxSpec::kModuleName}, jsInvoker),
++      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
++
++
++private:
++  class Delegate : public NativeContactsCxxSpecJSI {
++  public:
++    Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
++      NativeContactsCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
++
++    }
++
++    jsi::Value getAll(jsi::Runtime &rt) override {
++      static_assert(
++          bridging::getParameterCount(&T::getAll) == 1,
++          "Expected getAll(...) to have 1 parameters");
++
++      return bridging::callFromJs<jsi::Value>(
++          rt, &T::getAll, jsInvoker_, instance_);
++    }
++    jsi::Value getAllWithoutPhotos(jsi::Runtime &rt) override {
++      static_assert(
++          bridging::getParameterCount(&T::getAllWithoutPhotos) == 1,
++          "Expected getAllWithoutPhotos(...) to have 1 parameters");
++
++      return bridging::callFromJs<jsi::Value>(
++          rt, &T::getAllWithoutPhotos, jsInvoker_, instance_);
++    }
++    jsi::Value getContactById(jsi::Runtime &rt, jsi::String contactId) override {
++      static_assert(
++          bridging::getParameterCount(&T::getContactById) == 2,
++          "Expected getContactById(...) to have 2 parameters");
++
++      return bridging::callFromJs<jsi::Value>(
++          rt, &T::getContactById, jsInvoker_, instance_, std::move(contactId));
++    }
++    jsi::Value getCount(jsi::Runtime &rt) override {
++      static_assert(
++          bridging::getParameterCount(&T::getCount) == 1,
++          "Expected getCount(...) to have 1 parameters");
++
++      return bridging::callFromJs<jsi::Value>(
++          rt, &T::getCount, jsInvoker_, instance_);
++    }
++    jsi::Value getPhotoForId(jsi::Runtime &rt, jsi::String contactId) override {
++      static_assert(
++          bridging::getParameterCount(&T::getPhotoForId) == 2,
++          "Expected getPhotoForId(...) to have 2 parameters");
++
++      return bridging::callFromJs<jsi::Value>(
++          rt, &T::getPhotoForId, jsInvoker_, instance_, std::move(contactId));
++    }
++    jsi::Value addContact(jsi::Runtime &rt, jsi::Object contact) override {
++      static_assert(
++          bridging::getParameterCount(&T::addContact) == 2,
++          "Expected addContact(...) to have 2 parameters");
++
++      return bridging::callFromJs<jsi::Value>(
++          rt, &T::addContact, jsInvoker_, instance_, std::move(contact));
++    }
++    jsi::Value openContactForm(jsi::Runtime &rt, jsi::Object contact) override {
++      static_assert(
++          bridging::getParameterCount(&T::openContactForm) == 2,
++          "Expected openContactForm(...) to have 2 parameters");
++
++      return bridging::callFromJs<jsi::Value>(
++          rt, &T::openContactForm, jsInvoker_, instance_, std::move(contact));
++    }
++    jsi::Value openExistingContact(jsi::Runtime &rt, jsi::Object contact) override {
++      static_assert(
++          bridging::getParameterCount(&T::openExistingContact) == 2,
++          "Expected openExistingContact(...) to have 2 parameters");
++
++      return bridging::callFromJs<jsi::Value>(
++          rt, &T::openExistingContact, jsInvoker_, instance_, std::move(contact));
++    }
++    jsi::Value viewExistingContact(jsi::Runtime &rt, jsi::Object contact) override {
++      static_assert(
++          bridging::getParameterCount(&T::viewExistingContact) == 2,
++          "Expected viewExistingContact(...) to have 2 parameters");
++
++      return bridging::callFromJs<jsi::Value>(
++          rt, &T::viewExistingContact, jsInvoker_, instance_, std::move(contact));
++    }
++    jsi::Value editExistingContact(jsi::Runtime &rt, jsi::Object contact) override {
++      static_assert(
++          bridging::getParameterCount(&T::editExistingContact) == 2,
++          "Expected editExistingContact(...) to have 2 parameters");
++
++      return bridging::callFromJs<jsi::Value>(
++          rt, &T::editExistingContact, jsInvoker_, instance_, std::move(contact));
++    }
++    jsi::Value updateContact(jsi::Runtime &rt, jsi::Object contact) override {
++      static_assert(
++          bridging::getParameterCount(&T::updateContact) == 2,
++          "Expected updateContact(...) to have 2 parameters");
++
++      return bridging::callFromJs<jsi::Value>(
++          rt, &T::updateContact, jsInvoker_, instance_, std::move(contact));
++    }
++    jsi::Value deleteContact(jsi::Runtime &rt, jsi::Object contact) override {
++      static_assert(
++          bridging::getParameterCount(&T::deleteContact) == 2,
++          "Expected deleteContact(...) to have 2 parameters");
++
++      return bridging::callFromJs<jsi::Value>(
++          rt, &T::deleteContact, jsInvoker_, instance_, std::move(contact));
++    }
++    jsi::Value getContactsMatchingString(jsi::Runtime &rt, jsi::String str) override {
++      static_assert(
++          bridging::getParameterCount(&T::getContactsMatchingString) == 2,
++          "Expected getContactsMatchingString(...) to have 2 parameters");
++
++      return bridging::callFromJs<jsi::Value>(
++          rt, &T::getContactsMatchingString, jsInvoker_, instance_, std::move(str));
++    }
++    jsi::Value getContactsByPhoneNumber(jsi::Runtime &rt, jsi::String phoneNumber) override {
++      static_assert(
++          bridging::getParameterCount(&T::getContactsByPhoneNumber) == 2,
++          "Expected getContactsByPhoneNumber(...) to have 2 parameters");
++
++      return bridging::callFromJs<jsi::Value>(
++          rt, &T::getContactsByPhoneNumber, jsInvoker_, instance_, std::move(phoneNumber));
++    }
++    jsi::Value getContactsByEmailAddress(jsi::Runtime &rt, jsi::String emailAddress) override {
++      static_assert(
++          bridging::getParameterCount(&T::getContactsByEmailAddress) == 2,
++          "Expected getContactsByEmailAddress(...) to have 2 parameters");
++
++      return bridging::callFromJs<jsi::Value>(
++          rt, &T::getContactsByEmailAddress, jsInvoker_, instance_, std::move(emailAddress));
++    }
++    jsi::Value checkPermission(jsi::Runtime &rt) override {
++      static_assert(
++          bridging::getParameterCount(&T::checkPermission) == 1,
++          "Expected checkPermission(...) to have 1 parameters");
++
++      return bridging::callFromJs<jsi::Value>(
++          rt, &T::checkPermission, jsInvoker_, instance_);
++    }
++    jsi::Value requestPermission(jsi::Runtime &rt) override {
++      static_assert(
++          bridging::getParameterCount(&T::requestPermission) == 1,
++          "Expected requestPermission(...) to have 1 parameters");
++
++      return bridging::callFromJs<jsi::Value>(
++          rt, &T::requestPermission, jsInvoker_, instance_);
++    }
++    jsi::Value writePhotoToPath(jsi::Runtime &rt, jsi::String contactId, jsi::String file) override {
++      static_assert(
++          bridging::getParameterCount(&T::writePhotoToPath) == 3,
++          "Expected writePhotoToPath(...) to have 3 parameters");
++
++      return bridging::callFromJs<jsi::Value>(
++          rt, &T::writePhotoToPath, jsInvoker_, instance_, std::move(contactId), std::move(file));
++    }
++    void iosEnableNotesUsage(jsi::Runtime &rt, bool enabled) override {
++      static_assert(
++          bridging::getParameterCount(&T::iosEnableNotesUsage) == 2,
++          "Expected iosEnableNotesUsage(...) to have 2 parameters");
++
++      return bridging::callFromJs<void>(
++          rt, &T::iosEnableNotesUsage, jsInvoker_, instance_, std::move(enabled));
++    }
++    jsi::Value getGroups(jsi::Runtime &rt) override {
++      static_assert(
++          bridging::getParameterCount(&T::getGroups) == 1,
++          "Expected getGroups(...) to have 1 parameters");
++
++      return bridging::callFromJs<jsi::Value>(
++          rt, &T::getGroups, jsInvoker_, instance_);
++    }
++    jsi::Value getGroup(jsi::Runtime &rt, jsi::String identifier) override {
++      static_assert(
++          bridging::getParameterCount(&T::getGroup) == 2,
++          "Expected getGroup(...) to have 2 parameters");
++
++      return bridging::callFromJs<jsi::Value>(
++          rt, &T::getGroup, jsInvoker_, instance_, std::move(identifier));
++    }
++    jsi::Value deleteGroup(jsi::Runtime &rt, jsi::String identifier) override {
++      static_assert(
++          bridging::getParameterCount(&T::deleteGroup) == 2,
++          "Expected deleteGroup(...) to have 2 parameters");
++
++      return bridging::callFromJs<jsi::Value>(
++          rt, &T::deleteGroup, jsInvoker_, instance_, std::move(identifier));
++    }
++    jsi::Value updateGroup(jsi::Runtime &rt, jsi::String identifier, jsi::Object groupData) override {
++      static_assert(
++          bridging::getParameterCount(&T::updateGroup) == 3,
++          "Expected updateGroup(...) to have 3 parameters");
++
++      return bridging::callFromJs<jsi::Value>(
++          rt, &T::updateGroup, jsInvoker_, instance_, std::move(identifier), std::move(groupData));
++    }
++    jsi::Value addGroup(jsi::Runtime &rt, jsi::Object group) override {
++      static_assert(
++          bridging::getParameterCount(&T::addGroup) == 2,
++          "Expected addGroup(...) to have 2 parameters");
++
++      return bridging::callFromJs<jsi::Value>(
++          rt, &T::addGroup, jsInvoker_, instance_, std::move(group));
++    }
++    jsi::Value contactsInGroup(jsi::Runtime &rt, jsi::String identifier) override {
++      static_assert(
++          bridging::getParameterCount(&T::contactsInGroup) == 2,
++          "Expected contactsInGroup(...) to have 2 parameters");
++
++      return bridging::callFromJs<jsi::Value>(
++          rt, &T::contactsInGroup, jsInvoker_, instance_, std::move(identifier));
++    }
++    jsi::Value addContactsToGroup(jsi::Runtime &rt, jsi::String groupIdentifier, jsi::Array contactIdentifiers) override {
++      static_assert(
++          bridging::getParameterCount(&T::addContactsToGroup) == 3,
++          "Expected addContactsToGroup(...) to have 3 parameters");
++
++      return bridging::callFromJs<jsi::Value>(
++          rt, &T::addContactsToGroup, jsInvoker_, instance_, std::move(groupIdentifier), std::move(contactIdentifiers));
++    }
++    jsi::Value removeContactsFromGroup(jsi::Runtime &rt, jsi::String groupIdentifier, jsi::Array contactIdentifiers) override {
++      static_assert(
++          bridging::getParameterCount(&T::removeContactsFromGroup) == 3,
++          "Expected removeContactsFromGroup(...) to have 3 parameters");
++
++      return bridging::callFromJs<jsi::Value>(
++          rt, &T::removeContactsFromGroup, jsInvoker_, instance_, std::move(groupIdentifier), std::move(contactIdentifiers));
++    }
++
++  private:
++    friend class NativeContactsCxxSpec;
++    T *instance_;
++  };
++
++  Delegate delegate_;
++};
++
++} // namespace facebook::react
+diff --git a/node_modules/react-native-contacts/android/build/generated/source/codegen/jni/react/renderer/components/RNContactsSpec/ShadowNodes.cpp b/node_modules/react-native-contacts/android/build/generated/source/codegen/jni/react/renderer/components/RNContactsSpec/ShadowNodes.cpp
+new file mode 100644
+index 0000000..9ee431a
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/generated/source/codegen/jni/react/renderer/components/RNContactsSpec/ShadowNodes.cpp
+@@ -0,0 +1,17 @@
++
++/**
++ * This code was generated by [react-native-codegen](https://www.npmjs.com/package/react-native-codegen).
++ *
++ * Do not edit this file as changes may cause incorrect behavior and will be lost
++ * once the code is regenerated.
++ *
++ * @generated by codegen project: GenerateShadowNodeCpp.js
++ */
++
++#include <react/renderer/components/RNContactsSpec/ShadowNodes.h>
++
++namespace facebook::react {
++
++
++
++} // namespace facebook::react
+diff --git a/node_modules/react-native-contacts/android/build/generated/source/codegen/jni/react/renderer/components/RNContactsSpec/ShadowNodes.h b/node_modules/react-native-contacts/android/build/generated/source/codegen/jni/react/renderer/components/RNContactsSpec/ShadowNodes.h
+new file mode 100644
+index 0000000..a04609f
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/generated/source/codegen/jni/react/renderer/components/RNContactsSpec/ShadowNodes.h
+@@ -0,0 +1,23 @@
++
++/**
++ * This code was generated by [react-native-codegen](https://www.npmjs.com/package/react-native-codegen).
++ *
++ * Do not edit this file as changes may cause incorrect behavior and will be lost
++ * once the code is regenerated.
++ *
++ * @generated by codegen project: GenerateShadowNodeH.js
++ */
++
++#pragma once
++
++#include <react/renderer/components/RNContactsSpec/EventEmitters.h>
++#include <react/renderer/components/RNContactsSpec/Props.h>
++#include <react/renderer/components/RNContactsSpec/States.h>
++#include <react/renderer/components/view/ConcreteViewShadowNode.h>
++#include <jsi/jsi.h>
++
++namespace facebook::react {
++
++
++
++} // namespace facebook::react
+diff --git a/node_modules/react-native-contacts/android/build/generated/source/codegen/jni/react/renderer/components/RNContactsSpec/States.cpp b/node_modules/react-native-contacts/android/build/generated/source/codegen/jni/react/renderer/components/RNContactsSpec/States.cpp
+new file mode 100644
+index 0000000..7049842
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/generated/source/codegen/jni/react/renderer/components/RNContactsSpec/States.cpp
+@@ -0,0 +1,16 @@
++
++/**
++ * This code was generated by [react-native-codegen](https://www.npmjs.com/package/react-native-codegen).
++ *
++ * Do not edit this file as changes may cause incorrect behavior and will be lost
++ * once the code is regenerated.
++ *
++ * @generated by codegen project: GenerateStateCpp.js
++ */
++#include <react/renderer/components/RNContactsSpec/States.h>
++
++namespace facebook::react {
++
++
++
++} // namespace facebook::react
+diff --git a/node_modules/react-native-contacts/android/build/generated/source/codegen/jni/react/renderer/components/RNContactsSpec/States.h b/node_modules/react-native-contacts/android/build/generated/source/codegen/jni/react/renderer/components/RNContactsSpec/States.h
+new file mode 100644
+index 0000000..c011ed8
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/generated/source/codegen/jni/react/renderer/components/RNContactsSpec/States.h
+@@ -0,0 +1,19 @@
++/**
++ * This code was generated by [react-native-codegen](https://www.npmjs.com/package/react-native-codegen).
++ *
++ * Do not edit this file as changes may cause incorrect behavior and will be lost
++ * once the code is regenerated.
++ *
++ * @generated by codegen project: GenerateStateH.js
++ */
++#pragma once
++
++#ifdef ANDROID
++#include <folly/dynamic.h>
++#endif
++
++namespace facebook::react {
++
++
++
++} // namespace facebook::react
+\ No newline at end of file
+diff --git a/node_modules/react-native-contacts/android/build/generated/source/codegen/schema.json b/node_modules/react-native-contacts/android/build/generated/source/codegen/schema.json
+new file mode 100644
+index 0000000..26bd155
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/generated/source/codegen/schema.json
+@@ -0,0 +1 @@
++{"modules":{"NativeContacts":{"type":"NativeModule","aliasMap":{},"enumMap":{},"spec":{"eventEmitters":[],"methods":[{"name":"getAll","optional":false,"typeAnnotation":{"type":"FunctionTypeAnnotation","returnTypeAnnotation":{"type":"PromiseTypeAnnotation","elementType":{"type":"VoidTypeAnnotation"}},"params":[]}},{"name":"getAllWithoutPhotos","optional":false,"typeAnnotation":{"type":"FunctionTypeAnnotation","returnTypeAnnotation":{"type":"PromiseTypeAnnotation","elementType":{"type":"ArrayTypeAnnotation","elementType":{"type":"AnyTypeAnnotation"}}},"params":[]}},{"name":"getContactById","optional":false,"typeAnnotation":{"type":"FunctionTypeAnnotation","returnTypeAnnotation":{"type":"PromiseTypeAnnotation","elementType":{"type":"VoidTypeAnnotation"}},"params":[{"name":"contactId","optional":false,"typeAnnotation":{"type":"StringTypeAnnotation"}}]}},{"name":"getCount","optional":false,"typeAnnotation":{"type":"FunctionTypeAnnotation","returnTypeAnnotation":{"type":"PromiseTypeAnnotation","elementType":{"type":"NumberTypeAnnotation"}},"params":[]}},{"name":"getPhotoForId","optional":false,"typeAnnotation":{"type":"FunctionTypeAnnotation","returnTypeAnnotation":{"type":"PromiseTypeAnnotation","elementType":{"type":"StringTypeAnnotation"}},"params":[{"name":"contactId","optional":false,"typeAnnotation":{"type":"StringTypeAnnotation"}}]}},{"name":"addContact","optional":false,"typeAnnotation":{"type":"FunctionTypeAnnotation","returnTypeAnnotation":{"type":"PromiseTypeAnnotation","elementType":{"type":"VoidTypeAnnotation"}},"params":[{"name":"contact","optional":false,"typeAnnotation":{"type":"GenericObjectTypeAnnotation"}}]}},{"name":"openContactForm","optional":false,"typeAnnotation":{"type":"FunctionTypeAnnotation","returnTypeAnnotation":{"type":"PromiseTypeAnnotation","elementType":{"type":"VoidTypeAnnotation"}},"params":[{"name":"contact","optional":false,"typeAnnotation":{"type":"GenericObjectTypeAnnotation"}}]}},{"name":"openExistingContact","optional":false,"typeAnnotation":{"type":"FunctionTypeAnnotation","returnTypeAnnotation":{"type":"PromiseTypeAnnotation","elementType":{"type":"VoidTypeAnnotation"}},"params":[{"name":"contact","optional":false,"typeAnnotation":{"type":"GenericObjectTypeAnnotation"}}]}},{"name":"viewExistingContact","optional":false,"typeAnnotation":{"type":"FunctionTypeAnnotation","returnTypeAnnotation":{"type":"PromiseTypeAnnotation","elementType":{"type":"VoidTypeAnnotation"}},"params":[{"name":"contact","optional":false,"typeAnnotation":{"type":"ObjectTypeAnnotation","properties":[{"name":"recordID","optional":false,"typeAnnotation":{"type":"StringTypeAnnotation"}}]}}]}},{"name":"editExistingContact","optional":false,"typeAnnotation":{"type":"FunctionTypeAnnotation","returnTypeAnnotation":{"type":"PromiseTypeAnnotation","elementType":{"type":"VoidTypeAnnotation"}},"params":[{"name":"contact","optional":false,"typeAnnotation":{"type":"GenericObjectTypeAnnotation"}}]}},{"name":"updateContact","optional":false,"typeAnnotation":{"type":"FunctionTypeAnnotation","returnTypeAnnotation":{"type":"PromiseTypeAnnotation","elementType":{"type":"VoidTypeAnnotation"}},"params":[{"name":"contact","optional":false,"typeAnnotation":{"type":"GenericObjectTypeAnnotation"}}]}},{"name":"deleteContact","optional":false,"typeAnnotation":{"type":"FunctionTypeAnnotation","returnTypeAnnotation":{"type":"PromiseTypeAnnotation","elementType":{"type":"VoidTypeAnnotation"}},"params":[{"name":"contact","optional":false,"typeAnnotation":{"type":"GenericObjectTypeAnnotation"}}]}},{"name":"getContactsMatchingString","optional":false,"typeAnnotation":{"type":"FunctionTypeAnnotation","returnTypeAnnotation":{"type":"PromiseTypeAnnotation","elementType":{"type":"ArrayTypeAnnotation","elementType":{"type":"AnyTypeAnnotation"}}},"params":[{"name":"str","optional":false,"typeAnnotation":{"type":"StringTypeAnnotation"}}]}},{"name":"getContactsByPhoneNumber","optional":false,"typeAnnotation":{"type":"FunctionTypeAnnotation","returnTypeAnnotation":{"type":"PromiseTypeAnnotation","elementType":{"type":"ArrayTypeAnnotation","elementType":{"type":"AnyTypeAnnotation"}}},"params":[{"name":"phoneNumber","optional":false,"typeAnnotation":{"type":"StringTypeAnnotation"}}]}},{"name":"getContactsByEmailAddress","optional":false,"typeAnnotation":{"type":"FunctionTypeAnnotation","returnTypeAnnotation":{"type":"PromiseTypeAnnotation","elementType":{"type":"ArrayTypeAnnotation","elementType":{"type":"AnyTypeAnnotation"}}},"params":[{"name":"emailAddress","optional":false,"typeAnnotation":{"type":"StringTypeAnnotation"}}]}},{"name":"checkPermission","optional":false,"typeAnnotation":{"type":"FunctionTypeAnnotation","returnTypeAnnotation":{"type":"PromiseTypeAnnotation","elementType":{"type":"VoidTypeAnnotation"}},"params":[]}},{"name":"requestPermission","optional":false,"typeAnnotation":{"type":"FunctionTypeAnnotation","returnTypeAnnotation":{"type":"PromiseTypeAnnotation","elementType":{"type":"VoidTypeAnnotation"}},"params":[]}},{"name":"writePhotoToPath","optional":false,"typeAnnotation":{"type":"FunctionTypeAnnotation","returnTypeAnnotation":{"type":"PromiseTypeAnnotation","elementType":{"type":"BooleanTypeAnnotation"}},"params":[{"name":"contactId","optional":false,"typeAnnotation":{"type":"StringTypeAnnotation"}},{"name":"file","optional":false,"typeAnnotation":{"type":"StringTypeAnnotation"}}]}},{"name":"iosEnableNotesUsage","optional":false,"typeAnnotation":{"type":"FunctionTypeAnnotation","returnTypeAnnotation":{"type":"VoidTypeAnnotation"},"params":[{"name":"enabled","optional":false,"typeAnnotation":{"type":"BooleanTypeAnnotation"}}]}},{"name":"getGroups","optional":false,"typeAnnotation":{"type":"FunctionTypeAnnotation","returnTypeAnnotation":{"type":"PromiseTypeAnnotation","elementType":{"type":"ArrayTypeAnnotation","elementType":{"type":"AnyTypeAnnotation"}}},"params":[]}},{"name":"getGroup","optional":false,"typeAnnotation":{"type":"FunctionTypeAnnotation","returnTypeAnnotation":{"type":"PromiseTypeAnnotation","elementType":{"type":"VoidTypeAnnotation"}},"params":[{"name":"identifier","optional":false,"typeAnnotation":{"type":"StringTypeAnnotation"}}]}},{"name":"deleteGroup","optional":false,"typeAnnotation":{"type":"FunctionTypeAnnotation","returnTypeAnnotation":{"type":"PromiseTypeAnnotation","elementType":{"type":"BooleanTypeAnnotation"}},"params":[{"name":"identifier","optional":false,"typeAnnotation":{"type":"StringTypeAnnotation"}}]}},{"name":"updateGroup","optional":false,"typeAnnotation":{"type":"FunctionTypeAnnotation","returnTypeAnnotation":{"type":"PromiseTypeAnnotation","elementType":{"type":"VoidTypeAnnotation"}},"params":[{"name":"identifier","optional":false,"typeAnnotation":{"type":"StringTypeAnnotation"}},{"name":"groupData","optional":false,"typeAnnotation":{"type":"GenericObjectTypeAnnotation"}}]}},{"name":"addGroup","optional":false,"typeAnnotation":{"type":"FunctionTypeAnnotation","returnTypeAnnotation":{"type":"PromiseTypeAnnotation","elementType":{"type":"VoidTypeAnnotation"}},"params":[{"name":"group","optional":false,"typeAnnotation":{"type":"GenericObjectTypeAnnotation"}}]}},{"name":"contactsInGroup","optional":false,"typeAnnotation":{"type":"FunctionTypeAnnotation","returnTypeAnnotation":{"type":"PromiseTypeAnnotation","elementType":{"type":"ArrayTypeAnnotation","elementType":{"type":"AnyTypeAnnotation"}}},"params":[{"name":"identifier","optional":false,"typeAnnotation":{"type":"StringTypeAnnotation"}}]}},{"name":"addContactsToGroup","optional":false,"typeAnnotation":{"type":"FunctionTypeAnnotation","returnTypeAnnotation":{"type":"PromiseTypeAnnotation","elementType":{"type":"BooleanTypeAnnotation"}},"params":[{"name":"groupIdentifier","optional":false,"typeAnnotation":{"type":"StringTypeAnnotation"}},{"name":"contactIdentifiers","optional":false,"typeAnnotation":{"type":"ArrayTypeAnnotation","elementType":{"type":"StringTypeAnnotation"}}}]}},{"name":"removeContactsFromGroup","optional":false,"typeAnnotation":{"type":"FunctionTypeAnnotation","returnTypeAnnotation":{"type":"PromiseTypeAnnotation","elementType":{"type":"BooleanTypeAnnotation"}},"params":[{"name":"groupIdentifier","optional":false,"typeAnnotation":{"type":"StringTypeAnnotation"}},{"name":"contactIdentifiers","optional":false,"typeAnnotation":{"type":"ArrayTypeAnnotation","elementType":{"type":"StringTypeAnnotation"}}}]}}]},"moduleName":"RCTContacts"}}}
+\ No newline at end of file
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/AndroidManifest.xml b/node_modules/react-native-contacts/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/AndroidManifest.xml
+new file mode 100644
+index 0000000..ef748a9
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/AndroidManifest.xml
+@@ -0,0 +1,7 @@
++<?xml version="1.0" encoding="utf-8"?>
++<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++    package="com.rt2zz.reactnativecontacts" >
++
++    <uses-sdk android:minSdkVersion="24" />
++
++</manifest>
+\ No newline at end of file
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/output-metadata.json b/node_modules/react-native-contacts/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/output-metadata.json
+new file mode 100644
+index 0000000..91efb43
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/output-metadata.json
+@@ -0,0 +1,18 @@
++{
++  "version": 3,
++  "artifactType": {
++    "type": "AAPT_FRIENDLY_MERGED_MANIFESTS",
++    "kind": "Directory"
++  },
++  "applicationId": "com.rt2zz.reactnativecontacts",
++  "variantName": "debug",
++  "elements": [
++    {
++      "type": "SINGLE",
++      "filters": [],
++      "attributes": [],
++      "outputFile": "AndroidManifest.xml"
++    }
++  ],
++  "elementType": "File"
++}
+\ No newline at end of file
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/aar_metadata/debug/writeDebugAarMetadata/aar-metadata.properties b/node_modules/react-native-contacts/android/build/intermediates/aar_metadata/debug/writeDebugAarMetadata/aar-metadata.properties
+new file mode 100644
+index 0000000..1211b1e
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/intermediates/aar_metadata/debug/writeDebugAarMetadata/aar-metadata.properties
+@@ -0,0 +1,6 @@
++aarFormatVersion=1.0
++aarMetadataVersion=1.0
++minCompileSdk=1
++minCompileSdkExtension=0
++minAndroidGradlePluginVersion=1.0.0
++coreLibraryDesugaringEnabled=false
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/annotation_processor_list/debug/javaPreCompileDebug/annotationProcessors.json b/node_modules/react-native-contacts/android/build/intermediates/annotation_processor_list/debug/javaPreCompileDebug/annotationProcessors.json
+new file mode 100644
+index 0000000..9e26dfe
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/intermediates/annotation_processor_list/debug/javaPreCompileDebug/annotationProcessors.json
+@@ -0,0 +1 @@
++{}
+\ No newline at end of file
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/compile_library_classes_jar/debug/bundleLibCompileToJarDebug/classes.jar b/node_modules/react-native-contacts/android/build/intermediates/compile_library_classes_jar/debug/bundleLibCompileToJarDebug/classes.jar
+new file mode 100644
+index 0000000..2076c21
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/compile_library_classes_jar/debug/bundleLibCompileToJarDebug/classes.jar differ
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/compile_r_class_jar/debug/generateDebugRFile/R.jar b/node_modules/react-native-contacts/android/build/intermediates/compile_r_class_jar/debug/generateDebugRFile/R.jar
+new file mode 100644
+index 0000000..75ef569
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/compile_r_class_jar/debug/generateDebugRFile/R.jar differ
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/compile_symbol_list/debug/generateDebugRFile/R.txt b/node_modules/react-native-contacts/android/build/intermediates/compile_symbol_list/debug/generateDebugRFile/R.txt
+new file mode 100644
+index 0000000..e69de29
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/incremental/debug/packageDebugResources/compile-file-map.properties b/node_modules/react-native-contacts/android/build/intermediates/incremental/debug/packageDebugResources/compile-file-map.properties
+new file mode 100644
+index 0000000..0fa9c31
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/intermediates/incremental/debug/packageDebugResources/compile-file-map.properties
+@@ -0,0 +1 @@
++#Tue May 13 07:42:08 IST 2025
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/incremental/debug/packageDebugResources/merger.xml b/node_modules/react-native-contacts/android/build/intermediates/incremental/debug/packageDebugResources/merger.xml
+new file mode 100644
+index 0000000..f73fce0
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/intermediates/incremental/debug/packageDebugResources/merger.xml
+@@ -0,0 +1,2 @@
++<?xml version="1.0" encoding="utf-8"?>
++<merger version="3"><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/usha/Documents/CuriousIntern/InternalProject/quickchaat-frontend/node_modules/react-native-contacts/android/src/main/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main" generated-set="main$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/usha/Documents/CuriousIntern/InternalProject/quickchaat-frontend/node_modules/react-native-contacts/android/src/main/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="debug$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/usha/Documents/CuriousIntern/InternalProject/quickchaat-frontend/node_modules/react-native-contacts/android/src/debug/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="debug" generated-set="debug$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/usha/Documents/CuriousIntern/InternalProject/quickchaat-frontend/node_modules/react-native-contacts/android/src/debug/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="generated$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/usha/Documents/CuriousIntern/InternalProject/quickchaat-frontend/node_modules/react-native-contacts/android/build/generated/res/resValues/debug"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="generated" generated-set="generated$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/usha/Documents/CuriousIntern/InternalProject/quickchaat-frontend/node_modules/react-native-contacts/android/build/generated/res/resValues/debug"/></dataSet><mergedItems/></merger>
+\ No newline at end of file
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml b/node_modules/react-native-contacts/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml
+new file mode 100644
+index 0000000..1747e05
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml
+@@ -0,0 +1,2 @@
++<?xml version="1.0" encoding="utf-8"?>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/usha/Documents/CuriousIntern/InternalProject/quickchaat-frontend/node_modules/react-native-contacts/android/src/main/jniLibs"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/usha/Documents/CuriousIntern/InternalProject/quickchaat-frontend/node_modules/react-native-contacts/android/src/debug/jniLibs"/></dataSet></merger>
+\ No newline at end of file
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/incremental/mergeDebugShaders/merger.xml b/node_modules/react-native-contacts/android/build/intermediates/incremental/mergeDebugShaders/merger.xml
+new file mode 100644
+index 0000000..f3ec657
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/intermediates/incremental/mergeDebugShaders/merger.xml
+@@ -0,0 +1,2 @@
++<?xml version="1.0" encoding="utf-8"?>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/usha/Documents/CuriousIntern/InternalProject/quickchaat-frontend/node_modules/react-native-contacts/android/src/main/shaders"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/usha/Documents/CuriousIntern/InternalProject/quickchaat-frontend/node_modules/react-native-contacts/android/src/debug/shaders"/></dataSet></merger>
+\ No newline at end of file
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/incremental/packageDebugAssets/merger.xml b/node_modules/react-native-contacts/android/build/intermediates/incremental/packageDebugAssets/merger.xml
+new file mode 100644
+index 0000000..f5e3338
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/intermediates/incremental/packageDebugAssets/merger.xml
+@@ -0,0 +1,2 @@
++<?xml version="1.0" encoding="utf-8"?>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/usha/Documents/CuriousIntern/InternalProject/quickchaat-frontend/node_modules/react-native-contacts/android/src/main/assets"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/usha/Documents/CuriousIntern/InternalProject/quickchaat-frontend/node_modules/react-native-contacts/android/src/debug/assets"/></dataSet><dataSet config="generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/usha/Documents/CuriousIntern/InternalProject/quickchaat-frontend/node_modules/react-native-contacts/android/build/intermediates/shader_assets/debug/compileDebugShaders/out"/></dataSet></merger>
+\ No newline at end of file
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/BuildConfig.class b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/BuildConfig.class
+new file mode 100644
+index 0000000..5a1628b
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/BuildConfig.class differ
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsManager.class b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsManager.class
+new file mode 100644
+index 0000000..0db26f8
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsManager.class differ
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$1.class b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$1.class
+new file mode 100644
+index 0000000..39cd4ef
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$1.class differ
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$2.class b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$2.class
+new file mode 100644
+index 0000000..9cf8cd2
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$2.class differ
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$3.class b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$3.class
+new file mode 100644
+index 0000000..ee971b5
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$3.class differ
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$Contact$Birthday.class b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$Contact$Birthday.class
+new file mode 100644
+index 0000000..2d16eaf
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$Contact$Birthday.class differ
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$Contact$Item.class b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$Contact$Item.class
+new file mode 100644
+index 0000000..1a1960b
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$Contact$Item.class differ
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$Contact$PostalAddressItem.class b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$Contact$PostalAddressItem.class
+new file mode 100644
+index 0000000..ccb0214
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$Contact$PostalAddressItem.class differ
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$Contact.class b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$Contact.class
+new file mode 100644
+index 0000000..8246145
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider$Contact.class differ
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider.class b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider.class
+new file mode 100644
+index 0000000..e51bad6
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ContactsProvider.class differ
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/NativeContactsSpec.class b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/NativeContactsSpec.class
+new file mode 100644
+index 0000000..58ca867
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/NativeContactsSpec.class differ
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ReactNativeContacts.class b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ReactNativeContacts.class
+new file mode 100644
+index 0000000..6b91812
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/ReactNativeContacts.class differ
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/impl/ContactsManagerImpl$1.class b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/impl/ContactsManagerImpl$1.class
+new file mode 100644
+index 0000000..1183d4e
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/impl/ContactsManagerImpl$1.class differ
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/impl/ContactsManagerImpl.class b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/impl/ContactsManagerImpl.class
+new file mode 100644
+index 0000000..e16e623
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/rt2zz/reactnativecontacts/impl/ContactsManagerImpl.class differ
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/local_only_symbol_list/debug/parseDebugLocalResources/R-def.txt b/node_modules/react-native-contacts/android/build/intermediates/local_only_symbol_list/debug/parseDebugLocalResources/R-def.txt
+new file mode 100644
+index 0000000..78ac5b8
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/intermediates/local_only_symbol_list/debug/parseDebugLocalResources/R-def.txt
+@@ -0,0 +1,2 @@
++R_DEF: Internal format may change without notice
++local
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/manifest_merge_blame_file/debug/processDebugManifest/manifest-merger-blame-debug-report.txt b/node_modules/react-native-contacts/android/build/intermediates/manifest_merge_blame_file/debug/processDebugManifest/manifest-merger-blame-debug-report.txt
+new file mode 100644
+index 0000000..640dfd7
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/intermediates/manifest_merge_blame_file/debug/processDebugManifest/manifest-merger-blame-debug-report.txt
+@@ -0,0 +1,7 @@
++1<?xml version="1.0" encoding="utf-8"?>
++2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++3    package="com.rt2zz.reactnativecontacts" >
++4
++5    <uses-sdk android:minSdkVersion="24" />
++6
++7</manifest>
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml b/node_modules/react-native-contacts/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml
+new file mode 100644
+index 0000000..ef748a9
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml
+@@ -0,0 +1,7 @@
++<?xml version="1.0" encoding="utf-8"?>
++<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++    package="com.rt2zz.reactnativecontacts" >
++
++    <uses-sdk android:minSdkVersion="24" />
++
++</manifest>
+\ No newline at end of file
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/navigation_json/debug/extractDeepLinksDebug/navigation.json b/node_modules/react-native-contacts/android/build/intermediates/navigation_json/debug/extractDeepLinksDebug/navigation.json
+new file mode 100644
+index 0000000..0637a08
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/intermediates/navigation_json/debug/extractDeepLinksDebug/navigation.json
+@@ -0,0 +1 @@
++[]
+\ No newline at end of file
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/nested_resources_validation_report/debug/generateDebugResources/nestedResourcesValidationReport.txt b/node_modules/react-native-contacts/android/build/intermediates/nested_resources_validation_report/debug/generateDebugResources/nestedResourcesValidationReport.txt
+new file mode 100644
+index 0000000..08f4ebe
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/intermediates/nested_resources_validation_report/debug/generateDebugResources/nestedResourcesValidationReport.txt
+@@ -0,0 +1 @@
++0 Warning/Error
+\ No newline at end of file
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/rt2zz/reactnativecontacts/BuildConfig.class b/node_modules/react-native-contacts/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/rt2zz/reactnativecontacts/BuildConfig.class
+new file mode 100644
+index 0000000..5a1628b
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/rt2zz/reactnativecontacts/BuildConfig.class differ
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/rt2zz/reactnativecontacts/ContactsManager.class b/node_modules/react-native-contacts/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/rt2zz/reactnativecontacts/ContactsManager.class
+new file mode 100644
+index 0000000..0db26f8
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/rt2zz/reactnativecontacts/ContactsManager.class differ
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/rt2zz/reactnativecontacts/ContactsProvider$1.class b/node_modules/react-native-contacts/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/rt2zz/reactnativecontacts/ContactsProvider$1.class
+new file mode 100644
+index 0000000..39cd4ef
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/rt2zz/reactnativecontacts/ContactsProvider$1.class differ
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/rt2zz/reactnativecontacts/ContactsProvider$2.class b/node_modules/react-native-contacts/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/rt2zz/reactnativecontacts/ContactsProvider$2.class
+new file mode 100644
+index 0000000..9cf8cd2
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/rt2zz/reactnativecontacts/ContactsProvider$2.class differ
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/rt2zz/reactnativecontacts/ContactsProvider$3.class b/node_modules/react-native-contacts/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/rt2zz/reactnativecontacts/ContactsProvider$3.class
+new file mode 100644
+index 0000000..ee971b5
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/rt2zz/reactnativecontacts/ContactsProvider$3.class differ
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/rt2zz/reactnativecontacts/ContactsProvider$Contact$Birthday.class b/node_modules/react-native-contacts/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/rt2zz/reactnativecontacts/ContactsProvider$Contact$Birthday.class
+new file mode 100644
+index 0000000..2d16eaf
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/rt2zz/reactnativecontacts/ContactsProvider$Contact$Birthday.class differ
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/rt2zz/reactnativecontacts/ContactsProvider$Contact$Item.class b/node_modules/react-native-contacts/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/rt2zz/reactnativecontacts/ContactsProvider$Contact$Item.class
+new file mode 100644
+index 0000000..1a1960b
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/rt2zz/reactnativecontacts/ContactsProvider$Contact$Item.class differ
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/rt2zz/reactnativecontacts/ContactsProvider$Contact$PostalAddressItem.class b/node_modules/react-native-contacts/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/rt2zz/reactnativecontacts/ContactsProvider$Contact$PostalAddressItem.class
+new file mode 100644
+index 0000000..ccb0214
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/rt2zz/reactnativecontacts/ContactsProvider$Contact$PostalAddressItem.class differ
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/rt2zz/reactnativecontacts/ContactsProvider$Contact.class b/node_modules/react-native-contacts/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/rt2zz/reactnativecontacts/ContactsProvider$Contact.class
+new file mode 100644
+index 0000000..8246145
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/rt2zz/reactnativecontacts/ContactsProvider$Contact.class differ
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/rt2zz/reactnativecontacts/ContactsProvider.class b/node_modules/react-native-contacts/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/rt2zz/reactnativecontacts/ContactsProvider.class
+new file mode 100644
+index 0000000..e51bad6
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/rt2zz/reactnativecontacts/ContactsProvider.class differ
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/rt2zz/reactnativecontacts/NativeContactsSpec.class b/node_modules/react-native-contacts/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/rt2zz/reactnativecontacts/NativeContactsSpec.class
+new file mode 100644
+index 0000000..58ca867
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/rt2zz/reactnativecontacts/NativeContactsSpec.class differ
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/rt2zz/reactnativecontacts/ReactNativeContacts.class b/node_modules/react-native-contacts/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/rt2zz/reactnativecontacts/ReactNativeContacts.class
+new file mode 100644
+index 0000000..6b91812
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/rt2zz/reactnativecontacts/ReactNativeContacts.class differ
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/rt2zz/reactnativecontacts/impl/ContactsManagerImpl$1.class b/node_modules/react-native-contacts/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/rt2zz/reactnativecontacts/impl/ContactsManagerImpl$1.class
+new file mode 100644
+index 0000000..1183d4e
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/rt2zz/reactnativecontacts/impl/ContactsManagerImpl$1.class differ
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/rt2zz/reactnativecontacts/impl/ContactsManagerImpl.class b/node_modules/react-native-contacts/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/rt2zz/reactnativecontacts/impl/ContactsManagerImpl.class
+new file mode 100644
+index 0000000..e16e623
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/rt2zz/reactnativecontacts/impl/ContactsManagerImpl.class differ
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/runtime_library_classes_jar/debug/bundleLibRuntimeToJarDebug/classes.jar b/node_modules/react-native-contacts/android/build/intermediates/runtime_library_classes_jar/debug/bundleLibRuntimeToJarDebug/classes.jar
+new file mode 100644
+index 0000000..933296b
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/intermediates/runtime_library_classes_jar/debug/bundleLibRuntimeToJarDebug/classes.jar differ
+diff --git a/node_modules/react-native-contacts/android/build/intermediates/symbol_list_with_package_name/debug/generateDebugRFile/package-aware-r.txt b/node_modules/react-native-contacts/android/build/intermediates/symbol_list_with_package_name/debug/generateDebugRFile/package-aware-r.txt
+new file mode 100644
+index 0000000..a2297ba
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/intermediates/symbol_list_with_package_name/debug/generateDebugRFile/package-aware-r.txt
+@@ -0,0 +1 @@
++com.rt2zz.reactnativecontacts
+diff --git a/node_modules/react-native-contacts/android/build/outputs/logs/manifest-merger-debug-report.txt b/node_modules/react-native-contacts/android/build/outputs/logs/manifest-merger-debug-report.txt
+new file mode 100644
+index 0000000..b44b279
+--- /dev/null
++++ b/node_modules/react-native-contacts/android/build/outputs/logs/manifest-merger-debug-report.txt
+@@ -0,0 +1,17 @@
++-- Merging decision tree log ---
++manifest
++ADDED from /Users/usha/Documents/CuriousIntern/InternalProject/quickchaat-frontend/node_modules/react-native-contacts/android/src/main/AndroidManifest.xml:2:1-5:12
++INJECTED from /Users/usha/Documents/CuriousIntern/InternalProject/quickchaat-frontend/node_modules/react-native-contacts/android/src/main/AndroidManifest.xml:2:1-5:12
++	package
++		ADDED from /Users/usha/Documents/CuriousIntern/InternalProject/quickchaat-frontend/node_modules/react-native-contacts/android/src/main/AndroidManifest.xml:4:3-42
++		INJECTED from /Users/usha/Documents/CuriousIntern/InternalProject/quickchaat-frontend/node_modules/react-native-contacts/android/src/main/AndroidManifest.xml
++	xmlns:android
++		ADDED from /Users/usha/Documents/CuriousIntern/InternalProject/quickchaat-frontend/node_modules/react-native-contacts/android/src/main/AndroidManifest.xml:3:3-61
++uses-sdk
++INJECTED from /Users/usha/Documents/CuriousIntern/InternalProject/quickchaat-frontend/node_modules/react-native-contacts/android/src/main/AndroidManifest.xml reason: use-sdk injection requested
++INJECTED from /Users/usha/Documents/CuriousIntern/InternalProject/quickchaat-frontend/node_modules/react-native-contacts/android/src/main/AndroidManifest.xml
++INJECTED from /Users/usha/Documents/CuriousIntern/InternalProject/quickchaat-frontend/node_modules/react-native-contacts/android/src/main/AndroidManifest.xml
++	android:targetSdkVersion
++		INJECTED from /Users/usha/Documents/CuriousIntern/InternalProject/quickchaat-frontend/node_modules/react-native-contacts/android/src/main/AndroidManifest.xml
++	android:minSdkVersion
++		INJECTED from /Users/usha/Documents/CuriousIntern/InternalProject/quickchaat-frontend/node_modules/react-native-contacts/android/src/main/AndroidManifest.xml
+diff --git a/node_modules/react-native-contacts/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin b/node_modules/react-native-contacts/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin
+new file mode 100644
+index 0000000..a1d0042
+Binary files /dev/null and b/node_modules/react-native-contacts/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin differ
+diff --git a/node_modules/react-native-contacts/android/src/newarch/com/rt2zz/reactnativecontacts/ContactsManager.java b/node_modules/react-native-contacts/android/src/newarch/com/rt2zz/reactnativecontacts/ContactsManager.java
+index 78f5e0e..5b925da 100644
+--- a/node_modules/react-native-contacts/android/src/newarch/com/rt2zz/reactnativecontacts/ContactsManager.java
++++ b/node_modules/react-native-contacts/android/src/newarch/com/rt2zz/reactnativecontacts/ContactsManager.java
+@@ -12,6 +12,7 @@ import com.facebook.react.bridge.Promise;
+ import com.facebook.react.bridge.ReactApplicationContext;
+ import com.facebook.react.bridge.ReadableMap;
+ import com.rt2zz.reactnativecontacts.impl.ContactsManagerImpl;
++import com.facebook.react.bridge.ReadableArray;
+ 
+ import java.io.ByteArrayOutputStream;
+ import java.io.IOException;
+@@ -111,6 +112,138 @@ public class ContactsManager extends NativeContactsSpec implements ActivityEvent
+         contactsManagerImpl.getContactById(contactId, promise);
+     }
+ 
++    @Override
++    public void removeContactsFromGroup(String contactId, ReadableArray groupIds, Promise promise) {
++        // try {
++        //     // Implement your logic to remove the contact from groups here
++        //     for (int i = 0; i < groupIds.size(); i++) {
++        //         String groupId = groupIds.getString(i);
++        //         // Logic to remove contact from the group
++        //     }
++        //     promise.resolve("Contact removed successfully");
++        // } catch (Exception e) {
++        //     promise.reject("ERROR", e.getMessage());
++        // }
++    }
++
++    @Override
++    public void addContactsToGroup(String contactId, ReadableArray groupIds, Promise promise) {
++        // Implement the logic to add a contact to a group using contactId and groupIds
++        try {
++            // Your logic to add contacts to group goes here
++            promise.resolve("Contact added to groups successfully");
++        } catch (Exception e) {
++            promise.reject("ERROR", e.getMessage());
++        }
++    }
++    @Override
++    public void contactsInGroup(String groupId, Promise promise) {
++        try {
++            // Add the logic to retrieve contacts in a group
++            // Example response (replace with your logic):
++            // List<Contact> contacts = getContactsInGroup(groupId);
++            // promise.resolve(contacts);  // or whatever data you want to return
++        } catch (Exception e) {
++            promise.reject("ERROR", e.getMessage());
++        }
++    }
++
++    @Override
++    public void addGroup(ReadableMap groupData, Promise promise) {
++        try {
++            // Add the logic to add a new group
++            // Example: create a new group based on the passed data
++                // String groupName = groupData.getString("groupName");
++                // // You can create your logic here to handle the group creation
++                // boolean groupCreated = createGroup(groupName);  // Replace with actual logic
++                
++                // if (groupCreated) {
++                //     promise.resolve("Group added successfully");
++                // } else {
++                //     promise.reject("ERROR", "Failed to add group");
++                // }
++        } catch (Exception e) {
++            promise.reject("ERROR", e.getMessage());
++        }
++    }
++
++    @Override
++    public void updateGroup(String groupId, ReadableMap groupData, Promise promise) {
++        try {
++            // Add the logic to add a new group
++            // Example: create a new group based on the passed data
++                // String groupName = groupData.getString("groupName");
++                // // You can create your logic here to handle the group creation
++                // boolean groupCreated = createGroup(groupName);  // Replace with actual logic
++                
++                // if (groupCreated) {
++                //     promise.resolve("Group added successfully");
++                // } else {
++                //     promise.reject("ERROR", "Failed to add group");
++                // }
++        } catch (Exception e) {
++            promise.reject("ERROR", e.getMessage());
++        }
++    }
++
++    @Override
++    public void deleteGroup(String groupId, Promise promise) {
++        try {
++            // Add the logic to add a new group
++            // Example: create a new group based on the passed data
++                // String groupName = groupData.getString("groupName");
++                // // You can create your logic here to handle the group creation
++                // boolean groupCreated = createGroup(groupName);  // Replace with actual logic
++                
++                // if (groupCreated) {
++                //     promise.resolve("Group added successfully");
++                // } else {
++                //     promise.reject("ERROR", "Failed to add group");
++                // }
++        } catch (Exception e) {
++            promise.reject("ERROR", e.getMessage());
++        }
++    }
++
++
++    @Override
++    public void getGroup(String groupId, Promise promise) {
++        try {
++            // Add the logic to add a new group
++            // Example: create a new group based on the passed data
++                // String groupName = groupData.getString("groupName");
++                // // You can create your logic here to handle the group creation
++                // boolean groupCreated = createGroup(groupName);  // Replace with actual logic
++                
++                // if (groupCreated) {
++                //     promise.resolve("Group added successfully");
++                // } else {
++                //     promise.reject("ERROR", "Failed to add group");
++                // }
++        } catch (Exception e) {
++            promise.reject("ERROR", e.getMessage());
++        }
++    }
++
++    @Override
++    public void getGroups( Promise promise) {
++        try {
++            // Add the logic to add a new group
++            // Example: create a new group based on the passed data
++                // String groupName = groupData.getString("groupName");
++                // // You can create your logic here to handle the group creation
++                // boolean groupCreated = createGroup(groupName);  // Replace with actual logic
++                
++                // if (groupCreated) {
++                //     promise.resolve("Group added successfully");
++                // } else {
++                //     promise.reject("ERROR", "Failed to add group");
++                // }
++        } catch (Exception e) {
++            promise.reject("ERROR", e.getMessage());
++        }
++    }
++
+     @Override
+     public void writePhotoToPath(final String contactId, final String file, final Promise promise) {
+         contactsManagerImpl.writePhotoToPath(contactId, file, promise);

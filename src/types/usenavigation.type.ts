@@ -24,11 +24,10 @@ export type ProfileScreenNavigationProp = NativeStackNavigationProp<
 
 type HomeStackParams = {
   hometabs: undefined;
+  contacts:undefined;
 };
-export type HomeTabsProps = NativeStackNavigationProp<
-  HomeStackParams,
-  'hometabs'
->;
+
+export type HomeTabsProps = NativeStackNavigationProp<HomeStackParams, 'hometabs','contacts'>;
 
 type InitialStackParams = {
   welcome: undefined;
