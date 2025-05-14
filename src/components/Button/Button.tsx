@@ -13,7 +13,7 @@ export const Button = ({
 
   const colors = useThemeColors();
   const styles = getStyles(colors);
-  const { t } = useTranslation(['auth','home']);
+  const { t } = useTranslation(['auth','home', 'start']);
   return (
     <TouchableOpacity style={styles.button} onPress={onPress}>
       <Text style={styles.text}>{t(`${title}`)}</Text>
