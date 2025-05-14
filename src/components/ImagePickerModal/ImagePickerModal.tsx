@@ -29,7 +29,7 @@ export function ImagePickerModal({
   showDeleteOption?: boolean;
 }) {
   const dispatch = useDispatch();
-  const {isVisible, imageUri, image} = useSelector(
+  const {isVisible} = useSelector(
     (state: RootState) => state.registration,
   );
   const colors = useThemeColors();
