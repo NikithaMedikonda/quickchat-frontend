@@ -58,7 +58,6 @@ describe('getContacts', () => {
   it('should throw error if fetch fails', async () => {
     (Contacts.getAll as jest.Mock).mockResolvedValue(mockContacts);
     (fetch as jest.Mock).mockRejectedValueOnce('Network failed');
-
     await expect(getContacts()).rejects.toThrow('Network failed');
   });
 });
