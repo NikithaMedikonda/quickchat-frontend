@@ -1,5 +1,13 @@
 import {useEffect, useState} from 'react';
-import {View, Text, Modal, TouchableOpacity, Image, Alert} from 'react-native';
+import {
+  View,
+  Text,
+  Modal,
+  TouchableOpacity,
+  Image,
+  Alert,
+  TouchableWithoutFeedback,
+} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useNavigation} from '@react-navigation/native';
 import {useTranslation} from 'react-i18next';
@@ -10,6 +18,7 @@ import {hide, show} from '../../store/slices/loadingSlice';
 import {
   InitialStackProps,
   NavigationProps,
+  ProfileScreenNavigationProp,
 } from '../../types/usenavigation.type';
 import {logout} from '../../store/slices/loginSlice';
 import {useDispatch} from 'react-redux';
@@ -32,6 +41,7 @@ export const ProfileMoreOptionsModal = ({
   const [phoneNumber, setPhoneNumber] = useState('');
   const [authToken, setAuthToken] = useState('');
   const navigation: NavigationProps = useNavigation();
+  const profileNavigation: ProfileScreenNavigationProp = useNavigation();
   const initialStackNavigation: InitialStackProps = useNavigation();
   const {t} = useTranslation('profile');
 
@@ -106,46 +116,49 @@ export const ProfileMoreOptionsModal = ({
   };
   const handleEditProfile = () => {
     onClose();
+    profileNavigation.navigate('editProfile');
   };
   return (
     <View>
       <Modal animationType="slide" transparent={true} visible={visible}>
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <View style={styles.textContainer}>
-              <TouchableOpacity
-                onPress={handleDeleteAccountConfirmation}
-                style={[styles.binOptionsView, styles.optionsView]}>
-                <Text style={styles.modalText}>Delete Account</Text>
-                <Image
-                  source={require('../../assets/bin.png')}
-                  style={styles.image}
-                  accessibilityHint="bin-image"
-                />
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={handleLogoutConfirmation}
-                style={[styles.logoutOptionsView, styles.optionsView]}>
-                <Text style={styles.modalText}>Logout</Text>
-                <Image
-                  source={require('../../assets/log-out.png')}
-                  style={styles.image}
-                  accessibilityHint="logout-image"
-                />
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={handleEditProfile}
-                style={[styles.editOptionsView, styles.optionsView]}>
-                <Text style={styles.modalText}>Edit Profile</Text>
-                <Image
-                  source={require('../../assets/edit.png')}
-                  style={styles.image}
-                  accessibilityHint="edit-image"
-                />
-              </TouchableOpacity>
+        <TouchableWithoutFeedback onPress={onClose}>
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <View style={styles.textContainer}>
+                <TouchableOpacity
+                  onPress={handleDeleteAccountConfirmation}
+                  style={[styles.binOptionsView, styles.optionsView]}>
+                  <Text style={styles.modalText}>Delete Account</Text>
+                  <Image
+                    source={require('../../assets/bin.png')}
+                    style={styles.image}
+                    accessibilityHint="bin-image"
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={handleLogoutConfirmation}
+                  style={[styles.logoutOptionsView, styles.optionsView]}>
+                  <Text style={styles.modalText}>Logout</Text>
+                  <Image
+                    source={require('../../assets/log-out.png')}
+                    style={styles.image}
+                    accessibilityHint="logout-image"
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={handleEditProfile}
+                  style={[styles.editOptionsView, styles.optionsView]}>
+                  <Text style={styles.modalText}>Edit Profile</Text>
+                  <Image
+                    source={require('../../assets/edit.png')}
+                    style={styles.image}
+                    accessibilityHint="edit-image"
+                  />
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
-        </View>
+        </TouchableWithoutFeedback>
       </Modal>
       {buttonTypes === 'Logout' && (
         <ConfirmModal
