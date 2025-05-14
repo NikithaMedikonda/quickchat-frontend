@@ -4,7 +4,7 @@ on:
   push:
     branches:
      - main
-     - token-verification
+     - functionality/logout-delete-user
  
 jobs:
   lint-and-test:
