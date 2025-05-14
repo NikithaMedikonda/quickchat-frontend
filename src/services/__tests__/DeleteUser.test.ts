@@ -6,7 +6,7 @@ global.fetch = jest.fn();
 const mockedFetch = fetch as jest.Mock;
 
 describe('registerUser', () => {
-  const phoneNumber = '9876543210';
+  const payload = {phoneNumber: '9876543210', authToken: '24234'};
 
   afterEach(() => {
     jest.clearAllMocks();
@@ -20,13 +20,16 @@ describe('registerUser', () => {
         .mockResolvedValue({message: 'Account deleted succesfully'}),
     });
 
-    const result = await deleteUser(phoneNumber);
+    const result = await deleteUser(payload);
 
     expect(mockedFetch).toHaveBeenCalledTimes(1);
     expect(mockedFetch).toHaveBeenCalledWith(`${API_URL}/api/deleteAccount`, {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(phoneNumber),
+      headers: {
+        'Content-Type': 'application/json',
+        'authorization': 'Bearer 24234',
+      },
+      body: JSON.stringify({phoneNumber:payload.phoneNumber}),
     });
 
     expect(result.status).toBe(200);
@@ -39,7 +42,7 @@ describe('registerUser', () => {
       json: jest.fn().mockResolvedValue({message: 'Invalid phone number'}),
     });
 
-    const result = await deleteUser(phoneNumber);
+    const result = await deleteUser(payload);
 
     expect(result.status).toBe(404);
     expect(result.data).toEqual({message: 'Invalid phone number'});
@@ -48,6 +51,6 @@ describe('registerUser', () => {
   it('should throw if fetch fails', async () => {
     mockedFetch.mockRejectedValueOnce(new Error('Network Error'));
 
-    await expect(deleteUser(phoneNumber)).rejects.toThrow('Network Error');
+    await expect(deleteUser(payload)).rejects.toThrow('Network Error');
   });
 });
