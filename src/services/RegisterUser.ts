@@ -16,6 +16,7 @@ export const registerUser = async (payload: {
     email: payload.email,
     password: payload.password,
   };
+  console.log(API_URL);
   const response = await fetch(`${API_URL}/api/users`, {
     method: 'POST',
     headers: {

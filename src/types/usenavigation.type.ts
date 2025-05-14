@@ -11,6 +11,16 @@ export type NavigationProps = NativeStackNavigationProp<
   'login'
 >;
 
+export type ProfileStackParamList = {
+  profileScreen: undefined;
+  editProfile: undefined;
+};
+
+export type ProfileScreenNavigationProp = NativeStackNavigationProp<
+  ProfileStackParamList,
+  'profileScreen'
+>;
+
 type HomeStackParams = {
   hometabs: undefined;
 };
