@@ -1,6 +1,5 @@
-import React, {useState} from 'react';
+import {useState} from 'react';
 import {Image, Text, TouchableOpacity, View} from 'react-native';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {phone} from 'phone';
 import PhoneInput from 'react-native-phone-input';
 import {useNavigation} from '@react-navigation/native';
@@ -8,22 +7,15 @@ import {Button} from '../../components/Button/Button';
 import {loginStyles} from './Login.styles';
 import {Placeholder} from '../../components/InputField/InputField';
 import {useThemeColors} from '../../constants/colors';
+import {NavigationProps} from '../../types/usenavigation.type';
 
-type RootStackParamList = {
-  register: undefined;
-};
-
-export type RegisterScreenNavigationProp = NativeStackNavigationProp<
-  RootStackParamList,
-  'register'
->;
 function Login() {
   const colors = useThemeColors();
   const styles = loginStyles(colors);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
 
-  const navigate = useNavigation<RegisterScreenNavigationProp>();
+  const navigate = useNavigation<NavigationProps>();
 
   return (
     <View style={styles.container}>
