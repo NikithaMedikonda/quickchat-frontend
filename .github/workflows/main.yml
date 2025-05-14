@@ -4,7 +4,6 @@ on:
   push:
     branches:
      - main
-     - edit-profile-pic-removal 
 
 jobs:
   lint-and-test:

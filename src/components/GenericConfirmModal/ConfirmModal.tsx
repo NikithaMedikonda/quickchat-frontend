@@ -1,4 +1,7 @@
 import React from 'react';
+
+import {useThemeColors} from '../../constants/colors';
+
 import {
   Modal,
   View,
@@ -6,6 +9,7 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
 } from 'react-native';
+
 import {confirmModalStyles} from './ConfirmModal.styles';
 import {useTranslation} from 'react-i18next';
 
@@ -24,11 +28,13 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
   onClose,
   onConfirm,
 }) => {
-  const styles = confirmModalStyles();
+  const colors = useThemeColors();
+  const styles = confirmModalStyles(colors);
   const {t} = useTranslation('profile');
   if (!visible) {
     return null;
   }
+
 
   return (
     <View>
