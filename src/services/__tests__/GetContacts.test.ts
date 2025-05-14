@@ -1,7 +1,7 @@
-import Contacts from 'react-native-contacts';
-import {getContacts} from '../GetContacts';
-import {API_URL} from '../../constants/api';
 import {Alert} from 'react-native';
+import Contacts from 'react-native-contacts';
+import {API_URL} from '../../constants/api';
+import {getContacts} from '../GetContacts';
 
 jest.mock('react-native-contacts', () => ({
   getAll: jest.fn(),
