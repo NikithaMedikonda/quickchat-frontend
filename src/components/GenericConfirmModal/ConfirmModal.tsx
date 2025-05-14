@@ -28,10 +28,6 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
   onClose,
   onConfirm,
 }) => {
-
-  const onCancel = () => {
-    setVisible(false);
-  };
   const colors = useThemeColors();
   const styles = confirmModalStyles(colors);
   const {t} = useTranslation('profile');
