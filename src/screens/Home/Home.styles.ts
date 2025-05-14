@@ -10,7 +10,7 @@ export const getStyles = (colors: Colors) =>
             height: height,
             width: width,
             backgroundColor: colors.background,
-            paddingTop: width * 1.05,
+            paddingTop: width * 0.75,
         },
         description: {
             color: colors.gray,
@@ -21,7 +21,7 @@ export const getStyles = (colors: Colors) =>
         innerContainer: {
             alignItems: 'flex-end',
             width: width * 0.90,
-            marginTop: height * 0.20,
+            paddingTop: height * 0.25,
             height: height * 0.90,
         },
         plusImage: {
