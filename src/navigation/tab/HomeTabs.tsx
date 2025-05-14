@@ -6,11 +6,13 @@ import { Unread } from '../../screens/Unread/Unread';
 import { useThemeColors } from '../../constants/colors';
 import { useTranslation } from 'react-i18next';
 import { HomeStacks } from '../stack/HomeStacks';
+import {Home} from '../../screens/Home/Home';
+import {ProfileStack} from '../stack/ProfileStacks';
 
 export const HomeTabs = () => {
   const Tab = createBottomTabNavigator();
   const colors = useThemeColors();
-  const { t } = useTranslation('home');
+  const {t} = useTranslation('home');
   return (
     <Tab.Navigator
       screenOptions={{
@@ -76,8 +78,8 @@ export const HomeTabs = () => {
         }}
       />
       <Tab.Screen
-        name="profile"
-        component={Profile}
+        name="profileStack"
+        component={ProfileStack}
         options={{
           // eslint-disable-next-line react/no-unstable-nested-components
           tabBarIcon: ({focused}) => (
@@ -97,14 +99,7 @@ export const HomeTabs = () => {
             </View>
           ),
           tabBarLabel: t('Profile'),
-          headerStyle: {
-            backgroundColor: colors.background,
-          },
-          headerTitleAlign: 'center',
-          headerTitle: t('Profile'),
-          headerTitleStyle: {
-            color: colors.white,
-          },
+          headerShown: false,
         }}
       />
     </Tab.Navigator>

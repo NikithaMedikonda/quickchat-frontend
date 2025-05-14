@@ -14,10 +14,22 @@ jest.mock('@react-navigation/native', () => ({
   }),
 }));
 
-
 describe('Home Screen Tests', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+  });
+  
+  it('renders the description', () => {
+    const { getByText } = render(<Home/>);
+    expect(getByText('You have no chats. Start Messaging!')).toBeTruthy();
+  });
+  
+  it('render the plus-image icon', () => {
+    render(< Home/>);
+        const image = screen.getByA11yHint('plus-image');
+        expect(image.props.source).toEqual({
+            testUri: '../../../src/assets/plus-icon.png',
+        });
   });
 
   it('sets the header options using useLayoutEffect', () => {

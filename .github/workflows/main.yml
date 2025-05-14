@@ -3,8 +3,8 @@ name: QuickChat-frontend CI/CD
 on:
   push:
     branches:
-     - access-contacts
-  
+     - main
+
 jobs:
   lint-and-test:
     uses: ./.github/workflows/lint-and-test.yml
