@@ -1,6 +1,8 @@
+
 import {Alert, Image, Text, TouchableOpacity, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {phone} from 'phone';
 import PhoneInput from 'react-native-phone-input';
 import {useDispatch, useSelector} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -19,6 +21,7 @@ import {hide, show} from '../../store/slices/loadingSlice';
 import {loginUser} from '../../services/LoginUser';
 import {HomeTabsProps} from '../../types/usenavigation.type';
 import {useThemeColors} from '../../constants/colors';
+
 import {loginStyles} from './Login.styles';
 
 type RootStackParamList = {
@@ -29,6 +32,7 @@ export type RegisterScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
   'register'
 >;
+
 
 function Login() {
   const homeNavigation = useNavigation<HomeTabsProps>();
@@ -94,7 +98,7 @@ function Login() {
     }
   }
 
-  const navigate = useNavigation<RegisterScreenNavigationProp>();
+  const navigate = useNavigation<NavigationProps>();
 
   return (
     <View style={styles.container}>

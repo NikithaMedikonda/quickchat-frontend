@@ -11,7 +11,27 @@ export type NavigationProps = NativeStackNavigationProp<
   'login'
 >;
 
+export type ProfileStackParamList = {
+  profileScreen: undefined;
+  editProfile: undefined;
+};
+
+export type ProfileScreenNavigationProp = NativeStackNavigationProp<
+  ProfileStackParamList,
+  'profileScreen',
+   'editProfile'
+>;
+
 type HomeStackParams = {
   hometabs: undefined;
+  contacts:undefined;
 };
-export type HomeTabsProps = NativeStackNavigationProp<HomeStackParams, 'hometabs'>;
+export type HomeTabsProps = NativeStackNavigationProp<HomeStackParams, 'hometabs','contacts'>;
+
+type InitialStackParams = {
+  welcome: undefined;
+};
+export type InitialStackProps = NativeStackNavigationProp<
+  InitialStackParams,
+  'welcome'
+>;

@@ -14,6 +14,23 @@ jest.mock('react-native-image-crop-picker', () => ({
   openPicker: jest.fn().mockResolvedValue({path: 'mocked/path.jpg'}),
 }));
 
+jest.mock('react-native-phone-input', () => {
+  const React = require('react');
+  const { TextInput } = require('react-native');
+  const MockPhoneInput = React.forwardRef((props: { value: any; onChangePhoneNumber: any; }, ref: any) => {
+    return (
+      <TextInput
+        ref={ref}
+        placeholder="Phone number"
+        value={props.value}
+        onChangeText={props.onChangePhoneNumber}
+        testID="mock-phone-input"
+      />
+    );
+  });
+  return MockPhoneInput;
+});
+
 jest.mock('react-native-splash-screen', () => ({
   show: jest.fn(),
   hide: jest.fn(),

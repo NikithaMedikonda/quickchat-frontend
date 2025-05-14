@@ -1,13 +1,13 @@
-import {View, Image, Text, TouchableOpacity} from 'react-native';
-import {useTranslation} from 'react-i18next';
-import {getStyles} from './Profile.styles';
-import {useThemeColors} from '../../constants/colors';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useEffect, useLayoutEffect, useState} from 'react';
+import {View, Image, Text, TouchableOpacity} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useTranslation} from 'react-i18next';
 import {useNavigation} from '@react-navigation/native';
+import {getStyles} from './Profile.styles';
 import {ProfileMoreOptionsModal} from '../../components/ProfileMoreOptionsModal/ProfileMoreOptionsModal';
+import {useThemeColors} from '../../constants/colors';
 
-interface User {
+export interface User {
   firstName: string;
   lastName: string;
   profilePicture: string | null;

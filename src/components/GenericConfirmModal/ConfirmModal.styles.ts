@@ -1,8 +1,8 @@
-
 import { StyleSheet } from 'react-native';
 import { Colors } from '../../constants/colors';
 
 export const confirmModalStyles = (colors:Colors) => {
+
 
   return StyleSheet.create({
     overlay: {

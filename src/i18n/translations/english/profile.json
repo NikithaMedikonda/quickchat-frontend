@@ -1,0 +1,13 @@
+{
+  "Are you sure want to logout from this device?": "Are you sure want to logout from this device?",
+  "Logout": "Logout",
+  "Cancel": "Cancel",
+  "Are you sure want to delete this account?": "Are you sure want to delete this account?",
+  "Delete": "Delete",
+  "Invalid Phone number": "Invalid Phone number",
+  "Invalid secret key": "Invalid secret key",
+  "Invalid token": "Invalid token",
+  "Authentication failed": "Authentication failed",
+  "Something went wrong while deleting": "Something went wrong while deleting",
+  "Something went wrong": "Something went wrong"
+}
