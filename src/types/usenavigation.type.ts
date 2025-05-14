@@ -18,7 +18,8 @@ export type ProfileStackParamList = {
 
 export type ProfileScreenNavigationProp = NativeStackNavigationProp<
   ProfileStackParamList,
-  'profileScreen'
+  'profileScreen',
+   'editProfile'
 >;
 
 type HomeStackParams = {
