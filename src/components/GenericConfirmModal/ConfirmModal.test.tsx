@@ -1,17 +1,16 @@
-import React from 'react';
 import {render, fireEvent} from '@testing-library/react-native';
 import {ConfirmModal} from './ConfirmModal';
 
 describe('ConfirmModal renders and behaves correctly', () => {
-  const mockSetVisible = jest.fn();
   const mockOnConfirm = jest.fn();
+  const mockOnClose = jest.fn();
 
   const defaultProps = {
     visible: true,
-    setVisible: mockSetVisible,
     message: 'Are you sure?',
     confirmText: 'Confirm',
     onConfirm: mockOnConfirm,
+    onClose: mockOnClose,
   };
 
   afterEach(() => {
@@ -28,7 +27,7 @@ describe('ConfirmModal renders and behaves correctly', () => {
   test('Should calls setVisible(false) when "Cancel" is pressed', () => {
     const {getByText} = render(<ConfirmModal {...defaultProps} />);
     fireEvent.press(getByText('Cancel'));
-    expect(mockSetVisible).toHaveBeenCalledWith(false);
+    expect(mockOnClose).toHaveBeenCalledTimes(1);
   });
 
   test('Should calls onConfirm when "Confirm" is pressed', () => {
