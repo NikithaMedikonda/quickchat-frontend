@@ -131,6 +131,7 @@ export const EditProfile = () => {
           <Image
             source={getProfileImageSource()}
             accessibilityRole="image"
+            accessibilityLabel="Profile Picture"
             style={styles.profileImage}
             resizeMode="contain"
           />
