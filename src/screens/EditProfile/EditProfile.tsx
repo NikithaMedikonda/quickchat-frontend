@@ -13,6 +13,7 @@ import {useNavigation} from '@react-navigation/native';
 import {useTranslation} from 'react-i18next';
 import {useSelector, useDispatch} from 'react-redux';
 import {RootState} from '../../store/store';
+import {DEFAULT_PROFILE_IMAGE} from '../../constants/defaultImage';
 import {useThemeColors} from '../../constants/colors';
 import {getStyles} from './EditProfile.styles';
 import {Placeholder} from '../../components/InputField/InputField';
@@ -110,9 +111,7 @@ export const EditProfile = () => {
           onPress={() => dispatch(setIsVisible(true))}
           accessibilityRole="button">
           <Image
-            source={
-              imageUrl ? {uri: imageUrl} : require('../../assets/image.png')
-            }
+            source={imageUrl ? {uri: imageUrl} : {uri: DEFAULT_PROFILE_IMAGE}}
             accessibilityRole="button"
             style={styles.profileImage}
             resizeMode="contain"
