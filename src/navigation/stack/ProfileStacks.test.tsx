@@ -1,4 +1,3 @@
-import React from 'react';
 import {render, fireEvent, waitFor} from '@testing-library/react-native';
 import {Provider} from 'react-redux';
 import {NavigationContainer} from '@react-navigation/native';
