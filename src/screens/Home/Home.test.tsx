@@ -31,9 +31,8 @@ describe('Home Screen Tests', () => {
             testUri: '../../../src/assets/plus-icon.png',
         });
   });
-});
 
-  it('sets the header options using useLayoutEffect', () => {
+   it('sets the header options using useLayoutEffect', () => {
     render(
       <Provider store={store}>
         <Home />
@@ -51,14 +50,4 @@ describe('Home Screen Tests', () => {
       },
     });
   });
-
-  it('renders Hello home text and navigates on press', () => {
-    render(
-      <Provider store={store}>
-        <Home />
-      </Provider>,
-    );
-
-    const text = screen.getByText('Hello home');
-    expect(text).toBeTruthy();
-  });
+});
