@@ -74,7 +74,7 @@ export const Registration = () => {
       newErrors.confirmPassword = 'Passwords do not match';
       isValid = false;
     }
-    if (!form.phoneNumber || form.phoneNumber.length !== 10) {
+    if (!form.phoneNumber ) {
       newErrors.phoneNumber = 'Invalid phone number';
       isValid = false;
     }
