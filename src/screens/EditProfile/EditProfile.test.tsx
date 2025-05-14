@@ -1,10 +1,11 @@
 import React from 'react';
 import {Alert} from 'react-native';
 import {render, fireEvent, waitFor} from '@testing-library/react-native';
-import { Platform, KeyboardAvoidingView } from 'react-native';
+import {Platform, KeyboardAvoidingView} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import * as redux from 'react-redux';
 import {Provider} from 'react-redux';
+import {DEFAULT_PROFILE_IMAGE} from '../../constants/defaultImage';
 import {EditProfile} from './EditProfile';
 import {store} from '../../store/store';
 
@@ -24,7 +25,7 @@ jest.mock('../../components/ImagePickerModal/ImagePickerModal', () => ({
   ImagePickerModal: () => <></>,
 }));
 
-const mockNavigation = { setOptions: jest.fn() };
+const mockNavigation = {setOptions: jest.fn()};
 jest.mock('@react-navigation/native', () => {
   const actualNav = jest.requireActual('@react-navigation/native');
   return {
@@ -82,7 +83,10 @@ describe('EditProfile Screen', () => {
     fireEvent.press(getByText('Save'));
 
     await waitFor(() =>
-      expect(Alert.alert).toHaveBeenCalledWith('Error', 'First name is required'),
+      expect(Alert.alert).toHaveBeenCalledWith(
+        'Error',
+        'First name is required',
+      ),
     );
   });
 
@@ -120,88 +124,167 @@ describe('EditProfile Screen', () => {
   });
 
   it('shows error if last name is empty on save', async () => {
-  const {getByPlaceholderText, getByText} = renderComponent();
+    const {getByPlaceholderText, getByText} = renderComponent();
 
-  fireEvent.changeText(getByPlaceholderText('Last Name'), '');
-  fireEvent.press(getByText('Save'));
+    fireEvent.changeText(getByPlaceholderText('Last Name'), '');
+    fireEvent.press(getByText('Save'));
 
-  await waitFor(() =>
-    expect(Alert.alert).toHaveBeenCalledWith('Error', 'Last name is required'),
-  );
-});
-
-it('allows saving when all inputs are valid', async () => {
-  const {getByPlaceholderText, getByText} = renderComponent();
-
-  fireEvent.changeText(getByPlaceholderText('First Name'), 'Jane');
-  fireEvent.changeText(getByPlaceholderText('Last Name'), 'Smith');
-  fireEvent.changeText(getByPlaceholderText('Email'), 'jane.smith@example.com');
-
-  fireEvent.press(getByText('Save'));
-
-  await waitFor(() => {
-    expect(Alert.alert).not.toHaveBeenCalled();
-
-  });
-});
-
-it('uses empty string defaults when user is undefined', () => {
-  (redux.useSelector as unknown as jest.Mock).mockImplementation(callback =>
-    callback({
-      registration: {imageUri: null},
-      login: {
-        user: undefined,
-      },
-    }),
-  );
-
-  const {getByPlaceholderText} = renderComponent();
-
-  expect(getByPlaceholderText('First Name').props.value).toBe('');
-  expect(getByPlaceholderText('Last Name').props.value).toBe('');
-  expect(getByPlaceholderText('Email').props.value).toBe('');
-});
-
-describe('KeyboardAvoidingView platform behavior', () => {
-  const originalPlatform = Platform.OS;
-
-  afterEach(() => {
-    Platform.OS = originalPlatform;
+    await waitFor(() =>
+      expect(Alert.alert).toHaveBeenCalledWith(
+        'Error',
+        'Last name is required',
+      ),
+    );
   });
 
-  it('sets correct behavior and offset for iOS', () => {
-    Platform.OS = 'ios';
+  it('allows saving when all inputs are valid', async () => {
+    const {getByPlaceholderText, getByText} = renderComponent();
 
-    const {UNSAFE_getByType} = render(
-      <Provider store={store}>
-        <NavigationContainer>
-          <EditProfile />
-        </NavigationContainer>
-      </Provider>,
+    fireEvent.changeText(getByPlaceholderText('First Name'), 'Jane');
+    fireEvent.changeText(getByPlaceholderText('Last Name'), 'Smith');
+    fireEvent.changeText(
+      getByPlaceholderText('Email'),
+      'jane.smith@example.com',
     );
 
-    const keyboardSafeArea = UNSAFE_getByType(KeyboardAvoidingView);
-    expect(keyboardSafeArea.props.behavior).toBe('padding');
-    expect(keyboardSafeArea.props.keyboardVerticalOffset).toBe(60);
+    fireEvent.press(getByText('Save'));
+
+    await waitFor(() => {
+      expect(Alert.alert).not.toHaveBeenCalled();
+    });
   });
 
-  it('sets correct behavior and offset for Android', () => {
-    Platform.OS = 'android';
-
-    const {UNSAFE_getByType} = render(
-      <Provider store={store}>
-        <NavigationContainer>
-          <EditProfile />
-        </NavigationContainer>
-      </Provider>,
+  it('uses empty string defaults when user is undefined', () => {
+    (redux.useSelector as unknown as jest.Mock).mockImplementation(callback =>
+      callback({
+        registration: {imageUri: null},
+        login: {
+          user: undefined,
+        },
+      }),
     );
 
-    const kav = UNSAFE_getByType(KeyboardAvoidingView);
-    expect(kav.props.behavior).toBe('height');
-    expect(kav.props.keyboardVerticalOffset).toBe(0);
+    const {getByPlaceholderText} = renderComponent();
+
+    expect(getByPlaceholderText('First Name').props.value).toBe('');
+    expect(getByPlaceholderText('Last Name').props.value).toBe('');
+    expect(getByPlaceholderText('Email').props.value).toBe('');
+  });
+
+  describe('KeyboardAvoidingView platform behavior', () => {
+    const originalPlatform = Platform.OS;
+
+    afterEach(() => {
+      Platform.OS = originalPlatform;
+    });
+
+    it('sets correct behavior and offset for iOS', () => {
+      Platform.OS = 'ios';
+
+      const {UNSAFE_getByType} = render(
+        <Provider store={store}>
+          <NavigationContainer>
+            <EditProfile />
+          </NavigationContainer>
+        </Provider>,
+      );
+
+      const keyboardSafeArea = UNSAFE_getByType(KeyboardAvoidingView);
+      expect(keyboardSafeArea.props.behavior).toBe('padding');
+      expect(keyboardSafeArea.props.keyboardVerticalOffset).toBe(60);
+    });
+
+    it('sets correct behavior and offset for Android', () => {
+      Platform.OS = 'android';
+
+      const {UNSAFE_getByType} = render(
+        <Provider store={store}>
+          <NavigationContainer>
+            <EditProfile />
+          </NavigationContainer>
+        </Provider>,
+      );
+
+      const kav = UNSAFE_getByType(KeyboardAvoidingView);
+      expect(kav.props.behavior).toBe('height');
+      expect(kav.props.keyboardVerticalOffset).toBe(0);
+    });
+  });
+
+  it('uses DEFAULT_PROFILE_IMAGE when imageDeleted is true', () => {
+    (redux.useSelector as unknown as jest.Mock).mockImplementation(callback =>
+      callback({
+        registration: {imageDeleted: true},
+        login: {
+          user: {
+            firstName: 'John',
+            lastName: 'Doe',
+            email: 'john@example.com',
+          },
+        },
+      }),
+    );
+
+    const {getByLabelText} = renderComponent();
+    const image = getByLabelText('Profile Picture');
+    expect(image.props.source.uri).toBe(DEFAULT_PROFILE_IMAGE);
+  });
+
+  it('uses imageUri if available', () => {
+    (redux.useSelector as unknown as jest.Mock).mockImplementation(callback =>
+      callback({
+        registration: {imageUri: 'uri-from-imageUri'},
+        login: {
+          user: {
+            firstName: 'John',
+            lastName: 'Doe',
+            email: 'john@example.com',
+          },
+        },
+      }),
+    );
+
+    const {getByLabelText} = renderComponent();
+    const image = getByLabelText('Profile Picture');
+    expect(image.props.source.uri).toBe('uri-from-imageUri');
+  });
+
+  it('uses image if imageUri is not present but image is', () => {
+    (redux.useSelector as unknown as jest.Mock).mockImplementation(callback =>
+      callback({
+        registration: {imageUri: null, image: 'uri-from-image'},
+        login: {
+          user: {
+            firstName: 'John',
+            lastName: 'Doe',
+            email: 'john@example.com',
+          },
+        },
+      }),
+    );
+
+    const {getByLabelText} = renderComponent();
+    const image = getByLabelText('Profile Picture');
+    expect(image.props.source.uri).toBe('uri-from-image');
+  });
+
+  it('uses imageUrl if imageUri and image are not present', () => {
+    (redux.useSelector as unknown as jest.Mock).mockImplementation(callback =>
+      callback({
+        registration: {},
+        login: {
+          user: {
+            firstName: 'John',
+            lastName: 'Doe',
+            email: 'john@example.com',
+            profilePicture: 'uri-from-imageUrl',
+          },
+        },
+      }),
+    );
+
+    const {getByLabelText} = renderComponent();
+    const image = getByLabelText('Profile Picture');
+    expect(image.props.source.uri).toBe('uri-from-imageUrl');
   });
 });
-
-});
-
-

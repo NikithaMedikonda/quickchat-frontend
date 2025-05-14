@@ -49,6 +49,16 @@ describe('ImagePickerModal', () => {
         registration: {
           isVisible: true,
         },
+        login:{
+          user:{
+            phoneNumber:'9876543210',
+            firstName:"Test1",
+            lastName:"Test2",
+            profilePicture:'image.jpg',
+            email:'testuser@gmail.com'
+
+          }
+        }
       }),
     );
     jest.clearAllMocks();

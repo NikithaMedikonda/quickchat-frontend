@@ -16,6 +16,7 @@ interface RegistrationState {
   image: string;
   imageBase64: string;
   isVisible: boolean;
+  imageDeleted: boolean;
 }
 
 const initialState: RegistrationState = {
@@ -32,6 +33,7 @@ const initialState: RegistrationState = {
   image: '',
   imageBase64: '',
   isVisible: false,
+  imageDeleted: false,
 };
 
 const registrationSlice = createSlice({
@@ -59,6 +61,9 @@ const registrationSlice = createSlice({
     setIsVisible: (state, action: PayloadAction<boolean>) => {
       state.isVisible = action.payload;
     },
+    setImageDeleted: (state, action) => {
+      state.imageDeleted = action.payload;
+    },
     resetForm: () => initialState,
   },
 });
@@ -71,6 +76,7 @@ export const {
   setImage,
   setImageBase64,
   setIsVisible,
+  setImageDeleted,
 } = registrationSlice.actions;
 
 export const registrationReducer = registrationSlice.reducer;

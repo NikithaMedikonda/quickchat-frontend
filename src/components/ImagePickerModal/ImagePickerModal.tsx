@@ -15,20 +15,37 @@ import {
   setImageUri,
   setImage,
   setIsVisible,
+  setImageDeleted,
 } from '../../store/slices/registrationSlice';
+import {updateProfilePicture} from '../../store/slices/loginSlice';
 import {getStyles} from './ImagePickerModal.styles';
 import {requestPermissions} from '../../permissions/ImagePermissions';
 import {RootState} from '../../store/store';
 import {useThemeColors} from '../../constants/colors';
 
-export function ImagePickerModal() {
+export function ImagePickerModal({
+  showDeleteOption = false,
+}: {
+  showDeleteOption?: boolean;
+}) {
   const dispatch = useDispatch();
-  const {isVisible} = useSelector((state: RootState) => state.registration);
+  const {isVisible} = useSelector(
+    (state: RootState) => state.registration,
+  );
   const colors = useThemeColors();
   const styles = getStyles(colors);
 
+  const user = useSelector((state: any) => state.login.user);
   const handleClose = () => {
     dispatch(setIsVisible(false));
+  };
+
+  const handleDeletImage = () => {
+    dispatch(setImageUri(''));
+    dispatch(setImage(''));
+    dispatch(setImageDeleted(true));
+    dispatch(updateProfilePicture({...user, profilePicture: ''}));
+    handleClose();
   };
 
   const handlePickImage = async (from: 'camera' | 'gallery') => {
@@ -68,6 +85,7 @@ export function ImagePickerModal() {
       const imageData = `data:image/jpeg;base64,${base64Image}`;
       dispatch(setImageUri(pickedImage.path));
       dispatch(setImage(imageData));
+      dispatch(setImageDeleted(false));
       dispatch(setIsVisible(false));
     } catch (error: any) {
       handleClose();
@@ -81,9 +99,7 @@ export function ImagePickerModal() {
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
             <View style={styles.textContainer}>
-              <Text style={styles.profileText}>
-                Choose Profile
-              </Text>
+              <Text style={styles.profileText}>Choose Profile</Text>
               <TouchableOpacity onPress={handleClose}>
                 <Image
                   style={styles.cancel}
@@ -110,6 +126,15 @@ export function ImagePickerModal() {
                   source={require('../../assets/gallery.png')}
                 />
               </TouchableOpacity>
+              {showDeleteOption && (
+                <TouchableOpacity onPress={handleDeletImage}>
+                  <Image
+                    accessibilityHint="delete-image"
+                    style={styles.gallery}
+                    source={require('../../assets/deleteImage.png')}
+                  />
+                </TouchableOpacity>
+              )}
             </View>
           </View>
         </View>
