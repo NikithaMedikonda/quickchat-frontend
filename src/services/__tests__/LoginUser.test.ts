@@ -9,11 +9,6 @@ describe('loginUser', () => {
     password: 'Test@1234',
   };
 
-  const userData = {
-    phoneNumber: '9876543210',
-    password: 'Test@1234',
-  };
-
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -42,7 +37,7 @@ describe('loginUser', () => {
     expect(mockedFetch).toHaveBeenCalledWith(`${API_URL}/api/user`, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(userData),
+      body: JSON.stringify(payload),
     });
 
     expect(result.status).toBe(200);

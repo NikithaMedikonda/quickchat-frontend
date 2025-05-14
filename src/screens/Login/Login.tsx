@@ -88,7 +88,7 @@ function Login() {
         dispatch(hide());
         Alert.alert(t('Something went wrong while login'));
       }
-    } catch (e: any) {
+    } catch (error: any) {
       dispatch(hide());
       Alert.alert(t('Something went wrong'));
     }
