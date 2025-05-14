@@ -7,6 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useDispatch } from 'react-redux';
 import { show,hide } from '../../store/slices/loadingSlice';
 import { LoadingComponent } from '../../components/Loading/Loading';
+import Login from '../../screens/Login/Login';
 
 const Stack = createNativeStackNavigator();
 
@@ -48,7 +49,7 @@ export const InitialStacks = () => {
       />
       <Stack.Screen
         name="login"
-        component={Welcome}
+        component={Login}
         options={{headerShown: false}}
       />
     </Stack.Navigator>
