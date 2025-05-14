@@ -1,6 +1,7 @@
 import {Dimensions, StyleSheet} from 'react-native';
 import {Colors} from '../../constants/colors';
 const {width, height} = Dimensions.get('window');
+
 export const loginStyles = (colors: Colors) =>
   StyleSheet.create({
     container: {
@@ -54,4 +55,5 @@ export const loginStyles = (colors: Colors) =>
       margin: height * 0.012,
       backgroundColor: colors.white,
     },
+    error: {color: 'red', fontSize: 12},
   });

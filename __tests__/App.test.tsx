@@ -39,7 +39,31 @@ jest.mock('react-native-splash-screen', () => ({
 jest.mock('react-native-fs', () => ({
   readFile: jest.fn().mockResolvedValue('mockedBase64Image'),
 }));
+jest.mock('phone');
+jest.mock('react-native-phone-input', () => {
+  const {useState, forwardRef} = require('react');
+  const {TextInput} = require('react-native');
+  const MockPhoneInput = forwardRef(
+    (props: {value: any; onChangePhoneNumber: any}, ref: any) => {
+      const [phoneNumber, setPhoneNumber] = useState(props.value);
 
+      const handleChangeText = (text: any) => {
+        setPhoneNumber(text);
+        props.onChangePhoneNumber(text);
+      };
+      return (
+        <TextInput
+          ref={ref}
+          placeholder="Phone number"
+          value={phoneNumber}
+          onChangeText={handleChangeText}
+          testID="mock-phone-input"
+        />
+      );
+    },
+  );
+  return MockPhoneInput;
+});
 jest.mock('react-native-permissions', () => ({
   PERMISSIONS: {
     ANDROID: {
