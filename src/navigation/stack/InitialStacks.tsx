@@ -9,6 +9,7 @@ import {Welcome} from '../../screens/Welcome/Welcome';
 import {hide, show} from '../../store/slices/loadingSlice';
 import {setLoginSuccess} from '../../store/slices/loginSlice';
 import {HomeTabs} from '../tab/HomeTabs';
+import Login from '../../screens/Login/Login';
 
 const Stack = createNativeStackNavigator();
 
@@ -104,7 +105,7 @@ export const InitialStacks = () => {
       />
       <Stack.Screen
         name="login"
-        component={Welcome}
+        component={Login}
         options={{headerShown: false}}
       />
     </Stack.Navigator>
