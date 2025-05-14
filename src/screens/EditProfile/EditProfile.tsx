@@ -26,7 +26,9 @@ export const EditProfile = () => {
   const {t} = useTranslation(['home', 'auth']);
   const dispatch = useDispatch();
 
-  const {imageUri} = useSelector((state: RootState) => state.registration);
+  const {imageUri, image, imageDeleted} = useSelector(
+    (state: RootState) => state.registration,
+  );
 
   const user = useSelector((state: any) => state.login.user);
 
@@ -38,6 +40,22 @@ export const EditProfile = () => {
   const [inputFirstName, setInputFirstName] = useState(firstName);
   const [inputLastName, setInputLastName] = useState(lastName);
   const [inputEmail, setInputEmail] = useState(email);
+
+  const getProfileImageSource = () => {
+    if (imageDeleted) {
+      return {uri: DEFAULT_PROFILE_IMAGE};
+    }
+    if (imageUri) {
+      return {uri: imageUri};
+    }
+    if (image) {
+      return {uri: image};
+    }
+    if (imageUrl) {
+      return {uri: imageUrl};
+    }
+    return {uri: DEFAULT_PROFILE_IMAGE};
+  };
 
   const navigation = useNavigation();
   useLayoutEffect(() => {
@@ -111,13 +129,12 @@ export const EditProfile = () => {
           onPress={() => dispatch(setIsVisible(true))}
           accessibilityRole="button">
           <Image
-            source={imageUrl ? {uri: imageUrl} : {uri: DEFAULT_PROFILE_IMAGE}}
-            accessibilityRole="button"
+            source={getProfileImageSource()}
+            accessibilityRole="image"
             style={styles.profileImage}
             resizeMode="contain"
           />
         </TouchableOpacity>
-
         {inputFields.map(field => (
           <View key={field.key} style={styles.fieldContainer}>
             <Text style={styles.label}>{t(field.label)}</Text>
@@ -129,20 +146,17 @@ export const EditProfile = () => {
             />
           </View>
         ))}
-
         <View style={styles.buttonRow}>
           <TouchableOpacity style={styles.touchableButton} onPress={handleSave}>
             <Text style={styles.buttonText}>{t('Save')}</Text>
           </TouchableOpacity>
-
           <TouchableOpacity
             style={styles.touchableButton}
             onPress={handleCancel}>
             <Text style={styles.buttonText}>{t('Cancel')}</Text>
           </TouchableOpacity>
         </View>
-
-        <ImagePickerModal />
+        <ImagePickerModal showDeleteOption />
       </ScrollView>
     </KeyboardAvoidingView>
   );
