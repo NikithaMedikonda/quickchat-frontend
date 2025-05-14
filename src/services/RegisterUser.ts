@@ -1,4 +1,4 @@
-import {API_URL} from '../constants/api';
+import { API_URL } from "../constants/api";
 
 export const registerUser = async (payload: {
   image: string;
@@ -16,17 +16,27 @@ export const registerUser = async (payload: {
     email: payload.email,
     password: payload.password,
   };
-  console.log(API_URL);
-  const response = await fetch(`${API_URL}/api/users`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(userData),
-  });
-  const data = await response.json();
-  return {
-    status: response.status,
-    data,
-  };
+
+  try {
+    const response = await fetch(`${API_URL}/api/users`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(userData),
+    });
+
+    let data;
+    try {
+      data = await response.json();
+    } catch {
+      data = {};
+    }
+    return {
+      status: response.status,
+      data,
+    };
+  } catch (error) {
+    throw error;
+  }
 };

@@ -4,8 +4,6 @@ on:
   push:
     branches:
      - main
-     - functionality/logout-delete-user
- 
 jobs:
   lint-and-test:
     uses: ./.github/workflows/lint-and-test.yml
