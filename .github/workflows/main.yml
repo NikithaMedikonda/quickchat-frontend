@@ -4,8 +4,7 @@ on:
   push:
     branches:
      - main
-     - feature/home-screen
-  
+
 jobs:
   lint-and-test:
     uses: ./.github/workflows/lint-and-test.yml

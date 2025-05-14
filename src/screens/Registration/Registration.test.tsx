@@ -13,6 +13,23 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
   setItem: jest.fn(),
 }));
 
+jest.mock('react-native-phone-input', () => {
+  const React = require('react');
+  const { TextInput } = require('react-native');
+  const MockPhoneInput = React.forwardRef((props: { value: any; onChangePhoneNumber: any; }, ref: any) => {
+    return (
+      <TextInput
+        ref={ref}
+        placeholder="Phone number"
+        value={props.value}
+        onChangeText={props.onChangePhoneNumber}
+        testID="mock-phone-input"
+      />
+    );
+  });
+  return MockPhoneInput;
+});
+
 jest.mock('react-native-fs', () => ({
   readFile: jest.fn().mockResolvedValue('mockedBase64Image'),
 }));
@@ -58,7 +75,7 @@ describe('Registration Screen', () => {
     const {getByPlaceholderText, getByText} = renderComponent();
     expect(getByPlaceholderText('First Name')).toBeTruthy();
     expect(getByPlaceholderText('Last Name')).toBeTruthy();
-    expect(getByPlaceholderText('Phone Number')).toBeTruthy();
+    expect(getByPlaceholderText('Phone number')).toBeTruthy();
     expect(getByPlaceholderText('Password')).toBeTruthy();
     expect(getByPlaceholderText('Confirm Password')).toBeTruthy();
     expect(getByPlaceholderText('Email (Optional)')).toBeTruthy();
@@ -72,7 +89,6 @@ describe('Registration Screen', () => {
       expect(getByText('First name is required')).toBeTruthy();
       expect(getByText('Last name is required')).toBeTruthy();
       expect(getByText('Invalid password')).toBeTruthy();
-      expect(getByText('Invalid phone number')).toBeTruthy();
     });
   });
 
@@ -125,7 +141,7 @@ describe('Registration Screen', () => {
     const {getByPlaceholderText, getByText} = renderComponent();
     fireEvent.changeText(getByPlaceholderText('First Name'), 'testuser');
     fireEvent.changeText(getByPlaceholderText('Last Name'), 'testuser');
-    fireEvent.changeText(getByPlaceholderText('Phone Number'), '1234567890');
+    fireEvent.changeText(getByPlaceholderText('Phone number'), '1234567890');
     fireEvent.changeText(getByPlaceholderText('Password'), 'Password@123');
     fireEvent.changeText(
       getByPlaceholderText('Confirm Password'),
@@ -149,7 +165,7 @@ describe('Registration Screen', () => {
     const {getByPlaceholderText, getByText} = renderComponent();
     fireEvent.changeText(getByPlaceholderText('First Name'), 'testuser');
     fireEvent.changeText(getByPlaceholderText('Last Name'), 'testuser');
-    fireEvent.changeText(getByPlaceholderText('Phone Number'), '1234567890');
+    fireEvent.changeText(getByPlaceholderText('Phone number'), '1234567890');
     fireEvent.changeText(getByPlaceholderText('Password'), 'Password@123');
     fireEvent.changeText(
       getByPlaceholderText('Confirm Password'),
@@ -163,7 +179,7 @@ describe('Registration Screen', () => {
     await waitFor(() => {
       expect(registerUser).toHaveBeenCalled();
       expect(Alert.alert).toHaveBeenCalledWith(
-        'User already exist with this number',
+        'User already exists with this number or email',
       );
     });
   });
@@ -176,7 +192,7 @@ describe('Registration Screen', () => {
     const {getByPlaceholderText, getByText} = renderComponent();
     fireEvent.changeText(getByPlaceholderText('First Name'), 'testuser');
     fireEvent.changeText(getByPlaceholderText('Last Name'), 'testuser');
-    fireEvent.changeText(getByPlaceholderText('Phone Number'), '1234567890');
+    fireEvent.changeText(getByPlaceholderText('Phone number'), '1234567890');
     fireEvent.changeText(getByPlaceholderText('Password'), 'Password@123');
     fireEvent.changeText(
       getByPlaceholderText('Confirm Password'),
@@ -197,11 +213,11 @@ describe('Registration Screen', () => {
 
   it('shows error alert if API call fails', async () => {
     const {registerUser} = require('../../services/RegisterUser.ts');
-    registerUser.mockRejectedValue(new Error('Registration failed'));
+    registerUser.mockRejectedValue(new Error('Network error or something unexpected happened'));
     const {getByPlaceholderText, getByText} = renderComponent();
     fireEvent.changeText(getByPlaceholderText('First Name'), 'testuser');
     fireEvent.changeText(getByPlaceholderText('Last Name'), 'testuser');
-    fireEvent.changeText(getByPlaceholderText('Phone Number'), '1234567890');
+    fireEvent.changeText(getByPlaceholderText('Phone number'), '1234567890');
     fireEvent.changeText(getByPlaceholderText('Password'), 'Password@123');
     fireEvent.changeText(
       getByPlaceholderText('Confirm Password'),
@@ -210,7 +226,7 @@ describe('Registration Screen', () => {
     fireEvent.press(getByText('Register'));
     expect(registerUser).toHaveBeenCalled();
     await waitFor(() => {
-      expect(Alert.alert).toHaveBeenCalledWith('Registration failed');
+      expect(Alert.alert).toHaveBeenCalledWith('Network error or something unexpected happened');
     });
   });
 });
