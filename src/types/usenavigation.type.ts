@@ -13,5 +13,7 @@ export type NavigationProps = NativeStackNavigationProp<
 
 type HomeStackParams = {
   hometabs: undefined;
+  contacts:undefined;
 };
-export type HomeTabsProps = NativeStackNavigationProp<HomeStackParams, 'hometabs'>;
+export type HomeTabsProps = NativeStackNavigationProp<HomeStackParams, 'hometabs','contacts'>;
+
