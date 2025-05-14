@@ -24,7 +24,9 @@ export type ProfileScreenNavigationProp = NativeStackNavigationProp<
 
 type HomeStackParams = {
   hometabs: undefined;
+  contacts:undefined;
 };
+<<<<<<< HEAD
 export type HomeTabsProps = NativeStackNavigationProp<
   HomeStackParams,
   'hometabs'
@@ -37,3 +39,7 @@ export type InitialStackProps = NativeStackNavigationProp<
   InitialStackParams,
   'welcome'
 >;
+=======
+export type HomeTabsProps = NativeStackNavigationProp<HomeStackParams, 'hometabs','contacts'>;
+
+>>>>>>> access-contacts
