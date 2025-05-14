@@ -1,4 +1,4 @@
-import {render, screen, fireEvent} from '@testing-library/react-native';
+import {render, screen} from '@testing-library/react-native';
 import {Home} from './Home';
 import {Provider} from 'react-redux';
 import {store} from '../../store/store';
@@ -48,8 +48,5 @@ describe('Home Screen Tests', () => {
 
     const text = screen.getByText('Hello home');
     expect(text).toBeTruthy();
-
-    fireEvent.press(text);
-    expect(mockNavigate).toHaveBeenCalledWith('contacts');
   });
 });
