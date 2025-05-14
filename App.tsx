@@ -1,3 +1,4 @@
+import './src/i18n/i18n.config';
 import {useEffect} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import * as RNLocalize from 'react-native-localize';

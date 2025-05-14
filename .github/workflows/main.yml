@@ -3,8 +3,8 @@ name: QuickChat-frontend CI/CD
 on:
   push:
     branches:
-     - component/chatbox-content
-  
+     - main
+     
 jobs:
   lint-and-test:
     uses: ./.github/workflows/lint-and-test.yml
