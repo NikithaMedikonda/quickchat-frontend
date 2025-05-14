@@ -130,13 +130,13 @@ function Login() {
       )}
       <Button title="Login" onPress={handleLogin} />
       <View style={styles.messageView}>
-        <Text style={styles.messageText}>Don't have an account?</Text>
+        <Text style={styles.messageText}>{t('Don\'t have an account?')}</Text>
         <TouchableOpacity
           style={styles.signUpContainer}
           onPress={() => {
             navigate.navigate('register');
           }}>
-          <Text style={styles.validationText}>Sign up</Text>
+          <Text style={styles.validationText}>{t('Sign up')}</Text>
         </TouchableOpacity>
       </View>
     </View>
