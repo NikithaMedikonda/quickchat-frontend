@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {Modal, View, Text, TouchableOpacity} from 'react-native';
+import {useThemeColors} from '../../constants/colors';
 import {confirmModalStyles} from './ConfirmModal.styles';
 
 interface ConfirmModalProps {
@@ -21,10 +22,10 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
   const onCancel = () => {
     setVisible(false);
   };
+  const colors = useThemeColors();
+  const styles = confirmModalStyles(colors);
 
-  const styles = confirmModalStyles();
-
-  if (!visible) return null;
+  if (!visible) {return null;}
 
   return (
     <Modal transparent visible={visible} animationType="fade">
