@@ -4,6 +4,7 @@ on:
   push:
     branches:
      - main
+     
 jobs:
   lint-and-test:
     uses: ./.github/workflows/lint-and-test.yml
