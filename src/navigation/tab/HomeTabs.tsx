@@ -1,12 +1,11 @@
 import { Image, View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Home } from '../../screens/Home/Home';
 import { Profile } from '../../screens/Profile/Profile';
 import { styles } from './HomeTabs.styles';
 import { Unread } from '../../screens/Unread/Unread';
 import { useThemeColors } from '../../constants/colors';
 import { useTranslation } from 'react-i18next';
-// import { namespace } from '../../constants/namespace';
+import { HomeStacks } from '../stack/HomeStacks';
 
 export const HomeTabs = () => {
   const Tab = createBottomTabNavigator();
@@ -20,8 +19,8 @@ export const HomeTabs = () => {
         },
       }}>
       <Tab.Screen
-        name="home"
-        component={Home}
+        name="homeStacks"
+        component={HomeStacks}
         options={{
           // eslint-disable-next-line react/no-unstable-nested-components
           tabBarIcon: ({focused}) => (
@@ -41,14 +40,7 @@ export const HomeTabs = () => {
             </View>
           ),
           tabBarLabel: t('All Chats'),
-          headerStyle: {
-            backgroundColor: colors.background,
-          },
-          headerTitleAlign: 'center',
-          headerTitle: t('Quick Chat'),
-          headerTitleStyle: {
-            color: colors.white,
-          },
+          headerShown:false,
         }}
       />
       <Tab.Screen
