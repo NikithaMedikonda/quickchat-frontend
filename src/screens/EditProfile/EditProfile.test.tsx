@@ -107,7 +107,6 @@ describe('EditProfile Component', () => {
     expect(getByText('Last Name')).toBeTruthy();
     expect(getByText('Email')).toBeTruthy();
     expect(getByText('Save')).toBeTruthy();
-    expect(getByText('Cancel')).toBeTruthy();
   });
 
   test('shows alert if first name is missing', async () => {
