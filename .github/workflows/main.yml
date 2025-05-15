@@ -4,7 +4,7 @@ on:
   push:
     branches:
      - main
-     - error-handling 
+     - feature/edit-profile-edgecases 
 jobs:
   lint-and-test:
     uses: ./.github/workflows/lint-and-test.yml
