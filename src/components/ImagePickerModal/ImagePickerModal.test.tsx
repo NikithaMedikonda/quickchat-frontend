@@ -89,7 +89,7 @@ describe('ImagePickerModal', () => {
     const deleteButton = screen.getByA11yHint('delete-image');
     fireEvent.press(deleteButton);
     expect(mockDispatch).toHaveBeenCalledWith(setImageUri(DEFAULT_PROFILE_IMAGE));
-    expect(mockDispatch).toHaveBeenCalledWith(setImage(''));
+    expect(mockDispatch).toHaveBeenCalledWith(setImage(DEFAULT_PROFILE_IMAGE));
     expect(mockDispatch).toHaveBeenCalledWith(setImageDeleted(true));
     expect(mockDispatch).toHaveBeenCalledWith(setIsVisible(false));
   });
