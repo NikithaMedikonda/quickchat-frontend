@@ -14,6 +14,24 @@ jest.mock('@react-navigation/native', () => ({
 }));
 const mockNavigate = jest.fn();
 
+jest.mock('react-native-phone-input', () => {
+  // eslint-disable-next-line @typescript-eslint/no-shadow
+  const React = require('react');
+  const { TextInput } = require('react-native');
+  const MockPhoneInput = React.forwardRef((props: { value: any; onChangePhoneNumber: any; }, ref: any) => {
+    return (
+      <TextInput
+        ref={ref}
+        placeholder="Phone number"
+        value={props.value}
+        onChangeText={props.onChangePhoneNumber}
+        testID="mock-phone-input"
+      />
+    );
+  });
+  return MockPhoneInput;
+});
+
 jest.mock('react-native-phone-input');
 
 describe('Login Screen', () => {
