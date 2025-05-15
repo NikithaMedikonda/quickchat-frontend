@@ -1,5 +1,5 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
-import { UUIDTypes } from 'uuid';
+import {UUIDTypes} from 'uuid';
 
 interface LoginForm {
   phoneNumber: string;
@@ -51,7 +51,11 @@ const loginSlice = createSlice({
     },
     setLoginSuccess: (
       state,
-      action: PayloadAction<{ accessToken: string; refreshToken: string; user: User }>
+      action: PayloadAction<{
+        accessToken: string;
+        refreshToken: string;
+        user: User;
+      }>,
     ) => {
       state.isLoggedIn = true;
       state.accessToken = action.payload.accessToken;
@@ -68,9 +72,20 @@ const loginSlice = createSlice({
     resetLoginForm: state => {
       state.form = {...initialState.form};
     },
+    updateProfilePicture: (state, action: PayloadAction<string>) => {
+      if (state.user) {
+        state.user.profilePicture = action.payload;
+      }
+    },
   },
 });
 
-export const {setLoginField, setLoginErrors, setLoginSuccess, logout, resetLoginForm} =
-  loginSlice.actions;
+export const {
+  setLoginField,
+  setLoginErrors,
+  setLoginSuccess,
+  logout,
+  resetLoginForm,
+  updateProfilePicture,
+} = loginSlice.actions;
 export const loginReducer = loginSlice.reducer;
