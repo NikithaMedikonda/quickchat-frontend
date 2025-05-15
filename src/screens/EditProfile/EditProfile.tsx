@@ -14,6 +14,7 @@ import {useTranslation} from 'react-i18next';
 import {useSelector} from 'react-redux';
 import {RootState} from '../../store/store';
 import {useDispatch} from 'react-redux';
+import {DEFAULT_PROFILE_IMAGE} from '../../constants/defaultImage';
 import {useThemeColors} from '../../constants/colors';
 import {getStyles} from './EditProfile.styles';
 import {Placeholder} from '../../components/InputField/InputField';
@@ -70,10 +71,10 @@ export const EditProfile = () => {
     }
   };
 
+
   useEffect(() => {
     getUserData();
   }, []);
-
   useLayoutEffect(() => {
     profileNavigation.setOptions({
       headerTitleAlign: 'center',
@@ -168,7 +169,6 @@ export const EditProfile = () => {
             style={styles.profileImage}
           />
         </TouchableOpacity>
-
         {inputFields.map(field => (
           <View key={field.key} style={styles.fieldContainer}>
             <Text style={styles.label}>{t(field.label)}</Text>
@@ -180,7 +180,6 @@ export const EditProfile = () => {
             />
           </View>
         ))}
-
         <View style={styles.buttonRow}>
           <TouchableOpacity style={styles.touchableButton} onPress={handleSave}>
             <Text style={styles.buttonText}>{t('Save')}</Text>

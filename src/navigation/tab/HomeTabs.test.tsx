@@ -7,7 +7,9 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
   removeItem: jest.fn(),
   clear: jest.fn(),
 }));
-
+jest.mock('react-native-contacts', () => ({
+  getContactsByPhoneNumber: jest.fn(),
+}));
 jest.mock('react-native-image-crop-picker', () => ({
   openPicker: jest.fn().mockResolvedValue({path: 'mocked/image/path.jpg'}),
   openCamera: jest.fn().mockResolvedValue({path: 'mocked/image/path.jpg'}),

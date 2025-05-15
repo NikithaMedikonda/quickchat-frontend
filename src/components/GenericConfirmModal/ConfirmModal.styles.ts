@@ -1,9 +1,8 @@
 import { StyleSheet } from 'react-native';
-import { useThemeColors } from '../../constants/colors';
+import { Colors } from '../../constants/colors';
 
-export const confirmModalStyles = () => {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const colors = useThemeColors();
+export const confirmModalStyles = (colors:Colors) => {
+
 
   return StyleSheet.create({
     overlay: {
