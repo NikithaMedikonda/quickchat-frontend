@@ -7,12 +7,15 @@ const mockedFetch = fetch as jest.Mock;
 
 describe('editProfile', () => {
   const payload = {
+     phoneNumber:'9876543210',
     firstName: 'Test',
     lastName: 'User',
     email: 'test@example.com',
     image: 'image.jpg',
+    token:'qhgdasvggqvejgwejDSGBQEFUY'
   };
   const user = {
+    phoneNumber:'9876543210',
     firstName: 'Test1',
     lastName: 'User1',
     email: 'test@example1.com',
@@ -20,9 +23,9 @@ describe('editProfile', () => {
   };
 
   const userData = {
+    phoneNumber:'9876543210',
     firstName: 'Test',
     lastName: 'User',
-
     email: 'test@example.com',
     profilePicture: 'image.jpg',
   };
@@ -36,6 +39,7 @@ describe('editProfile', () => {
       accessToken: 'fake-jwt',
       refreshToken: 'fake-refresh',
       user: {
+        phoneNumber:'9876543210',
         firstName: 'Test',
         lastName: 'User',
         email: 'test@example.com',
@@ -53,9 +57,9 @@ describe('editProfile', () => {
     const result = await editProfile(payload, user);
 
     expect(mockedFetch).toHaveBeenCalledTimes(1);
-    expect(mockedFetch).toHaveBeenCalledWith(`${API_URL}/api/update`, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
+    expect(mockedFetch).toHaveBeenCalledWith(`${API_URL}/api/user`, {
+      method: 'PUT',
+      headers: {'Content-Type': 'application/json',authorization: `Bearer ${payload.token}`},
       body: JSON.stringify(userData),
     });
 
