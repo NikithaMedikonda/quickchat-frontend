@@ -1,4 +1,13 @@
-import {Alert, Image, Text, TouchableOpacity, View} from 'react-native';
+import {
+  Alert,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {phone} from 'phone';
 import PhoneInput from 'react-native-phone-input';
@@ -50,7 +59,6 @@ function Login() {
   };
 
   async function handleLogin() {
-    console.log('In login ');
     dispatch(setLoginErrors({}));
     dispatch(show());
     if (!validateForm()) {
@@ -73,6 +81,12 @@ function Login() {
         await AsyncStorage.setItem('user', JSON.stringify(result.data.user));
         dispatch(resetLoginForm());
         homeNavigation.replace('hometabs');
+      } else if (result.status === 404) {
+        dispatch(hide());
+        Alert.alert(t('No account exists with this phone number'));
+      } else if (result.status === 401) {
+        dispatch(hide());
+        Alert.alert(t('Wrong password'));
       } else {
         dispatch(hide());
         Alert.alert(t('Something went wrong while login'));
@@ -83,49 +97,57 @@ function Login() {
     }
   }
   return (
-    <View style={styles.container}>
-      <Image
-        style={styles.image}
-        source={require('../../assets/quickchat.png')}
-        accessibilityHint="logo-image"
-      />
-      <PhoneInput
-        style={styles.phoneNumber}
-        initialCountry={'in'}
-        textProps={{
-          placeholder: 'Phone number',
-        }}
-        onChangePhoneNumber={(text: string) => {
-          handleInputChange('phoneNumber', text);
-        }}
-        onPressFlag={() => {}}
-      />
-      {errors.phoneNumber && (
-        <Text style={styles.error}>{t(`${errors.phoneNumber}`)}</Text>
-      )}
-      <Placeholder
-        title="Password"
-        value={form.password}
-        onChange={(text: string) => {
-          handleInputChange('password', text);
-        }}
-        secureTextEntry={true}
-      />
-      {errors.password && (
-        <Text style={styles.error}>{t(`${errors.password}`)}</Text>
-      )}
-      <Button title="Login" onPress={handleLogin} />
-      <View style={styles.messageView}>
-        <Text style={styles.messageText}>{t('Don\'t have an account?')}</Text>
-        <TouchableOpacity
-          style={styles.signUpContainer}
-          onPress={() => {
-            navigate.navigate('register');
-          }}>
-          <Text style={styles.validationText}>{t('Sign up')}</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+    <KeyboardAvoidingView
+      style={styles.keyboardAvoidView}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}>
+      <ScrollView
+        contentContainerStyle={styles.loginMainContainer}
+        keyboardShouldPersistTaps="handled">
+        <Image
+          style={styles.image}
+          source={require('../../assets/quickchat.png')}
+          accessibilityHint="logo-image"
+        />
+        <PhoneInput
+          style={styles.phoneNumber}
+          initialCountry={'in'}
+          initialValue={form.phoneNumber}
+          textProps={{
+            placeholder: 'Phone number',
+          }}
+          onChangePhoneNumber={(text: string) => {
+            handleInputChange('phoneNumber', text);
+          }}
+          onPressFlag={() => {}}
+        />
+        {errors.phoneNumber && (
+          <Text style={styles.error}>{t(`${errors.phoneNumber}`)}</Text>
+        )}
+        <Placeholder
+          title="Password"
+          value={form.password}
+          onChange={(text: string) => {
+            handleInputChange('password', text);
+          }}
+          secureTextEntry={true}
+        />
+        {errors.password && (
+          <Text style={styles.error}>{t(`${errors.password}`)}</Text>
+        )}
+        <Button title="Login" onPress={handleLogin} />
+        <View style={styles.messageView}>
+          <Text style={styles.messageText}>{t("Don't have an account?")}</Text>
+          <TouchableOpacity
+            style={styles.signUpContainer}
+            onPress={() => {
+              navigate.navigate('register');
+            }}>
+            <Text style={styles.validationText}>{t('Sign up')}</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
