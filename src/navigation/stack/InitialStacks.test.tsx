@@ -28,6 +28,23 @@ jest.mock('../../permissions/ImagePermissions', () => ({
   requestPermissions: jest.fn(),
 }));
 
+jest.mock('react-native-phone-input', () => {
+  const React = require('react');
+  const { TextInput } = require('react-native');
+  const MockPhoneInput = React.forwardRef((props: { value: any; onChangePhoneNumber: any; }, ref: any) => {
+    return (
+      <TextInput
+        ref={ref}
+        placeholder="Phone number"
+        value={props.value}
+        onChangeText={props.onChangePhoneNumber}
+        testID="mock-phone-input"
+      />
+    );
+  });
+  return MockPhoneInput;
+});
+
 describe('InitialStacks', () => {
   beforeEach(() => {
     jest.resetAllMocks();
@@ -113,7 +130,7 @@ describe('InitialStacks', () => {
     const {getByText} = renderWithProviders();
 
     await waitFor(() => {
-      expect(getByText('Hello home')).toBeTruthy();
+      expect(getByText('You have no chats. Start Messaging!')).toBeTruthy();
     });
   });
 
@@ -149,7 +166,7 @@ describe('InitialStacks', () => {
         'refreshToken',
         'new-refresh-token',
       );
-      expect(getByText('Hello home')).toBeTruthy();
+      expect(getByText('You have no chats. Start Messaging!')).toBeTruthy();
     });
   });
 
