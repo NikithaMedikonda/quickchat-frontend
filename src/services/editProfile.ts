@@ -2,20 +2,25 @@ import { API_URL } from '../constants/api';
 
 export const editProfile = async (
   payload: {
+    phoneNumber:string
     image: string;
     firstName: string;
     lastName: string;
     email: string;
+    token:string;
   },
   user: {
+    phoneNumber:string
     image?: string;
     firstName: string;
     lastName: string;
     email: string;
-  }
+  },
 ) => {
   const userData: any = {};
-
+if (user.phoneNumber === payload.phoneNumber) {
+    userData.phoneNumber = payload.phoneNumber;
+  }
   if (user.firstName !== payload.firstName) {
     userData.firstName = payload.firstName;
   }
@@ -33,9 +38,10 @@ export const editProfile = async (
   }
 
   try {
-    const response = await fetch(`${API_URL}/api/update`, {
-      method: 'POST',
+    const response = await fetch(`${API_URL}/api/user`, {
+      method: 'PUT',
       headers: {
+        authorization: `Bearer ${payload.token}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(userData),
