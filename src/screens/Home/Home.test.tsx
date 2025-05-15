@@ -1,7 +1,7 @@
-import {fireEvent, render, screen, waitFor} from '@testing-library/react-native';
-import {Home} from './Home';
-import {Provider} from 'react-redux';
-import {store} from '../../store/store';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
+import { Home } from './Home';
+import { Provider } from 'react-redux';
+import { store } from '../../store/store';
 import { useThemeColors } from '../../constants/colors';
 const mockSetOptions = jest.fn();
 const mockNavigate = jest.fn();
@@ -18,16 +18,17 @@ describe('Home Screen Tests', () => {
     jest.clearAllMocks();
   });
   it('renders the description', () => {
-    const { getByText } = render(<Home/>);
+    const { getByText } = render(<Home />);
     expect(getByText('You have no chats. Start Messaging!')).toBeTruthy();
   });
   it('render the plus-image icon', () => {
-    render(< Home/>);
-        const image = screen.getByA11yHint('plus-image');
-        expect(image.props.source).toEqual({
-            testUri: '../../../src/assets/plus-icon.png',
-        });
+    render(< Home />);
+    const image = screen.getByA11yHint('plus-image');
+    expect(image.props.source).toEqual({
+      testUri: '../../../src/assets/plus-icon.png',
+    });
   });
+
 
   it('sets the header options using useLayoutEffect', () => {
     render(
