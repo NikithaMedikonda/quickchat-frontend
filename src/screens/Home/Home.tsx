@@ -1,6 +1,5 @@
 import { useLayoutEffect } from 'react';
 import { Text, View } from 'react-native';
-import { useLayoutEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { HomeTabsProps } from '../../types/usenavigation.type';
