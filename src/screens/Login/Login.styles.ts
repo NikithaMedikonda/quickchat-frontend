@@ -56,4 +56,14 @@ export const loginStyles = (colors: Colors) =>
       backgroundColor: colors.white,
     },
     error: {color: 'red', fontSize: 12},
+    loginMainContainer: {
+      backgroundColor: colors.background,
+      justifyContent: 'center',
+      alignItems: 'center',
+      height: height,
+      width: width,
+    },
+    keyboardAvoidView:{
+      flex:1,
+    },
   });
