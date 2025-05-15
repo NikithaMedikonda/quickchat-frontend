@@ -2,14 +2,17 @@ import React from 'react';
 import { View, Image, Text } from 'react-native';
 import { getStyles } from './ChatBoxContent.styles';
 import { useThemeColors } from '../../constants/colors';
+import { DEFAULT_PROFILE_IMAGE } from '../../constants/defaultImage';
 
 export const ChatBoxContent = ({
+    image,
     name,
     description,
 }: {
-        name: String,
-        description: String
-    }) => {
+    image?: string;
+    name: string;
+    description: string;
+}) => {
 
     const colors = useThemeColors();
     const styles = getStyles(colors);
@@ -19,13 +22,18 @@ export const ChatBoxContent = ({
             <View style={styles.innerContent}>
                 <Image
                     style={styles.profileImage}
-                    source={require('./../../assets/profile-image.png')}
+                    source={image ? { uri: image }
+                        : { uri: DEFAULT_PROFILE_IMAGE }}
                     accessibilityHint="profile-image"
                 />
             </View>
             <View style={styles.details}>
                 <Text style={styles.name}>{name}</Text>
-                <Text style={styles.description}>{description}</Text>
+                <Text style={styles.description}
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                >
+                    {description}</Text>
             </View>
         </View>
     );
