@@ -1,4 +1,4 @@
-import {Alert} from 'react-native';
+import { PermissionsAndroid} from 'react-native';
 import Contacts from 'react-native-contacts';
 import {API_URL} from '../../constants/api';
 import {getContacts} from '../GetContacts';
@@ -12,8 +12,21 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
   getItem: jest.fn(),
 }));
 
+jest.mock('react-native', () => ({
+  Platform: {OS: 'android'},
+  PermissionsAndroid: {
+    request: jest.fn(),
+    PERMISSIONS: {
+      READ_CONTACTS: 'android.permission.READ_CONTACTS',
+    },
+    RESULTS: {
+      GRANTED: 'granted',
+      DENIED: 'denied',
+    },
+  },
+}));
+
 global.fetch = jest.fn();
-Alert.alert = jest.fn();
 
 describe('getContacts', () => {
   const mockContacts = [
@@ -27,8 +40,52 @@ describe('getContacts', () => {
 
   const formattedNumbers = ['5551234567', '1234567890', '+18005551212'];
 
+  beforeAll(() => {
+    (Contacts.getAll as jest.Mock).mockResolvedValue([
+      {
+        phoneNumbers: [{number: '123-456-7890'}, {number: '(098) 765-4321'}],
+      },
+      {
+        phoneNumbers: [{number: '111 222 3333'}],
+      },
+    ]);
+  });
   afterEach(() => {
     jest.clearAllMocks();
+  });
+  it('should fetch contacts and send to server when permission is granted and token exists', async () => {
+    (PermissionsAndroid.request as jest.Mock).mockResolvedValue('granted');
+    (Contacts.getAll as jest.Mock).mockResolvedValue([
+      {phoneNumbers: [{number: '(123) 456-7890'}]},
+      {phoneNumbers: [{number: '987-654-3210'}]},
+    ]);
+    (AsyncStorage.getItem as jest.Mock).mockResolvedValue('dummy-token');
+
+    (fetch as jest.Mock).mockResolvedValue({
+      status: 200,
+      json: async () => ({
+        data: ['user1', 'user2'],
+      }),
+    });
+
+    const result = await getContacts();
+
+    expect(PermissionsAndroid.request).toHaveBeenCalled();
+    expect(Contacts.getAll).toHaveBeenCalled();
+    expect(AsyncStorage.getItem).toHaveBeenCalledWith('authToken');
+    expect(fetch).toHaveBeenCalledWith(
+      expect.stringContaining('/api/users/contacts'),
+      expect.objectContaining({
+        method: 'POST',
+        headers: expect.objectContaining({
+          authorization: 'Bearer dummy-token',
+        }),
+      })
+    );
+    expect(result).toEqual({
+      status: 200,
+      data: ['user1', 'user2'],
+    });
   });
 
   it('should fetch contacts and send cleaned phone numbers to the API', async () => {
