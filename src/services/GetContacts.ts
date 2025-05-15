@@ -1,18 +1,32 @@
 import Contacts from 'react-native-contacts';
 import {API_URL} from '../constants/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {PermissionsAndroid, Platform} from 'react-native';
 
 export const getContacts = async () => {
-  const phoneContacts = await Contacts.getAll();
-  let allContacts: string[] = [];
-  phoneContacts.forEach(contact => {
-    contact.phoneNumbers.forEach(phone => {
-      const phoneNumber = phone.number.replace(/[\s()-]/g, '');
-      allContacts.push(phoneNumber);
-    });
-  });
-
   try {
+    if (Platform.OS === 'android') {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
+        {
+          title: 'Contacts Permission',
+          message: 'This app needs access to your contacts',
+          buttonPositive: 'OK',
+        },
+      );
+
+      if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+        throw new Error('Contacts permission denied');
+      }
+    }
+    const phoneContacts = await Contacts.getAll();
+    let allContacts: string[] = [];
+    phoneContacts.forEach(contact => {
+      contact.phoneNumbers.forEach(phone => {
+        const phoneNumber = phone.number.replace(/[\s()-]/g, '');
+        allContacts.push(phoneNumber);
+      });
+    });
     const authToken = await AsyncStorage.getItem('authToken');
     console.log(authToken);
     if (!authToken) {
