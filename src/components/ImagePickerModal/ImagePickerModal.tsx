@@ -43,7 +43,7 @@ export function ImagePickerModal({
 
   const handleDeletImage = async () => {
     dispatch(setImageUri(DEFAULT_PROFILE_IMAGE));
-    dispatch(setImage(''));
+    dispatch(setImage(DEFAULT_PROFILE_IMAGE));
     dispatch(setImageDeleted(true));
     dispatch(updateProfilePicture({...user, profilePicture: ''}));
     handleClose();
