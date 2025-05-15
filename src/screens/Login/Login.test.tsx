@@ -83,9 +83,6 @@ jest.mock('react-native-phone-input', () => {
   return MockPhoneInput;
 });
 
-
-
-
 describe('Login Screen', () => {
   beforeEach(() => {
     render(

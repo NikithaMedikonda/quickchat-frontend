@@ -1,4 +1,3 @@
-
 import {Alert, Image, Text, TouchableOpacity, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {phone} from 'phone';
@@ -19,9 +18,8 @@ import {hide, show} from '../../store/slices/loadingSlice';
 import {loginUser} from '../../services/LoginUser';
 import {HomeTabsProps, NavigationProps} from '../../types/usenavigation.type';
 import {useThemeColors} from '../../constants/colors';
-
+import {NavigationProps} from '../../types/usenavigation.type';
 import {loginStyles} from './Login.styles';
-
 function Login() {
   const homeNavigation = useNavigation<HomeTabsProps>();
   const navigate = useNavigation<NavigationProps>();
@@ -34,7 +32,6 @@ function Login() {
   const handleInputChange = (key: keyof typeof form, value: string) => {
     dispatch(setLoginField({key, value}));
   };
-
   const validateForm = () => {
     const newErrors: Partial<typeof form> = {};
     let isValid = true;

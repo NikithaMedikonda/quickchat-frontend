@@ -11,67 +11,77 @@ import {
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {useTranslation} from 'react-i18next';
-import {useSelector, useDispatch} from 'react-redux';
+import {useSelector} from 'react-redux';
 import {RootState} from '../../store/store';
+import {useDispatch} from 'react-redux';
 import {DEFAULT_PROFILE_IMAGE} from '../../constants/defaultImage';
 import {useThemeColors} from '../../constants/colors';
 import {getStyles} from './EditProfile.styles';
 import {Placeholder} from '../../components/InputField/InputField';
 import {ImagePickerModal} from '../../components/ImagePickerModal/ImagePickerModal';
 import {setIsVisible} from '../../store/slices/registrationSlice';
+import {editProfile} from '../../services/editProfile';
+import {ProfileScreenNavigationProp} from '../../types/usenavigation.type';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const EditProfile = () => {
   const colors = useThemeColors();
+  const profileNavigation = useNavigation<ProfileScreenNavigationProp>();
   const styles = getStyles(colors);
   const {t} = useTranslation(['home', 'auth']);
   const dispatch = useDispatch();
-
-  const {imageUri, image, imageDeleted} = useSelector(
-    (state: RootState) => state.registration,
+  const imageUri = useSelector(
+    (state: RootState) => state.registration.imageUri,
   );
+  const image = useSelector((state: RootState) => state.registration.image);
 
-  const user = useSelector((state: any) => state.login.user);
+  const [inputFirstName, setInputFirstName] = useState('');
+  const [inputLastName, setInputLastName] = useState('');
+  const [inputEmail, setInputEmail] = useState('');
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [imageURL, setImageURL] = useState('');
+  const [token, setToken] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [user, setUser] = useState<any>(null);
 
-  const firstName = user?.firstName || '';
-  const lastName = user?.lastName || '';
-  const email = user?.email || '';
-  const imageUrl = user?.profilePicture || '';
+  const getUserData = async () => {
+    try {
+      const userDataString = await AsyncStorage.getItem('user');
+      const AccessToken = (await AsyncStorage.getItem('authToken')) || '';
+      const userData = userDataString ? JSON.parse(userDataString) : {};
 
-  const [inputFirstName, setInputFirstName] = useState(firstName);
-  const [inputLastName, setInputLastName] = useState(lastName);
-  const [inputEmail, setInputEmail] = useState(email);
+      const {
+        firstName = '',
+        lastName = '',
+        email = '',
+        profilePhoto = '',
+        // eslint-disable-next-line @typescript-eslint/no-shadow
+        phoneNumber = '',
+      } = userData;
 
-  const getProfileImageSource = () => {
-    if (imageDeleted) {
-      return {uri: DEFAULT_PROFILE_IMAGE};
+      setInputFirstName(firstName);
+      setInputLastName(lastName);
+      setInputEmail(email);
+      setImageURL(profilePhoto);
+      setToken(AccessToken);
+      setPhoneNumber(phoneNumber);
+      setUser(userData);
+    } catch (error) {
+       throw error;
     }
-    if (imageUri) {
-      return {uri: imageUri};
-    }
-    if (image) {
-      return {uri: image};
-    }
-    if (imageUrl) {
-      return {uri: imageUrl};
-    }
-    return {uri: DEFAULT_PROFILE_IMAGE};
   };
 
-  const navigation = useNavigation();
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerTitleAlign: 'center',
-      HeaderTitle: 'Edit Profile',
-    });
-  }, [navigation]);
 
   useEffect(() => {
-    setInputFirstName(firstName);
-    setInputLastName(lastName);
-    setInputEmail(email);
-  }, [firstName, lastName, email, imageUri]);
+    getUserData();
+  }, []);
+  useLayoutEffect(() => {
+    profileNavigation.setOptions({
+      headerTitleAlign: 'center',
+      headerTitle: 'Edit Profile',
+    });
+  }, [profileNavigation]);
 
-  // eslint-disable-next-line @typescript-eslint/no-shadow
   const validateEmail = (email: string) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
@@ -93,13 +103,28 @@ export const EditProfile = () => {
 
   const handleSave = async () => {
     if (validateForm()) {
-    }
-  };
+      const payload = {
+        phoneNumber: phoneNumber,
+        image: image,
+        firstName: inputFirstName,
+        lastName: inputLastName,
+        email: inputEmail,
+        token: token,
+      };
 
-  const handleCancel = () => {
-    setInputFirstName(firstName);
-    setInputLastName(lastName);
-    setInputEmail(email);
+      if (user) {
+        try {
+          const result = await editProfile(payload, user);
+          await AsyncStorage.setItem('user', JSON.stringify(result.data.user));
+          profileNavigation.replace('profileScreen');
+          Alert.alert('Success', 'Profile updated successfully!');
+        } catch (err) {
+          Alert.alert('Error', 'Failed to update profile');
+        }
+      } else {
+        Alert.alert('Error', 'User data not loaded. Please try again.');
+      }
+    }
   };
 
   const inputFields = [
@@ -115,7 +140,12 @@ export const EditProfile = () => {
       value: inputLastName,
       setter: setInputLastName,
     },
-    {key: 'email', label: 'Email', value: inputEmail, setter: setInputEmail},
+    {
+      key: 'email',
+      label: 'Email',
+      value: inputEmail,
+      setter: setInputEmail,
+    },
   ];
 
   return (
@@ -127,13 +157,16 @@ export const EditProfile = () => {
       <ScrollView contentContainerStyle={styles.container}>
         <TouchableOpacity
           onPress={() => dispatch(setIsVisible(true))}
-          accessibilityRole="button">
+          accessibilityHint="edit-profile-button">
           <Image
-            source={getProfileImageSource()}
-            accessibilityRole="image"
-            accessibilityLabel="Profile Picture"
+            source={{
+              uri:
+                imageUri ||
+                user?.profilePicture ||
+                'https://sdjetntpocezxjoelxgb.supabase.co/storage/v1/object/public/quick-chat/images/profile-pics/image.png',
+            }}
+            accessibilityHint="Profile-Picture"
             style={styles.profileImage}
-            resizeMode="contain"
           />
         </TouchableOpacity>
         {inputFields.map(field => (
@@ -151,12 +184,11 @@ export const EditProfile = () => {
           <TouchableOpacity style={styles.touchableButton} onPress={handleSave}>
             <Text style={styles.buttonText}>{t('Save')}</Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.touchableButton}
-            onPress={handleCancel}>
+          <TouchableOpacity style={styles.touchableButton}>
             <Text style={styles.buttonText}>{t('Cancel')}</Text>
           </TouchableOpacity>
         </View>
+
         <ImagePickerModal showDeleteOption />
       </ScrollView>
     </KeyboardAvoidingView>

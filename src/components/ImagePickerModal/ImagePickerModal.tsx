@@ -22,6 +22,7 @@ import {getStyles} from './ImagePickerModal.styles';
 import {requestPermissions} from '../../permissions/ImagePermissions';
 import {RootState} from '../../store/store';
 import {useThemeColors} from '../../constants/colors';
+import { DEFAULT_PROFILE_IMAGE } from '../../constants/defaultImage';
 
 export function ImagePickerModal({
   showDeleteOption = false,
@@ -40,8 +41,8 @@ export function ImagePickerModal({
     dispatch(setIsVisible(false));
   };
 
-  const handleDeletImage = () => {
-    dispatch(setImageUri(''));
+  const handleDeletImage = async () => {
+    dispatch(setImageUri(DEFAULT_PROFILE_IMAGE));
     dispatch(setImage(''));
     dispatch(setImageDeleted(true));
     dispatch(updateProfilePicture({...user, profilePicture: ''}));

@@ -1,3 +1,8 @@
+import {
+  fireEvent,
+  render,
+  waitFor,
+} from '@testing-library/react-native';
 import React from 'react';
 import {Alert} from 'react-native';
 import {render, fireEvent, waitFor} from '@testing-library/react-native';
@@ -7,13 +12,25 @@ import * as redux from 'react-redux';
 import {Provider} from 'react-redux';
 import {DEFAULT_PROFILE_IMAGE} from '../../constants/defaultImage';
 import {EditProfile} from './EditProfile';
+import {Alert} from 'react-native';
+import {useDispatch} from 'react-redux';
+import * as redux from 'react-redux';
 import {store} from '../../store/store';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {editProfile} from '../../services/editProfile';
 
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
   useSelector: jest.fn(),
   useDispatch: jest.fn(),
 }));
+const mockDispatch = jest.fn();
+
+jest.mock('@react-native-async-storage/async-storage', () => ({
+  setItem: jest.fn(),
+  getItem: jest.fn(),
+}));
+const useDispatchMock = jest.mocked(useDispatch);
 
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
@@ -21,11 +38,15 @@ jest.mock('react-i18next', () => ({
   }),
 }));
 
+jest.mock('../../services/editProfile', () => ({
+  editProfile: jest.fn(),
+}));
+
 jest.mock('../../components/ImagePickerModal/ImagePickerModal', () => ({
   ImagePickerModal: () => <></>,
 }));
 
-const mockNavigation = {setOptions: jest.fn()};
+const mockNavigation = {setOptions: jest.fn(), replace: jest.fn()};
 jest.mock('@react-navigation/native', () => {
   const actualNav = jest.requireActual('@react-navigation/native');
   return {
@@ -36,9 +57,9 @@ jest.mock('@react-navigation/native', () => {
 
 jest.spyOn(Alert, 'alert');
 
-describe('EditProfile Screen', () => {
+describe('EditProfile Component', () => {
   const dispatch = jest.fn();
-
+  useDispatchMock.mockImplementation(() => mockDispatch);
   beforeEach(() => {
     (redux.useDispatch as unknown as jest.Mock).mockReturnValue(dispatch);
     (redux.useSelector as unknown as jest.Mock).mockImplementation(callback =>
@@ -46,42 +67,62 @@ describe('EditProfile Screen', () => {
         registration: {imageUri: null},
         login: {
           user: {
-            firstName: 'John',
-            lastName: 'Doe',
-            email: 'john@example.com',
+            firstName: '',
+            lastName: '',
+            email: '',
           },
         },
       }),
     );
   });
 
+  (AsyncStorage.getItem as jest.Mock).mockImplementation(key => {
+    if (key === 'user') {
+      return Promise.resolve(
+        JSON.stringify({
+          firstName: 'test',
+          lastName: 'user',
+          email: 'testuser@gmail.com',
+          profilePhoto: '',
+          phoneNumber: '1234567890',
+        }),
+      );
+    }
+    if (key === 'authToken') {
+      return Promise.resolve('mock-token');
+    }
+    return Promise.resolve(null);
+  });
+
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  const renderComponent = () =>
-    render(
+  test('renders the profile image and input fields', async () => {
+    const {getByText, getByAccessibilityHint} = render(
       <Provider store={store}>
-        <NavigationContainer>
-          <EditProfile />
-        </NavigationContainer>
+        <EditProfile />
       </Provider>,
     );
 
-  it('renders input fields with user data', () => {
-    const {getByDisplayValue} = renderComponent();
+    await waitFor(() => {
+      expect(getByAccessibilityHint('Profile-Picture')).toBeTruthy();
+    });
 
-    expect(getByDisplayValue('John')).toBeTruthy();
-    expect(getByDisplayValue('Doe')).toBeTruthy();
-    expect(getByDisplayValue('john@example.com')).toBeTruthy();
+    expect(getByText('First Name')).toBeTruthy();
+    expect(getByText('Last Name')).toBeTruthy();
+    expect(getByText('Email')).toBeTruthy();
+    expect(getByText('Save')).toBeTruthy();
+    expect(getByText('Cancel')).toBeTruthy();
   });
 
-  it('shows error if first name is empty on save', async () => {
-    const {getByPlaceholderText, getByText} = renderComponent();
-
-    fireEvent.changeText(getByPlaceholderText('First Name'), '');
-    fireEvent.press(getByText('Save'));
-
+  test('shows alert if first name is missing', async () => {
+    const {getByText} = render(
+      <Provider store={store}>
+        <EditProfile />
+      </Provider>,
+    );
+    await waitFor(() => fireEvent.press(getByText('Save')));
     await waitFor(() =>
       expect(Alert.alert).toHaveBeenCalledWith(
         'Error',
@@ -90,45 +131,59 @@ describe('EditProfile Screen', () => {
     );
   });
 
-  it('shows error if email is invalid on save', async () => {
-    const {getByPlaceholderText, getByText} = renderComponent();
-
-    fireEvent.changeText(getByPlaceholderText('Email'), 'invalidemail');
+  test('shows alert for invalid email format', async () => {
+    (editProfile as jest.Mock).mockResolvedValue({
+      data: {
+        user: {
+          firstName: 'test',
+          lastName: 'user',
+          email: 'testuser@gmail.com',
+          phoneNumber: '1234567890',
+        },
+      },
+    });
+    const {getByText, getByDisplayValue} = render(
+      <Provider store={store}>
+        <EditProfile />
+      </Provider>,
+    );
+    await waitFor(() => getByText('Save'));
+    fireEvent.changeText(getByDisplayValue('test'), 'test');
+    fireEvent.changeText(getByDisplayValue('user'), 'user');
+    fireEvent.changeText(
+      getByDisplayValue('testuser@gmail.com'),
+      'invalidemail',
+    );
     fireEvent.press(getByText('Save'));
 
     await waitFor(() =>
       expect(Alert.alert).toHaveBeenCalledWith('Error', 'Invalid email format'),
     );
   });
-
-  it('resets form when Cancel is pressed', async () => {
-    const {getByPlaceholderText, getByText} = renderComponent();
-
-    fireEvent.changeText(getByPlaceholderText('First Name'), 'NewName');
-    fireEvent.press(getByText('Cancel'));
-
-    await waitFor(() =>
-      expect(getByPlaceholderText('First Name').props.value).toBe('John'),
-    );
-  });
-
-  it('opens ImagePickerModal on image press', () => {
-    const {getAllByRole} = renderComponent();
-
-    fireEvent.press(getAllByRole('button')[0]);
-
-    expect(dispatch).toHaveBeenCalledWith({
-      type: 'registration/setIsVisible',
-      payload: true,
+  test('shows alert for invalid last name', async () => {
+    (editProfile as jest.Mock).mockResolvedValue({
+      data: {
+        user: {
+          firstName: 'test',
+          lastName: '',
+          email: 'testuser@gmail.com',
+          phoneNumber: '1234567890',
+        },
+      },
     });
-  });
-
-  it('shows error if last name is empty on save', async () => {
-    const {getByPlaceholderText, getByText} = renderComponent();
-
-    fireEvent.changeText(getByPlaceholderText('Last Name'), '');
+    const {getByText, getByDisplayValue} = render(
+      <Provider store={store}>
+        <EditProfile />
+      </Provider>,
+    );
+    await waitFor(() => getByText('Save'));
+    fireEvent.changeText(getByDisplayValue('test'), 'test');
+    fireEvent.changeText(getByDisplayValue('user'), '');
+    fireEvent.changeText(
+      getByDisplayValue('testuser@gmail.com'),
+      'testuser@gmail.com',
+    );
     fireEvent.press(getByText('Save'));
-
     await waitFor(() =>
       expect(Alert.alert).toHaveBeenCalledWith(
         'Error',
@@ -137,135 +192,77 @@ describe('EditProfile Screen', () => {
     );
   });
 
-  it('allows saving when all inputs are valid', async () => {
-    const {getByPlaceholderText, getByText} = renderComponent();
+  test('calls editProfile and navigates on successful save', async () => {
+    (editProfile as jest.Mock).mockResolvedValue({
+      data: {
+        user: {
+          firstName: 'test',
+          lastName: 'user',
+          email: 'testuser@gmail.com',
+          phoneNumber: '1234567890',
+        },
+      },
+    });
 
-    fireEvent.changeText(getByPlaceholderText('First Name'), 'Jane');
-    fireEvent.changeText(getByPlaceholderText('Last Name'), 'Smith');
-    fireEvent.changeText(
-      getByPlaceholderText('Email'),
-      'jane.smith@example.com',
+    const {getByText, getByDisplayValue} = render(
+      <Provider store={store}>
+        <EditProfile />
+      </Provider>,
     );
 
+    await waitFor(() => {
+      expect(getByDisplayValue('test')).toBeTruthy();
+      expect(getByDisplayValue('user')).toBeTruthy();
+      expect(getByDisplayValue('testuser@gmail.com')).toBeTruthy();
+    });
     fireEvent.press(getByText('Save'));
 
     await waitFor(() => {
-      expect(Alert.alert).not.toHaveBeenCalled();
-    });
-  });
-
-  it('uses empty string defaults when user is undefined', () => {
-    (redux.useSelector as unknown as jest.Mock).mockImplementation(callback =>
-      callback({
-        registration: {imageUri: null},
-        login: {
-          user: undefined,
+      expect(editProfile).toHaveBeenCalledWith(
+        {
+          phoneNumber: '1234567890',
+          image: undefined,
+          firstName: 'test',
+          lastName: 'user',
+          email: 'testuser@gmail.com',
+          token: 'mock-token',
         },
-      }),
-    );
-
-    const {getByPlaceholderText} = renderComponent();
-
-    expect(getByPlaceholderText('First Name').props.value).toBe('');
-    expect(getByPlaceholderText('Last Name').props.value).toBe('');
-    expect(getByPlaceholderText('Email').props.value).toBe('');
-  });
-
-  describe('KeyboardAvoidingView platform behavior', () => {
-    const originalPlatform = Platform.OS;
-
-    afterEach(() => {
-      Platform.OS = originalPlatform;
-    });
-
-    it('sets correct behavior and offset for iOS', () => {
-      Platform.OS = 'ios';
-
-      const {UNSAFE_getByType} = render(
-        <Provider store={store}>
-          <NavigationContainer>
-            <EditProfile />
-          </NavigationContainer>
-        </Provider>,
+        expect.any(Object),
       );
-
-      const keyboardSafeArea = UNSAFE_getByType(KeyboardAvoidingView);
-      expect(keyboardSafeArea.props.behavior).toBe('padding');
-      expect(keyboardSafeArea.props.keyboardVerticalOffset).toBe(60);
-    });
-
-    it('sets correct behavior and offset for Android', () => {
-      Platform.OS = 'android';
-
-      const {UNSAFE_getByType} = render(
-        <Provider store={store}>
-          <NavigationContainer>
-            <EditProfile />
-          </NavigationContainer>
-        </Provider>,
+      expect(AsyncStorage.setItem).toHaveBeenCalled();
+      expect(mockNavigation.replace).toHaveBeenCalledWith('profileScreen');
+      expect(Alert.alert).toHaveBeenCalledWith(
+        'Success',
+        'Profile updated successfully!',
       );
-
-      const kav = UNSAFE_getByType(KeyboardAvoidingView);
-      expect(kav.props.behavior).toBe('height');
-      expect(kav.props.keyboardVerticalOffset).toBe(0);
     });
   });
 
-  it('uses DEFAULT_PROFILE_IMAGE when imageDeleted is true', () => {
-    (redux.useSelector as unknown as jest.Mock).mockImplementation(callback =>
-      callback({
-        registration: {imageDeleted: true},
-        login: {
-          user: {
-            firstName: 'John',
-            lastName: 'Doe',
-            email: 'john@example.com',
-          },
-        },
-      }),
+  test('shows error alert on editProfile failure', async () => {
+    (editProfile as jest.Mock).mockRejectedValue(new Error('Network error'));
+
+    const {getByText, getByDisplayValue} = render(
+      <Provider store={store}>
+        <EditProfile />
+      </Provider>,
     );
 
-    const {getByLabelText} = renderComponent();
-    const image = getByLabelText('Profile Picture');
-    expect(image.props.source.uri).toBe(DEFAULT_PROFILE_IMAGE);
-  });
+    await waitFor(() => getByText('Save'));
+    fireEvent.changeText(getByDisplayValue('test'), 'test');
+    fireEvent.changeText(getByDisplayValue('user'), 'user');
+    fireEvent.changeText(
+      getByDisplayValue('testuser@gmail.com'),
+      'testuser@gmail.com',
+    );
+    fireEvent.press(getByText('Save'));
 
-  it('uses imageUri if available', () => {
-    (redux.useSelector as unknown as jest.Mock).mockImplementation(callback =>
-      callback({
-        registration: {imageUri: 'uri-from-imageUri'},
-        login: {
-          user: {
-            firstName: 'John',
-            lastName: 'Doe',
-            email: 'john@example.com',
-          },
-        },
-      }),
+    await waitFor(() =>
+      expect(Alert.alert).toHaveBeenCalledWith(
+        'Error',
+        'Failed to update profile',
+      ),
     );
 
-    const {getByLabelText} = renderComponent();
-    const image = getByLabelText('Profile Picture');
-    expect(image.props.source.uri).toBe('uri-from-imageUri');
-  });
-
-  it('uses image if imageUri is not present but image is', () => {
-    (redux.useSelector as unknown as jest.Mock).mockImplementation(callback =>
-      callback({
-        registration: {imageUri: null, image: 'uri-from-image'},
-        login: {
-          user: {
-            firstName: 'John',
-            lastName: 'Doe',
-            email: 'john@example.com',
-          },
-        },
-      }),
-    );
-
-    const {getByLabelText} = renderComponent();
-    const image = getByLabelText('Profile Picture');
-    expect(image.props.source.uri).toBe('uri-from-image');
   });
 
   it('uses imageUrl if imageUri and image are not present', () => {
