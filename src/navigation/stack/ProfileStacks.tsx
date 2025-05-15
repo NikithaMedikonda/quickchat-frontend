@@ -25,6 +25,7 @@ export const ProfileStack = () => {
           headerTitleStyle: {
             color: colors.white,
           },
+          headerBackVisible:false,
         }}
       />
       <Stack.Screen

@@ -66,10 +66,9 @@ export const EditProfile = () => {
       setPhoneNumber(phoneNumber);
       setUser(userData);
     } catch (error) {
-       throw error;
+      throw error;
     }
   };
-
 
   useEffect(() => {
     getUserData();
@@ -170,7 +169,10 @@ export const EditProfile = () => {
         </TouchableOpacity>
         {inputFields.map(field => (
           <View key={field.key} style={styles.fieldContainer}>
-            <Text style={styles.label}>{t(field.label)}</Text>
+            <View style={styles.fieldTextContainer}>
+              <Text style={styles.label}>{t(field.label)}</Text>
+            </View>
+
             <Placeholder
               title={field.label}
               value={field.value}
@@ -182,9 +184,6 @@ export const EditProfile = () => {
         <View style={styles.buttonRow}>
           <TouchableOpacity style={styles.touchableButton} onPress={handleSave}>
             <Text style={styles.buttonText}>{t('Save')}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.touchableButton}>
-            <Text style={styles.buttonText}>{t('Cancel')}</Text>
           </TouchableOpacity>
         </View>
 
