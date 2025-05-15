@@ -25,9 +25,8 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
   onClose,
   onConfirm,
 }) => {
-
-  const styles = confirmModalStyles();
   const colors = useThemeColors();
+  const styles = confirmModalStyles(colors);
   const {t} = useTranslation('profile');
   if (!visible) {
     return null;

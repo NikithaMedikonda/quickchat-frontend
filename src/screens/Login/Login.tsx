@@ -18,7 +18,6 @@ import {hide, show} from '../../store/slices/loadingSlice';
 import {loginUser} from '../../services/LoginUser';
 import {HomeTabsProps, NavigationProps} from '../../types/usenavigation.type';
 import {useThemeColors} from '../../constants/colors';
-import {NavigationProps} from '../../types/usenavigation.type';
 import {loginStyles} from './Login.styles';
 function Login() {
   const homeNavigation = useNavigation<HomeTabsProps>();

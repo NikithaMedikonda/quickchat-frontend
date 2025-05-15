@@ -12,7 +12,7 @@ describe('editProfile', () => {
     lastName: 'User',
     email: 'test@example.com',
     image: 'image.jpg',
-    token:'qhgdasvggqvejgwejDSGBQEFUY'
+    token:'qhgdasvggqvejgwejDSGBQEFUY',
   };
   const user = {
     phoneNumber:'9876543210',

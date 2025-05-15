@@ -14,7 +14,6 @@ import {useTranslation} from 'react-i18next';
 import {useSelector} from 'react-redux';
 import {RootState} from '../../store/store';
 import {useDispatch} from 'react-redux';
-import {DEFAULT_PROFILE_IMAGE} from '../../constants/defaultImage';
 import {useThemeColors} from '../../constants/colors';
 import {getStyles} from './EditProfile.styles';
 import {Placeholder} from '../../components/InputField/InputField';

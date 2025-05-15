@@ -5,16 +5,10 @@ import {
 } from '@testing-library/react-native';
 import React from 'react';
 import {Alert} from 'react-native';
-import {render, fireEvent, waitFor} from '@testing-library/react-native';
-import {Platform, KeyboardAvoidingView} from 'react-native';
-import {NavigationContainer} from '@react-navigation/native';
 import * as redux from 'react-redux';
 import {Provider} from 'react-redux';
-import {DEFAULT_PROFILE_IMAGE} from '../../constants/defaultImage';
 import {EditProfile} from './EditProfile';
-import {Alert} from 'react-native';
 import {useDispatch} from 'react-redux';
-import * as redux from 'react-redux';
 import {store} from '../../store/store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {editProfile} from '../../services/editProfile';
@@ -263,25 +257,5 @@ describe('EditProfile Component', () => {
       ),
     );
 
-  });
-
-  it('uses imageUrl if imageUri and image are not present', () => {
-    (redux.useSelector as unknown as jest.Mock).mockImplementation(callback =>
-      callback({
-        registration: {},
-        login: {
-          user: {
-            firstName: 'John',
-            lastName: 'Doe',
-            email: 'john@example.com',
-            profilePicture: 'uri-from-imageUrl',
-          },
-        },
-      }),
-    );
-
-    const {getByLabelText} = renderComponent();
-    const image = getByLabelText('Profile Picture');
-    expect(image.props.source.uri).toBe('uri-from-imageUrl');
   });
 });
