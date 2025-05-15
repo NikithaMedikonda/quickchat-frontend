@@ -34,7 +34,7 @@ export const Contact = ({contactDetails}: {contactDetails: ContactDetails}) => {
         ) : (
           <Image
             style={styles.image}
-            source={{uri: contactDetails.profilePicture}}
+            source={{uri: contactDetails.profilePicture || DEFAULT_PROFILE_IMAGE}}
             accessibilityHint="profile-image"
           />
         )}

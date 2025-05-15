@@ -2,9 +2,14 @@ import {Alert} from 'react-native';
 import Contacts from 'react-native-contacts';
 import {API_URL} from '../../constants/api';
 import {getContacts} from '../GetContacts';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 jest.mock('react-native-contacts', () => ({
   getAll: jest.fn(),
+}));
+
+jest.mock('@react-native-async-storage/async-storage', () => ({
+  getItem: jest.fn(),
 }));
 
 global.fetch = jest.fn();
@@ -28,20 +33,24 @@ describe('getContacts', () => {
 
   it('should fetch contacts and send cleaned phone numbers to the API', async () => {
     (Contacts.getAll as jest.Mock).mockResolvedValue(mockContacts);
+    (AsyncStorage.getItem as jest.Mock).mockResolvedValue('token');
     (fetch as jest.Mock).mockResolvedValue({
       status: 200,
       json: async () => ({
-        registeredUsers: ['5551234567', '1234567890'],
-        unRegisteredusers: ['+18005551212'],
+        data: {
+          registeredUsers: ['5551234567', '1234567890'],
+          unRegisteredusers: ['+18005551212'],
+        },
       }),
     });
     const result = await getContacts();
 
     expect(Contacts.getAll).toHaveBeenCalled();
-    expect(fetch).toHaveBeenCalledWith(`${API_URL}/api/contacts`, {
+    expect(fetch).toHaveBeenCalledWith(`${API_URL}/api/users/contacts`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        authorization: 'Bearer token',
       },
       body: JSON.stringify(formattedNumbers),
     });
@@ -55,8 +64,15 @@ describe('getContacts', () => {
     });
   });
 
+  it('should throw an error if authToken is not found', async () => {
+    (Contacts.getAll as jest.Mock).mockResolvedValue(mockContacts);
+    (AsyncStorage.getItem as jest.Mock).mockResolvedValue(null);
+    await expect(getContacts()).rejects.toThrow('Authorization failed');
+  });
+
   it('should throw error if fetch fails', async () => {
     (Contacts.getAll as jest.Mock).mockResolvedValue(mockContacts);
+    (AsyncStorage.getItem as jest.Mock).mockResolvedValue('token');
     (fetch as jest.Mock).mockRejectedValueOnce('Network failed');
     await expect(getContacts()).rejects.toThrow('Network failed');
   });

@@ -66,7 +66,6 @@ jest.spyOn(Alert, 'alert');
 jest.mock('phone');
 
 jest.mock('react-native-phone-input', () => {
-  // eslint-disable-next-line @typescript-eslint/no-shadow
   const React = require('react');
   const { TextInput } = require('react-native');
   const MockPhoneInput = React.forwardRef((props: { value: any; onChangePhoneNumber: any; }, ref: any) => {
@@ -82,9 +81,6 @@ jest.mock('react-native-phone-input', () => {
   });
   return MockPhoneInput;
 });
-
-
-
 
 describe('Login Screen', () => {
   beforeEach(() => {

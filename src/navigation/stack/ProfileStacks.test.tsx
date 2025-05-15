@@ -1,7 +1,7 @@
 import {render, fireEvent, waitFor} from '@testing-library/react-native';
 import {Provider} from 'react-redux';
 import {NavigationContainer} from '@react-navigation/native';
-import { ProfileStack } from './ProfileStacks'; 
+import { ProfileStack } from './ProfileStacks';
 import {store} from '../../store/store';
 
 jest.mock('../../screens/Profile/Profile', () => {

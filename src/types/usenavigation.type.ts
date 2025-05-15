@@ -27,7 +27,6 @@ type HomeStackParams = {
   contacts:undefined;
 };
 export type HomeTabsProps = NativeStackNavigationProp<HomeStackParams, 'hometabs','contacts'>;
-
 type InitialStackParams = {
   welcome: undefined;
 };
