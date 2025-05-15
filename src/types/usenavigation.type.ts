@@ -18,11 +18,22 @@ export type ProfileStackParamList = {
 
 export type ProfileScreenNavigationProp = NativeStackNavigationProp<
   ProfileStackParamList,
-  'profileScreen'
+  'profileScreen',
+   'editProfile'
 >;
 
 type HomeStackParams = {
   hometabs: undefined;
 };
-export type HomeTabsProps = NativeStackNavigationProp<HomeStackParams, 'hometabs'>;
+export type HomeTabsProps = NativeStackNavigationProp<
+  HomeStackParams,
+  'hometabs'
+>;
 
+type InitialStackParams = {
+  welcome: undefined;
+};
+export type InitialStackProps = NativeStackNavigationProp<
+  InitialStackParams,
+  'welcome'
+>;
