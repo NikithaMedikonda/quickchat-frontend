@@ -74,15 +74,19 @@ export const Registration = () => {
       newErrors.confirmPassword = 'Passwords do not match';
       isValid = false;
     }
-    if (!form.phoneNumber ) {
-      newErrors.phoneNumber = 'Invalid phone number';
-      isValid = false;
-    }
 
     if (form.email && !validateEmail(form.email)) {
       newErrors.email = 'Invalid email format';
       isValid = false;
     }
+    if (!form.phoneNumber) {
+      newErrors.phoneNumber = 'Phone number required!';
+      isValid = false;
+    } else if (form.phoneNumber.length < 10) {
+      newErrors.phoneNumber = 'Invalid phone number';
+      isValid = false;
+    }
+
     dispatch(setErrors(newErrors));
     return isValid;
   };
@@ -96,33 +100,33 @@ export const Registration = () => {
       return;
     }
 
-try {
-  const result = await registerUser({ ...form, image });
-  if (result.status === 409) {
-    dispatch(hide());
-    Alert.alert(t('User already exists with this number or email'));
-  } else if (result.status === 200) {
-    dispatch(hide());
-    dispatch(
-      setLoginSuccess({
-        accessToken: result.data.accessToken,
-        refreshToken: result.data.refreshToken,
-        user: result.data.user,
-      }),
-    );
-    await AsyncStorage.setItem('authToken', result.data.accessToken);
-    await AsyncStorage.setItem('refreshToken', result.data.refreshToken);
-    await AsyncStorage.setItem('user', JSON.stringify(result.data.user));
-    homeNavigation.replace('hometabs');
-    dispatch(resetForm());
-  } else {
-    dispatch(hide());
-    Alert.alert(t('Something went wrong while registering'));
-  }
-} catch (e) {
-  dispatch(hide());
-  Alert.alert(t('Network error or something unexpected happened'));
-}
+    try {
+      const result = await registerUser({...form, image});
+      if (result.status === 409) {
+        dispatch(hide());
+        Alert.alert(t('User already exists with this number or email'));
+      } else if (result.status === 200) {
+        dispatch(hide());
+        dispatch(
+          setLoginSuccess({
+            accessToken: result.data.accessToken,
+            refreshToken: result.data.refreshToken,
+            user: result.data.user,
+          }),
+        );
+        await AsyncStorage.setItem('authToken', result.data.accessToken);
+        await AsyncStorage.setItem('refreshToken', result.data.refreshToken);
+        await AsyncStorage.setItem('user', JSON.stringify(result.data.user));
+        homeNavigation.replace('hometabs');
+        dispatch(resetForm());
+      } else {
+        dispatch(hide());
+        Alert.alert(t('Something went wrong while registering'));
+      }
+    } catch (e) {
+      dispatch(hide());
+      Alert.alert(t('Network error or something unexpected happened'));
+    }
   };
 
   const inputFields = [
@@ -152,17 +156,24 @@ try {
             accessibilityHint="logo"
           />
         </TouchableOpacity>
-        <PhoneInput
-          style={styles.phoneNumber}
-          initialCountry={'in'}
-          textProps={{
-            placeholder: 'Phone number',
-          }}
-          onChangePhoneNumber={(text: string) => {
-            dispatch(setFormField({key: 'phoneNumber', value: text}));
-          }}
-          onPressFlag={() => {}}
-        />
+        <View>
+          <PhoneInput
+            style={styles.phoneNumber}
+            initialCountry={'in'}
+            textProps={{
+              placeholder: 'Phone number',
+            }}
+            onChangePhoneNumber={(text: string) => {
+              dispatch(setFormField({key: 'phoneNumber', value: text}));
+            }}
+            onPressFlag={() => {}}
+          />
+          {errors.phoneNumber && (
+            <Text style={styles.phoneErrorText}>
+              {t(`${errors.phoneNumber}`)}
+            </Text>
+          )}
+        </View>
         {inputFields.map(field => (
           <View key={field.key}>
             <Placeholder
@@ -175,9 +186,7 @@ try {
             />
             {errors[field.key] && (
               // eslint-disable-next-line react-native/no-inline-styles
-              <Text style={{color: 'red', fontSize: 12}}>
-                {t(`${errors[field.key]}`)}
-              </Text>
+              <Text style={styles.errorText}>{t(`${errors[field.key]}`)}</Text>
             )}
           </View>
         ))}
