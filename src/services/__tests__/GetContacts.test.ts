@@ -1,14 +1,14 @@
-import { PermissionsAndroid} from 'react-native';
+import {PermissionsAndroid} from 'react-native';
 import Contacts from 'react-native-contacts';
+import EncryptedStorage from 'react-native-encrypted-storage';
 import {API_URL} from '../../constants/api';
 import {getContacts} from '../GetContacts';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 jest.mock('react-native-contacts', () => ({
   getAll: jest.fn(),
 }));
 
-jest.mock('@react-native-async-storage/async-storage', () => ({
+jest.mock('react-native-encrypted-storage', () => ({
   getItem: jest.fn(),
 }));
 
@@ -59,7 +59,7 @@ describe('getContacts', () => {
       {phoneNumbers: [{number: '(123) 456-7890'}]},
       {phoneNumbers: [{number: '987-654-3210'}]},
     ]);
-    (AsyncStorage.getItem as jest.Mock).mockResolvedValue('dummy-token');
+    (EncryptedStorage.getItem as jest.Mock).mockResolvedValue('dummy-token');
 
     (fetch as jest.Mock).mockResolvedValue({
       status: 200,
@@ -72,7 +72,7 @@ describe('getContacts', () => {
 
     expect(PermissionsAndroid.request).toHaveBeenCalled();
     expect(Contacts.getAll).toHaveBeenCalled();
-    expect(AsyncStorage.getItem).toHaveBeenCalledWith('authToken');
+    expect(EncryptedStorage.getItem).toHaveBeenCalledWith('authToken');
     expect(fetch).toHaveBeenCalledWith(
       expect.stringContaining('/api/users/contacts'),
       expect.objectContaining({
@@ -80,7 +80,7 @@ describe('getContacts', () => {
         headers: expect.objectContaining({
           authorization: 'Bearer dummy-token',
         }),
-      })
+      }),
     );
     expect(result).toEqual({
       status: 200,
@@ -90,7 +90,7 @@ describe('getContacts', () => {
 
   it('should fetch contacts and send cleaned phone numbers to the API', async () => {
     (Contacts.getAll as jest.Mock).mockResolvedValue(mockContacts);
-    (AsyncStorage.getItem as jest.Mock).mockResolvedValue('token');
+    (EncryptedStorage.getItem as jest.Mock).mockResolvedValue('token');
     (fetch as jest.Mock).mockResolvedValue({
       status: 200,
       json: async () => ({
@@ -123,13 +123,13 @@ describe('getContacts', () => {
 
   it('should throw an error if authToken is not found', async () => {
     (Contacts.getAll as jest.Mock).mockResolvedValue(mockContacts);
-    (AsyncStorage.getItem as jest.Mock).mockResolvedValue(null);
+    (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(null);
     await expect(getContacts()).rejects.toThrow('Authorization failed');
   });
 
   it('should throw error if fetch fails', async () => {
     (Contacts.getAll as jest.Mock).mockResolvedValue(mockContacts);
-    (AsyncStorage.getItem as jest.Mock).mockResolvedValue('token');
+    (EncryptedStorage.getItem as jest.Mock).mockResolvedValue('token');
     (fetch as jest.Mock).mockRejectedValueOnce('Network failed');
     await expect(getContacts()).rejects.toThrow('Network failed');
   });

@@ -51,7 +51,7 @@ jest.mock('@react-navigation/native', () => {
   };
 });
 
-jest.mock('@react-native-async-storage/async-storage', () => ({
+jest.mock('react-native-encrypted-storage', () => ({
   setItem: jest.fn(),
 }));
 
