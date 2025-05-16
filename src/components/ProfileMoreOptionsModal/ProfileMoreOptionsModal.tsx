@@ -8,7 +8,7 @@ import {
   Alert,
   TouchableWithoutFeedback,
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import EncryptedStorage from 'react-native-encrypted-storage';
 import {useNavigation} from '@react-navigation/native';
 import {useTranslation} from 'react-i18next';
 import {ConfirmModal} from '../GenericConfirmModal/ConfirmModal';
@@ -24,6 +24,7 @@ import {logout} from '../../store/slices/loginSlice';
 import {useDispatch} from 'react-redux';
 import {useThemeColors} from '../../constants/colors';
 import {User} from '../../screens/Profile/Profile';
+
 
 export const ProfileMoreOptionsModal = ({
   visible,
@@ -48,8 +49,8 @@ export const ProfileMoreOptionsModal = ({
   useEffect(() => {
     const getUserPhoneNumber = async () => {
       if (phoneNumber === '') {
-        const userDataString = await AsyncStorage.getItem('user');
-        const token = await AsyncStorage.getItem('authToken');
+        const userDataString = await EncryptedStorage.getItem('user');
+        const token = await EncryptedStorage.getItem('authToken');
         if (userDataString) {
           const userDataParsed: User = JSON.parse(userDataString);
           setPhoneNumber(userDataParsed.phoneNumber);
@@ -81,8 +82,8 @@ export const ProfileMoreOptionsModal = ({
   const onConfirmLogout = async () => {
     handleModalClose();
     dispatch(logout());
-    const removeItems = ['user', 'authToken', 'refreshToken'];
-    await AsyncStorage.multiRemove(removeItems);
+    // const removeItems = ['user', 'authToken', 'refreshToken'];
+    await EncryptedStorage.clear();
     navigation.replace('login');
   };
   const onConfirmDelete = async () => {
