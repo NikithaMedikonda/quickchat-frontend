@@ -4,6 +4,7 @@ export const styles = StyleSheet.create({
   iconContainer: {
     justifyContent: 'center',
     alignItems: 'center',
+    paddingTop: 30,
   },
   icon: {
     height: 30,
