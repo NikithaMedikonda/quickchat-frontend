@@ -64,16 +64,16 @@ export const ProfileMoreOptionsModal = ({
     getUserPhoneNumber();
   }, [phoneNumber]);
   const handleDeleteAccountConfirmation = () => {
+    onClose();
     setModalVisible(true);
     setButtonTypes('Delete');
     setMessage(t('Are you sure want to delete this account?'));
-    onClose();
   };
   const handleLogoutConfirmation = () => {
+    onClose();
     setModalVisible(true);
     setButtonTypes('Logout');
     setMessage(t('Are you sure want to logout from this device?'));
-    onClose();
   };
 
   const handleModalClose = () => {
