@@ -7,6 +7,7 @@ import {
   Image,
   Alert,
   TouchableWithoutFeedback,
+  Platform,
 } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {useNavigation} from '@react-navigation/native';
@@ -82,7 +83,6 @@ export const ProfileMoreOptionsModal = ({
   const onConfirmLogout = async () => {
     handleModalClose();
     dispatch(logout());
-    // const removeItems = ['user', 'authToken', 'refreshToken'];
     await EncryptedStorage.clear();
     navigation.replace('login');
   };
@@ -119,11 +119,16 @@ export const ProfileMoreOptionsModal = ({
     onClose();
     profileNavigation.navigate('editProfile');
   };
+  const modalStyle = Platform.select({
+    ios: styles.iosModal,
+    android: styles.androidModal,
+    default: styles.defaultModal,
+  });
   return (
     <View>
-      <Modal animationType="slide" transparent={true} visible={visible}>
+      <Modal transparent={true} visible={visible}>
         <TouchableWithoutFeedback onPress={onClose}>
-          <View style={styles.centeredView}>
+          <View style={[styles.centeredView,modalStyle]}>
             <View style={styles.modalView}>
               <View style={styles.textContainer}>
                 <TouchableOpacity
