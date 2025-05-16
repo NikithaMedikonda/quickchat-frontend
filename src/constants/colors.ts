@@ -5,6 +5,8 @@ export const useThemeColors = () => {
     background: '#000000',
     white: '#FFFFFF',
     text: '#FFFFFF',
+    thickgray:'#716868',
+    lightBlue: '#0080FE',
   };
 };
 
@@ -14,4 +16,6 @@ export type Colors = {
   background: string;
   white: string;
   text: string;
+  thickgray: string;
+  lightBlue: string;
 };

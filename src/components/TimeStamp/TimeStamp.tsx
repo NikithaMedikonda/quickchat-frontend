@@ -21,7 +21,7 @@ export const TimeStamp = ({
     );
   }
   if (messageReceivedTime.isSame(currentTime, 'day')) {
-    displayTime = messageReceivedTime.format('h:mm:ss a');
+    displayTime = messageReceivedTime.format('h:mm a');
   } else if (
     messageReceivedTime.isSame(
       moment().startOf('day').subtract(1, 'days'),
@@ -29,7 +29,7 @@ export const TimeStamp = ({
     )
   ) {
     displayTime = 'Yesterday';
-  } else if (messageReceivedTime.isAfter(moment().subtract(7, 'days'))) {
+  } else if (messageReceivedTime.isAfter(moment().subtract(7, 'days'))){
     displayTime = messageReceivedTime.format('dddd');
   } else {
     displayTime = messageReceivedTime.format('MMM D, YYYY');
