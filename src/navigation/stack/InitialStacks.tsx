@@ -10,7 +10,6 @@ import {hide, show} from '../../store/slices/loadingSlice';
 import {setLoginSuccess} from '../../store/slices/loginSlice';
 import {HomeTabs} from '../tab/HomeTabs';
 import Login from '../../screens/Login/Login';
-
 const Stack = createNativeStackNavigator();
 
 export const InitialStacks = () => {

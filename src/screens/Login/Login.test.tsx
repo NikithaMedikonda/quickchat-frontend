@@ -1,53 +1,123 @@
+import {Alert} from 'react-native';
 import {
   fireEvent,
   render,
   screen,
   waitFor,
 } from '@testing-library/react-native';
-import React from 'react';
+import {NavigationContainer} from '@react-navigation/native';
+import phone from 'phone';
+import {Provider} from 'react-redux';
 import Login from './Login';
-
-jest.mock('@react-navigation/native', () => ({
-  useNavigation: () => ({
-    navigate: mockNavigate,
-  }),
-}));
-const mockNavigate = jest.fn();
+import {loginUser} from '../../services/LoginUser';
+import {store} from '../../store/store';
 
 jest.mock('react-native-phone-input', () => {
-  // eslint-disable-next-line @typescript-eslint/no-shadow
-  const React = require('react');
-  const { TextInput } = require('react-native');
-  const MockPhoneInput = React.forwardRef((props: { value: any; onChangePhoneNumber: any; }, ref: any) => {
-    return (
-      <TextInput
-        ref={ref}
-        placeholder="Phone number"
-        value={props.value}
-        onChangeText={props.onChangePhoneNumber}
-        testID="mock-phone-input"
-      />
-    );
-  });
+  const {useState, forwardRef} = require('react');
+  const {TextInput} = require('react-native');
+  const MockPhoneInput = forwardRef(
+    (props: {value: any; onChangePhoneNumber: any}, ref: any) => {
+      const [phoneNumber, setPhoneNumber] = useState(props.value);
+
+      const handleChangeText = (text: any) => {
+        setPhoneNumber(text);
+        props.onChangePhoneNumber(text);
+      };
+      return (
+        <TextInput
+          ref={ref}
+          placeholder="Phone number"
+          value={phoneNumber}
+          onChangeText={handleChangeText}
+          testID="mock-phone-input"
+        />
+      );
+    },
+  );
   return MockPhoneInput;
 });
 
-jest.mock('react-native-phone-input');
+const mockNavigate = jest.fn();
+const mockReplace = jest.fn();
+
+jest.mock('@react-navigation/native', () => {
+  const actualNav = jest.requireActual('@react-navigation/native');
+  return {
+    ...actualNav,
+    useNavigation: () => ({
+      navigate: mockNavigate,
+      replace: mockReplace,
+    }),
+  };
+});
+
+jest.mock('@react-native-async-storage/async-storage', () => ({
+  setItem: jest.fn(),
+}));
+
+jest.mock('../../services/LoginUser', () => ({
+  loginUser: jest.fn(),
+}));
+
+jest.spyOn(Alert, 'alert');
+
+jest.mock('phone');
+
+jest.mock('react-native-phone-input', () => {
+  const React = require('react');
+  const {TextInput} = require('react-native');
+  const MockPhoneInput = React.forwardRef(
+    (props: {value: any; onChangePhoneNumber: any}, ref: any) => {
+      return (
+        <TextInput
+          ref={ref}
+          placeholder="Phone number"
+          value={props.value}
+          onChangeText={props.onChangePhoneNumber}
+          testID="mock-phone-input"
+        />
+      );
+    },
+  );
+  return MockPhoneInput;
+});
 
 describe('Login Screen', () => {
   beforeEach(() => {
-    render(<Login />);
+    render(
+      <Provider store={store}>
+        <NavigationContainer>
+          <Login />
+        </NavigationContainer>
+      </Provider>,
+    );
+    jest.clearAllMocks();
   });
+
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
+
   test('should render the elements correctly', () => {
+    expect(screen.getByPlaceholderText('Phone number')).toBeOnTheScreen();
     expect(screen.getByPlaceholderText('Password')).toBeOnTheScreen();
     expect(screen.getByText('Login')).toBeOnTheScreen();
     expect(screen.getByText('Sign up')).toBeOnTheScreen();
     expect(screen.getByText("Don't have an account?")).toBeOnTheScreen();
   });
+
   test('should navigate to the register', () => {
     const signUp = screen.getByText('Sign up');
     fireEvent.press(signUp);
     expect(mockNavigate).toHaveBeenCalledWith('register');
+  });
+
+  test('show the validation errors on empty form submission', async () => {
+    fireEvent.press(screen.getByText('Login'));
+    await waitFor(() => {
+      expect(screen.getByText('Phone number required!')).toBeTruthy();
+      expect(screen.getByText('Password is required')).toBeTruthy();
+    });
   });
 
   test('should change the value of password upon entering', async () => {
@@ -57,6 +127,117 @@ describe('Login Screen', () => {
 
     await waitFor(() => {
       expect(phoneNumber.props.value.target.value).toBe('Anu@1234');
+    });
+  });
+
+  test('show the error when the phone number is invalid', async () => {
+    (phone as jest.Mock).mockReturnValue({
+      isValid: false,
+      phoneNumber: '+918522041688',
+    });
+    const phoneNumber = screen.getByPlaceholderText('Phone number');
+    fireEvent.changeText(phoneNumber, '852204168');
+    fireEvent.changeText(screen.getByPlaceholderText('Password'), 'Anu@1234');
+    fireEvent.press(screen.getByText('Login'));
+    await waitFor(() => {
+      expect(screen.getByText('Invalid phone number!')).toBeOnTheScreen();
+    });
+  });
+  test('should show alert if something went wrong int the fetch call', async () => {
+    (phone as jest.Mock).mockReturnValue({
+      isValid: true,
+      phoneNumber: '+918522041688',
+    });
+    (loginUser as jest.Mock).mockRejectedValue({
+      status: 500,
+    });
+    const phoneNumber = screen.getByPlaceholderText('Phone number');
+    fireEvent.changeText(phoneNumber, '8522041688');
+    fireEvent.changeText(screen.getByPlaceholderText('Password'), 'Anu@1234');
+    fireEvent.press(screen.getByText('Login'));
+    await waitFor(() => {
+      expect(Alert.alert).toHaveBeenCalledWith('Something went wrong');
+    });
+  });
+  test('should show alert if user not existed with this phone number', async () => {
+    (phone as jest.Mock).mockReturnValue({
+      isValid: true,
+      phoneNumber: '+918522041688',
+    });
+    (loginUser as jest.Mock).mockResolvedValue({
+      status: 404,
+    });
+    const phoneNumber = screen.getByPlaceholderText('Phone number');
+    fireEvent.changeText(phoneNumber, '8522041688');
+    fireEvent.changeText(screen.getByPlaceholderText('Password'), 'Anu@1234');
+    fireEvent.press(screen.getByText('Login'));
+    await waitFor(() => {
+      expect(Alert.alert).toHaveBeenCalledWith(
+        'No account exists with this phone number',
+      );
+    });
+  });
+
+  test('should show alert if user entered the wrong password', async () => {
+    (phone as jest.Mock).mockReturnValue({
+      isValid: true,
+      phoneNumber: '+918522041688',
+    });
+    (loginUser as jest.Mock).mockResolvedValue({
+      status: 401,
+    });
+    const phoneNumber = screen.getByPlaceholderText('Phone number');
+    fireEvent.changeText(phoneNumber, '8522041688');
+    fireEvent.changeText(screen.getByPlaceholderText('Password'), 'Anu@1234');
+    fireEvent.press(screen.getByText('Login'));
+    await waitFor(() => {
+      expect(Alert.alert).toHaveBeenCalledWith('Wrong password');
+    });
+  });
+  test('should show alert if login failed', async () => {
+    (phone as jest.Mock).mockReturnValue({
+      isValid: true,
+      phoneNumber: '+918522041688',
+    });
+    (loginUser as jest.Mock).mockResolvedValue({
+      status: 500,
+    });
+    const phoneNumber = screen.getByPlaceholderText('Phone number');
+    fireEvent.changeText(phoneNumber, '8522041688');
+    fireEvent.changeText(screen.getByPlaceholderText('Password'), 'Anu@1234');
+    fireEvent.press(screen.getByText('Login'));
+    await waitFor(() => {
+      expect(Alert.alert).toHaveBeenCalledWith(
+        'Something went wrong while login',
+      );
+    });
+  });
+
+  test('should navigate to the hometabs upon successful login', async () => {
+    (phone as jest.Mock).mockReturnValue({
+      isValid: true,
+      phoneNumber: '+918522041688',
+    });
+    (loginUser as jest.Mock).mockResolvedValue({
+      status: 200,
+      data: {
+        accessToken: 'some-token',
+        refreshToken: 'some-refresh-token',
+        user: {
+          id: 'some-id',
+          firstName: 'some-first-name',
+          lastName: 'testUser',
+          phoneNumber: '+918522041688',
+        },
+      },
+    });
+
+    const phoneNumber = screen.getByPlaceholderText('Phone number');
+    fireEvent.changeText(phoneNumber, '8522041688');
+    fireEvent.changeText(screen.getByPlaceholderText('Password'), 'Anu@1234');
+    fireEvent.press(screen.getByText('Login'));
+    await waitFor(() => {
+      expect(mockReplace).toHaveBeenCalledWith('hometabs');
     });
   });
 });

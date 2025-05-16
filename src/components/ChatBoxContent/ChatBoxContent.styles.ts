@@ -1,25 +1,24 @@
-import {StyleSheet, Dimensions} from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
 import { Colors } from '../../constants/colors.ts';
 
-const {width, height} = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
-export const getStyles = (colors: Colors ) =>
+export const getStyles = (colors: Colors) =>
     StyleSheet.create({
         container: {
             display: 'flex',
-            height: height,
-            width: width,
+            height: height * 0.06,
+            width: width * 0.75,
             backgroundColor: colors.background,
-            paddingTop: width * 0.40,
         },
         innerContent: {
             width: width * 0.01,
             height: width * 0.01,
         },
         profileImage: {
-           width: width * 0.13,
-           height: width * 0.13,
-           borderRadius: width * 0.10,
+            width: width * 0.12,
+            height: height * 0.06,
+            borderRadius: width * 0.9,
         },
         details: {
             paddingLeft: width * 0.16,
@@ -33,5 +32,6 @@ export const getStyles = (colors: Colors ) =>
         description: {
             color: colors.text,
             fontSize: 13,
+            width: width * 0.55,
         },
     });

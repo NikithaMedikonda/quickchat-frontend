@@ -23,6 +23,7 @@ const initialState = {
   image: '',
   imageBase64: '',
   isVisible:false,
+   imageDeleted: false,
 };
 
 describe('registration slice', () => {
@@ -96,6 +97,7 @@ describe('registration slice', () => {
       image: '',
       imageBase64: '',
       isVisible:false,
+       imageDeleted: false,
     };
     const newState = registrationReducer(modifiedState, resetForm());
     expect(newState).toEqual(initialState);

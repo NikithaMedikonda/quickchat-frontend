@@ -27,9 +27,18 @@ export const getStyles = (colors: Colors) =>
     },
     fieldContainer: {
       marginBottom: 16,
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    fieldTextContainer: {
+      display: 'flex',
+      flexDirection:'row',
+      width: '85%',
+
     },
     label: {
-      fontSize: 14,
+      fontSize: 19,
       fontWeight: '500',
       color: colors.gray,
       marginBottom: 6,

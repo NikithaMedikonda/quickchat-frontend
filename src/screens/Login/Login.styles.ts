@@ -1,6 +1,7 @@
 import {Dimensions, StyleSheet} from 'react-native';
 import {Colors} from '../../constants/colors';
 const {width, height} = Dimensions.get('window');
+
 export const loginStyles = (colors: Colors) =>
   StyleSheet.create({
     container: {
@@ -53,5 +54,16 @@ export const loginStyles = (colors: Colors) =>
       color: colors.gray,
       margin: height * 0.012,
       backgroundColor: colors.white,
+    },
+    error: {color: 'red', fontSize: 12},
+    loginMainContainer: {
+      backgroundColor: colors.background,
+      justifyContent: 'center',
+      alignItems: 'center',
+      height: height,
+      width: width,
+    },
+    keyboardAvoidView:{
+      flex:1,
     },
   });

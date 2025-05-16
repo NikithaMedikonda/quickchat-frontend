@@ -74,6 +74,11 @@ export const Registration = () => {
       newErrors.confirmPassword = 'Passwords do not match';
       isValid = false;
     }
+    if (!form.phoneNumber ) {
+      newErrors.phoneNumber = 'Invalid phone number';
+      isValid = false;
+    }
+
     if (form.email && !validateEmail(form.email)) {
       newErrors.email = 'Invalid email format';
       isValid = false;

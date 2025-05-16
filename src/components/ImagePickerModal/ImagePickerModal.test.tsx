@@ -12,8 +12,10 @@ import {
   setImage,
   setImageUri,
   setIsVisible,
+  setImageDeleted,
 } from '../../store/slices/registrationSlice';
 import {ImagePickerModal} from './ImagePickerModal';
+import {DEFAULT_PROFILE_IMAGE} from '../../constants/defaultImage';
 
 jest.mock('react-native-fs', () => ({
   readFile: jest.fn().mockResolvedValue('mocked-base64-string'),
@@ -22,9 +24,6 @@ jest.mock('react-native-fs', () => ({
 jest.mock('react-native-image-crop-picker', () => ({
   openPicker: jest.fn().mockResolvedValue({path: 'mocked/image/path.jpg'}),
   openCamera: jest.fn().mockResolvedValue({path: 'mocked/image/path.jpg'}),
-}));
-jest.mock('../../services/RegisterUser.ts', () => ({
-  registerUser: jest.fn(),
 }));
 
 jest.mock('../../permissions/ImagePermissions', () => ({
@@ -35,12 +34,21 @@ jest.mock('react-redux', () => ({
   useDispatch: jest.fn(),
   useSelector: jest.fn(),
 }));
+
 const useDispatchMock = jest.mocked(useDispatch);
 const useSelectorMock = jest.mocked(useSelector);
+
 jest.spyOn(Alert, 'alert').mockImplementation(() => {});
 
 describe('ImagePickerModal', () => {
   const mockDispatch = jest.fn();
+  const mockUser = {
+    phoneNumber: '9876543210',
+    firstName: 'Test1',
+    lastName: 'Test2',
+    profilePicture: 'image.jpg',
+    email: 'testuser@gmail.com',
+  };
 
   beforeEach(() => {
     useDispatchMock.mockImplementation(() => mockDispatch);
@@ -48,6 +56,9 @@ describe('ImagePickerModal', () => {
       selector({
         registration: {
           isVisible: true,
+        },
+        login: {
+          user: mockUser,
         },
       }),
     );
@@ -68,40 +79,30 @@ describe('ImagePickerModal', () => {
     expect(mockDispatch).toHaveBeenCalledWith(setIsVisible(false));
   });
 
-  it('handles image picking from gallery for android', async () => {
-    Platform.OS = 'android';
-    const {requestPermissions} = require('../../permissions/ImagePermissions');
-    requestPermissions.mockResolvedValue(false);
-    render(<ImagePickerModal />);
-    const galleryButton = screen.getByA11yHint('gallery-image');
-    fireEvent.press(galleryButton);
-    await waitFor(() => {
-      expect(ImageCropPicker.openPicker).toHaveBeenCalledWith({
-        width: 300,
-        height: 300,
-        cropping: true,
-        includeBase64: false,
-      });
-      expect(RNFS.readFile).toHaveBeenCalledWith(
-        'mocked/image/path.jpg',
-        'base64',
-      );
-      expect(mockDispatch).toHaveBeenCalledWith(
-        setImageUri('mocked/image/path.jpg'),
-      );
-      expect(mockDispatch).toHaveBeenCalledWith(
-        setImage('data:image/jpeg;base64,mocked-base64-string'),
-      );
-    });
+  it('shows delete button when `showDeleteOption` is true', () => {
+    render(<ImagePickerModal showDeleteOption={true} />);
+    expect(screen.getByA11yHint('delete-image')).toBeTruthy();
   });
 
-  it('should give alert when permission is denied from gallery in iOS', async () => {
+  it('handles image deletion correctly', () => {
+    render(<ImagePickerModal showDeleteOption={true} />);
+    const deleteButton = screen.getByA11yHint('delete-image');
+    fireEvent.press(deleteButton);
+    expect(mockDispatch).toHaveBeenCalledWith(setImageUri(DEFAULT_PROFILE_IMAGE));
+    expect(mockDispatch).toHaveBeenCalledWith(setImage(DEFAULT_PROFILE_IMAGE));
+    expect(mockDispatch).toHaveBeenCalledWith(setImageDeleted(true));
+    expect(mockDispatch).toHaveBeenCalledWith(setIsVisible(false));
+  });
+
+  it('shows alert when permission denied on iOS', async () => {
     Platform.OS = 'ios';
     const {requestPermissions} = require('../../permissions/ImagePermissions');
     requestPermissions.mockResolvedValue(false);
+
     render(<ImagePickerModal />);
     const galleryButton = screen.getByA11yHint('gallery-image');
     fireEvent.press(galleryButton);
+
     await waitFor(() => {
       expect(Alert.alert).toHaveBeenCalledWith(
         'Permission Denied',
@@ -110,11 +111,55 @@ describe('ImagePickerModal', () => {
     });
   });
 
-  it('handles image picking from camera in ios', async () => {
-    render(<ImagePickerModal />);
-    Platform.OS === 'ios';
+  it('shows alert when permission denied on Android', async () => {
+    Platform.OS = 'android';
     const {requestPermissions} = require('../../permissions/ImagePermissions');
     requestPermissions.mockResolvedValue(true);
+
+    render(<ImagePickerModal />);
+    const galleryButton = screen.getByA11yHint('gallery-image');
+    fireEvent.press(galleryButton);
+
+    await waitFor(() => {
+      expect(Alert.alert).toHaveBeenCalledWith(
+        'Permission Denied',
+        'We need access to your photos to continue.',
+      );
+    });
+  });
+
+  it('handles image picking from gallery', async () => {
+    const {requestPermissions} = require('../../permissions/ImagePermissions');
+    requestPermissions.mockResolvedValue(true);
+    Platform.OS = 'ios';
+
+    render(<ImagePickerModal />);
+    const galleryButton = screen.getByA11yHint('gallery-image');
+    fireEvent.press(galleryButton);
+
+    await waitFor(() => {
+      expect(ImageCropPicker.openPicker).toHaveBeenCalledWith({
+        width: 300,
+        height: 300,
+        cropping: true,
+        includeBase64: false,
+      });
+      expect(RNFS.readFile).toHaveBeenCalledWith('mocked/image/path.jpg', 'base64');
+      expect(mockDispatch).toHaveBeenCalledWith(setImageUri('mocked/image/path.jpg'));
+      expect(mockDispatch).toHaveBeenCalledWith(
+        setImage('data:image/jpeg;base64,mocked-base64-string'),
+      );
+      expect(mockDispatch).toHaveBeenCalledWith(setImageDeleted(false));
+      expect(mockDispatch).toHaveBeenCalledWith(setIsVisible(false));
+    });
+  });
+
+  it('handles image picking from camera', async () => {
+    const {requestPermissions} = require('../../permissions/ImagePermissions');
+    requestPermissions.mockResolvedValue(true);
+    Platform.OS = 'ios';
+
+    render(<ImagePickerModal />);
     const cameraButton = screen.getByA11yHint('camera-image');
     fireEvent.press(cameraButton);
 
@@ -125,42 +170,13 @@ describe('ImagePickerModal', () => {
         cropping: true,
         includeBase64: false,
       });
-      expect(RNFS.readFile).toHaveBeenCalledWith(
-        'mocked/image/path.jpg',
-        'base64',
-      );
-      expect(mockDispatch).toHaveBeenCalledWith(
-        setImageUri('mocked/image/path.jpg'),
-      );
+      expect(RNFS.readFile).toHaveBeenCalledWith('mocked/image/path.jpg', 'base64');
+      expect(mockDispatch).toHaveBeenCalledWith(setImageUri('mocked/image/path.jpg'));
       expect(mockDispatch).toHaveBeenCalledWith(
         setImage('data:image/jpeg;base64,mocked-base64-string'),
       );
-    });
-  });
-
-  it('handles image picking from gallery', async () => {
-    render(<ImagePickerModal />);
-
-    const galleryButton = screen.getByA11yHint('gallery-image');
-    fireEvent.press(galleryButton);
-
-    await waitFor(() => {
-      expect(ImageCropPicker.openPicker).toHaveBeenCalledWith({
-        width: 300,
-        height: 300,
-        cropping: true,
-        includeBase64: false,
-      });
-      expect(RNFS.readFile).toHaveBeenCalledWith(
-        'mocked/image/path.jpg',
-        'base64',
-      );
-      expect(mockDispatch).toHaveBeenCalledWith(
-        setImageUri('mocked/image/path.jpg'),
-      );
-      expect(mockDispatch).toHaveBeenCalledWith(
-        setImage('data:image/jpeg;base64,mocked-base64-string'),
-      );
+      expect(mockDispatch).toHaveBeenCalledWith(setImageDeleted(false));
+      expect(mockDispatch).toHaveBeenCalledWith(setIsVisible(false));
     });
   });
 });

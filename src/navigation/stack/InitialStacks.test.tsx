@@ -23,7 +23,9 @@ jest.mock('react-native-image-crop-picker', () => ({
 jest.mock('react-native-fs', () => ({
   readFile: jest.fn().mockResolvedValue('mockedBase64Image'),
 }));
-
+jest.mock('react-native-contacts', () => ({
+  getContactsByPhoneNumber: jest.fn(),
+}));
 jest.mock('../../permissions/ImagePermissions', () => ({
   requestPermissions: jest.fn(),
 }));
