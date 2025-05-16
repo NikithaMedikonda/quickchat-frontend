@@ -58,6 +58,7 @@ export const Profile = () => {
   return (
     <View style={styles.container}>
       <View style={styles.innerContainer}>
+        <View style={styles.profileImageContainer}>
         {userData?.profilePicture && (
           <Image
             source={{uri: `${userData?.profilePicture}`}}
@@ -74,6 +75,7 @@ export const Profile = () => {
             style={styles.profileImage}
           />
         )}
+        </View>
       </View>
 
       <View style={styles.contentContainer}>

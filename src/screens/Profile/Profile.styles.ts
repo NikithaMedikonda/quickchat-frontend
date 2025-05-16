@@ -20,14 +20,6 @@ export const getStyles = (color: Colors) =>
       gap: 6,
       marginRight: 12,
     },
-    profileImage: {
-      height: height * 0.14,
-      width: width * 0.3,
-      borderRadius: 70,
-      justifyContent: 'flex-start',
-
-      padding: 10,
-    },
     icons: {
       height: 35,
       width: 31,
@@ -81,5 +73,18 @@ export const getStyles = (color: Colors) =>
     details: {
       display: 'flex',
       gap: 4,
+    },
+    profileImageContainer: {
+      width: width * 0.3,
+      height: width * 0.3,
+      borderRadius: (width * 0.3) / 2,
+      overflow: 'hidden',
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: '#ccc',
+    },
+    profileImage: {
+      width: '100%',
+      height: '100%',
     },
   });
