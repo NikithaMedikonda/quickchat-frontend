@@ -139,7 +139,7 @@ function Login() {
         <View style={styles.messageView}>
           <Text style={styles.messageText}>{t("Don't have an account?")}</Text>
           <TouchableOpacity
-            style={styles.signUpContainer}
+            style={[styles.signUpContainer, styles.signUpText]}
             onPress={() => {
               navigate.navigate('register');
             }}>
