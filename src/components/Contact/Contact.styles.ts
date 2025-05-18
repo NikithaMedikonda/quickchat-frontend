@@ -1,49 +1,36 @@
-import {Dimensions, StyleSheet} from 'react-native';
+import {StyleSheet} from 'react-native';
 import {Colors} from '../../constants/colors';
-
-const {width, height} = Dimensions.get('window');
 
 export const getStyles = (colors: Colors) =>
   StyleSheet.create({
-    contactContainer:{
-        flex:1,
-        backgroundColor:colors.background,
-        left:0.05 * width,
-        display:'flex',
-        flexDirection:'row',
-        justifyContent:'flex-start',
-    },
-    loadingContactsDisplay: {
-      display: 'flex',
+    contactContainer: {
       flexDirection: 'row',
-      alignItems:'center',
-      justifyContent:'center',
-      flex:1,
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingHorizontal: 16,
+      backgroundColor: colors.background,
+      height: 60,
     },
-    loadingContactsText:{
-        color:colors.white,
+    leftBlock: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      flex: 1,
+      gap: 12,
     },
-    nameNumberContainer:{
-        display:'flex',
-        flexDirection: 'column',
-        gap:0.004 * height,
+    image: {
+      width: 35,
+      height: 35,
+      borderRadius: 18,
     },
-    text:{
-        color:colors.white,
-        left:0.05 * width,
-        fontWeight:'bold',
+    nameNumberContainer: {
+      flexDirection: 'column',
     },
-    image:{
-        height:35,
-        width:35,
-        borderRadius:30,
+    text: {
+      color: colors.text,
+      fontWeight: 'bold',
     },
-    invitationContainer:{
-        display:'flex',
-        justifyContent:'center',
-        left:0.4 * width,
-    },
-    inviteText:{
-        color:colors.primaryBlue,
+    inviteText: {
+      color: colors.primaryBlue,
+      fontWeight: '600',
     },
   });
