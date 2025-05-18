@@ -11,7 +11,7 @@ export const styles = StyleSheet.create({
     width: 30,
   },
   profileIcon: {
-    height: 27,
-    width: 27,
+    height: 23,
+    width: 24,
   },
 });
