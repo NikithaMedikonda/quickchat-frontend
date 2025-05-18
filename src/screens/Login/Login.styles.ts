@@ -33,7 +33,7 @@ export const loginStyles = (colors: Colors) =>
       width: width * 0.8,
     },
     messageText: {
-      color: colors.white,
+      color: colors.text,
     },
     messageView: {
       display: 'flex',
@@ -53,7 +53,7 @@ export const loginStyles = (colors: Colors) =>
       padding: 10,
       color: colors.gray,
       margin: height * 0.012,
-      backgroundColor: colors.white,
+      backgroundColor: colors.placeholder,
     },
     error: {color: 'red', fontSize: 12},
     loginMainContainer: {

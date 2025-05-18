@@ -1,21 +1,30 @@
-import { Image, View } from 'react-native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { styles } from './HomeTabs.styles';
-import { Unread } from '../../screens/Unread/Unread';
-import { useThemeColors } from '../../constants/colors';
-import { useTranslation } from 'react-i18next';
-import { HomeStacks } from '../stack/HomeStacks';
-import { ProfileStack } from '../stack/ProfileStacks';
+import {Dimensions, Image, View} from 'react-native';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {styles} from './HomeTabs.styles';
+import {Unread} from '../../screens/Unread/Unread';
+import {useThemeColors} from '../../constants/colors';
+import {useTranslation} from 'react-i18next';
+import {HomeStacks} from '../stack/HomeStacks';
+import {ProfileStack} from '../stack/ProfileStacks';
+import {useImagesColors} from '../../constants/images';
+const {height} = Dimensions.get('window');
 
 export const HomeTabs = () => {
   const Tab = createBottomTabNavigator();
   const colors = useThemeColors();
+  const {tabHome, tabUnread, tabProfile} = useImagesColors();
   const {t} = useTranslation('home');
   return (
     <Tab.Navigator
       screenOptions={{
         tabBarStyle: {
           backgroundColor: colors.background,
+          height: height * 0.1,
+          paddingTop: 10,
+        },
+        tabBarLabelStyle: {
+          fontSize: 11,
+          paddingTop: 5,
         },
       }}>
       <Tab.Screen
@@ -25,12 +34,7 @@ export const HomeTabs = () => {
           // eslint-disable-next-line react/no-unstable-nested-components
           tabBarIcon: ({focused}) => (
             <View style={styles.iconContainer}>
-              {!focused && (
-                <Image
-                  source={require('../../assets/home.png')}
-                  style={styles.icon}
-                />
-              )}
+              {!focused && <Image source={tabHome} style={styles.icon} />}
               {focused && (
                 <Image
                   source={require('../../assets/highlight-home.png')}
@@ -40,7 +44,7 @@ export const HomeTabs = () => {
             </View>
           ),
           tabBarLabel: t('All Chats'),
-          headerShown:false,
+          headerShown: false,
         }}
       />
       <Tab.Screen
@@ -50,12 +54,7 @@ export const HomeTabs = () => {
           // eslint-disable-next-line react/no-unstable-nested-components
           tabBarIcon: ({focused}) => (
             <View style={styles.iconContainer}>
-              {!focused && (
-                <Image
-                  source={require('../../assets/unread-message.png')}
-                  style={styles.icon}
-                />
-              )}
+              {!focused && <Image source={tabUnread} style={styles.icon} />}
               {focused && (
                 <Image
                   source={require('../../assets/highlight-unread-message.png')}
@@ -71,7 +70,7 @@ export const HomeTabs = () => {
           headerTitleAlign: 'center',
           headerTitle: t('Quick Chat'),
           headerTitleStyle: {
-            color: colors.white,
+            color: colors.text,
           },
         }}
       />
@@ -83,10 +82,7 @@ export const HomeTabs = () => {
           tabBarIcon: ({focused}) => (
             <View style={styles.iconContainer}>
               {!focused && (
-                <Image
-                  source={require('../../assets/user.png')}
-                  style={styles.profileIcon}
-                />
+                <Image source={tabProfile} style={styles.profileIcon} />
               )}
               {focused && (
                 <Image

@@ -10,7 +10,7 @@ export const getStyles = (color: Colors) =>
       backgroundColor: color.background,
       paddingTop: height * 0.05,
     },
-    dotsImage: {
+    profileDots: {
       height: 30,
       width: 30,
     },

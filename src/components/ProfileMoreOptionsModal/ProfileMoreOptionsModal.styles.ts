@@ -1,5 +1,5 @@
 import {Dimensions, StyleSheet} from 'react-native';
-import { Colors } from '../../constants/colors';
+import {Colors} from '../../constants/colors';
 
 const {height} = Dimensions.get('window');
 
@@ -29,6 +29,7 @@ export const getStyles = (color: Colors) =>
     image: {
       height: 20,
       width: 20,
+      marginLeft: 20,
     },
     textContainer: {
       justifyContent: 'space-between',
@@ -37,7 +38,10 @@ export const getStyles = (color: Colors) =>
     optionsView: {
       display: 'flex',
       flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
       padding: 10,
+      width: 200,
     },
     binOptionsView: {
       gap: 20,
@@ -45,12 +49,9 @@ export const getStyles = (color: Colors) =>
     logoutOptionsView: {
       gap: 90,
     },
-    editOptionsView: {
-      gap: 55,
-    },
     modalText: {
       fontSize: 18,
       fontWeight: 'bold',
-      color: color.text,
+      color: color.profileOptionsText,
     },
   });

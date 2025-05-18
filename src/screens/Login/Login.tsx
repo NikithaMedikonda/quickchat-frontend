@@ -27,12 +27,14 @@ import {hide, show} from '../../store/slices/loadingSlice';
 import {loginUser} from '../../services/LoginUser';
 import {HomeTabsProps, NavigationProps} from '../../types/usenavigation.type';
 import {useThemeColors} from '../../constants/colors';
+import { useImagesColors } from '../../constants/images';
 import {loginStyles} from './Login.styles';
 function Login() {
   const homeNavigation = useNavigation<HomeTabsProps>();
   const navigate = useNavigation<NavigationProps>();
   const dispatch = useDispatch();
   const colors = useThemeColors();
+  const { logo } = useImagesColors();
   const styles = loginStyles(colors);
   const {t} = useTranslation('auth');
   const {form, errors} = useSelector((state: RootState) => state.login);
@@ -40,6 +42,7 @@ function Login() {
   const handleInputChange = (key: keyof typeof form, value: string) => {
     dispatch(setLoginField({key, value}));
   };
+
   const validateForm = () => {
     const newErrors: Partial<typeof form> = {};
     let isValid = true;
@@ -106,7 +109,7 @@ function Login() {
         keyboardShouldPersistTaps="handled">
         <Image
           style={styles.image}
-          source={require('../../assets/quickchat.png')}
+          source={logo}
           accessibilityHint="logo-image"
         />
         <PhoneInput

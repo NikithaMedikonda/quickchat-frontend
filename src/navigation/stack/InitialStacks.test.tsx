@@ -32,18 +32,20 @@ jest.mock('../../permissions/ImagePermissions', () => ({
 
 jest.mock('react-native-phone-input', () => {
   const React = require('react');
-  const { TextInput } = require('react-native');
-  const MockPhoneInput = React.forwardRef((props: { value: any; onChangePhoneNumber: any; }, ref: any) => {
-    return (
-      <TextInput
-        ref={ref}
-        placeholder="Phone number"
-        value={props.value}
-        onChangeText={props.onChangePhoneNumber}
-        testID="mock-phone-input"
-      />
-    );
-  });
+  const {TextInput} = require('react-native');
+  const MockPhoneInput = React.forwardRef(
+    (props: {value: any; onChangePhoneNumber: any}, ref: any) => {
+      return (
+        <TextInput
+          ref={ref}
+          placeholder="Phone number"
+          value={props.value}
+          onChangeText={props.onChangePhoneNumber}
+          testID="mock-phone-input"
+        />
+      );
+    },
+  );
   return MockPhoneInput;
 });
 
@@ -132,7 +134,8 @@ describe('InitialStacks', () => {
     const {getByText} = renderWithProviders();
 
     await waitFor(() => {
-      expect(getByText('You have no chats. Start Messaging!')).toBeTruthy();
+      expect(getByText('One message. Infinite possibilities.')).toBeTruthy();
+      expect(getByText('What are you waiting for?')).toBeTruthy();
     });
   });
 
@@ -168,7 +171,8 @@ describe('InitialStacks', () => {
         'refreshToken',
         'new-refresh-token',
       );
-      expect(getByText('You have no chats. Start Messaging!')).toBeTruthy();
+      expect(getByText('One message. Infinite possibilities.')).toBeTruthy();
+      expect(getByText('What are you waiting for?')).toBeTruthy();
     });
   });
 

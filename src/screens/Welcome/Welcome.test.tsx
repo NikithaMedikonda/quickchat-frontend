@@ -13,7 +13,7 @@ describe('Welcome Screen', () => {
     render(<Welcome />);
     const image = screen.getByA11yHint('logo-image');
     expect(image.props.source).toEqual({
-      testUri: '../../../src/assets/quickchat.png',
+      testUri: '../../../src/assets/WeChatLightLogo.png',
     });
   });
 

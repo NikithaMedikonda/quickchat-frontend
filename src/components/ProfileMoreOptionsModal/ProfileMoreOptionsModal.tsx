@@ -23,6 +23,7 @@ import {
 import {logout} from '../../store/slices/loginSlice';
 import {useDispatch} from 'react-redux';
 import {useThemeColors} from '../../constants/colors';
+import {useImagesColors} from '../../constants/images';
 import {User} from '../../screens/Profile/Profile';
 
 export const ProfileMoreOptionsModal = ({
@@ -34,6 +35,7 @@ export const ProfileMoreOptionsModal = ({
 }) => {
   const colors = useThemeColors();
   const styles = getStyles(colors);
+  const {bin, pencil, logoutImage} = useImagesColors();
   const dispatch = useDispatch();
   const [modalVisible, setModalVisible] = useState(false);
   const [message, setMessage] = useState('');
@@ -126,33 +128,33 @@ export const ProfileMoreOptionsModal = ({
             <View style={styles.modalView}>
               <View style={styles.textContainer}>
                 <TouchableOpacity
+                  onPress={handleEditProfile}
+                  style={ styles.optionsView}>
+                  <Text style={styles.modalText}>Edit Profile</Text>
+                  <Image
+                    source={pencil}
+                    style={styles.image}
+                    accessibilityHint="edit-image"
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity
                   onPress={handleDeleteAccountConfirmation}
-                  style={[styles.binOptionsView, styles.optionsView]}>
+                  style={styles.optionsView}>
                   <Text style={styles.modalText}>Delete Account</Text>
                   <Image
-                    source={require('../../assets/bin.png')}
+                    source={bin}
                     style={styles.image}
                     accessibilityHint="bin-image"
                   />
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={handleLogoutConfirmation}
-                  style={[styles.logoutOptionsView, styles.optionsView]}>
+                  style={ styles.optionsView}>
                   <Text style={styles.modalText}>Logout</Text>
                   <Image
-                    source={require('../../assets/log-out.png')}
+                    source={logoutImage}
                     style={styles.image}
                     accessibilityHint="logout-image"
-                  />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={handleEditProfile}
-                  style={[styles.editOptionsView, styles.optionsView]}>
-                  <Text style={styles.modalText}>Edit Profile</Text>
-                  <Image
-                    source={require('../../assets/edit.png')}
-                    style={styles.image}
-                    accessibilityHint="edit-image"
                   />
                 </TouchableOpacity>
               </View>

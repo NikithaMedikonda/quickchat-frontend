@@ -12,7 +12,7 @@ export const getStyles = (colors: Colors) =>
       padding: 10,
       color: colors.gray,
       margin: height * 0.012,
-      backgroundColor: colors.white,
+      backgroundColor: colors.placeholder,
     },
     placeholder: {
       color: colors.gray,
