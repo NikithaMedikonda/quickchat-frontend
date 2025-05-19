@@ -2,7 +2,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react-nativ
 import { Home } from './Home';
 import { Provider } from 'react-redux';
 import { store } from '../../store/store';
-import { useThemeColors } from '../../constants/colors';
+import { useThemeColors } from '../../themes/colors';
 const mockSetOptions = jest.fn();
 const mockNavigate = jest.fn();
 

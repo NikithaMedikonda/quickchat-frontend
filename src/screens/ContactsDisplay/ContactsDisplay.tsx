@@ -2,7 +2,7 @@
 import {useEffect, useLayoutEffect, useState} from 'react';
 import Contacts from 'react-native-contacts';
 import {View, Text, ScrollView, TouchableOpacity, Alert} from 'react-native';
-import {useThemeColors} from '../../constants/colors';
+import {useThemeColors} from '../../themes/colors';
 import {getStyles} from './ContactsDisplay.styles';
 import {HomeTabsProps} from '../../types/usenavigation.type';
 import {useNavigation} from '@react-navigation/native';

@@ -21,7 +21,7 @@ import {updateProfilePicture} from '../../store/slices/loginSlice';
 import {getStyles} from './ImagePickerModal.styles';
 import {requestPermissions} from '../../permissions/ImagePermissions';
 import {RootState} from '../../store/store';
-import {useThemeColors} from '../../constants/colors';
+import {useThemeColors} from '../../themes/colors';
 import { DEFAULT_PROFILE_IMAGE } from '../../constants/defaultImage';
 
 export function ImagePickerModal({

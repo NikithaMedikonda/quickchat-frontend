@@ -3,7 +3,7 @@ import {useTranslation} from 'react-i18next';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {Profile} from '../../screens/Profile/Profile';
 import {EditProfile} from '../../screens/EditProfile/EditProfile';
-import {useThemeColors} from '../../constants/colors';
+import {useThemeColors} from '../../themes/colors';
 
 const Stack = createNativeStackNavigator();
 

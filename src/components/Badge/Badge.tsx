@@ -1,6 +1,6 @@
 import { Text, View } from 'react-native';
 import { Badgestyles } from './Badge.styles';
-import { useThemeColors } from '../../constants/colors.ts';
+import { useThemeColors } from '../../themes/colors.ts';
 
 export const Badge = ({
   messageCount,

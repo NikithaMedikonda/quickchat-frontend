@@ -2,7 +2,7 @@ import {View, Text, Image, Alert} from 'react-native';
 import {ContactDetails} from '../../types/contact.types';
 import {DEFAULT_PROFILE_IMAGE} from '../../constants/defaultImage';
 import {getStyles} from './Contact.styles';
-import {useThemeColors} from '../../constants/colors';
+import {useThemeColors} from '../../themes/colors';
 import {Linking, Platform} from 'react-native';
 import { useTranslation } from 'react-i18next';
 

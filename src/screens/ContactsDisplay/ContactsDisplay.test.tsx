@@ -3,7 +3,7 @@ import {ContactsDisplay} from './ContactsDisplay';
 import {useNavigation} from '@react-navigation/native';
 import Contacts from 'react-native-contacts';
 import {getContacts} from '../../services/GetContacts';
-import {useThemeColors} from '../../constants/colors';
+import {useThemeColors} from '../../themes/colors';
 import {Alert} from 'react-native';
 
 jest.mock('@react-navigation/native', () => ({

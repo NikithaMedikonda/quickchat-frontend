@@ -2,11 +2,11 @@ import {Dimensions, Image, View} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {styles} from './HomeTabs.styles';
 import {Unread} from '../../screens/Unread/Unread';
-import {useThemeColors} from '../../constants/colors';
+import {useThemeColors} from '../../themes/colors';
 import {useTranslation} from 'react-i18next';
 import {HomeStacks} from '../stack/HomeStacks';
 import {ProfileStack} from '../stack/ProfileStacks';
-import {useImagesColors} from '../../constants/images';
+import {useImagesColors} from '../../themes/images';
 const {height} = Dimensions.get('window');
 
 export const HomeTabs = () => {

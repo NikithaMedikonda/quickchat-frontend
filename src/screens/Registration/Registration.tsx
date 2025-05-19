@@ -27,7 +27,7 @@ import {RootState} from '../../store/store';
 import {hide, show} from '../../store/slices/loadingSlice';
 import {setLoginSuccess} from '../../store/slices/loginSlice';
 import {useNavigation} from '@react-navigation/native';
-import {useThemeColors} from '../../constants/colors';
+import {useThemeColors} from '../../themes/colors';
 import {useTranslation} from 'react-i18next';
 
 export const Registration = () => {

@@ -5,8 +5,8 @@ import {useTranslation} from 'react-i18next';
 import {useNavigation} from '@react-navigation/native';
 import {getStyles} from './Profile.styles';
 import {ProfileMoreOptionsModal} from '../../components/ProfileMoreOptionsModal/ProfileMoreOptionsModal';
-import {useThemeColors} from '../../constants/colors';
-import { useImagesColors } from '../../constants/images';
+import {useThemeColors} from '../../themes/colors';
+import { useImagesColors } from '../../themes/images';
 
 export interface User {
   firstName: string;

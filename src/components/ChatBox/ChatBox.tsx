@@ -2,7 +2,7 @@ import { View } from 'react-native';
 import { ChatBoxContent } from '../ChatBoxContent/ChatBoxContent';
 import { TimeStamp } from '../TimeStamp/TimeStamp';
 import { getStyles } from './ChatBox.styles';
-import { useThemeColors } from '../../constants/colors';
+import { useThemeColors } from '../../themes/colors';
 import { Badge } from '../Badge/Badge';
 
 export const ChatBox = ({

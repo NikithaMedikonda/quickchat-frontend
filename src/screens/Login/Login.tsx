@@ -26,8 +26,8 @@ import {
 import {hide, show} from '../../store/slices/loadingSlice';
 import {loginUser} from '../../services/LoginUser';
 import {HomeTabsProps, NavigationProps} from '../../types/usenavigation.type';
-import {useThemeColors} from '../../constants/colors';
-import { useImagesColors } from '../../constants/images';
+import {useThemeColors} from '../../themes/colors';
+import { useImagesColors } from '../../themes/images';
 import {loginStyles} from './Login.styles';
 function Login() {
   const homeNavigation = useNavigation<HomeTabsProps>();

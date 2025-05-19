@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { Colors } from '../../constants/colors';
+import { Colors } from '../../themes/colors';
 export const Badgestyles = (colors: Colors) =>
   StyleSheet.create({
     background: {

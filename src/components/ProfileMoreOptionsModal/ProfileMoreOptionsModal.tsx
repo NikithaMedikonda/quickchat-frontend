@@ -22,8 +22,8 @@ import {
 } from '../../types/usenavigation.type';
 import {logout} from '../../store/slices/loginSlice';
 import {useDispatch} from 'react-redux';
-import {useThemeColors} from '../../constants/colors';
-import {useImagesColors} from '../../constants/images';
+import {useThemeColors} from '../../themes/colors';
+import {useImagesColors} from '../../themes/images';
 import {User} from '../../screens/Profile/Profile';
 
 export const ProfileMoreOptionsModal = ({

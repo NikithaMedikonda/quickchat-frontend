@@ -3,7 +3,7 @@ import {Image, Text, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {useTranslation} from 'react-i18next';
 import {HomeTabsProps} from '../../types/usenavigation.type';
-import {useThemeColors} from '../../constants/colors';
+import {useThemeColors} from '../../themes/colors';
 import {getStyles} from './Home.styles';
 import PlusIcon from '../../components/PlusIcon/PlusIcon';
 
