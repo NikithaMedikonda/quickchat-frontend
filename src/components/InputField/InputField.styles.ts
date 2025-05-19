@@ -10,7 +10,7 @@ export const getStyles = (colors: Colors) =>
       borderRadius: 10,
       width: width * 0.8,
       padding: 10,
-      color: colors.gray,
+      color: colors.inputText,
       margin: height * 0.012,
       backgroundColor: colors.placeholder,
     },
