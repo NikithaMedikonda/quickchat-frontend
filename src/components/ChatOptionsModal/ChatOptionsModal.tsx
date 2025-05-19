@@ -5,7 +5,6 @@ import {
   Modal,
   TouchableOpacity,
   Image,
-  Alert,
   TouchableWithoutFeedback,
   Platform,
 } from 'react-native';
