@@ -113,9 +113,20 @@ export const EditProfile = () => {
       if (user) {
         try {
           const result = await editProfile(payload, user);
-          await EncryptedStorage.setItem('user', JSON.stringify(result.data.user));
-          profileNavigation.replace('profileScreen');
-          Alert.alert('Success', 'Profile updated successfully!');
+          if (result.status === 200) {
+            await EncryptedStorage.setItem(
+              'user',
+              JSON.stringify(result.data.user),
+            );
+            profileNavigation.replace('profileScreen');
+            Alert.alert('Success', 'Profile updated successfully!');
+          } else if (result.status === 400) {
+            Alert.alert(
+              'Phone Number is required to change the profile image.',
+            );
+          } else if (result.status === 404) {
+            Alert.alert('No user exists with the given phone number.');
+          }
         } catch (err) {
           Alert.alert('Error', 'Failed to update profile');
         }
@@ -182,7 +193,7 @@ export const EditProfile = () => {
           </View>
         ))}
         <View style={styles.buttonRow}>
-          <TouchableOpacity style={styles.touchableButton} onPress={handleSave}>
+          <TouchableOpacity style={styles.touchableButton} onPress={handleSave} >
             <Text style={styles.buttonText}>{t('Save')}</Text>
           </TouchableOpacity>
         </View>
