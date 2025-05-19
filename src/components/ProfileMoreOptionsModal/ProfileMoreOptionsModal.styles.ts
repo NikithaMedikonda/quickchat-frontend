@@ -1,5 +1,5 @@
 import {Dimensions, StyleSheet} from 'react-native';
-import {Colors} from '../../constants/colors';
+import { Colors } from '../../constants/colors';
 
 const {height} = Dimensions.get('window');
 
@@ -9,17 +9,6 @@ export const getStyles = (color: Colors) =>
       flex: 1,
       justifyContent: 'flex-start',
       alignItems: 'flex-end',
-      backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    },
-    iosModal: {
-      paddingTop: height * 0.15,
-      paddingRight: height * 0.02,
-    },
-    androidModal: {
-      paddingTop: height * 0.09,
-      paddingRight: height * 0.04,
-    },
-    defaultModal: {
       paddingTop: height * 0.15,
       paddingRight: height * 0.02,
     },

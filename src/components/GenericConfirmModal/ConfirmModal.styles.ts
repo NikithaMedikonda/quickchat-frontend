@@ -7,9 +7,9 @@ export const confirmModalStyles = (colors:Colors) => {
   return StyleSheet.create({
     overlay: {
       flex: 1,
+      backgroundColor: colors.background,
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: 'rgba(0, 0, 0, 0.6)',
     },
     modal: {
       backgroundColor: colors.gray,

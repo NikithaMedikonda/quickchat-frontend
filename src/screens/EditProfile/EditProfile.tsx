@@ -1,4 +1,4 @@
-import {useEffect, useLayoutEffect, useState} from 'react';
+import React, {useEffect, useLayoutEffect, useState} from 'react';
 import {
   Alert,
   Image,
@@ -9,7 +9,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import EncryptedStorage from 'react-native-encrypted-storage';
 import {useNavigation} from '@react-navigation/native';
 import {useTranslation} from 'react-i18next';
 import {useSelector} from 'react-redux';
@@ -22,6 +21,7 @@ import {ImagePickerModal} from '../../components/ImagePickerModal/ImagePickerMod
 import {setIsVisible} from '../../store/slices/registrationSlice';
 import {editProfile} from '../../services/editProfile';
 import {ProfileScreenNavigationProp} from '../../types/usenavigation.type';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const EditProfile = () => {
   const colors = useThemeColors();
@@ -45,8 +45,8 @@ export const EditProfile = () => {
 
   const getUserData = async () => {
     try {
-      const userDataString = await EncryptedStorage.getItem('user');
-      const AccessToken = (await EncryptedStorage.getItem('authToken')) || '';
+      const userDataString = await AsyncStorage.getItem('user');
+      const AccessToken = (await AsyncStorage.getItem('authToken')) || '';
       const userData = userDataString ? JSON.parse(userDataString) : {};
 
       const {
@@ -113,7 +113,7 @@ export const EditProfile = () => {
       if (user) {
         try {
           const result = await editProfile(payload, user);
-          await EncryptedStorage.setItem('user', JSON.stringify(result.data.user));
+          await AsyncStorage.setItem('user', JSON.stringify(result.data.user));
           profileNavigation.replace('profileScreen');
           Alert.alert('Success', 'Profile updated successfully!');
         } catch (err) {

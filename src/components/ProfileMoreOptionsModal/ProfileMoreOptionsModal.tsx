@@ -7,9 +7,8 @@ import {
   Image,
   Alert,
   TouchableWithoutFeedback,
-  Platform,
 } from 'react-native';
-import EncryptedStorage from 'react-native-encrypted-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useNavigation} from '@react-navigation/native';
 import {useTranslation} from 'react-i18next';
 import {ConfirmModal} from '../GenericConfirmModal/ConfirmModal';
@@ -25,7 +24,6 @@ import {logout} from '../../store/slices/loginSlice';
 import {useDispatch} from 'react-redux';
 import {useThemeColors} from '../../constants/colors';
 import {User} from '../../screens/Profile/Profile';
-
 
 export const ProfileMoreOptionsModal = ({
   visible,
@@ -50,8 +48,8 @@ export const ProfileMoreOptionsModal = ({
   useEffect(() => {
     const getUserPhoneNumber = async () => {
       if (phoneNumber === '') {
-        const userDataString = await EncryptedStorage.getItem('user');
-        const token = await EncryptedStorage.getItem('authToken');
+        const userDataString = await AsyncStorage.getItem('user');
+        const token = await AsyncStorage.getItem('authToken');
         if (userDataString) {
           const userDataParsed: User = JSON.parse(userDataString);
           setPhoneNumber(userDataParsed.phoneNumber);
@@ -64,16 +62,16 @@ export const ProfileMoreOptionsModal = ({
     getUserPhoneNumber();
   }, [phoneNumber]);
   const handleDeleteAccountConfirmation = () => {
-    onClose();
     setModalVisible(true);
     setButtonTypes('Delete');
     setMessage(t('Are you sure want to delete this account?'));
+    onClose();
   };
   const handleLogoutConfirmation = () => {
-    onClose();
     setModalVisible(true);
     setButtonTypes('Logout');
     setMessage(t('Are you sure want to logout from this device?'));
+    onClose();
   };
 
   const handleModalClose = () => {
@@ -83,7 +81,8 @@ export const ProfileMoreOptionsModal = ({
   const onConfirmLogout = async () => {
     handleModalClose();
     dispatch(logout());
-    await EncryptedStorage.clear();
+    const removeItems = ['user', 'authToken', 'refreshToken'];
+    await AsyncStorage.multiRemove(removeItems);
     navigation.replace('login');
   };
   const onConfirmDelete = async () => {
@@ -119,16 +118,11 @@ export const ProfileMoreOptionsModal = ({
     onClose();
     profileNavigation.navigate('editProfile');
   };
-  const modalStyle = Platform.select({
-    ios: styles.iosModal,
-    android: styles.androidModal,
-    default: styles.defaultModal,
-  });
   return (
     <View>
-      <Modal transparent={true} visible={visible}>
+      <Modal animationType="slide" transparent={true} visible={visible}>
         <TouchableWithoutFeedback onPress={onClose}>
-          <View style={[styles.centeredView,modalStyle]}>
+          <View style={styles.centeredView}>
             <View style={styles.modalView}>
               <View style={styles.textContainer}>
                 <TouchableOpacity

@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   Alert,
   Image,
@@ -8,7 +9,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import EncryptedStorage from 'react-native-encrypted-storage';
 import {useDispatch, useSelector} from 'react-redux';
 import PhoneInput from 'react-native-phone-input';
 import {Button} from '../../components/Button/Button';
@@ -110,9 +110,9 @@ try {
         user: result.data.user,
       }),
     );
-    await EncryptedStorage.setItem('authToken', result.data.accessToken);
-    await EncryptedStorage.setItem('refreshToken', result.data.refreshToken);
-    await EncryptedStorage.setItem('user', JSON.stringify(result.data.user));
+    await AsyncStorage.setItem('authToken', result.data.accessToken);
+    await AsyncStorage.setItem('refreshToken', result.data.refreshToken);
+    await AsyncStorage.setItem('user', JSON.stringify(result.data.user));
     homeNavigation.replace('hometabs');
     dispatch(resetForm());
   } else {

@@ -1,11 +1,11 @@
-import {Image, View} from 'react-native';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {styles} from './HomeTabs.styles';
-import {Unread} from '../../screens/Unread/Unread';
-import {useThemeColors} from '../../constants/colors';
-import {useTranslation} from 'react-i18next';
-import {HomeStacks} from '../stack/HomeStacks';
-import {ProfileStack} from '../stack/ProfileStacks';
+import { Image, View } from 'react-native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { styles } from './HomeTabs.styles';
+import { Unread } from '../../screens/Unread/Unread';
+import { useThemeColors } from '../../constants/colors';
+import { useTranslation } from 'react-i18next';
+import { HomeStacks } from '../stack/HomeStacks';
+import { ProfileStack } from '../stack/ProfileStacks';
 
 export const HomeTabs = () => {
   const Tab = createBottomTabNavigator();
@@ -16,19 +16,6 @@ export const HomeTabs = () => {
       screenOptions={{
         tabBarStyle: {
           backgroundColor: colors.background,
-          borderTopWidth: 0,
-          height: 100,
-        },
-        tabBarItemStyle: {
-          justifyContent: 'center',
-          alignItems: 'center',
-          flex: 1,
-        },
-        tabBarLabelStyle: {
-          fontSize: 12,
-          fontWeight: '700',
-          marginTop: 20,
-          textAlign: 'center',
         },
       }}>
       <Tab.Screen
@@ -53,7 +40,7 @@ export const HomeTabs = () => {
             </View>
           ),
           tabBarLabel: t('All Chats'),
-          headerShown: false,
+          headerShown:false,
         }}
       />
       <Tab.Screen
