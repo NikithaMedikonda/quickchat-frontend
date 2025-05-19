@@ -251,6 +251,7 @@ describe('EditProfile Component', () => {
         button: 'close',
         closeOnOverlayTap: true,
       });
+     });
     
     await waitFor(
       () => {
@@ -291,3 +292,4 @@ describe('EditProfile Component', () => {
     });
   });
 });
+}
