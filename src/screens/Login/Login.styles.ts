@@ -1,5 +1,5 @@
 import {Dimensions, StyleSheet} from 'react-native';
-import {Colors} from '../../constants/colors';
+import {Colors} from '../../themes/colors';
 const {width, height} = Dimensions.get('window');
 
 export const loginStyles = (colors: Colors) =>
@@ -33,7 +33,7 @@ export const loginStyles = (colors: Colors) =>
       width: width * 0.8,
     },
     messageText: {
-      color: colors.white,
+      color: colors.text,
     },
     messageView: {
       display: 'flex',
@@ -56,7 +56,7 @@ export const loginStyles = (colors: Colors) =>
       padding: 10,
       color: colors.gray,
       margin: height * 0.012,
-      backgroundColor: colors.white,
+      backgroundColor: colors.placeholder,
     },
     error: {
       color: 'red',

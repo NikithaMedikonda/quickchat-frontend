@@ -1,5 +1,5 @@
 import {StyleSheet} from 'react-native';
-import {Colors} from '../../constants/colors';
+import {Colors} from '../../themes/colors';
 
 export const getStyles = (colors: Colors) =>
   StyleSheet.create({
@@ -65,7 +65,7 @@ export const getStyles = (colors: Colors) =>
       width: '48%',
     },
     buttonText: {
-      color: colors.white,
+      color: colors.text,
       fontWeight: '600',
       fontSize: 16,
     },

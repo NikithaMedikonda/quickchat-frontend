@@ -32,13 +32,15 @@ import {
   setLoginField,
   setLoginSuccess,
 } from '../../store/slices/loginSlice';
-import {useThemeColors} from '../../constants/colors';
+import {useThemeColors} from '../../themes/colors';
+import { useImagesColors } from '../../themes/images';
 
-function Login() {
+export function Login() {
   const homeNavigation = useNavigation<HomeTabsProps>();
   const navigate = useNavigation<NavigationProps>();
   const dispatch = useDispatch();
   const colors = useThemeColors();
+  const { logo } = useImagesColors();
   const styles = loginStyles(colors);
   const {t} = useTranslation('auth');
   const {form, errors} = useSelector((state: RootState) => state.login);
@@ -46,6 +48,7 @@ function Login() {
   const handleInputChange = (key: keyof typeof form, value: string) => {
     dispatch(setLoginField({key, value}));
   };
+
   const validateForm = () => {
     const newErrors: Partial<typeof form> = {};
     let isValid = true;
@@ -212,4 +215,3 @@ function Login() {
   );
 }
 
-export default Login;

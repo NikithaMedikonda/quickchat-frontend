@@ -1,10 +1,11 @@
-import {cleanup, render, screen, waitFor} from '@testing-library/react-native';
-import {ContactsDisplay} from './ContactsDisplay';
-import {useNavigation} from '@react-navigation/native';
-import Contacts from 'react-native-contacts';
-import {getContacts} from '../../services/GetContacts';
-import {useThemeColors} from '../../constants/colors';
 import {Alert} from 'react-native';
+import Contacts from 'react-native-contacts';
+import {cleanup, render, screen, waitFor} from '@testing-library/react-native';
+import {useNavigation} from '@react-navigation/native';
+import {ContactsDisplay} from './ContactsDisplay';
+import {getContacts} from '../../services/GetContacts';
+import {useThemeColors} from '../../themes/colors';
+
 
 jest.mock('@react-navigation/native', () => ({
   useNavigation: jest.fn(),
@@ -159,7 +160,7 @@ describe('ContactsDisplay Component', () => {
           headerTitle: 'Contacts',
           headerTitleAlign: 'center',
           headerStyle: {backgroundColor: useThemeColors().background},
-          headerTitleStyle: {color: useThemeColors().white},
+          headerTitleStyle: {color: useThemeColors().text},
         }),
       );
     });

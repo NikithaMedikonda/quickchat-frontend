@@ -1,5 +1,5 @@
 import {Dimensions, StyleSheet} from 'react-native';
-import {Colors} from '../../constants/colors';
+import {Colors} from '../../themes/colors';
 
 const {width, height} = Dimensions.get('window');
 
@@ -48,14 +48,14 @@ export const getStyles = (colors: Colors) =>
     placeholder: {
       color: colors.gray,
     },
-    phoneNumber: {
-      height: height * 0.044,
+    phoneNumber:{
+      height: height * 0.055,
       fontSize: 20,
       borderRadius: 10,
       width: width * 0.75,
       padding: 10,
       color: colors.gray,
       margin: height * 0.012,
-      backgroundColor: colors.white,
+      backgroundColor: colors.placeholder,
     },
   });

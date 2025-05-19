@@ -1,5 +1,5 @@
 import {Dimensions, StyleSheet} from 'react-native';
-import {Colors} from '../../constants/colors';
+import {Colors} from '../../themes/colors';
 
 const {width, height} = Dimensions.get('window');
 
@@ -17,11 +17,11 @@ export const getStyles = (colors: Colors) =>
       flex: 1,
     },
     loadingContactsText: {
-      color: colors.white,
+      color: colors.text,
       paddingHorizontal:0.04 * width,
     },
     title: {
-      color: colors.white,
+      color: colors.text,
       left: 0.05 * width,
       fontWeight: 'bold',
       paddingTop:0.03 * height,

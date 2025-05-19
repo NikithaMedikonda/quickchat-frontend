@@ -1,28 +1,28 @@
 import {
-  View,
-  Text,
-  Modal,
-  TouchableOpacity,
-  Image,
   Alert,
-  TouchableWithoutFeedback,
+  Image,
+  Modal,
   Platform,
+  Text,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
 } from 'react-native';
 import ImageCropPicker from 'react-native-image-crop-picker';
 import RNFS from 'react-native-fs';
-import {useDispatch, useSelector} from 'react-redux';
-import {
-  setImageUri,
-  setImage,
-  setIsVisible,
-  setImageDeleted,
-} from '../../store/slices/registrationSlice';
-import {updateProfilePicture} from '../../store/slices/loginSlice';
-import {getStyles} from './ImagePickerModal.styles';
-import {requestPermissions} from '../../permissions/ImagePermissions';
-import {RootState} from '../../store/store';
-import {useThemeColors} from '../../constants/colors';
+import { useDispatch, useSelector } from 'react-redux';
 import { DEFAULT_PROFILE_IMAGE } from '../../constants/defaultImage';
+import { getStyles } from './ImagePickerModal.styles';
+import { requestPermissions } from '../../permissions/ImagePermissions';
+import { RootState } from '../../store/store';
+import {
+  setImage,
+  setImageDeleted,
+  setImageUri,
+  setIsVisible,
+} from '../../store/slices/registrationSlice';
+import { updateProfilePicture } from '../../store/slices/loginSlice';
+import { useThemeColors } from '../../themes/colors';
 
 export function ImagePickerModal({
   showDeleteOption = false,

@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import {useTranslation} from 'react-i18next';
 import {confirmModalStyles} from './ConfirmModal.styles';
-import {useThemeColors} from '../../constants/colors';
+import {useThemeColors} from '../../themes/colors';
 
 interface ConfirmModalProps {
   visible: boolean;

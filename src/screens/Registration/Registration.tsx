@@ -1,4 +1,4 @@
-import {useNavigation} from '@react-navigation/native';
+import React from 'react';
 import {
   Image,
   KeyboardAvoidingView,
@@ -8,34 +8,32 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import EncryptedStorage from 'react-native-encrypted-storage';
+import {useNavigation} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
-import PhoneInput from 'react-native-phone-input';
 import {
   ALERT_TYPE,
   AlertNotificationRoot,
   Dialog,
 } from 'react-native-alert-notification';
+import PhoneInput from 'react-native-phone-input';
 import {useTranslation} from 'react-i18next';
-
 import {Button} from '../../components/Button/Button';
 import {ImagePickerModal} from '../../components/ImagePickerModal/ImagePickerModal';
 import {Placeholder} from '../../components/InputField/InputField';
-
-import {useThemeColors} from '../../constants/colors';
-import {HomeTabsProps, NavigationProps} from '../../types/usenavigation.type';
-import {getStyles} from './Registration.styles';
-
 import {registerUser} from '../../services/RegisterUser';
-import {RootState} from '../../store/store';
-import {hide, show} from '../../store/slices/loadingSlice';
+import {show, hide} from '../../store/slices/loadingSlice';
+import {setLoginSuccess} from '../../store/slices/loginSlice';
 import {
   resetForm,
   setErrors,
   setFormField,
   setIsVisible,
 } from '../../store/slices/registrationSlice';
-import {setLoginSuccess} from '../../store/slices/loginSlice';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import {useThemeColors} from '../../themes/colors';
+import {getStyles} from './Registration.styles';
+import {RootState} from '../../store/store';
+import {HomeTabsProps, NavigationProps} from '../../types/usenavigation.type';
 
 export const Registration = () => {
   const navigation = useNavigation<NavigationProps>();

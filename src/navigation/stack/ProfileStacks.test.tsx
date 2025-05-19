@@ -1,6 +1,6 @@
-import {render, fireEvent, waitFor} from '@testing-library/react-native';
-import {Provider} from 'react-redux';
+import {fireEvent,render, waitFor} from '@testing-library/react-native';
 import {NavigationContainer} from '@react-navigation/native';
+import {Provider} from 'react-redux';
 import { ProfileStack } from './ProfileStacks';
 import {store} from '../../store/store';
 

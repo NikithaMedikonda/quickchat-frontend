@@ -1,16 +1,16 @@
-import { useLayoutEffect } from 'react';
-import { Text, View } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { useTranslation } from 'react-i18next';
-import { HomeTabsProps } from '../../types/usenavigation.type';
-import { useThemeColors } from '../../constants/colors';
-import { getStyles } from './Home.styles';
+import {useLayoutEffect} from 'react';
+import {Image, Text, View} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
+import {useTranslation} from 'react-i18next';
+import {HomeTabsProps} from '../../types/usenavigation.type';
+import {useThemeColors} from '../../themes/colors';
+import {getStyles} from './Home.styles';
 import PlusIcon from '../../components/PlusIcon/PlusIcon';
 
 export const Home = () => {
   const navigation = useNavigation<HomeTabsProps>();
   const colors = useThemeColors();
-  const { t } = useTranslation('auth');
+  const {t} = useTranslation('auth');
   const styles = getStyles(colors);
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -20,22 +20,27 @@ export const Home = () => {
         backgroundColor: colors.background,
       },
       headerTitleStyle: {
-        color: colors.white,
+        color: colors.text,
       },
     });
   });
 
   return (
     <View style={styles.container}>
+      <Image
+        // eslint-disable-next-line react-native/no-inline-styles
+        style={styles.gif}
+        source={require('./../../assets/homescreen.png')}
+      />
       <View>
         <Text style={styles.description}>
-          {t('You have no chats. Start Messaging!')}
+          {t('One message. Infinite possibilities.')}
+        </Text>
+        <Text style={styles.description}>
+          {t(' What are you waiting for?')}
         </Text>
       </View>
-      <View>
         <PlusIcon />
-      </View>
     </View>
   );
 };
-

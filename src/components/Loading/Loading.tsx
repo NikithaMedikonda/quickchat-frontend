@@ -1,7 +1,8 @@
 import { ActivityIndicator, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import { RootState } from '../../store/store';
 import { loadingComponentStyles } from './Loading.styles';
+import { RootState } from '../../store/store';
+
 
 export const LoadingComponent = () => {
   const loadingState = useSelector((state: RootState) => state.loading);

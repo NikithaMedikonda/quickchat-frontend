@@ -1,5 +1,5 @@
 import {StyleSheet, Dimensions} from 'react-native';
-import {Colors} from '../../constants/colors.ts';
+import {Colors} from '../../themes/colors.ts';
 
 const {width} = Dimensions.get('window');
 
@@ -21,6 +21,6 @@ export const getStyles = (colors: Colors) =>
     text: {
       fontSize: 15,
       fontWeight: '600',
-      color: colors.text,
+      color: colors.buttonText,
     },
   });

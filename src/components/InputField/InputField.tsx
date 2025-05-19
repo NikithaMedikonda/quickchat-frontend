@@ -1,6 +1,6 @@
 import {TextInput} from 'react-native';
 import {getStyles} from './InputField.styles.ts';
-import {useThemeColors} from '../../constants/colors.ts';
+import {useThemeColors} from '../../themes/colors.ts';
 import { useTranslation } from 'react-i18next';
 
 export const Placeholder = ({

@@ -8,8 +8,8 @@ import {NavigationContainer} from '@react-navigation/native';
 import {AlertNotificationRoot, Dialog} from 'react-native-alert-notification';
 import phone from 'phone';
 import {Provider} from 'react-redux';
+import {Login} from './Login';
 import {loginUser} from '../../services/LoginUser';
-import Login from './Login';
 import {store} from '../../store/store';
 
 jest.mock('react-native-phone-input', () => {

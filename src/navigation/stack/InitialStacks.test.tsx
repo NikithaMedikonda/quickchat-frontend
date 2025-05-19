@@ -1,7 +1,7 @@
-import {render, waitFor} from '@testing-library/react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {Provider} from 'react-redux';
 import {NavigationContainer} from '@react-navigation/native';
+import {Provider} from 'react-redux';
+import {render, waitFor} from '@testing-library/react-native';
 import {InitialStacks} from './InitialStacks';
 import {store} from '../../store/store';
 
@@ -136,7 +136,8 @@ describe('InitialStacks', () => {
     const {getByText} = renderWithProviders();
 
     await waitFor(() => {
-      expect(getByText('You have no chats. Start Messaging!')).toBeTruthy();
+      expect(getByText('One message. Infinite possibilities.')).toBeTruthy();
+      expect(getByText('What are you waiting for?')).toBeTruthy();
     });
   });
 
@@ -174,7 +175,8 @@ describe('InitialStacks', () => {
         'refreshToken',
         'new-refresh-token',
       );
-      expect(getByText('You have no chats. Start Messaging!')).toBeTruthy();
+      expect(getByText('One message. Infinite possibilities.')).toBeTruthy();
+      expect(getByText('What are you waiting for?')).toBeTruthy();
     });
   });
 
