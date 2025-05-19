@@ -1,8 +1,6 @@
-import React from 'react';
 import {render} from '@testing-library/react-native';
-import {TimeStamp} from './TimeStamp';
 import moment from 'moment';
-
+import {TimeStamp} from './TimeStamp';
 
 beforeAll(() => {
   jest.useFakeTimers();

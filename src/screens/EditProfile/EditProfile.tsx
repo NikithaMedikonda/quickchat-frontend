@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useNavigation} from '@react-navigation/native';
 import {useTranslation} from 'react-i18next';
 import {useSelector} from 'react-redux';
@@ -21,7 +22,7 @@ import {ImagePickerModal} from '../../components/ImagePickerModal/ImagePickerMod
 import {setIsVisible} from '../../store/slices/registrationSlice';
 import {editProfile} from '../../services/editProfile';
 import {ProfileScreenNavigationProp} from '../../types/usenavigation.type';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 export const EditProfile = () => {
   const colors = useThemeColors();

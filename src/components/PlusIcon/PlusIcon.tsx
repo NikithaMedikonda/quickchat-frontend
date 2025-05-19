@@ -1,10 +1,10 @@
-import React, { useLayoutEffect } from 'react';
+import { useLayoutEffect } from 'react';
 import { TouchableOpacity, Image } from 'react-native';
-import { useThemeColors } from '../../themes/colors';
 import { useNavigation } from '@react-navigation/native';
-import { HomeTabsProps } from '../../types/usenavigation.type';
 import { getStyles } from './PlusIcon.styles';
+import { HomeTabsProps } from '../../types/usenavigation.type';
 import { useImagesColors } from '../../themes/images';
+import { useThemeColors } from '../../themes/colors';
 
 const PlusIcon = () => {
   const navigation = useNavigation<HomeTabsProps>();

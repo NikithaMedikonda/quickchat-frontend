@@ -1,6 +1,6 @@
-import {render, waitFor} from '@testing-library/react-native';
-import {Provider} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {Provider} from 'react-redux';
+import {render, waitFor} from '@testing-library/react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {InitialStacks} from './InitialStacks';
 import {store} from '../../store/store';
@@ -34,7 +34,7 @@ jest.mock('react-native-phone-input', () => {
   const React = require('react');
   const {TextInput} = require('react-native');
   const MockPhoneInput = React.forwardRef(
-    (props: {value: any; onChangePhoneNumber: any}, ref: any) => {
+    (props: {value: string; onChangePhoneNumber: ()=>{}}, ref: string) => {
       return (
         <TextInput
           ref={ref}

@@ -29,7 +29,7 @@ import {HomeTabsProps, NavigationProps} from '../../types/usenavigation.type';
 import {useThemeColors} from '../../themes/colors';
 import { useImagesColors } from '../../themes/images';
 import {loginStyles} from './Login.styles';
-function Login() {
+export function Login() {
   const homeNavigation = useNavigation<HomeTabsProps>();
   const navigate = useNavigation<NavigationProps>();
   const dispatch = useDispatch();
@@ -154,4 +154,3 @@ function Login() {
   );
 }
 
-export default Login;

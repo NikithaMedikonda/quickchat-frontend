@@ -1,9 +1,9 @@
 import { View, Image } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { Button } from '../../components/Button/Button.tsx';
 import { getStyles } from './Welcome.styles.ts';
 import { NavigationProps } from '../../types/usenavigation.type.ts';
 import { useImagesColors } from '../../themes/images.ts';
-import { useNavigation } from '@react-navigation/native';
 import { useThemeColors } from '../../themes/colors.ts';
 export const Welcome = () => {
      const navigation = useNavigation<NavigationProps>();

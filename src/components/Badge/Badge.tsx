@@ -1,5 +1,5 @@
 import { Text, View } from 'react-native';
-import { Badgestyles } from './Badge.styles';
+import { badgeStyles } from './Badge.styles';
 import { useThemeColors } from '../../themes/colors.ts';
 
 export const Badge = ({
@@ -10,7 +10,7 @@ export const Badge = ({
   variant?: 'corner' | 'center';
 }) => {
   const colors = useThemeColors();
-  const styles = Badgestyles(colors);
+  const styles = badgeStyles(colors);
 
   if (messageCount <= 0) { return null; }
 

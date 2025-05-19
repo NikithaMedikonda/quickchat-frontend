@@ -1,9 +1,10 @@
 import { View } from 'react-native';
-import { ChatBoxContent } from '../ChatBoxContent/ChatBoxContent';
-import { TimeStamp } from '../TimeStamp/TimeStamp';
-import { getStyles } from './ChatBox.styles';
-import { useThemeColors } from '../../themes/colors';
 import { Badge } from '../Badge/Badge';
+import { ChatBoxContent } from '../ChatBoxContent/ChatBoxContent';
+import { getStyles } from './ChatBox.styles';
+import { TimeStamp } from '../TimeStamp/TimeStamp';
+import { useThemeColors } from '../../themes/colors';
+
 
 export const ChatBox = ({
     image,

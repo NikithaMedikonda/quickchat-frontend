@@ -1,7 +1,8 @@
-import {getStyles} from './Button.styles';
 import {TouchableOpacity, Text} from 'react-native';
-import {useThemeColors} from '../../themes/colors';
 import { useTranslation } from 'react-i18next';
+import {getStyles} from './Button.styles';
+import {useThemeColors} from '../../themes/colors';
+
 
 export const Button = ({
   title,

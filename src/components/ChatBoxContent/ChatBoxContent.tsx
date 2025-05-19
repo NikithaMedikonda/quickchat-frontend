@@ -1,8 +1,7 @@
-import React from 'react';
 import { View, Image, Text } from 'react-native';
+import { DEFAULT_PROFILE_IMAGE } from '../../constants/defaultImage';
 import { getStyles } from './ChatBoxContent.styles';
 import { useThemeColors } from '../../themes/colors';
-import { DEFAULT_PROFILE_IMAGE } from '../../constants/defaultImage';
 
 export const ChatBoxContent = ({
     image,

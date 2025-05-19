@@ -1,15 +1,15 @@
 import {useEffect, useState} from 'react';
-import {useDispatch} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {LoadingComponent} from '../../components/Loading/Loading';
+import {useDispatch} from 'react-redux';
 import {API_URL} from '../../constants/api';
-import {Registration} from '../../screens/Registration/Registration';
-import {Welcome} from '../../screens/Welcome/Welcome';
 import {hide, show} from '../../store/slices/loadingSlice';
-import {setLoginSuccess} from '../../store/slices/loginSlice';
 import {HomeTabs} from '../tab/HomeTabs';
-import Login from '../../screens/Login/Login';
+import {LoadingComponent} from '../../components/Loading/Loading';
+import {Registration} from '../../screens/Registration/Registration';
+import {setLoginSuccess} from '../../store/slices/loginSlice';
+import {Welcome} from '../../screens/Welcome/Welcome';
+import {Login} from '../../screens/Login/Login';
 const Stack = createNativeStackNavigator();
 
 export const InitialStacks = () => {

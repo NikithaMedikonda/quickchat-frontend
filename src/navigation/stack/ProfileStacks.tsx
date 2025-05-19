@@ -1,8 +1,7 @@
-import React from 'react';
-import {useTranslation} from 'react-i18next';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {Profile} from '../../screens/Profile/Profile';
+import {useTranslation} from 'react-i18next';
 import {EditProfile} from '../../screens/EditProfile/EditProfile';
+import {Profile} from '../../screens/Profile/Profile';
 import {useThemeColors} from '../../themes/colors';
 
 const Stack = createNativeStackNavigator();
@@ -23,7 +22,7 @@ export const ProfileStack = () => {
           },
           headerTitleAlign: 'center',
           headerTitleStyle: {
-            color: colors.white,
+            color: colors.text,
           },
           headerBackVisible:false,
         }}
@@ -39,7 +38,7 @@ export const ProfileStack = () => {
           },
           headerTitleAlign: 'center',
           headerTitleStyle: {
-            color: colors.white,
+            color: colors.text,
           },
         }}
       />

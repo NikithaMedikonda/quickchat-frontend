@@ -1,4 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 import {
   Alert,
   Image,
@@ -9,26 +11,25 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {useDispatch, useSelector} from 'react-redux';
 import PhoneInput from 'react-native-phone-input';
-import {Button} from '../../components/Button/Button';
-import {getStyles} from './Registration.styles';
-import {ImagePickerModal} from '../../components/ImagePickerModal/ImagePickerModal';
-import {HomeTabsProps, NavigationProps} from '../../types/usenavigation.type';
-import {Placeholder} from '../../components/InputField/InputField';
-import {registerUser} from '../../services/RegisterUser';
+import { useDispatch, useSelector } from 'react-redux';
+import { Button } from '../../components/Button/Button';
+import { ImagePickerModal } from '../../components/ImagePickerModal/ImagePickerModal';
+import { Placeholder } from '../../components/InputField/InputField';
+import { registerUser } from '../../services/RegisterUser';
+import { hide, show } from '../../store/slices/loadingSlice';
+import { setLoginSuccess } from '../../store/slices/loginSlice';
 import {
   resetForm,
   setErrors,
   setFormField,
   setIsVisible,
 } from '../../store/slices/registrationSlice';
-import {RootState} from '../../store/store';
-import {hide, show} from '../../store/slices/loadingSlice';
-import {setLoginSuccess} from '../../store/slices/loginSlice';
-import {useNavigation} from '@react-navigation/native';
-import {useThemeColors} from '../../themes/colors';
-import {useTranslation} from 'react-i18next';
+import { RootState } from '../../store/store';
+import { useThemeColors } from '../../themes/colors';
+import { HomeTabsProps, NavigationProps } from '../../types/usenavigation.type';
+import { getStyles } from './Registration.styles';
+
 
 export const Registration = () => {
   const navigation = useNavigation<NavigationProps>();

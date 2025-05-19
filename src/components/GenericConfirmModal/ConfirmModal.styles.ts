@@ -35,7 +35,7 @@ export const confirmModalStyles = (colors:Colors) => {
       gap: 10,
     },
     cancelButton: {
-      backgroundColor: colors.white,
+      backgroundColor: colors.text,
       paddingVertical: 10,
       paddingHorizontal: 20,
       borderRadius: 5,
@@ -55,7 +55,7 @@ export const confirmModalStyles = (colors:Colors) => {
       color: 'black',
     },
     confirmText: {
-      color: colors.white,
+      color: colors.text,
     },
   });
 };
