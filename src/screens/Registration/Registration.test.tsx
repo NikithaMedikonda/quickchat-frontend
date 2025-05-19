@@ -9,14 +9,14 @@ jest.mock('react-native-image-crop-picker', () => ({
   openPicker: jest.fn().mockResolvedValue({path: 'mocked/image/path.jpg'}),
 }));
 
-jest.mock('@react-native-async-storage/async-storage', () => ({
+jest.mock('react-native-encrypted-storage', () => ({
   setItem: jest.fn(),
 }));
 
 jest.mock('react-native-phone-input', () => {
   const React = require('react');
   const { TextInput } = require('react-native');
-  const MockPhoneInput = React.forwardRef((props: { value: any; onChangePhoneNumber: any; }, ref: any) => {
+  const MockPhoneInput = React.forwardRef((props: { value: string; onChangePhoneNumber: ()=>{}; }, ref: string) => {
     return (
       <TextInput
         ref={ref}

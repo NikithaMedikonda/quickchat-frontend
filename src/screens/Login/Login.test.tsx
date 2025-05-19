@@ -51,7 +51,7 @@ jest.mock('@react-navigation/native', () => {
   };
 });
 
-jest.mock('@react-native-async-storage/async-storage', () => ({
+jest.mock('react-native-encrypted-storage', () => ({
   setItem: jest.fn(),
 }));
 
@@ -67,7 +67,7 @@ jest.mock('react-native-phone-input', () => {
   const React = require('react');
   const {TextInput} = require('react-native');
   const MockPhoneInput = React.forwardRef(
-    (props: {value: any; onChangePhoneNumber: any}, ref: any) => {
+    (props: {value: string; onChangePhoneNumber: ()=>{}}, ref: string) => {
       return (
         <TextInput
           ref={ref}

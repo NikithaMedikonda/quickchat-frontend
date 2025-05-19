@@ -6,7 +6,7 @@ import {
   within,
 } from '@testing-library/react-native';
 import {Alert} from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import EncryptedStorage from 'react-native-encrypted-storage';
 import {Provider} from 'react-redux';
 import {deleteUser} from '../../services/DeleteUser';
 import {ProfileMoreOptionsModal} from './ProfileMoreOptionsModal';
@@ -19,9 +19,9 @@ jest.mock('@react-navigation/native', () => ({
     replace: mockReplace,
   }),
 }));
-jest.mock('@react-native-async-storage/async-storage', () => ({
+jest.mock('react-native-encrypted-storage', () => ({
   setItem: jest.fn(),
-  multiRemove: jest.fn(),
+  clear: jest.fn(),
   getItem: jest.fn(key => {
     if (key === 'user') {
       return Promise.resolve(JSON.stringify({phoneNumber: '1234567890'}));
@@ -106,11 +106,7 @@ describe('Profile More Options Modal', () => {
     const confirmButton = within(confirmModal!).getByText('Logout');
     fireEvent.press(confirmButton);
     await waitFor(() => {
-      expect(AsyncStorage.multiRemove).toHaveBeenCalledWith([
-        'user',
-        'authToken',
-        'refreshToken',
-      ]);
+      expect(EncryptedStorage.clear).toHaveBeenCalledTimes(1);
       expect(mockReplace).toHaveBeenCalledWith('login');
     });
   });
@@ -169,11 +165,11 @@ describe('Profile More Options Modal', () => {
     });
   });
 
-  it('loads user phone number and auth token from AsyncStorage on mount', async () => {
+  it('loads user phone number and auth token from EncryptedStorage on mount', async () => {
     renderComponent();
     await waitFor(() => {
-      expect(AsyncStorage.getItem).toHaveBeenCalledWith('user');
-      expect(AsyncStorage.getItem).toHaveBeenCalledWith('authToken');
+      expect(EncryptedStorage.getItem).toHaveBeenCalledWith('user');
+      expect(EncryptedStorage.getItem).toHaveBeenCalledWith('authToken');
     });
     fireEvent.press(screen.getByText('Delete Account'));
     const confirmButton = await screen.findByText('Delete');
@@ -186,11 +182,11 @@ describe('Profile More Options Modal', () => {
     });
   });
 
-  it('should trigger useEffect and call AsyncStorage.getItem with correct keys', async () => {
+  it('should trigger useEffect and call EncryptedStorage.getItem with correct keys', async () => {
     renderComponent();
     await waitFor(() => {
-      expect(AsyncStorage.getItem).toHaveBeenCalledWith('user');
-      expect(AsyncStorage.getItem).toHaveBeenCalledWith('authToken');
+      expect(EncryptedStorage.getItem).toHaveBeenCalledWith('user');
+      expect(EncryptedStorage.getItem).toHaveBeenCalledWith('authToken');
     });
   });
 
