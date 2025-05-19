@@ -165,7 +165,7 @@ describe('Profile More Options Modal', () => {
     });
   });
 
-  it('loads user phone number and auth token from AsyncStorage on mount', async () => {
+  it('loads user phone number and auth token from EncryptedStorage on mount', async () => {
     renderComponent();
     await waitFor(() => {
       expect(EncryptedStorage.getItem).toHaveBeenCalledWith('user');
@@ -182,7 +182,7 @@ describe('Profile More Options Modal', () => {
     });
   });
 
-  it('should trigger useEffect and call AsyncStorage.getItem with correct keys', async () => {
+  it('should trigger useEffect and call EncryptedStorage.getItem with correct keys', async () => {
     renderComponent();
     await waitFor(() => {
       expect(EncryptedStorage.getItem).toHaveBeenCalledWith('user');
