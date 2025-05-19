@@ -1,13 +1,12 @@
-import {useColorScheme} from 'react-native';
 export const useThemeColors = () => {
-  const scheme = useColorScheme();
   return {
     primaryBlue: '#1877F2',
     gray: '#898989',
-    background: scheme === 'dark' ? '#000000' : '#FFFFFF',
-    text: scheme === 'dark' ? '#FFFFFF' : '#000000',
-    placeholder: scheme === 'dark' ? '#FFFFFF' : '#D3D3D3',
-    profileOptionsText: scheme === 'dark' ? '#000000' : '#FFFFFF',
+    background:  '#000000' ,
+    text:  '#FFFFFF' ,
+    placeholder:  '#FFFFFF' ,
+    profileOptionsText:  '#000000',
+    buttonText :  '#000000' ,
   };
 };
 
@@ -18,4 +17,5 @@ export type Colors = {
   text: string;
   placeholder: string;
   profileOptionsText: string;
+  buttonText:string
 };

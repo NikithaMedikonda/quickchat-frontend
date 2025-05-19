@@ -21,6 +21,6 @@ export const getStyles = (colors: Colors) =>
     text: {
       fontSize: 16,
       fontWeight: '600',
-      color: colors.text,
+      color: colors.buttonText,
     },
   });
