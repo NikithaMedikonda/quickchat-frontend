@@ -18,7 +18,6 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import {useNavigation} from '@react-navigation/native';
 import {useTranslation} from 'react-i18next';
 import {RootState} from '../../store/store';
-import {useDispatch} from 'react-redux';
 import {useThemeColors} from '../../constants/colors';
 import {getStyles} from './EditProfile.styles';
 import {Placeholder} from '../../components/InputField/InputField';
