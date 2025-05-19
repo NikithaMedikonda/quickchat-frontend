@@ -8,7 +8,7 @@ import {
 import {NavigationContainer} from '@react-navigation/native';
 import phone from 'phone';
 import {Provider} from 'react-redux';
-import Login from './Login';
+import {Login} from './Login';
 import {loginUser} from '../../services/LoginUser';
 import {store} from '../../store/store';
 
