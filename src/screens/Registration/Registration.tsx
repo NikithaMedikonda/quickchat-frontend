@@ -1,5 +1,5 @@
+import {useNavigation} from '@react-navigation/native';
 import {
-  Alert,
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -11,24 +11,31 @@ import {
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {useDispatch, useSelector} from 'react-redux';
 import PhoneInput from 'react-native-phone-input';
+import {
+  ALERT_TYPE,
+  AlertNotificationRoot,
+  Dialog,
+} from 'react-native-alert-notification';
+import {useTranslation} from 'react-i18next';
+
 import {Button} from '../../components/Button/Button';
-import {getStyles} from './Registration.styles';
 import {ImagePickerModal} from '../../components/ImagePickerModal/ImagePickerModal';
-import {HomeTabsProps, NavigationProps} from '../../types/usenavigation.type';
 import {Placeholder} from '../../components/InputField/InputField';
+
+import {useThemeColors} from '../../constants/colors';
+import {HomeTabsProps, NavigationProps} from '../../types/usenavigation.type';
+import {getStyles} from './Registration.styles';
+
 import {registerUser} from '../../services/RegisterUser';
+import {RootState} from '../../store/store';
+import {hide, show} from '../../store/slices/loadingSlice';
 import {
   resetForm,
   setErrors,
   setFormField,
   setIsVisible,
 } from '../../store/slices/registrationSlice';
-import {RootState} from '../../store/store';
-import {hide, show} from '../../store/slices/loadingSlice';
 import {setLoginSuccess} from '../../store/slices/loginSlice';
-import {useNavigation} from '@react-navigation/native';
-import {useThemeColors} from '../../constants/colors';
-import {useTranslation} from 'react-i18next';
 
 export const Registration = () => {
   const navigation = useNavigation<NavigationProps>();
@@ -104,7 +111,13 @@ try {
   const result = await registerUser({ ...form, image });
   if (result.status === 409) {
     dispatch(hide());
-    Alert.alert(t('User already exists with this number or email'));
+    Dialog.show({
+      type: ALERT_TYPE.DANGER,
+      title: 'Registration failed',
+      textBody: 'User already exists with this number or email',
+      button: 'close',
+      closeOnOverlayTap: true,
+    });
   } else if (result.status === 200) {
     dispatch(hide());
     dispatch(
@@ -121,11 +134,24 @@ try {
     dispatch(resetForm());
   } else {
     dispatch(hide());
-    Alert.alert(t('Something went wrong while registering'));
+    // Alert.alert(t('Something went wrong while registering'));
+    Dialog.show({
+      type: ALERT_TYPE.DANGER,
+      title: 'Registration failed',
+      textBody: 'Something went wrong while registering',
+      button: 'close',
+      closeOnOverlayTap: true,
+    });
   }
 } catch (e) {
   dispatch(hide());
-  Alert.alert(t('Network error or something unexpected happened'));
+  Dialog.show({
+    type: ALERT_TYPE.DANGER,
+    title: 'Registration failed',
+    textBody: 'Network error or something unexpected happened',
+    button: 'close',
+    closeOnOverlayTap: true,
+  });
 }
   };
 
@@ -138,6 +164,29 @@ try {
   ] as const;
 
   return (
+
+    <AlertNotificationRoot
+      theme="dark"
+      colors={[
+        {
+          label: '#000000',
+          card: '#FFFFFF',
+          overlay: 'rgba(0, 0, 0, 0.5)',
+          success: '#4CAF50',
+          danger: '#F44336',
+          warning: '#1877F2',
+          info: '#000000',
+        },
+        {
+          label: '#000000',
+          card: '#FFFFFF',
+          overlay: 'rgba(255, 255, 255, 0.5)',
+          success: '#4CAF50',
+          danger: '#F44336',
+          warning: '#FFFFFF',
+          info: '#000000',
+        },
+      ]}>
     <KeyboardAvoidingView
       // eslint-disable-next-line react-native/no-inline-styles
       style={{flex: 1}}
@@ -182,27 +231,30 @@ try {
               onChange={(text: string) => handleInputChange(field.key, text)}
               secureTextEntry={
                 field.key === 'password' || field.key === 'confirmPassword'
-              }
-            />
-            {errors[field.key] && (
-              // eslint-disable-next-line react-native/no-inline-styles
-              <Text style={styles.errorText}>{t(`${errors[field.key]}`)}</Text>
-            )}
+                }
+              />
+              {errors[field.key] && (
+                // eslint-disable-next-line react-native/no-inline-styles
+                <Text style={{color: 'red', fontSize: 12}}>
+                  {t(`${errors[field.key]}`)}
+                </Text>
+              )}
+            </View>
+          ))}
+          <View style={styles.registerButtonContainer}>
+            <Button title="Register" onPress={handleRegister} />
           </View>
-        ))}
-        <View style={styles.registerButtonContainer}>
-          <Button title="Register" onPress={handleRegister} />
-        </View>
-        <View style={styles.loginButtonContainer}>
-          <Text style={styles.loginButtontext}>
-            {t('Already have an account?')}{' '}
-          </Text>
-          <TouchableOpacity onPress={() => navigation.navigate('login')}>
-            <Text style={styles.loginButtonSignInText}>{t('Sign in')}</Text>
-          </TouchableOpacity>
-        </View>
-        {isVisible && <ImagePickerModal />}
-      </ScrollView>
-    </KeyboardAvoidingView>
+          <View style={styles.loginButtonContainer}>
+            <Text style={styles.loginButtontext}>
+              {t('Already have an account?')}{' '}
+            </Text>
+            <TouchableOpacity onPress={() => navigation.navigate('login')}>
+              <Text style={styles.loginButtonSignInText}>{t('Sign in')}</Text>
+            </TouchableOpacity>
+          </View>
+          {isVisible && <ImagePickerModal />}
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </AlertNotificationRoot>
   );
 };
