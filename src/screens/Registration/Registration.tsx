@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useNavigation} from '@react-navigation/native';
 import {
   Image,
@@ -9,6 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import EncryptedStorage from 'react-native-encrypted-storage';
 import {useDispatch, useSelector} from 'react-redux';
 import PhoneInput from 'react-native-phone-input';
 import {
@@ -81,15 +81,19 @@ export const Registration = () => {
       newErrors.confirmPassword = 'Passwords do not match';
       isValid = false;
     }
-    if (!form.phoneNumber ) {
-      newErrors.phoneNumber = 'Invalid phone number';
-      isValid = false;
-    }
 
     if (form.email && !validateEmail(form.email)) {
       newErrors.email = 'Invalid email format';
       isValid = false;
     }
+    if (!form.phoneNumber) {
+      newErrors.phoneNumber = 'Phone number required!';
+      isValid = false;
+    } else if (form.phoneNumber.length < 10) {
+      newErrors.phoneNumber = 'Invalid phone number';
+      isValid = false;
+    }
+
     dispatch(setErrors(newErrors));
     return isValid;
   };
@@ -123,9 +127,9 @@ try {
         user: result.data.user,
       }),
     );
-    await AsyncStorage.setItem('authToken', result.data.accessToken);
-    await AsyncStorage.setItem('refreshToken', result.data.refreshToken);
-    await AsyncStorage.setItem('user', JSON.stringify(result.data.user));
+    await EncryptedStorage.setItem('authToken', result.data.accessToken);
+    await EncryptedStorage.setItem('refreshToken', result.data.refreshToken);
+    await EncryptedStorage.setItem('user', JSON.stringify(result.data.user));
     homeNavigation.replace('hometabs');
     dispatch(resetForm());
   } else {
@@ -160,6 +164,7 @@ try {
   ] as const;
 
   return (
+
     <AlertNotificationRoot
       theme="dark"
       colors={[
@@ -182,24 +187,25 @@ try {
           info: '#000000',
         },
       ]}>
-      <KeyboardAvoidingView
-        // eslint-disable-next-line react-native/no-inline-styles
-        style={{flex: 1}}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}>
-        <ScrollView
-          contentContainerStyle={styles.registrationMainContainer}
-          keyboardShouldPersistTaps="handled">
-          <TouchableOpacity onPress={handleOpenImageSelector}>
-            <Image
-              style={styles.logo}
-              source={
-                imageUri ? {uri: imageUri} : require('../../assets/image.png')
-              }
-              resizeMode="contain"
-              accessibilityHint="logo"
-            />
-          </TouchableOpacity>
+    <KeyboardAvoidingView
+      // eslint-disable-next-line react-native/no-inline-styles
+      style={{flex: 1}}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}>
+      <ScrollView
+        contentContainerStyle={styles.registrationMainContainer}
+        keyboardShouldPersistTaps="handled">
+        <TouchableOpacity onPress={handleOpenImageSelector}>
+          <Image
+            style={styles.logo}
+            source={
+              imageUri ? {uri: imageUri} : require('../../assets/image.png')
+            }
+            resizeMode="contain"
+            accessibilityHint="logo"
+          />
+        </TouchableOpacity>
+        <View>
           <PhoneInput
             style={styles.phoneNumber}
             initialCountry={'in'}
@@ -211,14 +217,20 @@ try {
             }}
             onPressFlag={() => {}}
           />
-          {inputFields.map(field => (
-            <View key={field.key}>
-              <Placeholder
-                title={field.title}
-                value={form[field.key]}
-                onChange={(text: string) => handleInputChange(field.key, text)}
-                secureTextEntry={
-                  field.key === 'password' || field.key === 'confirmPassword'
+          {errors.phoneNumber && (
+            <Text style={styles.phoneErrorText}>
+              {t(`${errors.phoneNumber}`)}
+            </Text>
+          )}
+        </View>
+        {inputFields.map(field => (
+          <View key={field.key}>
+            <Placeholder
+              title={field.title}
+              value={form[field.key]}
+              onChange={(text: string) => handleInputChange(field.key, text)}
+              secureTextEntry={
+                field.key === 'password' || field.key === 'confirmPassword'
                 }
               />
               {errors[field.key] && (

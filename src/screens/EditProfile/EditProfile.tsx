@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useState } from 'react';
+import {useEffect, useLayoutEffect, useState} from 'react';
 import {
   Image,
   KeyboardAvoidingView,
@@ -8,31 +8,24 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native';
-import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   ALERT_TYPE,
   AlertNotificationRoot,
   Dialog,
 } from 'react-native-alert-notification';
-
-
-import { useThemeColors } from '../../constants/colors';
-import { getStyles } from './EditProfile.styles';
-import { ProfileScreenNavigationProp } from '../../types/usenavigation.type';
-
-
-import { Placeholder } from '../../components/InputField/InputField';
-import { ImagePickerModal } from '../../components/ImagePickerModal/ImagePickerModal';
-
-
-import { editProfile } from '../../services/editProfile';
-
-
-import { RootState } from '../../store/store';
-import { setIsVisible } from '../../store/slices/registrationSlice';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import {useNavigation} from '@react-navigation/native';
+import {useTranslation} from 'react-i18next';
+import {RootState} from '../../store/store';
+import {useDispatch} from 'react-redux';
+import {useThemeColors} from '../../constants/colors';
+import {getStyles} from './EditProfile.styles';
+import {Placeholder} from '../../components/InputField/InputField';
+import {ImagePickerModal} from '../../components/ImagePickerModal/ImagePickerModal';
+import {setIsVisible} from '../../store/slices/registrationSlice';
+import {editProfile} from '../../services/editProfile';
+import {ProfileScreenNavigationProp} from '../../types/usenavigation.type';
 
 export const EditProfile = () => {
   const colors = useThemeColors();
@@ -56,8 +49,8 @@ export const EditProfile = () => {
 
   const getUserData = async () => {
     try {
-      const userDataString = await AsyncStorage.getItem('user');
-      const AccessToken = (await AsyncStorage.getItem('authToken')) || '';
+      const userDataString = await EncryptedStorage.getItem('user');
+      const AccessToken = (await EncryptedStorage.getItem('authToken')) || '';
       const userData = userDataString ? JSON.parse(userDataString) : {};
 
       const {
@@ -142,7 +135,7 @@ export const EditProfile = () => {
       if (user) {
         try {
           const result = await editProfile(payload, user);
-          await AsyncStorage.setItem('user', JSON.stringify(result.data.user));
+          await EncryptedStorage.setItem('user', JSON.stringify(result.data.user));
         Dialog.show({
             type: ALERT_TYPE.SUCCESS,
             title: 'Success',
@@ -153,6 +146,7 @@ export const EditProfile = () => {
           setTimeout(() => {
             profileNavigation.replace('profileScreen');
           }, 4000);
+
         } catch (err) {
           Dialog.show({
             type: ALERT_TYPE.DANGER,

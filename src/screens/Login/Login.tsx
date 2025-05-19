@@ -7,37 +7,32 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { phone } from 'phone';
-import PhoneInput from 'react-native-phone-input';
-import { useDispatch, useSelector } from 'react-redux';
-import { useTranslation } from 'react-i18next';
+
 import {
   ALERT_TYPE,
   AlertNotificationRoot,
   Dialog,
 } from 'react-native-alert-notification';
-
-
-import { Button } from '../../components/Button/Button';
-import { Placeholder } from '../../components/InputField/InputField';
-
-
-import { useThemeColors } from '../../constants/colors';
-import { HomeTabsProps, NavigationProps } from '../../types/usenavigation.type';
-import { loginStyles } from './Login.styles';
-
-import { loginUser } from '../../services/LoginUser';
-
-import { RootState } from '../../store/store';
-import { hide, show } from '../../store/slices/loadingSlice';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import {phone} from 'phone';
+import PhoneInput from 'react-native-phone-input';
+import {useNavigation} from '@react-navigation/native';
+import {useDispatch, useSelector} from 'react-redux';
+import {useTranslation} from 'react-i18next';
+import {Button} from '../../components/Button/Button';
+import {hide, show} from '../../store/slices/loadingSlice';
+import {HomeTabsProps, NavigationProps} from '../../types/usenavigation.type';
+import {loginUser} from '../../services/LoginUser';
+import {loginStyles} from './Login.styles';
+import {Placeholder} from '../../components/InputField/InputField';
+import {RootState} from '../../store/store';
 import {
   resetLoginForm,
   setLoginErrors,
   setLoginField,
   setLoginSuccess,
 } from '../../store/slices/loginSlice';
+import {useThemeColors} from '../../constants/colors';
 
 function Login() {
   const homeNavigation = useNavigation<HomeTabsProps>();
@@ -87,9 +82,15 @@ function Login() {
             user: result.data.user,
           }),
         );
-        await AsyncStorage.setItem('authToken', result.data.accessToken);
-        await AsyncStorage.setItem('refreshToken', result.data.refreshToken);
-        await AsyncStorage.setItem('user', JSON.stringify(result.data.user));
+        await EncryptedStorage.setItem('authToken', result.data.accessToken);
+        await EncryptedStorage.setItem(
+          'refreshToken',
+          result.data.refreshToken,
+        );
+        await EncryptedStorage.setItem(
+          'user',
+          JSON.stringify(result.data.user),
+        );
         dispatch(resetLoginForm());
         homeNavigation.replace('hometabs');
       } else if (result.status === 404) {

@@ -9,7 +9,7 @@ jest.mock('react-native-image-crop-picker', () => ({
   openPicker: jest.fn().mockResolvedValue({path: 'mocked/image/path.jpg'}),
 }));
 
-jest.mock('@react-native-async-storage/async-storage', () => ({
+jest.mock('react-native-encrypted-storage', () => ({
   setItem: jest.fn(),
 }));
 
@@ -251,6 +251,24 @@ describe('Registration Screen', () => {
         button: 'close',
         closeOnOverlayTap: true,
       });
+    });
+  });
+
+  it('shows phone number required error when phone number is empty', async () => {
+    const {getByPlaceholderText, getByText} = renderComponent();
+    fireEvent.changeText(getByPlaceholderText('Phone number'), '');
+    fireEvent.press(getByText('Register'));
+    await waitFor(() => {
+      expect(getByText('Phone number required!')).toBeTruthy();
+    });
+  });
+
+  it('shows invalid phone number error when phone number is less than 10 digits', async () => {
+    const {getByPlaceholderText, getByText} = renderComponent();
+    fireEvent.changeText(getByPlaceholderText('Phone number'), '123456789');
+    fireEvent.press(getByText('Register'));
+    await waitFor(() => {
+      expect(getByText('Invalid phone number')).toBeTruthy();
     });
   });
 });

@@ -4,8 +4,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Provider} from 'react-redux';
 import * as redux from 'react-redux';
 import {useDispatch} from 'react-redux';
-
 import {store} from '../../store/store';
+import EncryptedStorage from 'react-native-encrypted-storage';
 import {editProfile} from '../../services/editProfile';
 import {EditProfile} from './EditProfile';
 
@@ -16,7 +16,7 @@ jest.mock('react-redux', () => ({
 }));
 const mockDispatch = jest.fn();
 
-jest.mock('@react-native-async-storage/async-storage', () => ({
+jest.mock('react-native-encrypted-storage', () => ({
   setItem: jest.fn(),
   getItem: jest.fn(),
 }));
@@ -70,7 +70,7 @@ describe('EditProfile Component', () => {
     );
   });
 
-  (AsyncStorage.getItem as jest.Mock).mockImplementation(key => {
+  (EncryptedStorage.getItem as jest.Mock).mockImplementation(key => {
     if (key === 'user') {
       return Promise.resolve(
         JSON.stringify({
@@ -244,14 +244,12 @@ describe('EditProfile Component', () => {
         },
         expect.any(Object),
       );
-      expect(AsyncStorage.setItem).toHaveBeenCalled();
-     expect(Dialog.show).toHaveBeenCalledWith({
-        type: 'success',
-        title: 'Success',
-        textBody: 'Profile updated successfully',
-        button: 'close',
-        closeOnOverlayTap: true,
-      });
+      expect(EncryptedStorage.setItem).toHaveBeenCalled();
+      expect(mockNavigation.replace).toHaveBeenCalledWith('profileScreen');
+      expect(Alert.alert).toHaveBeenCalledWith(
+        'Success',
+        'Profile updated successfully!',
+      );
     });
     await waitFor(
       () => {
