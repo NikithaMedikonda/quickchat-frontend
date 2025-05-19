@@ -1,10 +1,10 @@
-import { useLayoutEffect } from 'react';
-import { TouchableOpacity, Image } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { getStyles } from './PlusIcon.styles';
-import { HomeTabsProps } from '../../types/usenavigation.type';
-import { useImagesColors } from '../../themes/images';
-import { useThemeColors } from '../../themes/colors';
+import {useLayoutEffect} from 'react';
+import {TouchableOpacity, Image} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
+import {getStyles} from './PlusIcon.styles';
+import {HomeTabsProps} from '../../types/usenavigation.type';
+import {useImagesColors} from '../../themes/images';
+import {useThemeColors} from '../../themes/colors';
 
 const PlusIcon = () => {
   const navigation = useNavigation<HomeTabsProps>();
@@ -24,7 +24,9 @@ const PlusIcon = () => {
     });
   });
   return (
-    <TouchableOpacity style={styles.innerContainer} onPress={() => navigation.navigate('contacts')}>
+    <TouchableOpacity
+      style={styles.innerContainer}
+      onPress={() => navigation.navigate('contacts')}>
       <Image
         style={styles.plusImage}
         source={homeAdd}

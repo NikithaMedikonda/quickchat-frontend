@@ -27,19 +27,21 @@ export const Home = () => {
 
   return (
     <View style={styles.container}>
+    <View style={styles.imageContainer}>
       <Image
         style={styles.gif}
         source={require('./../../assets/homescreen.png')}
       />
-      <View>
-        <Text style={styles.description}>
-          {t('One message. Infinite possibilities.')}
-        </Text>
-        <Text style={styles.description}>
-          {t(' What are you waiting for?')}
-        </Text>
-      </View>
-        <PlusIcon />
+      <Text style={styles.description}>
+        {t('One message. Infinite possibilities.')}
+      </Text>
+      <Text style={styles.description}>
+        {t('What are you waiting for?')}
+      </Text>
     </View>
+    <View style={styles.plusContainer}>
+      <PlusIcon />
+    </View>
+  </View>
   );
 };

@@ -232,8 +232,7 @@ try {
                 }
               />
               {errors[field.key] && (
-                // eslint-disable-next-line react-native/no-inline-styles
-                <Text style={{color: 'red', fontSize: 12}}>
+                <Text style={styles.errorText}>
                   {t(`${errors[field.key]}`)}
                 </Text>
               )}
