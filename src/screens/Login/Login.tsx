@@ -196,7 +196,9 @@ export function Login() {
           {errors.password && (
             <Text style={styles.error}>{t(`${errors.password}`)}</Text>
           )}
-          <Button title="Login" onPress={handleLogin} />
+          <View style={styles.loginButtonContainer}>
+            <Button title="Login" onPress={handleLogin} />
+          </View>
           <View style={styles.messageView}>
             <Text style={styles.messageText}>
               {t("Don't have an account?")}
@@ -206,7 +208,7 @@ export function Login() {
               onPress={() => {
                 navigate.navigate('register');
               }}>
-              <Text style={styles.validationText}>{t('Sign up')}</Text>
+              <Text style={styles.validationText}>{t(' Sign up')}</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>

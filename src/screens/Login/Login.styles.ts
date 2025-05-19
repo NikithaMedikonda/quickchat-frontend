@@ -16,7 +16,6 @@ export const loginStyles = (colors: Colors) =>
       width: width * 0.5,
       height: height * 0.3,
     },
-
     imageContainer: {
       height: height * 0.6,
       width: width * 0.9,
@@ -52,7 +51,7 @@ export const loginStyles = (colors: Colors) =>
       height: height * 0.044,
       fontSize: 20,
       borderRadius: 10,
-      width: width * 0.75,
+      width: width * 0.8,
       padding: 10,
       color: colors.gray,
       margin: height * 0.012,
@@ -73,5 +72,8 @@ export const loginStyles = (colors: Colors) =>
     },
     keyboardAvoidView: {
       flex: 1,
+    },
+    loginButtonContainer: {
+      marginTop: height * 0.02,
     },
   });

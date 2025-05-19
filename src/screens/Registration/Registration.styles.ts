@@ -49,10 +49,10 @@ export const getStyles = (colors: Colors) =>
       color: colors.gray,
     },
     phoneNumber:{
-      height: height * 0.055,
-      fontSize: 20,
+      height: height * 0.044,
+      fontSize: 16,
       borderRadius: 10,
-      width: width * 0.75,
+      width: width * 0.8,
       padding: 10,
       color: colors.gray,
       margin: height * 0.012,

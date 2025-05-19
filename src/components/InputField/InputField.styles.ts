@@ -5,8 +5,8 @@ const {width, height} = Dimensions.get('window');
 export const getStyles = (colors: Colors) =>
   StyleSheet.create({
     input: {
-      height: height * 0.055,
-      fontSize: 20,
+      height: height * 0.044,
+      fontSize: 16,
       borderRadius: 10,
       width: width * 0.8,
       padding: 10,
