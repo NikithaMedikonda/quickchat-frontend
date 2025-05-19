@@ -67,7 +67,7 @@ jest.mock('react-native-phone-input', () => {
   const React = require('react');
   const {TextInput} = require('react-native');
   const MockPhoneInput = React.forwardRef(
-    (props: {value: any; onChangePhoneNumber: any}, ref: any) => {
+    (props: {value: string; onChangePhoneNumber: ()=>{}}, ref: string) => {
       return (
         <TextInput
           ref={ref}
