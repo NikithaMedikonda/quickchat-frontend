@@ -107,7 +107,6 @@ try {
   const result = await registerUser({ ...form, image });
   if (result.status === 409) {
     dispatch(hide());
-    // Alert.alert(t('User already exists with this number or email'));
     Dialog.show({
       type: ALERT_TYPE.DANGER,
       title: 'Registration failed',
@@ -142,7 +141,6 @@ try {
   }
 } catch (e) {
   dispatch(hide());
-  // Alert.alert(t('Network error or something unexpected happened'));
   Dialog.show({
     type: ALERT_TYPE.DANGER,
     title: 'Registration failed',
