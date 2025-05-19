@@ -1,6 +1,5 @@
 import {fireEvent, render, waitFor} from '@testing-library/react-native';
 import {AlertNotificationRoot, Dialog} from 'react-native-alert-notification';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Provider} from 'react-redux';
 import * as redux from 'react-redux';
 import {useDispatch} from 'react-redux';
