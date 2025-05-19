@@ -134,8 +134,12 @@ export const EditProfile = () => {
       if (user) {
         try {
           const result = await editProfile(payload, user);
-          await EncryptedStorage.setItem('user', JSON.stringify(result.data.user));
-        Dialog.show({
+          if (result.status === 200) {
+            await EncryptedStorage.setItem(
+              'user',
+              JSON.stringify(result.data.user),
+            );
+            Dialog.show({
             type: ALERT_TYPE.SUCCESS,
             title: 'Success',
             textBody: 'Profile updated successfully',
@@ -145,7 +149,23 @@ export const EditProfile = () => {
           setTimeout(() => {
             profileNavigation.replace('profileScreen');
           }, 4000);
-
+          } else if (result.status === 400) {
+          Dialog.show({
+            type: ALERT_TYPE.DANGER,
+            title: 'Error',
+            textBody: 'Phone Number is required to change the profile image.',
+            button: 'close',
+            closeOnOverlayTap: true,
+          });
+          } else if (result.status === 404) {
+            Dialog.show({
+            type: ALERT_TYPE.DANGER,
+            title: 'Error',
+            textBody: 'No user exists with the given phone number.',
+            button: 'close',
+            closeOnOverlayTap: true,
+          });
+          }
         } catch (err) {
           Dialog.show({
             type: ALERT_TYPE.DANGER,

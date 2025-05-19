@@ -1,12 +1,14 @@
-import {fireEvent, render, waitFor} from '@testing-library/react-native';
+import React from 'react';
 import {AlertNotificationRoot, Dialog} from 'react-native-alert-notification';
-import {Provider} from 'react-redux';
-import * as redux from 'react-redux';
-import {useDispatch} from 'react-redux';
-import {store} from '../../store/store';
 import EncryptedStorage from 'react-native-encrypted-storage';
+import {fireEvent, render, waitFor} from '@testing-library/react-native';
+import * as redux from 'react-redux';
+import {Provider} from 'react-redux';
+import {useDispatch} from 'react-redux';
 import {editProfile} from '../../services/editProfile';
 import {EditProfile} from './EditProfile';
+import {store} from '../../store/store';
+
 
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
@@ -206,12 +208,14 @@ describe('EditProfile Component', () => {
 
   test('calls editProfile and navigates on successful save', async () => {
     (editProfile as jest.Mock).mockResolvedValue({
+      status: 200,
       data: {
         user: {
           firstName: 'test',
           lastName: 'user',
           email: 'testuser@gmail.com',
           phoneNumber: '1234567890',
+          profilePicture: 'somerandomsupabaseurl.com',
         },
       },
     });
@@ -223,13 +227,17 @@ describe('EditProfile Component', () => {
         </AlertNotificationRoot>
       </Provider>,
     );
-
     await waitFor(() => {
-      expect(getByDisplayValue('test')).toBeTruthy();
-      expect(getByDisplayValue('user')).toBeTruthy();
-      expect(getByDisplayValue('testuser@gmail.com')).toBeTruthy();
+      fireEvent.changeText(getByDisplayValue('test'), 'test');
+      fireEvent.changeText(getByDisplayValue('user'), 'user');
+      fireEvent.changeText(
+        getByDisplayValue('testuser@gmail.com'),
+        'testuser@gmail.com',
+      );
     });
-    fireEvent.press(getByText('Save'));
+    await waitFor(() => {
+      fireEvent.press(getByText('Save'));
+    });
 
     await waitFor(() => {
       expect(editProfile).toHaveBeenCalledWith(
