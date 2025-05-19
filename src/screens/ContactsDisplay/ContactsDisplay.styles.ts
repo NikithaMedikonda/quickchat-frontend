@@ -26,6 +26,7 @@ export const getStyles = (colors: Colors) =>
       fontWeight: 'bold',
       paddingTop:0.03 * height,
       paddingBottom:0.03 * height,
+      fontSize:18,
     },
     contactDetailsContainer: {
       display: 'flex',

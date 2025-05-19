@@ -2,10 +2,9 @@ import {App} from '../App';
 import {render} from '@testing-library/react-native';
 import i18next from 'i18next';
 
-jest.mock('@react-native-async-storage/async-storage', () => ({
+jest.mock('react-native-encrypted-storage', () => ({
   setItem: jest.fn(),
   getItem: jest.fn(),
-  removeItem: jest.fn(),
   clear: jest.fn(),
 }));
 

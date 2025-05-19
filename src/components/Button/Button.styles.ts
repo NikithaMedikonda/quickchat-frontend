@@ -7,8 +7,8 @@ export const getStyles = (colors: Colors) =>
   StyleSheet.create({
     button: {
       paddingVertical: 12,
-      height: 50,
-      width: width * 0.55,
+      height: 43,
+      width: width * 0.4,
       display: 'flex',
       justifyContent: 'center',
       alignContent: 'center',
@@ -19,7 +19,7 @@ export const getStyles = (colors: Colors) =>
       marginVertical: 5,
     },
     text: {
-      fontSize: 16,
+      fontSize: 15,
       fontWeight: '600',
       color: colors.buttonText,
     },

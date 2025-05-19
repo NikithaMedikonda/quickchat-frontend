@@ -4,13 +4,13 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import EncryptedStorage from 'react-native-encrypted-storage';
 import {Profile} from './Profile';
 import {ProfileMoreOptionsModal} from '../../components/ProfileMoreOptionsModal/ProfileMoreOptionsModal';
 import {Provider} from 'react-redux';
 import {store} from '../../store/store';
 
-jest.mock('@react-native-async-storage/async-storage', () => ({
+jest.mock('react-native-encrypted-storage', () => ({
   getItem: jest.fn(),
 }));
 
@@ -39,7 +39,7 @@ const mockUserData = {
 
 describe('Profile Screen', () => {
   beforeEach(() => {
-    (AsyncStorage.getItem as jest.Mock).mockResolvedValue(
+    (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(
       JSON.stringify(mockUserData),
     );
   });
@@ -99,12 +99,12 @@ describe('Profile Screen', () => {
     expect(await screen.findByText(mockUserData.phoneNumber)).toBeTruthy();
   });
 
-  it('loads user data from AsyncStorage and displays profile image', async () => {
+  it('loads user data from Encrypted storage and displays profile image', async () => {
     const mockUser = {
       profilePicture: 'https://example.com/profile.jpg',
       firstName: 'Anoosha',
     };
-    (AsyncStorage.getItem as jest.Mock).mockResolvedValueOnce(
+    (EncryptedStorage.getItem as jest.Mock).mockResolvedValueOnce(
       JSON.stringify(mockUser),
     );
     renderComponent();

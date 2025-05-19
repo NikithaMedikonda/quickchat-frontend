@@ -1,10 +1,9 @@
 import {render} from '@testing-library/react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {HomeTabs} from './HomeTabs';
-jest.mock('@react-native-async-storage/async-storage', () => ({
+jest.mock('react-native-encrypted-storage', () => ({
   getItem: jest.fn(),
   setItem: jest.fn(),
-  removeItem: jest.fn(),
   clear: jest.fn(),
 }));
 jest.mock('react-native-contacts', () => ({

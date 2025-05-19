@@ -1,17 +1,14 @@
-import {
-  fireEvent,
-  render,
-  waitFor,
-} from '@testing-library/react-native';
 import React from 'react';
-import {Alert} from 'react-native';
+import {AlertNotificationRoot, Dialog} from 'react-native-alert-notification';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import {fireEvent, render, waitFor} from '@testing-library/react-native';
 import * as redux from 'react-redux';
 import {Provider} from 'react-redux';
-import {EditProfile} from './EditProfile';
 import {useDispatch} from 'react-redux';
-import {store} from '../../store/store';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {editProfile} from '../../services/editProfile';
+import {EditProfile} from './EditProfile';
+import {store} from '../../store/store';
+
 
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
@@ -20,7 +17,7 @@ jest.mock('react-redux', () => ({
 }));
 const mockDispatch = jest.fn();
 
-jest.mock('@react-native-async-storage/async-storage', () => ({
+jest.mock('react-native-encrypted-storage', () => ({
   setItem: jest.fn(),
   getItem: jest.fn(),
 }));
@@ -49,8 +46,12 @@ jest.mock('@react-navigation/native', () => {
   };
 });
 
-jest.spyOn(Alert, 'alert');
-
+jest.mock('react-native-alert-notification', () => ({
+  AlertNotificationRoot: ({children}: any) => <>{children}</>,
+  Toast: {show: jest.fn()},
+  Dialog: {show: jest.fn()},
+  ALERT_TYPE: {SUCCESS: 'success', DANGER: 'danger'},
+}));
 describe('EditProfile Component', () => {
   const dispatch = jest.fn();
   useDispatchMock.mockImplementation(() => mockDispatch);
@@ -70,7 +71,7 @@ describe('EditProfile Component', () => {
     );
   });
 
-  (AsyncStorage.getItem as jest.Mock).mockImplementation(key => {
+  (EncryptedStorage.getItem as jest.Mock).mockImplementation(key => {
     if (key === 'user') {
       return Promise.resolve(
         JSON.stringify({
@@ -95,7 +96,9 @@ describe('EditProfile Component', () => {
   test('renders the profile image and input fields', async () => {
     const {getByText, getByAccessibilityHint} = render(
       <Provider store={store}>
-        <EditProfile />
+        <AlertNotificationRoot>
+          <EditProfile />
+        </AlertNotificationRoot>
       </Provider>,
     );
 
@@ -112,16 +115,21 @@ describe('EditProfile Component', () => {
   test('shows alert if first name is missing', async () => {
     const {getByText} = render(
       <Provider store={store}>
-        <EditProfile />
+        <AlertNotificationRoot>
+          <EditProfile />
+        </AlertNotificationRoot>
       </Provider>,
     );
     await waitFor(() => fireEvent.press(getByText('Save')));
-    await waitFor(() =>
-      expect(Alert.alert).toHaveBeenCalledWith(
-        'Error',
-        'First name is required',
-      ),
-    );
+    await waitFor(() =>{
+      expect(Dialog.show).toHaveBeenCalledWith({
+        type: 'danger',
+        title: 'Error',
+        textBody: 'First name is required',
+        button: 'close',
+        closeOnOverlayTap: true,
+      });
+  });
   });
 
   test('shows alert for invalid email format', async () => {
@@ -137,7 +145,9 @@ describe('EditProfile Component', () => {
     });
     const {getByText, getByDisplayValue} = render(
       <Provider store={store}>
-        <EditProfile />
+        <AlertNotificationRoot>
+          <EditProfile />
+        </AlertNotificationRoot>
       </Provider>,
     );
     await waitFor(() => getByText('Save'));
@@ -149,9 +159,15 @@ describe('EditProfile Component', () => {
     );
     fireEvent.press(getByText('Save'));
 
-    await waitFor(() =>
-      expect(Alert.alert).toHaveBeenCalledWith('Error', 'Invalid email format'),
-    );
+    await waitFor(() => {
+      expect(Dialog.show).toHaveBeenCalledWith({
+        type: 'danger',
+        title: 'Error',
+        textBody: 'Invalid email format',
+        button: 'close',
+        closeOnOverlayTap: true,
+      });
+    });
   });
   test('shows alert for invalid last name', async () => {
     (editProfile as jest.Mock).mockResolvedValue({
@@ -166,7 +182,9 @@ describe('EditProfile Component', () => {
     });
     const {getByText, getByDisplayValue} = render(
       <Provider store={store}>
-        <EditProfile />
+        <AlertNotificationRoot>
+          <EditProfile />
+        </AlertNotificationRoot>
       </Provider>,
     );
     await waitFor(() => getByText('Save'));
@@ -177,38 +195,49 @@ describe('EditProfile Component', () => {
       'testuser@gmail.com',
     );
     fireEvent.press(getByText('Save'));
-    await waitFor(() =>
-      expect(Alert.alert).toHaveBeenCalledWith(
-        'Error',
-        'Last name is required',
-      ),
-    );
+    await waitFor(() => {
+      expect(Dialog.show).toHaveBeenCalledWith({
+        type: 'danger',
+        title: 'Error',
+        textBody: 'Last name is required',
+        button: 'close',
+        closeOnOverlayTap: true,
+      });
+    });
   });
 
   test('calls editProfile and navigates on successful save', async () => {
     (editProfile as jest.Mock).mockResolvedValue({
+      status: 200,
       data: {
         user: {
           firstName: 'test',
           lastName: 'user',
           email: 'testuser@gmail.com',
           phoneNumber: '1234567890',
+          profilePicture: 'somerandomsupabaseurl.com',
         },
       },
     });
 
     const {getByText, getByDisplayValue} = render(
       <Provider store={store}>
-        <EditProfile />
+        <AlertNotificationRoot>
+          <EditProfile />
+        </AlertNotificationRoot>
       </Provider>,
     );
-
     await waitFor(() => {
-      expect(getByDisplayValue('test')).toBeTruthy();
-      expect(getByDisplayValue('user')).toBeTruthy();
-      expect(getByDisplayValue('testuser@gmail.com')).toBeTruthy();
+      fireEvent.changeText(getByDisplayValue('test'), 'test');
+      fireEvent.changeText(getByDisplayValue('user'), 'user');
+      fireEvent.changeText(
+        getByDisplayValue('testuser@gmail.com'),
+        'testuser@gmail.com',
+      );
     });
-    fireEvent.press(getByText('Save'));
+    await waitFor(() => {
+      fireEvent.press(getByText('Save'));
+    });
 
     await waitFor(() => {
       expect(editProfile).toHaveBeenCalledWith(
@@ -222,13 +251,22 @@ describe('EditProfile Component', () => {
         },
         expect.any(Object),
       );
-      expect(AsyncStorage.setItem).toHaveBeenCalled();
-      expect(mockNavigation.replace).toHaveBeenCalledWith('profileScreen');
-      expect(Alert.alert).toHaveBeenCalledWith(
-        'Success',
-        'Profile updated successfully!',
-      );
-    });
+      expect(EncryptedStorage.setItem).toHaveBeenCalled();
+      expect(Dialog.show).toHaveBeenCalledWith({
+        type: 'success',
+        title: 'Success',
+        textBody: 'Profile updated successfully',
+        button: 'close',
+        closeOnOverlayTap: true,
+      });
+     });
+    
+    await waitFor(
+      () => {
+        expect(mockNavigation.replace).toHaveBeenCalledWith('profileScreen');
+      },
+      {timeout: 5000},
+    );
   });
 
   test('shows error alert on editProfile failure', async () => {
@@ -236,7 +274,9 @@ describe('EditProfile Component', () => {
 
     const {getByText, getByDisplayValue} = render(
       <Provider store={store}>
-        <EditProfile />
+        <AlertNotificationRoot>
+          <EditProfile />
+        </AlertNotificationRoot>
       </Provider>,
     );
 
@@ -249,12 +289,14 @@ describe('EditProfile Component', () => {
     );
     fireEvent.press(getByText('Save'));
 
-    await waitFor(() =>
-      expect(Alert.alert).toHaveBeenCalledWith(
-        'Error',
-        'Failed to update profile',
-      ),
-    );
-
+    await waitFor(() => {
+      expect(Dialog.show).toHaveBeenCalledWith({
+        type: 'danger',
+        title: 'Error',
+        textBody: 'Failed to update profile',
+        button: 'close',
+        closeOnOverlayTap: true,
+      });
+    });
   });
 });

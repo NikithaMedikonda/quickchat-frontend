@@ -9,7 +9,7 @@ export const getStyles = (colors: Colors) =>
       height: height * 0.14,
       width: width * 0.3,
       marginBottom: height * 0.03,
-      borderRadius:100,
+      borderRadius: 100,
     },
     registrationMainContainer: {
       backgroundColor: colors.background,
@@ -30,10 +30,20 @@ export const getStyles = (colors: Colors) =>
       color: colors.primaryBlue,
     },
     registerButtonContainer: {
-      marginTop: height * 0.03,
+      marginTop: height * 0.02,
     },
     errorText: {
       color: 'red',
+      fontSize: 15,
+      alignSelf: 'flex-start',
+      width: width * 0.75,
+      marginLeft: width * 0.011,
+    },
+    phoneErrorText: {
+      color: 'red',
+      fontSize: 15,
+      marginTop: 4,
+      marginLeft: width * 0.027,
     },
     placeholder: {
       color: colors.gray,
@@ -42,7 +52,7 @@ export const getStyles = (colors: Colors) =>
       height: height * 0.055,
       fontSize: 20,
       borderRadius: 10,
-      width: width * 0.8,
+      width: width * 0.75,
       padding: 10,
       color: colors.gray,
       margin: height * 0.012,

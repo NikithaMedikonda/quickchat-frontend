@@ -1,15 +1,16 @@
 import {useEffect, useState} from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import EncryptedStorage from 'react-native-encrypted-storage';
 import {useDispatch} from 'react-redux';
 import {API_URL} from '../../constants/api';
 import {hide, show} from '../../store/slices/loadingSlice';
 import {HomeTabs} from '../tab/HomeTabs';
 import {LoadingComponent} from '../../components/Loading/Loading';
+import {Login} from '../../screens/Login/Login';
 import {Registration} from '../../screens/Registration/Registration';
 import {setLoginSuccess} from '../../store/slices/loginSlice';
 import {Welcome} from '../../screens/Welcome/Welcome';
-import {Login} from '../../screens/Login/Login';
+
 const Stack = createNativeStackNavigator();
 
 export const InitialStacks = () => {
@@ -19,9 +20,9 @@ export const InitialStacks = () => {
     const getUser = async () => {
       dispatch(show());
 
-      const userString = await AsyncStorage.getItem('user');
-      const accessToken = await AsyncStorage.getItem('authToken');
-      const refreshToken = await AsyncStorage.getItem('refreshToken');
+      const userString = await EncryptedStorage.getItem('user');
+      const accessToken = await EncryptedStorage.getItem('authToken');
+      const refreshToken = await EncryptedStorage.getItem('refreshToken');
 
       const user = userString ? JSON.parse(userString) : null;
 
@@ -45,7 +46,7 @@ export const InitialStacks = () => {
           result.message === 'Invalid access token' ||
           result.message === 'Invalid refresh token'
         ) {
-          await AsyncStorage.multiRemove(['user', 'authToken', 'refreshToken']);
+          await EncryptedStorage.clear();
           setInitialRoute('welcome');
           dispatch(hide());
           return;
@@ -57,8 +58,8 @@ export const InitialStacks = () => {
         }
 
         if (result.message === 'New access token issued') {
-          await AsyncStorage.setItem('authToken', result.accessToken);
-          await AsyncStorage.setItem('refreshToken', result.refreshToken);
+          await EncryptedStorage.setItem('authToken', result.accessToken);
+          await EncryptedStorage.setItem('refreshToken', result.refreshToken);
         }
 
         dispatch(

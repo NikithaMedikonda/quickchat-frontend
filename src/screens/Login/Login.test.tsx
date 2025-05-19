@@ -1,4 +1,3 @@
-import {Alert} from 'react-native';
 import {
   fireEvent,
   render,
@@ -6,6 +5,7 @@ import {
   waitFor,
 } from '@testing-library/react-native';
 import {NavigationContainer} from '@react-navigation/native';
+import {AlertNotificationRoot, Dialog} from 'react-native-alert-notification';
 import phone from 'phone';
 import {Provider} from 'react-redux';
 import {Login} from './Login';
@@ -51,7 +51,7 @@ jest.mock('@react-navigation/native', () => {
   };
 });
 
-jest.mock('@react-native-async-storage/async-storage', () => ({
+jest.mock('react-native-encrypted-storage', () => ({
   setItem: jest.fn(),
 }));
 
@@ -59,15 +59,13 @@ jest.mock('../../services/LoginUser', () => ({
   loginUser: jest.fn(),
 }));
 
-jest.spyOn(Alert, 'alert');
-
 jest.mock('phone');
 
 jest.mock('react-native-phone-input', () => {
   const React = require('react');
   const {TextInput} = require('react-native');
   const MockPhoneInput = React.forwardRef(
-    (props: {value: any; onChangePhoneNumber: any}, ref: any) => {
+    (props: {value: string; onChangePhoneNumber: ()=>{}}, ref: string) => {
       return (
         <TextInput
           ref={ref}
@@ -81,13 +79,20 @@ jest.mock('react-native-phone-input', () => {
   );
   return MockPhoneInput;
 });
-
+jest.mock('react-native-alert-notification', () => ({
+  AlertNotificationRoot: ({children}: any) => <>{children}</>,
+  Toast: {show: jest.fn()},
+  Dialog: {show: jest.fn()},
+  ALERT_TYPE: {SUCCESS: 'success', DANGER: 'danger'},
+}));
 describe('Login Screen', () => {
   beforeEach(() => {
     render(
       <Provider store={store}>
         <NavigationContainer>
-          <Login />
+          <AlertNotificationRoot>
+            <Login />
+          </AlertNotificationRoot>
         </NavigationContainer>
       </Provider>,
     );
@@ -156,7 +161,13 @@ describe('Login Screen', () => {
     fireEvent.changeText(screen.getByPlaceholderText('Password'), 'Anu@1234');
     fireEvent.press(screen.getByText('Login'));
     await waitFor(() => {
-      expect(Alert.alert).toHaveBeenCalledWith('Something went wrong');
+      expect(Dialog.show).toHaveBeenCalledWith({
+        type: 'danger',
+        title: 'Login failed',
+        textBody: 'Something went wrong',
+        button: 'close',
+        closeOnOverlayTap: true,
+      });
     });
   });
   test('should show alert if user not existed with this phone number', async () => {
@@ -172,9 +183,13 @@ describe('Login Screen', () => {
     fireEvent.changeText(screen.getByPlaceholderText('Password'), 'Anu@1234');
     fireEvent.press(screen.getByText('Login'));
     await waitFor(() => {
-      expect(Alert.alert).toHaveBeenCalledWith(
-        'No account exists with this phone number',
-      );
+      expect(Dialog.show).toHaveBeenCalledWith({
+        type: 'danger',
+        title: 'Login failed',
+        textBody: 'No account exists with this phone number',
+        button: 'close',
+        closeOnOverlayTap: true,
+      });
     });
   });
 
@@ -191,7 +206,13 @@ describe('Login Screen', () => {
     fireEvent.changeText(screen.getByPlaceholderText('Password'), 'Anu@1234');
     fireEvent.press(screen.getByText('Login'));
     await waitFor(() => {
-      expect(Alert.alert).toHaveBeenCalledWith('Wrong password');
+      expect(Dialog.show).toHaveBeenCalledWith({
+        type: 'danger',
+        title: 'Login failed',
+        textBody: 'Invalid credentials!',
+        button: 'close',
+        closeOnOverlayTap: true,
+      });
     });
   });
   test('should show alert if login failed', async () => {
@@ -207,9 +228,13 @@ describe('Login Screen', () => {
     fireEvent.changeText(screen.getByPlaceholderText('Password'), 'Anu@1234');
     fireEvent.press(screen.getByText('Login'));
     await waitFor(() => {
-      expect(Alert.alert).toHaveBeenCalledWith(
-        'Something went wrong while login',
-      );
+      expect(Dialog.show).toHaveBeenCalledWith({
+        type: 'danger',
+        title: 'Login failed',
+        textBody: 'Something went wrong while login',
+        button: 'close',
+        closeOnOverlayTap: true,
+      });
     });
   });
 

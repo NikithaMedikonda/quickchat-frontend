@@ -20,35 +20,29 @@ export const getStyles = (color: Colors) =>
       gap: 6,
       marginRight: 12,
     },
-    profileImage: {
-      height: height * 0.14,
-      width: width * 0.3,
-      borderRadius: 70,
-      justifyContent: 'flex-start',
-
-      padding: 10,
-    },
     icons: {
-      height: 30,
-      width: 30,
-      marginTop:10,
+      height: 35,
+      width: 31,
+      marginTop: 4,
+      marginRight: -4,
     },
     iconLast: {
       height: 35,
-      width: 31,
-      marginTop:10,
+      width: 35,
+      marginTop: 2,
+      marginRight: -8,
     },
     iconEmail: {
       height: 25,
       width: 25,
-      marginLeft: 6,
-      marginTop:10,
+      marginLeft: 2,
+      marginTop: 4,
     },
     iconPhone: {
       height: 25,
       width: 25,
-      marginLeft: 6,
-      marginTop:10,
+      marginLeft: 1,
+      marginTop: 6,
     },
     headerText: {
       color: color.text,
@@ -79,5 +73,18 @@ export const getStyles = (color: Colors) =>
     details: {
       display: 'flex',
       gap: 4,
+    },
+    profileImageContainer: {
+      width: width * 0.3,
+      height: width * 0.3,
+      borderRadius: (width * 0.3) / 2,
+      overflow: 'hidden',
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: '#ccc',
+    },
+    profileImage: {
+      width: '100%',
+      height: '100%',
     },
   });
