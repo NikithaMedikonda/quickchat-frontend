@@ -244,12 +244,14 @@ describe('EditProfile Component', () => {
         expect.any(Object),
       );
       expect(EncryptedStorage.setItem).toHaveBeenCalled();
-      expect(mockNavigation.replace).toHaveBeenCalledWith('profileScreen');
-      expect(Alert.alert).toHaveBeenCalledWith(
-        'Success',
-        'Profile updated successfully!',
-      );
-    });
+      expect(Dialog.show).toHaveBeenCalledWith({
+        type: 'success',
+        title: 'Success',
+        textBody: 'Profile updated successfully',
+        button: 'close',
+        closeOnOverlayTap: true,
+      });
+    
     await waitFor(
       () => {
         expect(mockNavigation.replace).toHaveBeenCalledWith('profileScreen');
