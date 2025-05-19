@@ -25,7 +25,7 @@ import {logout} from '../../store/slices/loginSlice';
 import {useDispatch} from 'react-redux';
 import {useThemeColors} from '../../constants/colors';
 import {User} from '../../screens/Profile/Profile';
-
+import {resetForm} from '../../store/slices/registrationSlice';
 
 export const ProfileMoreOptionsModal = ({
   visible,
@@ -96,6 +96,9 @@ export const ProfileMoreOptionsModal = ({
         Alert.alert(t('Invalid Phone number'));
       } else if (result.status === 200) {
         dispatch(hide());
+        dispatch(resetForm());
+        dispatch(logout());
+        await EncryptedStorage.clear();
         initialStackNavigation.replace('welcome');
       } else if (result.status === 412) {
         dispatch(hide());
@@ -128,7 +131,7 @@ export const ProfileMoreOptionsModal = ({
     <View>
       <Modal transparent={true} visible={visible}>
         <TouchableWithoutFeedback onPress={onClose}>
-          <View style={[styles.centeredView,modalStyle]}>
+          <View style={[styles.centeredView, modalStyle]}>
             <View style={styles.modalView}>
               <View style={styles.textContainer}>
                 <TouchableOpacity
