@@ -34,7 +34,7 @@ jest.mock('react-native-phone-input', () => {
   const React = require('react');
   const {TextInput} = require('react-native');
   const MockPhoneInput = React.forwardRef(
-    (props: {value: any; onChangePhoneNumber: any}, ref: any) => {
+    (props: {value: string; onChangePhoneNumber: ()=>{}}, ref: string) => {
       return (
         <TextInput
           ref={ref}
@@ -85,7 +85,7 @@ describe('InitialStacks', () => {
     });
   });
 
-  it('should clear AsyncStorage and navigate to Welcome if tokens are invalid', async () => {
+  it('should clear EncryptedStorage and navigate to Welcome if tokens are invalid', async () => {
     (EncryptedStorage.getItem as jest.Mock).mockImplementation(
       (key: string) => {
         if (key === 'user') {
