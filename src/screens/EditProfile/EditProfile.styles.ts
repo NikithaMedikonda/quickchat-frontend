@@ -65,7 +65,7 @@ export const getStyles = (colors: Colors) =>
       width: '48%',
     },
     buttonText: {
-      color: colors.text,
+      color: colors.buttonText,
       fontWeight: '600',
       fontSize: 16,
     },
