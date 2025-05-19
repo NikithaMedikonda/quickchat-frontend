@@ -1,15 +1,15 @@
 /* eslint-disable react-native/no-inline-styles */
 import {useEffect, useLayoutEffect, useState} from 'react';
-import Contacts from 'react-native-contacts';
 import {View, Text, ScrollView, TouchableOpacity, Alert} from 'react-native';
-import {useThemeColors} from '../../constants/colors';
+import {Contact} from '../../components/Contact/Contact';
+import Contacts from 'react-native-contacts';
+import {ContactDetails} from '../../types/contact.types';
+import {DEFAULT_PROFILE_IMAGE} from '../../constants/defaultImage';
+import {getContacts} from '../../services/GetContacts';
 import {getStyles} from './ContactsDisplay.styles';
 import {HomeTabsProps} from '../../types/usenavigation.type';
 import {useNavigation} from '@react-navigation/native';
-import {ContactDetails} from '../../types/contact.types';
-import {Contact} from '../../components/Contact/Contact';
-import {getContacts} from '../../services/GetContacts';
-import {DEFAULT_PROFILE_IMAGE} from '../../constants/defaultImage';
+import {useThemeColors} from '../../constants/colors';
 import {useTranslation} from 'react-i18next';
 
 export const ContactsDisplay = () => {
