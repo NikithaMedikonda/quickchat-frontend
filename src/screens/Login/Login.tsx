@@ -1,5 +1,4 @@
 import {
-  Alert,
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -8,6 +7,12 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+
+import {
+  ALERT_TYPE,
+  AlertNotificationRoot,
+  Dialog,
+} from 'react-native-alert-notification';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {phone} from 'phone';
 import PhoneInput from 'react-native-phone-input';
@@ -90,71 +95,120 @@ function Login() {
         homeNavigation.replace('hometabs');
       } else if (result.status === 404) {
         dispatch(hide());
-        Alert.alert(t('No account exists with this phone number'));
+        Dialog.show({
+          type: ALERT_TYPE.DANGER,
+          title: 'Login failed',
+          textBody: 'No account exists with this phone number',
+          button: 'close',
+          closeOnOverlayTap: true,
+        });
       } else if (result.status === 401) {
         dispatch(hide());
-        Alert.alert(t('Wrong password'));
+        Dialog.show({
+          type: ALERT_TYPE.DANGER,
+          title: 'Login failed',
+          textBody: 'Invalid credentials!',
+          button: 'close',
+          closeOnOverlayTap: true,
+        });
       } else {
         dispatch(hide());
-        Alert.alert(t('Something went wrong while login'));
+        Dialog.show({
+          type: ALERT_TYPE.DANGER,
+          title: 'Login failed',
+          textBody: 'Something went wrong while login',
+          button: 'close',
+          closeOnOverlayTap: true,
+        });
       }
     } catch (error: any) {
       dispatch(hide());
-      Alert.alert(t('Something went wrong'));
+      Dialog.show({
+        type: ALERT_TYPE.DANGER,
+        title: 'Login failed',
+        textBody: 'Something went wrong',
+        button: 'close',
+        closeOnOverlayTap: true,
+      });
     }
   }
   return (
-    <KeyboardAvoidingView
-      style={styles.keyboardAvoidView}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}>
-      <ScrollView
-        contentContainerStyle={styles.loginMainContainer}
-        keyboardShouldPersistTaps="handled">
-        <Image
-          style={styles.image}
-          source={require('../../assets/quickchat.png')}
-          accessibilityHint="logo-image"
-        />
-        <PhoneInput
-          style={styles.phoneNumber}
-          initialCountry={'in'}
-          initialValue={form.phoneNumber}
-          textProps={{
-            placeholder: 'Phone number',
-          }}
-          onChangePhoneNumber={(text: string) => {
-            handleInputChange('phoneNumber', text);
-          }}
-          onPressFlag={() => {}}
-        />
-        {errors.phoneNumber && (
-          <Text style={styles.error}>{t(`${errors.phoneNumber}`)}</Text>
-        )}
-        <Placeholder
-          title="Password"
-          value={form.password}
-          onChange={(text: string) => {
-            handleInputChange('password', text);
-          }}
-          secureTextEntry={true}
-        />
-        {errors.password && (
-          <Text style={styles.error}>{t(`${errors.password}`)}</Text>
-        )}
-        <Button title="Login" onPress={handleLogin} />
-        <View style={styles.messageView}>
-          <Text style={styles.messageText}>{t("Don't have an account?")}</Text>
-          <TouchableOpacity
-            style={styles.signUpContainer}
-            onPress={() => {
-              navigate.navigate('register');
-            }}>
-            <Text style={styles.validationText}>{t('Sign up')}</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+    <AlertNotificationRoot
+      theme="dark"
+      colors={[
+        {
+          label: '#000000',
+          card: '#FFFFFF',
+          overlay: 'rgba(0, 0, 0, 0.5)',
+          success: '#4CAF50',
+          danger: '#F44336',
+          warning: '#1877F2',
+          info: '#000000',
+        },
+        {
+          label: '#000000',
+          card: '#FFFFFF',
+          overlay: 'rgb(255, 254, 254)',
+          success: '#4CAF50',
+          danger: '#F44336',
+          warning: '#FFFFFF',
+          info: '#000000',
+        },
+      ]}>
+      <KeyboardAvoidingView
+        style={styles.keyboardAvoidView}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}>
+        <ScrollView
+          contentContainerStyle={styles.loginMainContainer}
+          keyboardShouldPersistTaps="handled">
+          <Image
+            style={styles.image}
+            source={require('../../assets/quickchat.png')}
+            accessibilityHint="logo-image"
+          />
+          <PhoneInput
+            style={styles.phoneNumber}
+            initialCountry={'in'}
+            initialValue={form.phoneNumber}
+            textProps={{
+              placeholder: 'Phone number',
+            }}
+            onChangePhoneNumber={(text: string) => {
+              handleInputChange('phoneNumber', text);
+            }}
+            onPressFlag={() => {}}
+          />
+          {errors.phoneNumber && (
+            <Text style={styles.error}>{t(`${errors.phoneNumber}`)}</Text>
+          )}
+          <Placeholder
+            title="Password"
+            value={form.password}
+            onChange={(text: string) => {
+              handleInputChange('password', text);
+            }}
+            secureTextEntry={true}
+          />
+          {errors.password && (
+            <Text style={styles.error}>{t(`${errors.password}`)}</Text>
+          )}
+          <Button title="Login" onPress={handleLogin} />
+          <View style={styles.messageView}>
+            <Text style={styles.messageText}>
+              {t("Don't have an account?")}
+            </Text>
+            <TouchableOpacity
+              style={styles.signUpContainer}
+              onPress={() => {
+                navigate.navigate('register');
+              }}>
+              <Text style={styles.validationText}>{t('Sign up')}</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </AlertNotificationRoot>
   );
 }
 
