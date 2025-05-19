@@ -1,16 +1,16 @@
-import { API_URL } from '../constants/api';
+import {API_URL} from '../constants/api';
 
 export const editProfile = async (
   payload: {
-    phoneNumber:string
+    phoneNumber: string;
     image: string;
     firstName: string;
     lastName: string;
     email: string;
-    token:string;
+    token: string;
   },
   user: {
-    phoneNumber:string
+    phoneNumber: string;
     image?: string;
     firstName: string;
     lastName: string;
@@ -18,7 +18,7 @@ export const editProfile = async (
   },
 ) => {
   const userData: any = {};
-if (user.phoneNumber === payload.phoneNumber) {
+  if (user.phoneNumber === payload.phoneNumber) {
     userData.phoneNumber = payload.phoneNumber;
   }
   if (user.firstName !== payload.firstName) {
@@ -37,27 +37,17 @@ if (user.phoneNumber === payload.phoneNumber) {
     userData.profilePicture = payload.image;
   }
 
-  try {
-    const response = await fetch(`${API_URL}/api/user`, {
-      method: 'PUT',
-      headers: {
-        authorization: `Bearer ${payload.token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(userData),
-    });
-
-    let data;
-    try {
-      data = await response.json();
-    } catch {
-      data = {};
-    }
-    return {
-      status: response.status,
-      data,
-    };
-  } catch (error) {
-    throw error;
-  }
+  const response = await fetch(`${API_URL}/api/user`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      authorization: `Bearer ${payload.token}`,
+    },
+    body: JSON.stringify(userData),
+  });
+  const data = await response.json();
+  return {
+    status: response.status,
+    data,
+  };
 };
