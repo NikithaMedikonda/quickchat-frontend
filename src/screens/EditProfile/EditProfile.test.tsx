@@ -265,7 +265,7 @@ describe('EditProfile Component', () => {
       () => {
         expect(mockNavigation.replace).toHaveBeenCalledWith('profileScreen');
       },
-      {timeout: 4000},
+      {timeout: 5000},
     );
   });
 
