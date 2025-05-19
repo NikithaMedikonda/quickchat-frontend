@@ -15,18 +15,20 @@ jest.mock('react-native-encrypted-storage', () => ({
 
 jest.mock('react-native-phone-input', () => {
   const React = require('react');
-  const { TextInput } = require('react-native');
-  const MockPhoneInput = React.forwardRef((props: { value: string; onChangePhoneNumber: ()=>{}; }, ref: string) => {
-    return (
-      <TextInput
-        ref={ref}
-        placeholder="Phone number"
-        value={props.value}
-        onChangeText={props.onChangePhoneNumber}
-        testID="mock-phone-input"
-      />
-    );
-  });
+  const {TextInput} = require('react-native');
+  const MockPhoneInput = React.forwardRef(
+    (props: {value: any; onChangePhoneNumber: any}, ref: any) => {
+      return (
+        <TextInput
+          ref={ref}
+          placeholder="Phone number"
+          value={props.value}
+          onChangeText={props.onChangePhoneNumber}
+          testID="mock-phone-input"
+        />
+      );
+    },
+  );
   return MockPhoneInput;
 });
 
@@ -42,7 +44,7 @@ jest.mock('@react-navigation/native', () => {
     ...actualNav,
     useNavigation: () => ({
       navigate: mockNavigate,
-      replace:mockReplace,
+      replace: mockReplace,
     }),
   };
 });
@@ -213,7 +215,9 @@ describe('Registration Screen', () => {
 
   it('shows error alert if API call fails', async () => {
     const {registerUser} = require('../../services/RegisterUser.ts');
-    registerUser.mockRejectedValue(new Error('Network error or something unexpected happened'));
+    registerUser.mockRejectedValue(
+      new Error('Network error or something unexpected happened'),
+    );
     const {getByPlaceholderText, getByText} = renderComponent();
     fireEvent.changeText(getByPlaceholderText('First Name'), 'testuser');
     fireEvent.changeText(getByPlaceholderText('Last Name'), 'testuser');
@@ -226,7 +230,27 @@ describe('Registration Screen', () => {
     fireEvent.press(getByText('Register'));
     expect(registerUser).toHaveBeenCalled();
     await waitFor(() => {
-      expect(Alert.alert).toHaveBeenCalledWith('Network error or something unexpected happened');
+      expect(Alert.alert).toHaveBeenCalledWith(
+        'Network error or something unexpected happened',
+      );
+    });
+  });
+
+  it('shows phone number required error when phone number is empty', async () => {
+    const {getByPlaceholderText, getByText} = renderComponent();
+    fireEvent.changeText(getByPlaceholderText('Phone number'), '');
+    fireEvent.press(getByText('Register'));
+    await waitFor(() => {
+      expect(getByText('Phone number required!')).toBeTruthy();
+    });
+  });
+
+  it('shows invalid phone number error when phone number is less than 10 digits', async () => {
+    const {getByPlaceholderText, getByText} = renderComponent();
+    fireEvent.changeText(getByPlaceholderText('Phone number'), '123456789');
+    fireEvent.press(getByText('Register'));
+    await waitFor(() => {
+      expect(getByText('Invalid phone number')).toBeTruthy();
     });
   });
 });
