@@ -9,7 +9,7 @@ export const getStyles = (color: Colors) =>
       flex: 1,
       justifyContent: 'flex-start',
       alignItems: 'flex-end',
-      backgroundColor: 'rgba(0, 0, 0, 0.6)',
+      backgroundColor: color.modalOverlayBackground,
     },
     iosModal: {
       paddingTop: height * 0.15,
