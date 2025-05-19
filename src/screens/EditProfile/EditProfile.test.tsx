@@ -1,4 +1,3 @@
-import React from 'react';
 import {AlertNotificationRoot, Dialog} from 'react-native-alert-notification';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {fireEvent, render, waitFor} from '@testing-library/react-native';
@@ -260,7 +259,6 @@ describe('EditProfile Component', () => {
         closeOnOverlayTap: true,
       });
      });
-    
     await waitFor(
       () => {
         expect(mockNavigation.replace).toHaveBeenCalledWith('profileScreen');

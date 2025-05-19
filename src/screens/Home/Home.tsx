@@ -28,7 +28,6 @@ export const Home = () => {
   return (
     <View style={styles.container}>
       <Image
-        // eslint-disable-next-line react-native/no-inline-styles
         style={styles.gif}
         source={require('./../../assets/homescreen.png')}
       />

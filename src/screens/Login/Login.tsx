@@ -167,7 +167,7 @@ export function Login() {
           keyboardShouldPersistTaps="handled">
           <Image
             style={styles.image}
-            source={require('../../assets/quickchat.png')}
+            source={logo}
             accessibilityHint="logo-image"
           />
           <PhoneInput
