@@ -10,8 +10,9 @@ import {Provider} from 'react-redux';
 import {EditProfile} from './EditProfile';
 import {useDispatch} from 'react-redux';
 import {store} from '../../store/store';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import EncryptedStorage from 'react-native-encrypted-storage';
 import {editProfile} from '../../services/editProfile';
+
 
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
@@ -20,7 +21,7 @@ jest.mock('react-redux', () => ({
 }));
 const mockDispatch = jest.fn();
 
-jest.mock('@react-native-async-storage/async-storage', () => ({
+jest.mock('react-native-encrypted-storage', () => ({
   setItem: jest.fn(),
   getItem: jest.fn(),
 }));
@@ -70,7 +71,7 @@ describe('EditProfile Component', () => {
     );
   });
 
-  (AsyncStorage.getItem as jest.Mock).mockImplementation(key => {
+  (EncryptedStorage.getItem as jest.Mock).mockImplementation(key => {
     if (key === 'user') {
       return Promise.resolve(
         JSON.stringify({
@@ -222,7 +223,7 @@ describe('EditProfile Component', () => {
         },
         expect.any(Object),
       );
-      expect(AsyncStorage.setItem).toHaveBeenCalled();
+      expect(EncryptedStorage.setItem).toHaveBeenCalled();
       expect(mockNavigation.replace).toHaveBeenCalledWith('profileScreen');
       expect(Alert.alert).toHaveBeenCalledWith(
         'Success',

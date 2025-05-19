@@ -1,7 +1,8 @@
 import Contacts from 'react-native-contacts';
 import {API_URL} from '../constants/api';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import EncryptedStorage from 'react-native-encrypted-storage';
 import {PermissionsAndroid, Platform} from 'react-native';
+
 
 export const getContacts = async () => {
   try {
@@ -27,7 +28,7 @@ export const getContacts = async () => {
         allContacts.push(phoneNumber);
       });
     });
-    const authToken = await AsyncStorage.getItem('authToken');
+    const authToken = await EncryptedStorage.getItem('authToken');
     console.log(authToken);
     if (!authToken) {
       throw new Error('Authorization failed');

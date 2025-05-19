@@ -1,6 +1,6 @@
 import {useEffect, useLayoutEffect, useState} from 'react';
 import {View, Image, Text, TouchableOpacity} from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import EncryptedStorage from 'react-native-encrypted-storage';
 import {useTranslation} from 'react-i18next';
 import {useNavigation} from '@react-navigation/native';
 import {getStyles} from './Profile.styles';
@@ -47,7 +47,7 @@ export const Profile = () => {
   }, [navigation, styles.dotsImage, styles.headerRight]);
   useEffect(() => {
     const getUserData = async () => {
-      const userDataString = await AsyncStorage.getItem('user');
+      const userDataString = await EncryptedStorage.getItem('user');
       if (userDataString) {
         const userDataParsed: User = JSON.parse(userDataString);
         setUserData(userDataParsed);
@@ -58,6 +58,7 @@ export const Profile = () => {
   return (
     <View style={styles.container}>
       <View style={styles.innerContainer}>
+        <View style={styles.profileImageContainer}>
         {userData?.profilePicture && (
           <Image
             source={{uri: `${userData?.profilePicture}`}}
@@ -74,6 +75,7 @@ export const Profile = () => {
             style={styles.profileImage}
           />
         )}
+        </View>
       </View>
 
       <View style={styles.contentContainer}>
