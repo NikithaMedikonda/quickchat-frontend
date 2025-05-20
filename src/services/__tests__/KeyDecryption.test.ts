@@ -1,5 +1,5 @@
 import CryptoJS from 'crypto-js';
-import { keyDecryption } from '../keyDecryption';
+import { keyDecryption } from '../KeyDecryption';
 
 jest.mock('crypto-js', () => ({
   AES: {
