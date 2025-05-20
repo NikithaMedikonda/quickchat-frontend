@@ -6,15 +6,15 @@ import { ReceivedMessage } from '../../components/ReceivedMessage/ReceivedMessag
 import { SentMessage } from '../../components/SentMessage/SentMessage';
 import { useThemeColors } from '../../constants/colors';
 import { Message, ReceivedMessagetype } from '../../types/messsage.types';
-import { userDetails } from '../../types/user.types';
+import { UserDetails } from '../../types/user.types';
 import { individualChatstyles } from './IndividualChat.styles';
 
-export const IndividualChat = ({user}: {user: userDetails}) => {
+export const IndividualChat = ({user}: {user: UserDetails}) => {
   const colors = useThemeColors();
   const styles = individualChatstyles(colors);
-  // Prefix with underscore to silence ESLint/TS warnings while keeping them for future use
-  const [sentMessages, _setSentMessages] = useState<Message[]>([]);
-  const [receivedMessages, _setReceivedMessages] = useState<
+
+  const [sentMessages, setSentMessages] = useState<Message[]>([]);
+  const [receivedMessages, setReceivedMessages] = useState<
     ReceivedMessagetype[]
   >([]);
   return (
