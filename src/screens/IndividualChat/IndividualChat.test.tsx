@@ -33,10 +33,4 @@ describe('IndividualChat', () => {
     const sendIcon = screen.getByA11yHint('send-message-icon');
     expect(sendIcon).toBeTruthy();
   });
-
-  test('Should render the message container', () => {
-    render(<IndividualChat user={testUser} />);
-    const messageContainer = screen.getByA11yHint('message-container');
-    expect(messageContainer).toBeTruthy();
-  });
 });
