@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
-import { Colors } from '../../constants/colors';
-export const Badgestyles = (colors: Colors) =>
+import { Colors } from '../../themes/colors';
+export const badgeStyles = (colors: Colors) =>
   StyleSheet.create({
     background: {
       position: 'absolute',
@@ -27,7 +27,7 @@ export const Badgestyles = (colors: Colors) =>
       alignItems: 'center',
     },
     text: {
-      color: colors.white,
+      color: colors.text,
       fontWeight: 'bold',
       textAlign: 'center',
     },

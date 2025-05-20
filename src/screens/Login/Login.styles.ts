@@ -1,5 +1,5 @@
 import {Dimensions, StyleSheet} from 'react-native';
-import {Colors} from '../../constants/colors';
+import {Colors} from '../../themes/colors';
 const {width, height} = Dimensions.get('window');
 
 export const loginStyles = (colors: Colors) =>
@@ -16,7 +16,6 @@ export const loginStyles = (colors: Colors) =>
       width: width * 0.5,
       height: height * 0.3,
     },
-
     imageContainer: {
       height: height * 0.6,
       width: width * 0.9,
@@ -33,7 +32,7 @@ export const loginStyles = (colors: Colors) =>
       width: width * 0.8,
     },
     messageText: {
-      color: colors.white,
+      color: colors.text,
     },
     messageView: {
       display: 'flex',
@@ -45,17 +44,26 @@ export const loginStyles = (colors: Colors) =>
     signUpContainer: {
       alignSelf: 'center',
     },
+    signUpText: {
+      marginLeft: width * 0.015,
+    },
     phoneNumber: {
-      height: height * 0.055,
+      height: height * 0.044,
       fontSize: 20,
       borderRadius: 10,
       width: width * 0.8,
       padding: 10,
       color: colors.gray,
       margin: height * 0.012,
-      backgroundColor: colors.white,
+      backgroundColor: colors.placeholder,
     },
-    error: {color: 'red', fontSize: 12},
+    error: {
+      color: 'red',
+      fontSize: 15,
+      alignSelf: 'flex-start',
+      width: width * 0.75,
+      marginLeft: width * 0.1,
+    },
     loginMainContainer: {
       backgroundColor: colors.background,
       justifyContent: 'center',
@@ -63,7 +71,10 @@ export const loginStyles = (colors: Colors) =>
       height: height,
       width: width,
     },
-    keyboardAvoidView:{
-      flex:1,
+    keyboardAvoidView: {
+      flex: 1,
+    },
+    loginButtonContainer: {
+      marginTop: height * 0.02,
     },
   });

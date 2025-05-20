@@ -1,23 +1,25 @@
-import {Image, View} from 'react-native';
+import { Image, View} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {styles} from './HomeTabs.styles';
-import {Unread} from '../../screens/Unread/Unread';
-import {useThemeColors} from '../../constants/colors';
-import {useTranslation} from 'react-i18next';
 import {HomeStacks} from '../stack/HomeStacks';
 import {ProfileStack} from '../stack/ProfileStacks';
+import {styles} from './HomeTabs.styles';
+import {Unread} from '../../screens/Unread/Unread';
+import {useThemeColors} from '../../themes/colors';
+import {useTranslation} from 'react-i18next';
+import {useImagesColors} from '../../themes/images';
 
 export const HomeTabs = () => {
   const Tab = createBottomTabNavigator();
   const colors = useThemeColors();
+  const {tabHome, tabUnread, tabProfile} = useImagesColors();
   const {t} = useTranslation('home');
   return (
     <Tab.Navigator
       screenOptions={{
         tabBarStyle: {
           backgroundColor: colors.background,
-          borderTopWidth: 0,
           height: 100,
+          borderTopWidth: 0,
         },
         tabBarItemStyle: {
           justifyContent: 'center',
@@ -38,12 +40,7 @@ export const HomeTabs = () => {
           // eslint-disable-next-line react/no-unstable-nested-components
           tabBarIcon: ({focused}) => (
             <View style={styles.iconContainer}>
-              {!focused && (
-                <Image
-                  source={require('../../assets/home.png')}
-                  style={styles.icon}
-                />
-              )}
+              {!focused && <Image source={tabHome} style={styles.icon} />}
               {focused && (
                 <Image
                   source={require('../../assets/highlight-home.png')}
@@ -63,12 +60,7 @@ export const HomeTabs = () => {
           // eslint-disable-next-line react/no-unstable-nested-components
           tabBarIcon: ({focused}) => (
             <View style={styles.iconContainer}>
-              {!focused && (
-                <Image
-                  source={require('../../assets/unread-message.png')}
-                  style={styles.icon}
-                />
-              )}
+              {!focused && <Image source={tabUnread} style={styles.icon} />}
               {focused && (
                 <Image
                   source={require('../../assets/highlight-unread-message.png')}
@@ -84,7 +76,7 @@ export const HomeTabs = () => {
           headerTitleAlign: 'center',
           headerTitle: t('Quick Chat'),
           headerTitleStyle: {
-            color: colors.white,
+            color: colors.text,
           },
         }}
       />
@@ -96,10 +88,7 @@ export const HomeTabs = () => {
           tabBarIcon: ({focused}) => (
             <View style={styles.iconContainer}>
               {!focused && (
-                <Image
-                  source={require('../../assets/user.png')}
-                  style={styles.profileIcon}
-                />
+                <Image source={tabProfile} style={styles.profileIcon} />
               )}
               {focused && (
                 <Image

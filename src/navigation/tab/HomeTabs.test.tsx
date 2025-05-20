@@ -1,5 +1,5 @@
-import {NavigationContainer} from '@react-navigation/native';
 import {render} from '@testing-library/react-native';
+import {NavigationContainer} from '@react-navigation/native';
 import {HomeTabs} from './HomeTabs';
 jest.mock('react-native-encrypted-storage', () => ({
   getItem: jest.fn(),

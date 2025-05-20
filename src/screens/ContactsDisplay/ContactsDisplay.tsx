@@ -1,16 +1,16 @@
 /* eslint-disable react-native/no-inline-styles */
 import {useEffect, useLayoutEffect, useState} from 'react';
-import Contacts from 'react-native-contacts';
 import {View, Text, ScrollView, TouchableOpacity, Alert} from 'react-native';
-import {useThemeColors} from '../../constants/colors';
-import {getStyles} from './ContactsDisplay.styles';
-import {HomeTabsProps} from '../../types/usenavigation.type';
+import Contacts from 'react-native-contacts';
+import {useTranslation} from 'react-i18next';
 import {useNavigation} from '@react-navigation/native';
 import {ContactDetails} from '../../types/contact.types';
 import {Contact} from '../../components/Contact/Contact';
-import {getContacts} from '../../services/GetContacts';
 import {DEFAULT_PROFILE_IMAGE} from '../../constants/defaultImage';
-import {useTranslation} from 'react-i18next';
+import {getStyles} from './ContactsDisplay.styles';
+import {getContacts} from '../../services/GetContacts';
+import {HomeTabsProps} from '../../types/usenavigation.type';
+import {useThemeColors} from '../../themes/colors';
 
 export const ContactsDisplay = () => {
   const [appContacts, setAppContacts] = useState<ContactDetails[] | []>([]);
@@ -29,7 +29,7 @@ export const ContactsDisplay = () => {
         backgroundColor: colors.background,
       },
       headerTitleStyle: {
-        color: colors.white,
+        color: colors.text,
       },
       // eslint-disable-next-line react/no-unstable-nested-components
       headerLeft: () => (

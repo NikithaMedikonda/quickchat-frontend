@@ -1,10 +1,9 @@
-import {View, Text, Image, Alert} from 'react-native';
-import {ContactDetails} from '../../types/contact.types';
-import {DEFAULT_PROFILE_IMAGE} from '../../constants/defaultImage';
-import {getStyles} from './Contact.styles';
-import {useThemeColors} from '../../constants/colors';
-import {Linking, Platform} from 'react-native';
+import { Alert, Image, Linking, Platform, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { ContactDetails } from '../../types/contact.types';
+import { DEFAULT_PROFILE_IMAGE } from '../../constants/defaultImage';
+import { getStyles } from './Contact.styles';
+import { useThemeColors } from '../../themes/colors';
 
 export const Contact = ({contactDetails}: {contactDetails: ContactDetails}) => {
   const openSMS = async (phoneNumber: string, body: string) => {
@@ -24,34 +23,33 @@ export const Contact = ({contactDetails}: {contactDetails: ContactDetails}) => {
 
   return (
     <View style={styles.contactContainer}>
-      <View>
-        {contactDetails.toBeInvited ? (
-          <Image
-            style={styles.image}
-            source={{uri: DEFAULT_PROFILE_IMAGE}}
-            accessibilityHint="default-image"
-          />
-        ) : (
-          <Image
-            style={styles.image}
-            source={{uri: contactDetails.profilePicture || DEFAULT_PROFILE_IMAGE}}
-            accessibilityHint="profile-image"
-          />
-        )}
-      </View>
-      <View style={styles.nameNumberContainer}>
-        <Text style={styles.text}>{contactDetails.name}</Text>
-        <Text style={styles.text}>{contactDetails.phoneNumber}</Text>
+      <View style={styles.leftBlock}>
+        <Image
+          style={styles.image}
+          source={{
+            uri:
+              contactDetails.profilePicture && !contactDetails.toBeInvited
+                ? contactDetails.profilePicture
+                : DEFAULT_PROFILE_IMAGE,
+          }}
+          accessibilityHint={contactDetails.profilePicture && !contactDetails.toBeInvited ? 'profile-image' : 'default-image'}
+        />
+        <View style={styles.nameNumberContainer}>
+          <Text style={styles.text}>{contactDetails.name}</Text>
+          <Text style={styles.text}>{contactDetails.phoneNumber}</Text>
+        </View>
       </View>
       {contactDetails.toBeInvited && (
-        <View style={styles.invitationContainer}>
+        <View>
           <Text
-            onPress={async () => {
+            onPress={async () =>
               await openSMS(
                 contactDetails.phoneNumber,
-                `${t('Welcome to Quick Chat. Let\'s have fun with this chating app')}`,
-              );
-            }}
+                t(
+                  "Welcome to Quick Chat. Let's have fun with this chating app",
+                ),
+              )
+            }
             style={styles.inviteText}>
             {t('Invite')}
           </Text>

@@ -1,5 +1,5 @@
+import React from 'react';
 import {
-  Alert,
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -8,27 +8,32 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import EncryptedStorage from 'react-native-encrypted-storage';
+import {useNavigation} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
+import {
+  ALERT_TYPE,
+  AlertNotificationRoot,
+  Dialog,
+} from 'react-native-alert-notification';
 import PhoneInput from 'react-native-phone-input';
+import {useTranslation} from 'react-i18next';
 import {Button} from '../../components/Button/Button';
-import {getStyles} from './Registration.styles';
 import {ImagePickerModal} from '../../components/ImagePickerModal/ImagePickerModal';
-import {HomeTabsProps, NavigationProps} from '../../types/usenavigation.type';
 import {Placeholder} from '../../components/InputField/InputField';
 import {registerUser} from '../../services/RegisterUser';
+import {show, hide} from '../../store/slices/loadingSlice';
+import {setLoginSuccess} from '../../store/slices/loginSlice';
 import {
   resetForm,
   setErrors,
   setFormField,
   setIsVisible,
 } from '../../store/slices/registrationSlice';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import {useThemeColors} from '../../themes/colors';
+import {getStyles} from './Registration.styles';
 import {RootState} from '../../store/store';
-import {hide, show} from '../../store/slices/loadingSlice';
-import {setLoginSuccess} from '../../store/slices/loginSlice';
-import {useNavigation} from '@react-navigation/native';
-import {useThemeColors} from '../../constants/colors';
-import {useTranslation} from 'react-i18next';
+import {HomeTabsProps, NavigationProps} from '../../types/usenavigation.type';
 
 export const Registration = () => {
   const navigation = useNavigation<NavigationProps>();
@@ -59,30 +64,34 @@ export const Registration = () => {
     const newErrors: Partial<typeof form> = {};
     let isValid = true;
     if (!form.firstName) {
-      newErrors.firstName = 'First name is required';
+      newErrors.firstName = 'First name required!';
       isValid = false;
     }
     if (!form.lastName) {
-      newErrors.lastName = 'Last name is required';
+      newErrors.lastName = 'Last name required!';
       isValid = false;
     }
     if (!form.password || !validatePassword(form.password)) {
-      newErrors.password = 'Invalid password';
+      newErrors.password = 'Invalid password!';
       isValid = false;
     }
     if (form.password !== form.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
-      isValid = false;
-    }
-    if (!form.phoneNumber ) {
-      newErrors.phoneNumber = 'Invalid phone number';
+      newErrors.confirmPassword = 'Passwords do not match!';
       isValid = false;
     }
 
     if (form.email && !validateEmail(form.email)) {
-      newErrors.email = 'Invalid email format';
+      newErrors.email = 'Invalid email format!';
       isValid = false;
     }
+    if (!form.phoneNumber) {
+      newErrors.phoneNumber = 'Phone number required!';
+      isValid = false;
+    } else if (form.phoneNumber.length < 10) {
+      newErrors.phoneNumber = 'Invalid phone number!';
+      isValid = false;
+    }
+
     dispatch(setErrors(newErrors));
     return isValid;
   };
@@ -100,7 +109,13 @@ try {
   const result = await registerUser({ ...form, image });
   if (result.status === 409) {
     dispatch(hide());
-    Alert.alert(t('User already exists with this number or email'));
+    Dialog.show({
+      type: ALERT_TYPE.DANGER,
+      title: 'Registration failed',
+      textBody: 'User already exists with this number or email',
+      button: 'close',
+      closeOnOverlayTap: true,
+    });
   } else if (result.status === 200) {
     dispatch(hide());
     dispatch(
@@ -117,11 +132,24 @@ try {
     dispatch(resetForm());
   } else {
     dispatch(hide());
-    Alert.alert(t('Something went wrong while registering'));
+    // Alert.alert(t('Something went wrong while registering'));
+    Dialog.show({
+      type: ALERT_TYPE.DANGER,
+      title: 'Registration failed',
+      textBody: 'Something went wrong while registering',
+      button: 'close',
+      closeOnOverlayTap: true,
+    });
   }
 } catch (e) {
   dispatch(hide());
-  Alert.alert(t('Network error or something unexpected happened'));
+  Dialog.show({
+    type: ALERT_TYPE.DANGER,
+    title: 'Registration failed',
+    textBody: 'Network error or something unexpected happened',
+    button: 'close',
+    closeOnOverlayTap: true,
+  });
 }
   };
 
@@ -134,6 +162,29 @@ try {
   ] as const;
 
   return (
+
+    <AlertNotificationRoot
+      theme="dark"
+      colors={[
+        {
+          label: '#000000',
+          card: '#FFFFFF',
+          overlay: 'rgba(0, 0, 0, 0.5)',
+          success: '#4CAF50',
+          danger: '#F44336',
+          warning: '#1877F2',
+          info: '#000000',
+        },
+        {
+          label: '#000000',
+          card: '#FFFFFF',
+          overlay: 'rgba(255, 255, 255, 0.5)',
+          success: '#4CAF50',
+          danger: '#F44336',
+          warning: '#FFFFFF',
+          info: '#000000',
+        },
+      ]}>
     <KeyboardAvoidingView
       // eslint-disable-next-line react-native/no-inline-styles
       style={{flex: 1}}
@@ -152,17 +203,24 @@ try {
             accessibilityHint="logo"
           />
         </TouchableOpacity>
-        <PhoneInput
-          style={styles.phoneNumber}
-          initialCountry={'in'}
-          textProps={{
-            placeholder: 'Phone number',
-          }}
-          onChangePhoneNumber={(text: string) => {
-            dispatch(setFormField({key: 'phoneNumber', value: text}));
-          }}
-          onPressFlag={() => {}}
-        />
+        <View>
+          <PhoneInput
+            style={styles.phoneNumber}
+            initialCountry={'in'}
+            textProps={{
+              placeholder: 'Phone number',
+            }}
+            onChangePhoneNumber={(text: string) => {
+              dispatch(setFormField({key: 'phoneNumber', value: text}));
+            }}
+            onPressFlag={() => {}}
+          />
+          {errors.phoneNumber && (
+            <Text style={styles.phoneErrorText}>
+              {t(`${errors.phoneNumber}`)}
+            </Text>
+          )}
+        </View>
         {inputFields.map(field => (
           <View key={field.key}>
             <Placeholder
@@ -171,29 +229,29 @@ try {
               onChange={(text: string) => handleInputChange(field.key, text)}
               secureTextEntry={
                 field.key === 'password' || field.key === 'confirmPassword'
-              }
-            />
-            {errors[field.key] && (
-              // eslint-disable-next-line react-native/no-inline-styles
-              <Text style={{color: 'red', fontSize: 12}}>
-                {t(`${errors[field.key]}`)}
-              </Text>
-            )}
+                }
+              />
+              {errors[field.key] && (
+                <Text style={styles.errorText}>
+                  {t(`${errors[field.key]}`)}
+                </Text>
+              )}
+            </View>
+          ))}
+          <View style={styles.registerButtonContainer}>
+            <Button title="Register" onPress={handleRegister} />
           </View>
-        ))}
-        <View style={styles.registerButtonContainer}>
-          <Button title="Register" onPress={handleRegister} />
-        </View>
-        <View style={styles.loginButtonContainer}>
-          <Text style={styles.loginButtontext}>
-            {t('Already have an account?')}{' '}
-          </Text>
-          <TouchableOpacity onPress={() => navigation.navigate('login')}>
-            <Text style={styles.loginButtonSignInText}>{t('Sign in')}</Text>
-          </TouchableOpacity>
-        </View>
-        {isVisible && <ImagePickerModal />}
-      </ScrollView>
-    </KeyboardAvoidingView>
+          <View style={styles.loginButtonContainer}>
+            <Text style={styles.loginButtontext}>
+              {t('Already have an account?')}{' '}
+            </Text>
+            <TouchableOpacity onPress={() => navigation.navigate('login')}>
+              <Text style={styles.loginButtonSignInText}>{t('Sign in')}</Text>
+            </TouchableOpacity>
+          </View>
+          {isVisible && <ImagePickerModal />}
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </AlertNotificationRoot>
   );
 };

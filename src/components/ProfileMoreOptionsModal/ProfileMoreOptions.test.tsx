@@ -51,52 +51,67 @@ describe('Profile More Options Modal', () => {
         <ProfileMoreOptionsModal visible={true} onClose={mockOnClose} />
       </Provider>,
     );
-  it('should renders the delete account text and bin image', () => {
-    renderComponent();
+  it('should renders the delete account text and bin image', async () => {
+    await waitFor(() => {
+      renderComponent();
+    });
     expect(screen.getByText('Delete Account')).toBeTruthy();
     const binImage = screen.getByA11yHint('bin-image');
     expect(binImage.props.source).toEqual({
-      testUri: '../../../src/assets/bin.png',
+      testUri: '../../../src/assets/BinDark.png',
     });
   });
 
-  it('should renders the logout text and logout image', () => {
-    renderComponent();
+  it('should renders the logout text and logout image', async () => {
+    await waitFor(() => {
+      renderComponent();
+    });
     expect(screen.getByText('Logout')).toBeTruthy();
     const logoutImage = screen.getByA11yHint('logout-image');
     expect(logoutImage.props.source).toEqual({
-      testUri: '../../../src/assets/log-out.png',
+      testUri: '../../../src/assets/LogoutDark.png',
     });
   });
 
-  it('should renders the edit profile text and edit image', () => {
-    renderComponent();
+  it('should renders the edit profile text and edit image', async () => {
+    await waitFor(() => {
+      renderComponent();
+    });
     expect(screen.getByText('Edit Profile')).toBeTruthy();
     const binImage = screen.getByA11yHint('edit-image');
     expect(binImage.props.source).toEqual({
-      testUri: '../../../src/assets/edit.png',
+      testUri: '../../../src/assets/PencilDark.png',
     });
   });
-  it('should calls onClose when "Delete Account" is pressed', () => {
-    renderComponent();
+
+  it('should calls onClose when "Delete Account" is pressed', async () => {
+    await waitFor(() => {
+      renderComponent();
+    });
     fireEvent.press(screen.getByText('Delete Account'));
     expect(mockOnClose).toHaveBeenCalledTimes(1);
   });
 
-  it('should calls onClose when "Logout" is pressed', () => {
-    renderComponent();
+  it('should calls onClose when "Logout" is pressed', async() => {
+    await waitFor(() => {
+      renderComponent();
+    });
     fireEvent.press(screen.getByText('Logout'));
     expect(mockOnClose).toHaveBeenCalledTimes(1);
   });
 
-  it('should calls onClose when "Edit Profile" is pressed', () => {
-    renderComponent();
+  it('should calls onClose when "Edit Profile" is pressed',async () => {
+    await waitFor(() => {
+      renderComponent();
+    });
     fireEvent.press(screen.getByText('Edit Profile'));
     expect(mockOnClose).toHaveBeenCalledTimes(1);
   });
 
   it('opens and confirms logout modal', async () => {
-    renderComponent();
+    await waitFor(() => {
+      renderComponent();
+    });
     fireEvent.press(screen.getAllByText('Logout')[0]);
     expect(mockOnClose).toHaveBeenCalled();
     const confirmModalText = await screen.findByText(
@@ -113,7 +128,9 @@ describe('Profile More Options Modal', () => {
 
   it('opens and confirms delete modal (200)', async () => {
     (deleteUser as jest.Mock).mockResolvedValue({status: 200, data: {}});
-    renderComponent();
+    await waitFor(() => {
+      renderComponent();
+    });
     fireEvent.press(screen.getByText('Delete Account'));
     expect(mockOnClose).toHaveBeenCalled();
     const confirmButton = await screen.findByText('Delete');
@@ -133,7 +150,9 @@ describe('Profile More Options Modal', () => {
     ];
     for (const {status, expected} of responses) {
       (deleteUser as jest.Mock).mockResolvedValue({status});
+      await waitFor(() => {
       renderComponent();
+    });
       fireEvent.press(screen.getByText('Delete Account'));
       const confirmButton = await screen.findByText('Delete');
       fireEvent.press(confirmButton);
@@ -145,7 +164,9 @@ describe('Profile More Options Modal', () => {
 
   it('handles delete exception (network or unknown error)', async () => {
     (deleteUser as jest.Mock).mockRejectedValueOnce(new Error('Custom error'));
-    renderComponent();
+    await waitFor(() => {
+      renderComponent();
+    });
     fireEvent.press(screen.getByText('Delete Account'));
     const confirmButton = await screen.findByText('Delete');
     fireEvent.press(confirmButton);
@@ -155,7 +176,9 @@ describe('Profile More Options Modal', () => {
   });
 
   it('closes modal on cancel', async () => {
-    renderComponent();
+    await waitFor(() => {
+      renderComponent();
+    });
     fireEvent.press(screen.getAllByText('Logout')[0]);
 
     const closeButton = await screen.findAllByText('Logout');
@@ -166,7 +189,9 @@ describe('Profile More Options Modal', () => {
   });
 
   it('loads user phone number and auth token from EncryptedStorage on mount', async () => {
-    renderComponent();
+    await waitFor(() => {
+      renderComponent();
+    });
     await waitFor(() => {
       expect(EncryptedStorage.getItem).toHaveBeenCalledWith('user');
       expect(EncryptedStorage.getItem).toHaveBeenCalledWith('authToken');
@@ -183,7 +208,9 @@ describe('Profile More Options Modal', () => {
   });
 
   it('should trigger useEffect and call EncryptedStorage.getItem with correct keys', async () => {
-    renderComponent();
+    await waitFor(() => {
+      renderComponent();
+    });
     await waitFor(() => {
       expect(EncryptedStorage.getItem).toHaveBeenCalledWith('user');
       expect(EncryptedStorage.getItem).toHaveBeenCalledWith('authToken');
@@ -193,7 +220,9 @@ describe('Profile More Options Modal', () => {
   it('should handle error and alert the message if deleteUser throws', async () => {
     const errorMessage = 'Network error';
     (deleteUser as jest.Mock).mockRejectedValueOnce(new Error(errorMessage));
-    renderComponent();
+    await waitFor(() => {
+      renderComponent();
+    });
     fireEvent.press(screen.getByText('Delete Account'));
     const confirmButton = await screen.findByText('Delete');
     fireEvent.press(confirmButton);

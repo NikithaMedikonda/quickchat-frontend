@@ -1,6 +1,5 @@
 import {useEffect, useLayoutEffect, useState} from 'react';
 import {
-  Alert,
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -9,13 +8,17 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  ALERT_TYPE,
+  AlertNotificationRoot,
+  Dialog,
+} from 'react-native-alert-notification';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {useNavigation} from '@react-navigation/native';
 import {useTranslation} from 'react-i18next';
-import {useSelector} from 'react-redux';
 import {RootState} from '../../store/store';
-import {useDispatch} from 'react-redux';
-import {useThemeColors} from '../../constants/colors';
+import {useThemeColors} from '../../themes/colors';
 import {getStyles} from './EditProfile.styles';
 import {Placeholder} from '../../components/InputField/InputField';
 import {ImagePickerModal} from '../../components/ImagePickerModal/ImagePickerModal';
@@ -85,15 +88,33 @@ export const EditProfile = () => {
 
   const validateForm = () => {
     if (!inputFirstName) {
-      Alert.alert('Error', 'First name is required');
+      Dialog.show({
+        type: ALERT_TYPE.DANGER,
+        title: 'Error',
+        textBody: 'First name is required',
+        button: 'close',
+        closeOnOverlayTap: true,
+      });
       return false;
     }
     if (!inputLastName) {
-      Alert.alert('Error', 'Last name is required');
+      Dialog.show({
+        type: ALERT_TYPE.DANGER,
+        title: 'Error',
+        textBody: 'Last name is required',
+        button: 'close',
+        closeOnOverlayTap: true,
+      });
       return false;
     }
     if (inputEmail && !validateEmail(inputEmail)) {
-      Alert.alert('Error', 'Invalid email format');
+      Dialog.show({
+        type: ALERT_TYPE.DANGER,
+        title: 'Error',
+        textBody: 'Invalid email format',
+        button: 'close',
+        closeOnOverlayTap: true,
+      });
       return false;
     }
     return true;
@@ -113,14 +134,55 @@ export const EditProfile = () => {
       if (user) {
         try {
           const result = await editProfile(payload, user);
-          await EncryptedStorage.setItem('user', JSON.stringify(result.data.user));
-          profileNavigation.replace('profileScreen');
-          Alert.alert('Success', 'Profile updated successfully!');
+          if (result.status === 200) {
+            await EncryptedStorage.setItem(
+              'user',
+              JSON.stringify(result.data.user),
+            );
+            Dialog.show({
+            type: ALERT_TYPE.SUCCESS,
+            title: 'Success',
+            textBody: 'Profile updated successfully',
+            button: 'close',
+            closeOnOverlayTap: true,
+          });
+          setTimeout(() => {
+            profileNavigation.replace('profileScreen');
+          }, 4000);
+          } else if (result.status === 400) {
+          Dialog.show({
+            type: ALERT_TYPE.DANGER,
+            title: 'Error',
+            textBody: 'Phone Number is required to change the profile image.',
+            button: 'close',
+            closeOnOverlayTap: true,
+          });
+          } else if (result.status === 404) {
+            Dialog.show({
+            type: ALERT_TYPE.DANGER,
+            title: 'Error',
+            textBody: 'No user exists with the given phone number.',
+            button: 'close',
+            closeOnOverlayTap: true,
+          });
+          }
         } catch (err) {
-          Alert.alert('Error', 'Failed to update profile');
+          Dialog.show({
+            type: ALERT_TYPE.DANGER,
+            title: 'Error',
+            textBody: 'Failed to update profile',
+            button: 'close',
+            closeOnOverlayTap: true,
+          });
         }
       } else {
-        Alert.alert('Error', 'User data not loaded. Please try again.');
+        Dialog.show({
+          type: ALERT_TYPE.DANGER,
+          title: 'Error',
+          textBody: 'User data not loaded, Please try again.',
+          button: 'close',
+          closeOnOverlayTap: true,
+        });
       }
     }
   };
@@ -147,48 +209,73 @@ export const EditProfile = () => {
   ];
 
   return (
-    <KeyboardAvoidingView
-      // eslint-disable-next-line react-native/no-inline-styles
-      style={{flex: 1}}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}>
-      <ScrollView contentContainerStyle={styles.container}>
-        <TouchableOpacity
-          onPress={() => dispatch(setIsVisible(true))}
-          accessibilityHint="edit-profile-button">
-          <Image
-            source={{
-              uri:
-                imageUri ||
-                user?.profilePicture ||
-                'https://sdjetntpocezxjoelxgb.supabase.co/storage/v1/object/public/quick-chat/images/profile-pics/image.png',
-            }}
-            accessibilityHint="Profile-Picture"
-            style={styles.profileImage}
-          />
-        </TouchableOpacity>
-        {inputFields.map(field => (
-          <View key={field.key} style={styles.fieldContainer}>
-            <View style={styles.fieldTextContainer}>
-              <Text style={styles.label}>{t(field.label)}</Text>
-            </View>
-
-            <Placeholder
-              title={field.label}
-              value={field.value}
-              onChange={text => field.setter(text)}
-              secureTextEntry={false}
+    <AlertNotificationRoot
+      theme="dark"
+      colors={[
+        {
+          label: '#000000',
+          card: '#FFFFFF',
+          overlay: '#FFFFFF',
+          success: '#4CAF50',
+          danger: '#F44336',
+          warning: '#1877F2',
+          info: '#000000',
+        },
+        {
+          label: '#000000',
+          card: '#FFFFFF',
+          overlay: 'rgba(239, 238, 238, 0.5)',
+          success: '#4CAF50',
+          danger: '#F44336',
+          warning: '#1877F2',
+          info: '#000000',
+        },
+      ]}>
+      <KeyboardAvoidingView
+        // eslint-disable-next-line react-native/no-inline-styles
+        style={{flex: 1}}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}>
+        <ScrollView contentContainerStyle={styles.container}>
+          <TouchableOpacity
+            onPress={() => dispatch(setIsVisible(true))}
+            accessibilityHint="edit-profile-button">
+            <Image
+              source={{
+                uri:
+                  imageUri ||
+                  user?.profilePicture ||
+                  'https://sdjetntpocezxjoelxgb.supabase.co/storage/v1/object/public/quick-chat/images/profile-pics/image.png',
+              }}
+              accessibilityHint="Profile-Picture"
+              style={styles.profileImage}
             />
-          </View>
-        ))}
-        <View style={styles.buttonRow}>
-          <TouchableOpacity style={styles.touchableButton} onPress={handleSave}>
-            <Text style={styles.buttonText}>{t('Save')}</Text>
           </TouchableOpacity>
-        </View>
+          {inputFields.map(field => (
+            <View key={field.key} style={styles.fieldContainer}>
+              <View style={styles.fieldTextContainer}>
+                <Text style={styles.label}>{t(field.label)}</Text>
+              </View>
 
-        <ImagePickerModal showDeleteOption />
-      </ScrollView>
-    </KeyboardAvoidingView>
+              <Placeholder
+                title={field.label}
+                value={field.value}
+                onChange={text => field.setter(text)}
+                secureTextEntry={false}
+              />
+            </View>
+          ))}
+          <View style={styles.buttonRow}>
+            <TouchableOpacity
+              style={styles.touchableButton}
+              onPress={handleSave}>
+              <Text style={styles.buttonText}>{t('Save')}</Text>
+            </TouchableOpacity>
+          </View>
+
+          <ImagePickerModal showDeleteOption />
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </AlertNotificationRoot>
   );
 };

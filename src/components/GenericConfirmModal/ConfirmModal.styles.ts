@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { Colors } from '../../constants/colors';
+import { Colors } from '../../themes/colors';
 
 export const confirmModalStyles = (colors:Colors) => {
 
@@ -9,7 +9,7 @@ export const confirmModalStyles = (colors:Colors) => {
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: 'rgba(0, 0, 0, 0.6)',
+      backgroundColor: colors.modalOverlayBackground,
     },
     modal: {
       backgroundColor: colors.gray,
@@ -35,7 +35,7 @@ export const confirmModalStyles = (colors:Colors) => {
       gap: 10,
     },
     cancelButton: {
-      backgroundColor: colors.white,
+      backgroundColor: colors.text,
       paddingVertical: 10,
       paddingHorizontal: 20,
       borderRadius: 5,
@@ -55,7 +55,7 @@ export const confirmModalStyles = (colors:Colors) => {
       color: 'black',
     },
     confirmText: {
-      color: colors.white,
+      color: colors.buttonText,
     },
   });
 };

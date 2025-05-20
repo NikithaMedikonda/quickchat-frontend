@@ -23,9 +23,10 @@ import {
 } from '../../types/usenavigation.type';
 import {logout} from '../../store/slices/loginSlice';
 import {useDispatch} from 'react-redux';
-import {useThemeColors} from '../../constants/colors';
+import {useThemeColors} from '../../themes/colors';
+import {useImagesColors} from '../../themes/images';
 import {User} from '../../screens/Profile/Profile';
-
+import {resetForm} from '../../store/slices/registrationSlice';
 
 export const ProfileMoreOptionsModal = ({
   visible,
@@ -36,6 +37,7 @@ export const ProfileMoreOptionsModal = ({
 }) => {
   const colors = useThemeColors();
   const styles = getStyles(colors);
+  const {bin, pencil, logoutImage} = useImagesColors();
   const dispatch = useDispatch();
   const [modalVisible, setModalVisible] = useState(false);
   const [message, setMessage] = useState('');
@@ -96,6 +98,9 @@ export const ProfileMoreOptionsModal = ({
         Alert.alert(t('Invalid Phone number'));
       } else if (result.status === 200) {
         dispatch(hide());
+        dispatch(resetForm());
+        dispatch(logout());
+        await EncryptedStorage.clear();
         initialStackNavigation.replace('welcome');
       } else if (result.status === 412) {
         dispatch(hide());
@@ -128,37 +133,37 @@ export const ProfileMoreOptionsModal = ({
     <View>
       <Modal transparent={true} visible={visible}>
         <TouchableWithoutFeedback onPress={onClose}>
-          <View style={[styles.centeredView,modalStyle]}>
+          <View style={[styles.centeredView, modalStyle]}>
             <View style={styles.modalView}>
               <View style={styles.textContainer}>
                 <TouchableOpacity
+                  onPress={handleEditProfile}
+                  style={ styles.optionsView}>
+                  <Text style={styles.modalText}>Edit Profile</Text>
+                  <Image
+                    source={pencil}
+                    style={styles.image}
+                    accessibilityHint="edit-image"
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity
                   onPress={handleDeleteAccountConfirmation}
-                  style={[styles.binOptionsView, styles.optionsView]}>
+                  style={styles.optionsView}>
                   <Text style={styles.modalText}>Delete Account</Text>
                   <Image
-                    source={require('../../assets/bin.png')}
+                    source={bin}
                     style={styles.image}
                     accessibilityHint="bin-image"
                   />
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={handleLogoutConfirmation}
-                  style={[styles.logoutOptionsView, styles.optionsView]}>
+                  style={ styles.optionsView}>
                   <Text style={styles.modalText}>Logout</Text>
                   <Image
-                    source={require('../../assets/log-out.png')}
+                    source={logoutImage}
                     style={styles.image}
                     accessibilityHint="logout-image"
-                  />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={handleEditProfile}
-                  style={[styles.editOptionsView, styles.optionsView]}>
-                  <Text style={styles.modalText}>Edit Profile</Text>
-                  <Image
-                    source={require('../../assets/edit.png')}
-                    style={styles.image}
-                    accessibilityHint="edit-image"
                   />
                 </TouchableOpacity>
               </View>

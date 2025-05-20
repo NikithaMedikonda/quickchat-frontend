@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, screen } from '@testing-library/react-native';
 import { ChatBox } from './ChatBox';
 
@@ -7,7 +6,7 @@ describe('ChatBox Component', () => {
         image: 'profile-image',
         name: 'Nagulu',
         description: 'Hello everyone!',
-        timestamp: '2025-05-13T12:00:00',
+        timestamp: '2025-05-20T12:00:00',
         unreadCount: 3,
     };
 
@@ -18,6 +17,14 @@ describe('ChatBox Component', () => {
         expect(getByText('Hello everyone!')).toBeTruthy();
     });
 
+<<<<<<< HEAD
+=======
+    it('displays the timestamp', () => {
+        const { getByText } = render(<ChatBox {...mockProps} />);
+        expect(getByText('12:00:00 pm')).toBeTruthy();
+    });
+
+>>>>>>> main
     it('shows the unread badge when unreadCount > 0', () => {
         const { getByText } = render(<ChatBox {...mockProps} />);
         expect(getByText('3')).toBeTruthy();

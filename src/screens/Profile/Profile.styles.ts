@@ -1,5 +1,5 @@
 import {Dimensions, StyleSheet} from 'react-native';
-import {Colors} from '../../constants/colors';
+import {Colors} from '../../themes/colors';
 const {width, height} = Dimensions.get('window');
 export const getStyles = (color: Colors) =>
   StyleSheet.create({
@@ -10,7 +10,7 @@ export const getStyles = (color: Colors) =>
       backgroundColor: color.background,
       paddingTop: height * 0.05,
     },
-    dotsImage: {
+    profileDots: {
       height: 30,
       width: 30,
     },
@@ -30,19 +30,19 @@ export const getStyles = (color: Colors) =>
       height: 35,
       width: 35,
       marginTop: 2,
-      marginRight: -6,
+      marginRight: -8,
     },
     iconEmail: {
       height: 25,
       width: 25,
-      marginLeft: 6,
-      marginTop: 2,
+      marginLeft: 2,
+      marginTop: 4,
     },
     iconPhone: {
       height: 25,
       width: 25,
-      marginLeft: 6,
-      marginTop: 4,
+      marginLeft: 1,
+      marginTop: 6,
     },
     headerText: {
       color: color.text,

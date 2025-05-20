@@ -16,7 +16,7 @@ describe('Plus Icon Tests', () => {
         render(<PlusIcon />);
         const image = screen.getByA11yHint('plus-image');
         expect(image.props.source).toEqual({
-            testUri: '../../../src/assets/plus-icon.png',
+            testUri: '../../../src/assets/HomeAddDark.png',
         });
     });
 });

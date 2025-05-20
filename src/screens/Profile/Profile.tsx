@@ -5,7 +5,8 @@ import {useTranslation} from 'react-i18next';
 import {useNavigation} from '@react-navigation/native';
 import {getStyles} from './Profile.styles';
 import {ProfileMoreOptionsModal} from '../../components/ProfileMoreOptionsModal/ProfileMoreOptionsModal';
-import {useThemeColors} from '../../constants/colors';
+import {useThemeColors} from '../../themes/colors';
+import { useImagesColors } from '../../themes/images';
 
 export interface User {
   firstName: string;
@@ -18,6 +19,7 @@ export interface User {
 export const Profile = () => {
   const colors = useThemeColors();
   const styles = getStyles(colors);
+  const {profileDots} = useImagesColors();
   const {t} = useTranslation('auth');
   const [userData, setUserData] = useState<User | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -36,15 +38,15 @@ export const Profile = () => {
         <View style={styles.headerRight}>
           <TouchableOpacity onPress={handleMoreOptionsModal}>
             <Image
-              source={require('../../assets/more-options-icon.png')}
+              source={profileDots}
               accessibilityHint="dots-image"
-              style={styles.dotsImage}
+              style={styles.profileDots}
             />
           </TouchableOpacity>
         </View>
       ),
     });
-  }, [navigation, styles.dotsImage, styles.headerRight]);
+  }, [navigation, styles.profileDots, styles.headerRight, profileDots]);
   useEffect(() => {
     const getUserData = async () => {
       const userDataString = await EncryptedStorage.getItem('user');

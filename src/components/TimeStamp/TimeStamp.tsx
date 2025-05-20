@@ -1,7 +1,7 @@
 import {Text, View} from 'react-native';
 import moment from 'moment';
 import {Timestampstyle} from './TimeStamp.styles';
-import {useThemeColors} from '../../constants/colors';
+import {useThemeColors} from '../../themes/colors';
 
 export const TimeStamp = ({
   messageTime,

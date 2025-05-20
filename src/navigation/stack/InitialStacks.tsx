@@ -1,15 +1,15 @@
 import {useEffect, useState} from 'react';
-import {useDispatch} from 'react-redux';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {LoadingComponent} from '../../components/Loading/Loading';
+import {useDispatch} from 'react-redux';
 import {API_URL} from '../../constants/api';
-import {Registration} from '../../screens/Registration/Registration';
-import {Welcome} from '../../screens/Welcome/Welcome';
 import {hide, show} from '../../store/slices/loadingSlice';
-import {setLoginSuccess} from '../../store/slices/loginSlice';
 import {HomeTabs} from '../tab/HomeTabs';
-import Login from '../../screens/Login/Login';
+import {LoadingComponent} from '../../components/Loading/Loading';
+import {Login} from '../../screens/Login/Login';
+import {Registration} from '../../screens/Registration/Registration';
+import {setLoginSuccess} from '../../store/slices/loginSlice';
+import {Welcome} from '../../screens/Welcome/Welcome';
 
 const Stack = createNativeStackNavigator();
 
