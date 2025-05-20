@@ -19,7 +19,6 @@ export const individualChatHeaderStyles = (colors: Colors) => {
       tintColor: colors.text,
       resizeMode: 'contain',
       alignSelf: 'flex-start',
-      marginTop: width * 0.01,
     },
     profilePicture: {
       width: width * 0.13,
