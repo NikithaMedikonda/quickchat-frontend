@@ -21,11 +21,11 @@ describe('KeyGeneration', () => {
   });
 
   it('should handle errors during key generation', async () => {
-    (Rsa as jest.Mock).mockImplementation(() => ({
-      generateKeys: jest.fn().mockRejectedValue(new Error('Generation error')),
-    }));
+    (Rsa as jest.Mock).mockImplementation(() => {
+      throw new Error('Generation error');
+    });
 
-    const result = await KeyGeneration();
-    expect(result).toBeNull();
+    await expect(
+      KeyGeneration()).rejects.toThrow('Generation error');
   });
 });
