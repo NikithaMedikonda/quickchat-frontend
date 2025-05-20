@@ -9,8 +9,7 @@ export const KeyGeneration = async () => {
     const publicKey = keys.public;
     const privateKey = keys.private;
     return { publicKey, privateKey };
-  } catch (error) {
-    
-    return null;
+  } catch (error: any) {
+    throw new Error(error.message || 'Generation error');
   }
 };
