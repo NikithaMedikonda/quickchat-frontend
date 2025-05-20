@@ -10,7 +10,7 @@ export const TimeStamp = ({
 }) => {
   const colors = useThemeColors();
   const styles = Timestampstyle(colors);
-  let displayTime = null;
+  let displayTime;
    const currentTime = moment();
   const messageReceivedTime = moment(messageTime);
   if (!messageTime || !moment(messageTime).isValid()) {
@@ -21,7 +21,7 @@ export const TimeStamp = ({
     );
   }
   if (messageReceivedTime.isSame(currentTime, 'day')) {
-    displayTime = messageReceivedTime.format('h:mm:ss a');
+    displayTime = messageReceivedTime.format('h:mm a');
   } else if (
     messageReceivedTime.isSame(
       moment().startOf('day').subtract(1, 'days'),
