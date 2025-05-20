@@ -34,9 +34,4 @@ describe('TimeStamp component', () => {
     const {getByText} = render(<TimeStamp messageTime="2025-04-30T15:30:00" />);
     expect(getByText('Apr 30, 2025, 3:30 pm')).toBeTruthy();
   });
-
-  test(' Should display "---" for null or invalid timestamp', () => {
-    const {getByText} = render(<TimeStamp messageTime={null} />);
-    expect(getByText('---')).toBeTruthy();
-  });
 });

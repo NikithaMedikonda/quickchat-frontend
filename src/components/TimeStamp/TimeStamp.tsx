@@ -6,20 +6,13 @@ import {useThemeColors} from '../../constants/colors';
 export const TimeStamp = ({
   messageTime,
 }: {
-  messageTime: Date | string | null;
+  messageTime: Date | string
 }) => {
   const colors = useThemeColors();
   const styles = Timestampstyle(colors);
   let displayTime;
    const currentTime = moment();
   const messageReceivedTime = moment(messageTime);
-  if (!messageTime || !moment(messageTime).isValid()) {
-    return (
-      <View>
-        <Text style={styles.color}>---</Text>
-      </View>
-    );
-  }
   if (messageReceivedTime.isSame(currentTime, 'day')) {
     displayTime = messageReceivedTime.format('h:mm a');
   } else if (
