@@ -1,9 +1,9 @@
 import { Image, Platform, Text, View } from 'react-native';
 import { useThemeColors } from '../../constants/colors';
-import { userDetails } from '../../types/user.types';
+import { UserDetails } from '../../types/user.types';
 import { individualChatHeaderStyles } from './IndividualChatHeader.styles';
 
-export const IndividualChatHeader = ({name, profilePicture}: userDetails) => {
+export const IndividualChatHeader = ({name, profilePicture}: UserDetails) => {
   const colors = useThemeColors();
 
   const styles = individualChatHeaderStyles(colors);
