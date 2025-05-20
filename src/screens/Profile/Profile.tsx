@@ -36,7 +36,7 @@ export const Profile = () => {
         <View style={styles.headerRight}>
           <TouchableOpacity onPress={handleMoreOptionsModal}>
             <Image
-              source={require('../../assets/dots.png')}
+              source={require('../../assets/more-options-icon.png')}
               accessibilityHint="dots-image"
               style={styles.dotsImage}
             />
