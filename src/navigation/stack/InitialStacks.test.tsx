@@ -65,9 +65,10 @@ describe('InitialStacks', () => {
 
   it('should show loading initially', async () => {
     const {getByTestId} = renderWithProviders();
-
+    await waitFor(() => {
     expect(getByTestId('loading-spinner')).toBeTruthy();
   });
+});
 
   it('should show Welcome screen if no tokens are found', async () => {
     (EncryptedStorage.getItem as jest.Mock).mockImplementation(

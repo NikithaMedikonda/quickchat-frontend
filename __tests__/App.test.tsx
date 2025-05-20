@@ -1,5 +1,5 @@
 import {App} from '../App';
-import {render} from '@testing-library/react-native';
+import {render, waitFor} from '@testing-library/react-native';
 import i18next from 'i18next';
 
 jest.mock('react-native-encrypted-storage', () => ({
@@ -87,8 +87,10 @@ jest.mock('react-native-permissions', () => ({
   request: jest.fn().mockResolvedValue('granted'),
 }));
 
-test('renders App component', () => {
+test('renders App component',async () => {
+    await waitFor(() => {
   render(<App />);
+});
 });
 
 jest.mock('react-native-localize', () => ({
@@ -106,9 +108,11 @@ jest.mock('i18next', () => {
   };
 });
 
-test('runs useEffect on mount and sets language', () => {
+test('runs useEffect on mount and sets language', async() => {
   render(
       <App />
   );
+    await waitFor(() => {
   expect(i18next.changeLanguage).toHaveBeenCalledWith('te');
+});
 });
