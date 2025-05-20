@@ -94,9 +94,9 @@ describe('Registration Screen', () => {
     const {getByText} = renderComponent();
     fireEvent.press(getByText('Register'));
     await waitFor(() => {
-      expect(getByText('First name is required')).toBeTruthy();
-      expect(getByText('Last name is required')).toBeTruthy();
-      expect(getByText('Invalid password')).toBeTruthy();
+      expect(getByText('First name required!')).toBeTruthy();
+      expect(getByText('Last name required!')).toBeTruthy();
+      expect(getByText('Invalid password!')).toBeTruthy();
     });
   });
 
@@ -109,7 +109,7 @@ describe('Registration Screen', () => {
     );
     fireEvent.press(getByText('Register'));
     await waitFor(() => {
-      expect(getByText('Passwords do not match')).toBeTruthy();
+      expect(getByText('Passwords do not match!')).toBeTruthy();
     });
   });
   it('shows invalid pass error', async () => {
@@ -117,7 +117,7 @@ describe('Registration Screen', () => {
     fireEvent.changeText(getByPlaceholderText('Password'), '12345678');
     fireEvent.press(getByText('Register'));
     await waitFor(() => {
-      expect(getByText('Invalid password')).toBeTruthy();
+      expect(getByText('Invalid password!')).toBeTruthy();
     });
   });
 
@@ -129,7 +129,7 @@ describe('Registration Screen', () => {
     );
     fireEvent.press(getByText('Register'));
     await waitFor(() => {
-      expect(getByText('Invalid email format')).toBeTruthy();
+      expect(getByText('Invalid email format!')).toBeTruthy();
     });
   });
 
@@ -268,7 +268,7 @@ describe('Registration Screen', () => {
     fireEvent.changeText(getByPlaceholderText('Phone number'), '123456789');
     fireEvent.press(getByText('Register'));
     await waitFor(() => {
-      expect(getByText('Invalid phone number')).toBeTruthy();
+      expect(getByText('Invalid phone number!')).toBeTruthy();
     });
   });
 });
