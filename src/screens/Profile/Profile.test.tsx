@@ -49,8 +49,10 @@ describe('Profile Screen', () => {
         <Profile />
       </Provider>,
     );
-  it('renders the dot image', () => {
-    renderComponent();
+  it('renders the dot image', async() => {
+    await waitFor(() => {
+      renderComponent();
+    });
     expect(mockNavigate).toHaveBeenCalledWith(
       expect.objectContaining({
         headerTitleAlign: 'center',
@@ -68,7 +70,9 @@ describe('Profile Screen', () => {
   });
 
   it('renders the fallback profile image if profilePicture is empty', async () => {
-    renderComponent();
+    await waitFor(() => {
+      renderComponent();
+    });
     const profileImage = await waitFor(() =>
       screen.getByA11yHint('profile-image'),
     );
@@ -76,25 +80,33 @@ describe('Profile Screen', () => {
   });
 
   it('renders the first name section correctly', async () => {
-    renderComponent();
+    await waitFor(() => {
+      renderComponent();
+    });
     expect(await screen.findByText('First Name')).toBeTruthy();
     expect(await screen.findByText(mockUserData.firstName)).toBeTruthy();
   });
 
   it('renders the last name section correctly', async () => {
-    renderComponent();
+    await waitFor(() => {
+      renderComponent();
+    });
     expect(await screen.findByText('Last Name')).toBeTruthy();
     expect(await screen.findByText(mockUserData.lastName)).toBeTruthy();
   });
 
   it('renders the email section correctly', async () => {
-    renderComponent();
+    await waitFor(() => {
+      renderComponent();
+    });
     expect(await screen.findByText('Email')).toBeTruthy();
     expect(await screen.findByText(mockUserData.email)).toBeTruthy();
   });
 
   it('renders the phone number section correctly', async () => {
-    renderComponent();
+      await waitFor(() => {
+      renderComponent();
+    });
     expect(await screen.findByText('Phone Number')).toBeTruthy();
     expect(await screen.findByText(mockUserData.phoneNumber)).toBeTruthy();
   });
@@ -107,13 +119,17 @@ describe('Profile Screen', () => {
     (EncryptedStorage.getItem as jest.Mock).mockResolvedValueOnce(
       JSON.stringify(mockUser),
     );
-    renderComponent();
+      await waitFor(() => {
+      renderComponent();
+    });
     const image = await waitFor(() => screen.getByA11yHint('profile-image'));
     expect(image).toBeTruthy();
   });
 
   it('opens the modal when dots image is pressed', async () => {
-    renderComponent();
+      await waitFor(() => {
+      renderComponent();
+    });
     const headerRight = mockNavigate.mock.calls[0][0].headerRight();
     const {getByA11yHint} = render(headerRight);
     const dotsButton = getByA11yHint('dots-image');

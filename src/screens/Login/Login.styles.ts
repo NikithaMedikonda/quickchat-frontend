@@ -16,7 +16,6 @@ export const loginStyles = (colors: Colors) =>
       width: width * 0.5,
       height: height * 0.3,
     },
-
     imageContainer: {
       height: height * 0.6,
       width: width * 0.9,
@@ -52,7 +51,7 @@ export const loginStyles = (colors: Colors) =>
       height: height * 0.044,
       fontSize: 20,
       borderRadius: 10,
-      width: width * 0.75,
+      width: width * 0.8,
       padding: 10,
       color: colors.gray,
       margin: height * 0.012,
@@ -61,8 +60,9 @@ export const loginStyles = (colors: Colors) =>
     error: {
       color: 'red',
       fontSize: 15,
+      alignSelf: 'flex-start',
       width: width * 0.75,
-      marginLeft: width * 0.01,
+      marginLeft: width * 0.1,
     },
     loginMainContainer: {
       backgroundColor: colors.background,
@@ -73,5 +73,8 @@ export const loginStyles = (colors: Colors) =>
     },
     keyboardAvoidView: {
       flex: 1,
+    },
+    loginButtonContainer: {
+      marginTop: height * 0.02,
     },
   });

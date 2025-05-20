@@ -1,4 +1,4 @@
-import {Dimensions, Image, View} from 'react-native';
+import { Image, View} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {HomeStacks} from '../stack/HomeStacks';
 import {ProfileStack} from '../stack/ProfileStacks';
@@ -7,7 +7,6 @@ import {Unread} from '../../screens/Unread/Unread';
 import {useThemeColors} from '../../themes/colors';
 import {useTranslation} from 'react-i18next';
 import {useImagesColors} from '../../themes/images';
-const {height} = Dimensions.get('window');
 
 export const HomeTabs = () => {
   const Tab = createBottomTabNavigator();
@@ -19,12 +18,19 @@ export const HomeTabs = () => {
       screenOptions={{
         tabBarStyle: {
           backgroundColor: colors.background,
-          height: height * 0.1,
-          paddingTop: 10,
+          height: 100,
+          borderTopWidth: 0,
+        },
+        tabBarItemStyle: {
+          justifyContent: 'center',
+          alignItems: 'center',
+          flex: 1,
         },
         tabBarLabelStyle: {
-          fontSize: 11,
-          paddingTop: 5,
+          fontSize: 12,
+          fontWeight: '700',
+          marginTop: 20,
+          textAlign: 'center',
         },
       }}>
       <Tab.Screen

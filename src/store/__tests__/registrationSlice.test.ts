@@ -7,6 +7,7 @@ import  {
   setIsVisible,
   resetForm,
   registrationReducer,
+  setImageDeleted,
 } from '../slices/registrationSlice';
 
 const initialState = {
@@ -80,6 +81,12 @@ describe('registration slice', () => {
     const imagebase64 = '';
     const newState = registrationReducer(initialState, setImageBase64(imagebase64));
     expect(newState.imageUri).toBe(imagebase64);
+  });
+
+   it('should handle deleted image', () => {
+    const imagebase64 = '';
+    const newState = registrationReducer(initialState, setImageDeleted(imagebase64));
+    expect(newState.imageDeleted).toBe(imagebase64);
   });
 
   it('should handle resetForm', () => {
