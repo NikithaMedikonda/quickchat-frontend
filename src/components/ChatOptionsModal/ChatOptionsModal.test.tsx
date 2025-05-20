@@ -1,13 +1,12 @@
-import React from 'react';
 import {
   fireEvent,
   render,
   screen,
   waitFor,
 } from '@testing-library/react-native';
-import {ChatOptionsModal} from './ChatOptionsModal';
 import {Provider} from 'react-redux';
 import {store} from '../../store/store';
+import {ChatOptionsModal} from './ChatOptionsModal';
 
 jest.mock('../../themes/colors', () => ({
   useThemeColors: () => ({
@@ -84,14 +83,27 @@ describe('ChatOptionsModal', () => {
     });
   });
 
-  it('closes confirmation modal when cancel (onClose) is pressed', async () => {
+  it('closes confirmation modal after confirming "Delete"', async () => {
     renderComponent();
     fireEvent.press(screen.getByText('Delete Chat'));
-    const closeButton = await screen.findByText('Delete');
-    fireEvent.press(closeButton);
+    const confirmButton = await screen.findByText('Delete');
+    fireEvent.press(confirmButton);
     await waitFor(() => {
       expect(
         screen.queryByText('Are you sure you want to delete this chat?'),
+      ).toBeNull();
+    });
+  });
+
+  it('closes confirmation modal when cancel is pressed', async () => {
+    renderComponent();
+    fireEvent.press(screen.getByText('Block User'));
+    const cancelButton = await screen.findByText('Cancel');
+    fireEvent.press(cancelButton);
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText('Are you sure you want to block this user?'),
       ).toBeNull();
     });
   });
