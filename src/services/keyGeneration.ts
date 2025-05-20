@@ -8,11 +8,9 @@ export const KeyGeneration = async () => {
     const keys: { public: string; private: string } = await rsa.generateKeys(bits, exponent);
     const publicKey = keys.public;
     const privateKey = keys.private;
-    console.log(publicKey);
-    console.log(privateKey);
     return { publicKey, privateKey };
   } catch (error) {
-    console.error('Key generation failed:', error);
+    
     return null;
   }
 };

@@ -1,5 +1,6 @@
-import { KeyGeneration } from '../keyGeneration';
 import Rsa from 'react-native-rsa';
+import { KeyGeneration } from '../keyGeneration';
+
 
 jest.mock('react-native-rsa', () => {
   return jest.fn().mockImplementation(() => ({
