@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Image, TextInput, TouchableOpacity, View } from 'react-native';
-import { useThemeColors } from '../../constants/colors';
+import { useThemeColors } from '../../themes/colors';
 import { messageInputStyles } from './MessageInput.styles';
 
 export const MessageInput = () => {
