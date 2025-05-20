@@ -21,18 +21,18 @@ describe('TimeStamp component', () => {
 
   test('Should display "Yesterday" if the time is more than one day', () => {
     const {getByText} = render(<TimeStamp messageTime="2025-05-12T08:00:00" />);
-    expect(getByText('Yesterday')).toBeTruthy();
+    expect(getByText(/Yesterday, 8:00 am/i)).toBeTruthy();
   });
 
   test('Should display day name within last 7 days', () => {
     const dayName = moment('2025-05-09').format('dddd'); // Friday
     const {getByText} = render(<TimeStamp messageTime="2025-05-09T09:00:00" />);
-    expect(getByText(dayName)).toBeTruthy();
+     expect(getByText(`${dayName}, 9:00 am`)).toBeTruthy();
   });
 
   test('Should display full date, if the timestamps are older than 7 days', () => {
     const {getByText} = render(<TimeStamp messageTime="2025-04-30T15:30:00" />);
-    expect(getByText('Apr 30, 2025')).toBeTruthy();
+    expect(getByText('Apr 30, 2025, 3:30 pm')).toBeTruthy();
   });
 
   test(' Should display "---" for null or invalid timestamp', () => {
