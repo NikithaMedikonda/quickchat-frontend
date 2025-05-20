@@ -1,5 +1,5 @@
-import {Dimensions, StyleSheet} from 'react-native';
-import {Colors} from '../../constants/colors';
+import { Dimensions, StyleSheet } from 'react-native';
+import { Colors } from '../../constants/colors';
 
 const {width, height} = Dimensions.get('window');
 
@@ -20,7 +20,7 @@ export const messageInputStyles = (colors: Colors) => {
       width: width * 0.7,
       padding: 4,
       color: colors.gray,
-      margin: height * 0.010,
+      margin: height * 0.01,
       backgroundColor: colors.white,
       alignSelf: 'flex-end',
     },
