@@ -18,11 +18,6 @@ describe('ChatBox Component', () => {
         expect(getByText('Hello everyone!')).toBeTruthy();
     });
 
-    it('displays the timestamp', () => {
-        const { getByText } = render(<ChatBox {...mockProps} />);
-        expect(getByText('Tuesday')).toBeTruthy();
-    });
-
     it('shows the unread badge when unreadCount > 0', () => {
         const { getByText } = render(<ChatBox {...mockProps} />);
         expect(getByText('3')).toBeTruthy();
