@@ -8,10 +8,10 @@ import {
   TouchableWithoutFeedback,
   Platform,
 } from 'react-native';
-import {getStyles} from './ChatOptionsModal.styles';
-import {useThemeColors} from '../../themes/colors';
-import {useImagesColors} from '../../themes/images';
 import {ConfirmModal} from '../GenericConfirmModal/ConfirmModal';
+import {getStyles} from './ChatOptionsModal.styles';
+import {useImagesColors} from '../../themes/images';
+import {useThemeColors} from '../../themes/colors';
 
 type Props = {
   visible: boolean;
@@ -26,18 +26,11 @@ export const ChatOptionsModal = ({visible, onClose}: Props) => {
   const [message, setMessage] = useState('');
   const [buttonTypes, setButtonTypes] = useState('');
 
-  const handleBlockUserConfirmation = () => {
+  const showConfirmation = (type: 'Block' | 'Delete', message: string) => {
     onClose();
     setModalVisible(true);
-    setButtonTypes('Block');
-    setMessage('Are you sure you want to block this user?');
-  };
-
-  const handleDeleteChatConfirmation = () => {
-    onClose();
-    setModalVisible(true);
-    setButtonTypes('Delete');
-    setMessage('Are you sure you want to delete this chat?');
+    setButtonTypes(type);
+    setMessage(message);
   };
 
   const handleModalClose = () => {
@@ -68,7 +61,12 @@ export const ChatOptionsModal = ({visible, onClose}: Props) => {
             <View style={styles.modalView}>
               <View style={styles.textContainer}>
                 <TouchableOpacity
-                  onPress={handleBlockUserConfirmation}
+                  onPress={() =>
+                    showConfirmation(
+                      'Block',
+                      'Are you sure you want to block this user?',
+                    )
+                  }
                   style={styles.optionsView}>
                   <Text style={styles.modalText}>Block User</Text>
                   <Image
@@ -78,7 +76,12 @@ export const ChatOptionsModal = ({visible, onClose}: Props) => {
                   />
                 </TouchableOpacity>
                 <TouchableOpacity
-                  onPress={handleDeleteChatConfirmation}
+                  onPress={() =>
+                    showConfirmation(
+                      'Delete',
+                      'Are you sure you want to delete this chat?',
+                    )
+                  }
                   style={styles.optionsView}>
                   <Text style={styles.modalText}>Delete Chat</Text>
                   <Image
