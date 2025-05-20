@@ -23,7 +23,6 @@ export const getStyles = (color: Colors) =>
       paddingTop: height * 0.15,
       paddingRight: height * 0.02,
     },
-
     modalView: {
       backgroundColor: color.primaryBlue,
       borderRadius: 20,
@@ -40,25 +39,23 @@ export const getStyles = (color: Colors) =>
     image: {
       height: 20,
       width: 20,
-      marginLeft: 20,
+      marginRight: 5,
+    },
+    blockImage: {
+      height: 28,
+      width: 28,
+      marginRight: 1,
     },
     textContainer: {
       justifyContent: 'space-between',
       alignItems: 'center',
     },
     optionsView: {
-      display: 'flex',
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
       padding: 10,
       width: 200,
-    },
-    binOptionsView: {
-      gap: 20,
-    },
-    logoutOptionsView: {
-      gap: 90,
     },
     modalText: {
       fontSize: 18,

@@ -8,6 +8,7 @@ import ProfileDotsDark from '../assets/ProfileDotsDark.png';
 import BinDark from '../assets/BinDark.png';
 import PencilDark from '../assets/PencilDark.png';
 import LogoutDark from '../assets/LogoutDark.png';
+import chatblockDark from '../assets/chatblockDark.png';
 
 export const useImagesColors = (): {
   logo: ImageSourcePropType;
@@ -19,6 +20,7 @@ export const useImagesColors = (): {
   bin: ImageSourcePropType;
   pencil: ImageSourcePropType;
   logoutImage: ImageSourcePropType;
+  chatblockImage: ImageSourcePropType;
 } => {
   return {
     logo:  QuickChatDarkLogo ,
@@ -30,5 +32,6 @@ export const useImagesColors = (): {
     bin:  BinDark ,
     pencil:  PencilDark ,
     logoutImage:  LogoutDark,
+    chatblockImage : chatblockDark
   };
 };
