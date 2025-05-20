@@ -13,7 +13,9 @@ export const sentMessageStyles = (colors: Colors) => {
       borderBottomLeftRadius: 12,
       padding: 10,
       marginVertical: 4,
+      marginRight: width * 0.02,
       maxWidth: width * 0.75,
+
     },
     sentMessageText: {
       color: colors.white,
