@@ -29,7 +29,6 @@ export const getContacts = async () => {
       });
     });
     const authToken = await EncryptedStorage.getItem('authToken');
-    console.log(authToken);
     if (!authToken) {
       throw new Error('Authorization failed');
     }

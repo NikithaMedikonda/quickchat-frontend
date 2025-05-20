@@ -64,31 +64,31 @@ export const Registration = () => {
     const newErrors: Partial<typeof form> = {};
     let isValid = true;
     if (!form.firstName) {
-      newErrors.firstName = 'First name is required';
+      newErrors.firstName = 'First name required!';
       isValid = false;
     }
     if (!form.lastName) {
-      newErrors.lastName = 'Last name is required';
+      newErrors.lastName = 'Last name required!';
       isValid = false;
     }
     if (!form.password || !validatePassword(form.password)) {
-      newErrors.password = 'Invalid password';
+      newErrors.password = 'Invalid password!';
       isValid = false;
     }
     if (form.password !== form.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
+      newErrors.confirmPassword = 'Passwords do not match!';
       isValid = false;
     }
 
     if (form.email && !validateEmail(form.email)) {
-      newErrors.email = 'Invalid email format';
+      newErrors.email = 'Invalid email format!';
       isValid = false;
     }
     if (!form.phoneNumber) {
       newErrors.phoneNumber = 'Phone number required!';
       isValid = false;
     } else if (form.phoneNumber.length < 10) {
-      newErrors.phoneNumber = 'Invalid phone number';
+      newErrors.phoneNumber = 'Invalid phone number!';
       isValid = false;
     }
 

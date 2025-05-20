@@ -1,5 +1,5 @@
 import Rsa from 'react-native-rsa';
-import { KeyGeneration } from '../keyGeneration';
+import { keyGeneration } from '../keyGeneration';
 
 
 jest.mock('react-native-rsa', () => {
@@ -13,7 +13,7 @@ jest.mock('react-native-rsa', () => {
 
 describe('KeyGeneration', () => {
   it('should generate and return public and private keys', async () => {
-    const keys = await KeyGeneration();
+    const keys = await keyGeneration();
     expect(keys).toEqual({
       publicKey: 'mockPublicKey',
       privateKey: 'mockPrivateKey',
@@ -21,11 +21,11 @@ describe('KeyGeneration', () => {
   });
 
   it('should handle errors during key generation', async () => {
-    (Rsa as jest.Mock).mockImplementation(() => ({
-      generateKeys: jest.fn().mockRejectedValue(new Error('Generation error')),
-    }));
+    (Rsa as jest.Mock).mockImplementation(() => {
+      throw new Error('Error occured while generating Keys');
+    });
 
-    const result = await KeyGeneration();
-    expect(result).toBeNull();
+    await expect(
+      keyGeneration()).rejects.toThrow('Error occured while generating Keys');
   });
 });

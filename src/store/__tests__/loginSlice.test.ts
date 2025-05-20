@@ -1,4 +1,4 @@
-import {loginReducer} from '../slices/loginSlice';
+import {loginReducer, updateProfilePicture} from '../slices/loginSlice';
 import {
   setLoginField,
   setLoginErrors,
@@ -95,5 +95,30 @@ describe('login slice', () => {
     };
     const newState = loginReducer(modifiedState, resetLoginForm());
     expect(newState.form).toEqual(initialState.form);
+  });
+
+  it('should handle updateProfilePicture when user exists', () => {
+    const modifiedState = {
+      ...initialState,
+      user: {
+        id: 'uuid',
+        firstName: 'test',
+        lastName: 'user',
+        phoneNumber: '1234567890',
+        email: 'test@example.com',
+        profilePicture: 'old-picture.png',
+      },
+    };
+
+    const newState = loginReducer(
+      modifiedState,
+      updateProfilePicture('new.png'),
+    );
+    expect(newState.user?.profilePicture).toBe('new.png');
+  });
+
+  it('should not update profilePicture if user is null', () => {
+    const state = loginReducer(initialState, updateProfilePicture('new.png'));
+    expect(state.user).toBeNull();
   });
 });
