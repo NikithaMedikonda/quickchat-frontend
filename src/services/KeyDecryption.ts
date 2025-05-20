@@ -11,6 +11,6 @@ export const keyDecryption = async ({
     const decryptedPrivateKey = CryptoJS.AES.decrypt(encryptedPrivateKey, password).toString();
     return decryptedPrivateKey;
     } catch (error) {
-    throw new Error('Decryption error failed');
+    throw new Error('Decryption failed');
   }
 };
