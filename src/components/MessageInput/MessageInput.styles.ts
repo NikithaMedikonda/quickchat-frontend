@@ -20,7 +20,7 @@ export const messageInputStyles = (colors: Colors) => {
       width: width * 0.7,
       padding: 4,
       color: colors.gray,
-      margin: height * 0.01,
+      margin: height * 0.02,
       backgroundColor: colors.white,
       alignSelf: 'flex-end',
     },
