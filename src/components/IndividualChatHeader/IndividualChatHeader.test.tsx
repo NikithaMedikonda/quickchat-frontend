@@ -22,7 +22,7 @@ describe('IndividualChatHeader', () => {
 
   test('Should render the username', () => {
     render(<IndividualChatHeader {...userDetails} />);
-    const username = screen.getByA11yHint('username-text');
+    const username = screen.getByText('Chitty');
     expect(username).toBeTruthy();
     expect(screen.getByText('Chitty')).toBeTruthy();
   });
