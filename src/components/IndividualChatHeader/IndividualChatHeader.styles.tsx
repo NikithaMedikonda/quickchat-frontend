@@ -1,5 +1,5 @@
 import {Dimensions, Platform, StyleSheet} from 'react-native';
-import {Colors} from '../../constants/colors';
+import {Colors} from '../../themes/colors';
 const {width} = Dimensions.get('window');
 
 export const individualChatHeaderStyles = (colors: Colors) => {

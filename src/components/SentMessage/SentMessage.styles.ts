@@ -1,5 +1,5 @@
 import {StyleSheet, Dimensions} from 'react-native';
-import {Colors} from '../../constants/colors';
+import {Colors} from '../../themes/colors';
 
 const {width} = Dimensions.get('window');
 
@@ -18,7 +18,7 @@ export const sentMessageStyles = (colors: Colors) => {
 
     },
     sentMessageText: {
-      color: colors.white,
+      color: colors.text,
       fontSize: 16,
     },
     tickIcon: {
@@ -26,7 +26,7 @@ export const sentMessageStyles = (colors: Colors) => {
       height: 16,
       marginTop: 4,
       alignSelf: 'flex-end',
-      tintColor: colors.white,
+      tintColor: colors.text,
     },
   });
 };
