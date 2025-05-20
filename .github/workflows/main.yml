@@ -4,7 +4,7 @@ on:
   push:
     branches:
      - main
-     - key-generation
+
 jobs:
   lint-and-test:
     uses: ./.github/workflows/lint-and-test.yml

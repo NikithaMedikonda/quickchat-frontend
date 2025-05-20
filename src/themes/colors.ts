@@ -8,6 +8,7 @@ export const useThemeColors = () => {
     profileOptionsText:  '#000000',
     buttonText :  '#000000' ,
     inputText : '#000000',
+    modalOverlayBackground : 'rgba(0, 0, 0, 0.6)',
   };
 };
 
@@ -20,4 +21,5 @@ export type Colors = {
   profileOptionsText: string;
   buttonText:string;
   inputText: string;
+  modalOverlayBackground: string;
 };
