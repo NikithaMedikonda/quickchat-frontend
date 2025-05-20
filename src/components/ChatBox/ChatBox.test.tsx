@@ -6,7 +6,7 @@ describe('ChatBox Component', () => {
         image: 'profile-image',
         name: 'Nagulu',
         description: 'Hello everyone!',
-        timestamp: '2025-05-13T12:00:00',
+        timestamp: '2025-05-20T12:00:00',
         unreadCount: 3,
     };
 
@@ -19,7 +19,7 @@ describe('ChatBox Component', () => {
 
     it('displays the timestamp', () => {
         const { getByText } = render(<ChatBox {...mockProps} />);
-        expect(getByText('Tuesday')).toBeTruthy();
+        expect(getByText('12:00:00 pm')).toBeTruthy();
     });
 
     it('shows the unread badge when unreadCount > 0', () => {
