@@ -1,6 +1,6 @@
 import Rsa from 'react-native-rsa';
 
-export const KeyGeneration = async () => {
+export const keyGeneration = async () => {
   const rsa = new Rsa();
   const bits = 2048;
   const exponent = '10001';
@@ -9,7 +9,7 @@ export const KeyGeneration = async () => {
     const publicKey = keys.public;
     const privateKey = keys.private;
     return { publicKey, privateKey };
-  } catch (error: any) {
-    throw new Error(error.message || 'Generation error');
+  } catch (error) {
+    throw new Error('Error occured while generating Keys');
   }
 };

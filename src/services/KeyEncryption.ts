@@ -10,7 +10,7 @@ export const keyEncryption = async ({
   try {
     const encryptedPrivateKey = CryptoJS.AES.encrypt(privateKey, password).toString();
     return encryptedPrivateKey;
-  } catch (error: any) {
-    throw new Error(error.message || 'Encryption error');
+  } catch (error) {
+    throw new Error('Encryption failed');
   }
 };

@@ -10,7 +10,7 @@ export const keyDecryption = async ({
     try {
     const decryptedPrivateKey = CryptoJS.AES.decrypt(encryptedPrivateKey, password).toString();
     return decryptedPrivateKey;
-    } catch (error: any) {
-    throw new Error(error.message || 'Decryption error');
+    } catch (error) {
+    throw new Error('Decryption error failed');
   }
 };
