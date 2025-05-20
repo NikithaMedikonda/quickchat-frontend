@@ -9,6 +9,7 @@ export const useThemeColors = () => {
     buttonText :  '#000000' ,
     inputText : '#000000',
     modalOverlayBackground : 'rgba(0, 0, 0, 0.6)',
+    darkGray: '##3C4142',
   };
 };
 
@@ -22,4 +23,5 @@ export type Colors = {
   buttonText:string;
   inputText: string;
   modalOverlayBackground: string;
+  darkGray: string;
 };
