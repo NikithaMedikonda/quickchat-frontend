@@ -1,5 +1,5 @@
 import { Image, Platform, Text, View } from 'react-native';
-import { useThemeColors } from '../../constants/colors';
+import { useThemeColors } from '../../themes/colors';
 import { UserDetails } from '../../types/user.types';
 import { individualChatHeaderStyles } from './IndividualChatHeader.styles';
 
