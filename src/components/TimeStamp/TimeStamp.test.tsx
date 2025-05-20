@@ -1,6 +1,8 @@
-import { render } from '@testing-library/react-native';
+import React from 'react';
+import {render} from '@testing-library/react-native';
+import {TimeStamp} from './TimeStamp';
 import moment from 'moment';
-import { TimeStamp } from './TimeStamp';
+
 
 beforeAll(() => {
   jest.useFakeTimers();
@@ -14,7 +16,7 @@ afterAll(() => {
 describe('TimeStamp component', () => {
   test(' should display correct time for today', () => {
     const {getByText} = render(<TimeStamp messageTime="2025-05-13T10:00:00" />);
-    expect(getByText(/10:00 am/i)).toBeTruthy();
+    expect(getByText(/10:00:00 am/i)).toBeTruthy();
   });
 
   test('Should display "Yesterday" if the time is more than one day', () => {
