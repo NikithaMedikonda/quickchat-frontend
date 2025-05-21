@@ -34,6 +34,7 @@ import {useThemeColors} from '../../themes/colors';
 import {getStyles} from './Registration.styles';
 import {RootState} from '../../store/store';
 import {HomeTabsProps, NavigationProps} from '../../types/usenavigation.type';
+import { DEFAULT_PROFILE_IMAGE } from '../../constants/defaultImage';
 
 export const Registration = () => {
   const navigation = useNavigation<NavigationProps>();
@@ -132,7 +133,6 @@ try {
     dispatch(resetForm());
   } else {
     dispatch(hide());
-    // Alert.alert(t('Something went wrong while registering'));
     Dialog.show({
       type: ALERT_TYPE.DANGER,
       title: 'Registration failed',
@@ -197,7 +197,7 @@ try {
           <Image
             style={styles.logo}
             source={
-              imageUri ? {uri: imageUri} : require('../../assets/image.png')
+              imageUri ? {uri: imageUri} : {uri: DEFAULT_PROFILE_IMAGE}
             }
             resizeMode="contain"
             accessibilityHint="logo"
