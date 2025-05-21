@@ -1,7 +1,7 @@
 global.fetch = jest.fn();
 
 import {API_URL} from '../../constants/api';
-import {editProfile} from '../editProfile';
+import { updateProfile } from '../UpdateProfile';
 
 const mockedFetch = fetch as jest.Mock;
 
@@ -54,7 +54,7 @@ describe('editProfile', () => {
       json: jest.fn().mockResolvedValue(mockResponse),
     } as any);
 
-    const result = await editProfile(payload, user);
+    const result = await updateProfile(payload, user);
 
     expect(mockedFetch).toHaveBeenCalledTimes(1);
     expect(mockedFetch).toHaveBeenCalledWith(`${API_URL}/api/user`, {
@@ -68,6 +68,6 @@ describe('editProfile', () => {
   });
    it('should throw if fetch fails', async () => {
       mockedFetch.mockRejectedValueOnce(new Error('Network Error'));
-      await expect(editProfile(payload,user)).rejects.toThrow('Network Error');
+      await expect(updateProfile(payload,user)).rejects.toThrow('Network Error');
     });
 });
