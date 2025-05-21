@@ -20,7 +20,7 @@ export const IndividualChat = ({route}: Props) => {
   const currentUserId = 1223;
   const recipientId = 1222;
   useEffect(() => {
-    const newSocket = io('http://localhost:5050');
+    const newSocket = io('http://192.168.0.2:5050');
     setSocket(newSocket);
     newSocket.emit('join', {userId: currentUserId});
 
