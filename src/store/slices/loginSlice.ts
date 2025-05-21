@@ -13,6 +13,8 @@ interface User {
   phoneNumber: string;
   email: string;
   profilePicture: string;
+  publicKey:string;
+  privateKey:string
 }
 
 interface LoginState {
