@@ -41,7 +41,7 @@ export function ImagePickerModal({
     dispatch(setIsVisible(false));
   };
 
-  const handleDeletImage = async () => {
+  const handleDeleteImage = async () => {
     dispatch(setImageUri(DEFAULT_PROFILE_IMAGE));
     dispatch(setImage(DEFAULT_PROFILE_IMAGE));
     dispatch(setImageDeleted(true));
@@ -128,7 +128,7 @@ export function ImagePickerModal({
                 />
               </TouchableOpacity>
               {showDeleteOption && (
-                <TouchableOpacity onPress={handleDeletImage}>
+                <TouchableOpacity onPress={handleDeleteImage}>
                   <Image
                     accessibilityHint="delete-image"
                     style={styles.gallery}
