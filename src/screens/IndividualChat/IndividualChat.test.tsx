@@ -1,16 +1,44 @@
-import React from 'react';
-import { render, screen } from '@testing-library/react-native';
-import { IndividualChat } from './IndividualChat';
+import {render, screen} from '@testing-library/react-native';
+import {NavigationContainer, RouteProp} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
-const testUser = {
-  name: 'Chitty',
-  profilePicture: '/Users/keerthana/Documents/Internal-project/quickchat-frontend/src/assets/user.png',
+import {IndividualChat} from './IndividualChat';
+import {HomeStackParamList} from '../../types/usenavigation.type';
+
+type IndividualChatRouteProp = RouteProp<HomeStackParamList, 'individualChat'>;
+const mockRoute: IndividualChatRouteProp = {
+  key: 'individualChat',
+  name: 'individualChat',
+  params: {
+    user: {
+      name: 'Chitty',
+      profilePicture: 'mock/path/to/image.png',
+    },
+  },
 };
-
+const mockNavigation: Partial<
+  NativeStackNavigationProp<HomeStackParamList, 'individualChat'>
+> = {
+  navigate: jest.fn(),
+  goBack: jest.fn(),
+};
 describe('IndividualChat', () => {
+  beforeEach(() => {
+    render(
+      <NavigationContainer>
+        <IndividualChat
+          navigation={
+            mockNavigation as NativeStackNavigationProp<
+              HomeStackParamList,
+              'individualChat'
+            >
+          }
+          route={mockRoute}
+        />
+      </NavigationContainer>,
+    );
+  });
   test('Should render the header component with user details', () => {
-    render(<IndividualChat user={testUser} />);
-
     const username = screen.getByA11yHint('username-text');
     expect(username).toBeTruthy();
 
@@ -25,8 +53,6 @@ describe('IndividualChat', () => {
   });
 
   test('Should render the message input component', () => {
-    render(<IndividualChat user={testUser} />);
-
     const inputBox = screen.getByPlaceholderText('Type a message..');
     expect(inputBox).toBeTruthy();
 
