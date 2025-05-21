@@ -35,6 +35,7 @@ import {getStyles} from './Registration.styles';
 import {RootState} from '../../store/store';
 import {HomeTabsProps, NavigationProps} from '../../types/usenavigation.type';
 import { DEFAULT_PROFILE_IMAGE } from '../../constants/defaultImage';
+import { keyGeneration } from '../../services/KeyGeneration';
 
 export const Registration = () => {
   const navigation = useNavigation<NavigationProps>();
@@ -107,7 +108,11 @@ export const Registration = () => {
     }
 
 try {
-  const result = await registerUser({ ...form, image });
+  const keys = await keyGeneration();
+  const result = await registerUser({ ...form, image},{
+    publicKey: keys.publicKey,
+    privateKey: keys.privateKey,
+  });
   if (result.status === 409) {
     dispatch(hide());
     Dialog.show({
@@ -129,6 +134,7 @@ try {
     await EncryptedStorage.setItem('authToken', result.data.accessToken);
     await EncryptedStorage.setItem('refreshToken', result.data.refreshToken);
     await EncryptedStorage.setItem('user', JSON.stringify(result.data.user));
+    await EncryptedStorage.setItem('privateKey',keys.privateKey);
     homeNavigation.replace('hometabs');
     dispatch(resetForm());
   } else {
@@ -186,8 +192,7 @@ try {
         },
       ]}>
     <KeyboardAvoidingView
-      // eslint-disable-next-line react-native/no-inline-styles
-      style={{flex: 1}}
+      style={styles.keyboardView}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}>
       <ScrollView
