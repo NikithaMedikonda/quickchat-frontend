@@ -1,4 +1,5 @@
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import { UserDetails } from './user.types';
 
 type RootStackParamList = {
   register: undefined;
@@ -19,18 +20,32 @@ export type ProfileStackParamList = {
 export type ProfileScreenNavigationProp = NativeStackNavigationProp<
   ProfileStackParamList,
   'profileScreen',
-   'editProfile'
+  'editProfile'
 >;
 
 type HomeStackParams = {
   hometabs: undefined;
-  contacts:undefined;
+  contacts: undefined;
 };
-export type HomeTabsProps = NativeStackNavigationProp<HomeStackParams, 'hometabs','contacts'>;
+export type HomeTabsProps = NativeStackNavigationProp<
+  HomeStackParams,
+  'hometabs',
+  'contacts'
+>;
 type InitialStackParams = {
   welcome: undefined;
 };
 export type InitialStackProps = NativeStackNavigationProp<
   InitialStackParams,
   'welcome'
+>;
+export type HomeStackParamList = {
+  home: undefined;
+  individualChat: {user: UserDetails};
+  contacts: undefined;
+};
+export type HomeStackProps = NativeStackNavigationProp<
+  HomeStackParamList,
+  'home',
+  'individualChat'
 >;
