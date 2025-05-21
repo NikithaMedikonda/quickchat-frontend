@@ -10,14 +10,13 @@ describe('ChatBox Component', () => {
     unreadCount: 3,
   };
   beforeAll(() => {
-  jest.useFakeTimers();
-  jest.setSystemTime(new Date('2025-05-21T12:00:00').getTime());
-});
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date('2025-05-21T12:00:00').getTime());
+  });
 
-afterAll(() => {
-  jest.useRealTimers();
-});
-
+  afterAll(() => {
+    jest.useRealTimers();
+  });
 
   it('renders correctly with all props', () => {
     const {getByText} = render(<ChatBox {...mockProps} />);
