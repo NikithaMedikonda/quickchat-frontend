@@ -58,4 +58,7 @@ export const getStyles = (colors: Colors) =>
       margin: height * 0.012,
       backgroundColor: colors.placeholder,
     },
+    keyboardView: {
+      flex: 1,
+    },
   });
