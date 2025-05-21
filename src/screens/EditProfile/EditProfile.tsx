@@ -23,8 +23,9 @@ import {getStyles} from './EditProfile.styles';
 import {Placeholder} from '../../components/InputField/InputField';
 import {ImagePickerModal} from '../../components/ImagePickerModal/ImagePickerModal';
 import {setIsVisible} from '../../store/slices/registrationSlice';
-import {editProfile} from '../../services/editProfile';
+import { updateProfile } from '../../services/UpdateProfile';
 import {ProfileScreenNavigationProp} from '../../types/usenavigation.type';
+import { DEFAULT_PROFILE_IMAGE } from '../../constants/defaultImage';
 
 export const EditProfile = () => {
   const colors = useThemeColors();
@@ -133,7 +134,7 @@ export const EditProfile = () => {
 
       if (user) {
         try {
-          const result = await editProfile(payload, user);
+          const result = await updateProfile(payload, user);
           if (result.status === 200) {
             await EncryptedStorage.setItem(
               'user',
@@ -244,8 +245,7 @@ export const EditProfile = () => {
               source={{
                 uri:
                   imageUri ||
-                  user?.profilePicture ||
-                  'https://sdjetntpocezxjoelxgb.supabase.co/storage/v1/object/public/quick-chat/images/profile-pics/image.png',
+                  user?.profilePicture || DEFAULT_PROFILE_IMAGE,
               }}
               accessibilityHint="Profile-Picture"
               style={styles.profileImage}
