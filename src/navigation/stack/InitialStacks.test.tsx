@@ -49,6 +49,30 @@ jest.mock('react-native-phone-input', () => {
   return MockPhoneInput;
 });
 
+jest.mock('react-native-rsa', () => {
+  return jest.fn().mockImplementation(() => ({
+    encrypt: jest.fn((data) => `mock-rsa-encrypted(${data})`),
+    decrypt: jest.fn((data) => data.replace('mock-rsa-encrypted(', '').replace(')', '')),
+  }));
+});
+
+jest.mock('crypto-js', () => ({
+  AES: {
+    encrypt: jest.fn(() => ({
+      toString: jest.fn(() => 'mock-encrypted-value'),
+    })),
+  },
+}));
+
+jest.mock('crypto-js', () => ({
+  AES: {
+    decrypt: jest.fn(() => ({
+      toString: jest.fn(() => 'secret-key'),
+    })),
+  },
+}));
+
+
 describe('InitialStacks', () => {
   beforeEach(() => {
     jest.resetAllMocks();
