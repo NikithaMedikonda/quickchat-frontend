@@ -18,14 +18,14 @@ jest.mock('react-native-phone-input', () => {
   const React = require('react');
   const {TextInput} = require('react-native');
   const MockPhoneInput = React.forwardRef(
-    (props: {value: any; onChangePhoneNumber: any}, ref: any) => {
+    (props: {value?: string; onChangePhoneNumber: (value: string) => void;}, ref: string) => {
       const [text, setText] = React.useState('');
       return (
         <TextInput
           ref={ref}
           placeholder="Phone number"
           value={text}
-          onChangeText={(value: any) => {
+          onChangeText={(value: string) => {
             setText(value);
             props.onChangePhoneNumber(value);
           }}
@@ -248,8 +248,8 @@ describe('Registration Screen', () => {
 
     const {getByPlaceholderText, getByText} = renderComponent();
 
-    fireEvent.changeText(getByPlaceholderText('First Name'), 'Jim');
-    fireEvent.changeText(getByPlaceholderText('Last Name'), 'Bean');
+    fireEvent.changeText(getByPlaceholderText('First Name'), 'Test');
+    fireEvent.changeText(getByPlaceholderText('Last Name'), 'User');
     fireEvent.changeText(getByPlaceholderText('Phone number'), '1234567890');
     fireEvent.changeText(getByPlaceholderText('Password'), 'Password@123');
     fireEvent.changeText(
