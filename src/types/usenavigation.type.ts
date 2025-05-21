@@ -14,13 +14,13 @@ export type NavigationProps = NativeStackNavigationProp<
 
 export type ProfileStackParamList = {
   profileScreen: undefined;
-  editProfile: undefined;
+  editProfileScreen: undefined;
 };
 
 export type ProfileScreenNavigationProp = NativeStackNavigationProp<
   ProfileStackParamList,
   'profileScreen',
-  'editProfile'
+  'editProfileScreen'
 >;
 
 type HomeStackParams = {
