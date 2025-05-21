@@ -4,7 +4,8 @@ on:
   push:
     branches:
       - main
-      - feature/socket.io-connection
+      - fix-app-crash
+      
 jobs:
   lint-and-test:
     uses: ./.github/workflows/lint-and-test.yml
