@@ -1,5 +1,5 @@
-import { Dimensions, StyleSheet } from 'react-native';
-import { Colors } from '../../themes/colors';
+import {Dimensions, StyleSheet} from 'react-native';
+import {Colors} from '../../themes/colors';
 
 const {width, height} = Dimensions.get('window');
 
@@ -8,29 +8,30 @@ export const messageInputStyles = (colors: Colors) => {
     messageInput: {
       flexDirection: 'row',
       alignItems: 'center',
-      paddingHorizontal: 10,
-      paddingVertical: 8,
+      justifyContent: 'center',
+      paddingHorizontal: width * 0.03,
+      paddingVertical: height * 0.02,
       backgroundColor: colors.background,
-      marginBottom: 15,
     },
-    inputbox: {
-      height: height * 0.055,
-      fontSize: 20,
-      borderRadius: 12,
-      width: width * 0.7,
-      padding: 4,
+    inputBox: {
+      height: height * 0.05,
+      width: width * 0.75,
+      fontSize: 16,
+      borderRadius: 20,
+      paddingHorizontal: 16,
       color: colors.gray,
-      margin: height * 0.02,
-      backgroundColor: colors.text,
-      alignSelf: 'flex-end',
+      backgroundColor: colors.messageTextBox,
+      alignSelf: 'flex-start',
+      marginRight: 6,
     },
     placeholder: {
       color: colors.gray,
     },
     sendIcon: {
       width: width * 0.16,
-      height: width * 0.16,
+      height: height * 0.055,
       resizeMode: 'contain',
+      alignSelf: 'flex-start',
     },
   });
 };
