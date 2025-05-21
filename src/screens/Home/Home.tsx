@@ -5,7 +5,7 @@ import {useTranslation} from 'react-i18next';
 import {HomeTabsProps} from '../../types/usenavigation.type';
 import {useThemeColors} from '../../themes/colors';
 import {getStyles} from './Home.styles';
-import PlusIcon from '../../components/PlusIcon/PlusIcon';
+import {PlusIcon} from '../../components/PlusIcon/PlusIcon';
 
 export const Home = () => {
   const navigation = useNavigation<HomeTabsProps>();
