@@ -7,6 +7,7 @@ import {getStyles} from './Profile.styles';
 import {ProfileMoreOptionsModal} from '../../components/ProfileMoreOptionsModal/ProfileMoreOptionsModal';
 import {useThemeColors} from '../../themes/colors';
 import { useImagesColors } from '../../themes/images';
+import { DEFAULT_PROFILE_IMAGE } from '../../constants/defaultImage';
 
 export interface User {
   firstName: string;
@@ -71,7 +72,7 @@ export const Profile = () => {
         {!userData?.profilePicture && (
           <Image
             source={{
-              uri: 'https://sdjetntpocezxjoelxgb.supabase.co/storage/v1/object/public/quick-chat/images/profile-pics/image.png',
+              uri: DEFAULT_PROFILE_IMAGE,
             }}
             accessibilityHint="profile-image"
             style={styles.profileImage}
