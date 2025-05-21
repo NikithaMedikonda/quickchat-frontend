@@ -1,6 +1,6 @@
 import {API_URL} from '../constants/api';
 
-export const editProfile = async (
+export const updateProfile = async (
   payload: {
     phoneNumber: string;
     image: string;
