@@ -1,16 +1,18 @@
 /* eslint-disable react-native/no-inline-styles */
-import {useEffect, useLayoutEffect, useState} from 'react';
-import {View, Text, ScrollView, TouchableOpacity, Alert} from 'react-native';
-import Contacts from 'react-native-contacts';
-import {useTranslation} from 'react-i18next';
 import {useNavigation} from '@react-navigation/native';
-import {ContactDetails} from '../../types/contact.types';
+import {useEffect, useLayoutEffect, useState} from 'react';
+import {useTranslation} from 'react-i18next';
+import {Alert, ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import Contacts from 'react-native-contacts';
+
 import {Contact} from '../../components/Contact/Contact';
 import {DEFAULT_PROFILE_IMAGE} from '../../constants/defaultImage';
-import {getStyles} from './ContactsDisplay.styles';
 import {getContacts} from '../../services/GetContacts';
-import {HomeTabsProps} from '../../types/usenavigation.type';
 import {useThemeColors} from '../../themes/colors';
+import {ContactDetails} from '../../types/contact.types';
+import {HomeStackProps, HomeTabsProps} from '../../types/usenavigation.type';
+import {getStyles} from './ContactsDisplay.styles';
+
 
 export const ContactsDisplay = () => {
   const [appContacts, setAppContacts] = useState<ContactDetails[] | []>([]);
@@ -20,7 +22,7 @@ export const ContactsDisplay = () => {
   const styles = getStyles(colors);
   const navigation = useNavigation<HomeTabsProps>();
   const {t} = useTranslation('contact');
-
+  const homeStackNavigation = useNavigation<HomeStackProps>();
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: t('Contacts'),
@@ -82,7 +84,18 @@ export const ContactsDisplay = () => {
             {appContacts.length > 0 ? (
               <View style={styles.contactDetailsContainer}>
                 {appContacts.map((contact: ContactDetails, index: number) => (
-                  <Contact key={index} contactDetails={contact} />
+                  <TouchableOpacity
+                    key={`${contact.name}-${index}`}
+                    onPress={() => {
+                      homeStackNavigation.navigate('individualChat', {
+                        user: {
+                          name: contact.name,
+                          profilePicture: contact.profilePicture,
+                        },
+                      });
+                    }}>
+                    <Contact contactDetails={contact} />
+                  </TouchableOpacity>
                 ))}
               </View>
             ) : (
@@ -106,7 +119,10 @@ export const ContactsDisplay = () => {
             ) : (
               <View style={styles.contactDetailsContainer}>
                 {phoneContacts.map((contact: ContactDetails, index: number) => (
-                  <Contact key={index} contactDetails={contact} />
+                  <Contact
+                    key={`${index}-${contact}`}
+                    contactDetails={contact}
+                  />
                 ))}
               </View>
             )}
