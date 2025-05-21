@@ -1,12 +1,14 @@
-import { Image, View} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
+import {useTranslation} from 'react-i18next';
+import {Image, View} from 'react-native';
+
+import {Unread} from '../../screens/Unread/Unread';
+import {useThemeColors} from '../../themes/colors';
+import {useImagesColors} from '../../themes/images';
 import {HomeStacks} from '../stack/HomeStacks';
 import {ProfileStack} from '../stack/ProfileStacks';
 import {styles} from './HomeTabs.styles';
-import {Unread} from '../../screens/Unread/Unread';
-import {useThemeColors} from '../../themes/colors';
-import {useTranslation} from 'react-i18next';
-import {useImagesColors} from '../../themes/images';
 
 export const HomeTabs = () => {
   const Tab = createBottomTabNavigator();
@@ -36,21 +38,32 @@ export const HomeTabs = () => {
       <Tab.Screen
         name="homeStacks"
         component={HomeStacks}
-        options={{
-          // eslint-disable-next-line react/no-unstable-nested-components
-          tabBarIcon: ({focused}) => (
-            <View style={styles.iconContainer}>
-              {!focused && <Image source={tabHome} style={styles.icon} />}
-              {focused && (
-                <Image
-                  source={require('../../assets/highlight-home.png')}
-                  style={styles.icon}
-                />
-              )}
-            </View>
-          ),
-          tabBarLabel: t('All Chats'),
-          headerShown: false,
+        options={({route}) => {
+          // Get the current stack screen inside HomeStacks
+          const routeName = getFocusedRouteNameFromRoute(route) ?? 'home';
+          // Hide tab bar only on individualChat screen
+          const hideTabBar = routeName === 'individualChat';
+          return {
+            headerShown: false,
+            tabBarLabel: t('All Chats'),
+            tabBarStyle: {
+              display: hideTabBar ? 'none' : 'flex',
+              backgroundColor: colors.background,
+              height: 100,
+              borderTopWidth: 0,
+            },
+            tabBarIcon: ({focused}) => (
+              <View style={styles.iconContainer}>
+                {!focused && <Image source={tabHome} style={styles.icon} />}
+                {focused && (
+                  <Image
+                    source={require('../../assets/highlight-home.png')}
+                    style={styles.icon}
+                  />
+                )}
+              </View>
+            ),
+          };
         }}
       />
       <Tab.Screen
