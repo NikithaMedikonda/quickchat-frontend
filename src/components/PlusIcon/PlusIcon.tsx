@@ -6,7 +6,7 @@ import {HomeTabsProps} from '../../types/usenavigation.type';
 import {useImagesColors} from '../../themes/images';
 import {useThemeColors} from '../../themes/colors';
 
-const PlusIcon = () => {
+export const PlusIcon = () => {
   const navigation = useNavigation<HomeTabsProps>();
   const {homeAdd} = useImagesColors();
   const colors = useThemeColors();
@@ -36,4 +36,3 @@ const PlusIcon = () => {
   );
 };
 
-export default PlusIcon;
