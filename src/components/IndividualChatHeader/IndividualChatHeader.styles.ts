@@ -1,41 +1,39 @@
-import {Dimensions, Platform, StyleSheet} from 'react-native';
+import {Dimensions, StyleSheet} from 'react-native';
 import {Colors} from '../../themes/colors';
-const {width} = Dimensions.get('window');
+
+const {width, height} = Dimensions.get('window');
 
 export const individualChatHeaderStyles = (colors: Colors) => {
   return StyleSheet.create({
     content: {
       flexDirection: 'row',
       alignItems: 'center',
-      paddingHorizontal: 10,
-      paddingTop: Platform.OS === 'ios' ? 50 : 40,
-      paddingBottom: 10,
-      backgroundColor: colors.background,
-      gap: 10,
+      paddingTop: height * 0.07,
     },
     backArrow: {
-      width: width * 0.08,
-      height: width * 0.08,
+      width: width * 0.04,
+      height: width * 0.05,
       tintColor: colors.text,
       resizeMode: 'contain',
-      alignSelf: 'flex-start',
     },
     profilePicture: {
-      width: width * 0.13,
-      height: width * 0.13,
-      borderRadius: width * 0.06,
-      marginHorizontal: 10,
+      width: width * 0.11,
+      height: width * 0.11,
+      borderRadius: width * 0.055,
+      marginLeft: 12,
+      marginRight: 8,
     },
-    userName: {
+    username: {
       flex: 1,
       color: colors.text,
-      fontSize: 25,
-      fontWeight: '600',
+      fontSize: 15,
+      fontWeight: '400',
     },
     moreOptionsIcon: {
-      width: width * 0.08,
-      height: width * 0.08,
+      width: width * 0.06,
+      height: width * 0.06,
       resizeMode: 'contain',
+      tintColor: colors.text,
     },
   });
 };
