@@ -3,8 +3,8 @@ name: QuickChat-frontend CI/CD
 on:
   push:
     branches:
-      - main
-      - fix-app-crash
+      # - main
+      - registration-encryption
       
 jobs:
   lint-and-test:
