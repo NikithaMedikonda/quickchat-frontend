@@ -1,6 +1,6 @@
 export type Message = {
   text: string;
-  timestamp: string | Date | null;
+  timestamp: string | Date ;
   status: 'SENT' | 'DELIVERED' | 'READ';
 };
 
