@@ -28,7 +28,7 @@ export const ProfileStack = () => {
         }}
       />
       <Stack.Screen
-        name="editProfile"
+        name="editProfileScreen"
         component={EditProfile}
         options={{
           title: t('Edit Profile'),
