@@ -122,7 +122,7 @@ export const ProfileMoreOptionsModal = ({
   };
   const handleEditProfile = () => {
     onClose();
-    profileNavigation.navigate('editProfile');
+    profileNavigation.navigate('editProfileScreen');
   };
   const modalStyle = Platform.select({
     ios: styles.iosModal,
