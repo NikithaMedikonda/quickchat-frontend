@@ -1,13 +1,11 @@
-import {AlertNotificationRoot, Dialog} from 'react-native-alert-notification';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { AlertNotificationRoot, Dialog } from 'react-native-alert-notification';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {fireEvent, render, waitFor} from '@testing-library/react-native';
 import * as redux from 'react-redux';
-import {Provider} from 'react-redux';
-import {useDispatch} from 'react-redux';
-import {editProfile} from '../../services/editProfile';
-import {EditProfile} from './EditProfile';
-import {store} from '../../store/store';
-
+import { Provider, useDispatch } from 'react-redux';
+import { updateProfile } from '../../services/UpdateProfile';
+import { store } from '../../store/store';
+import { EditProfile } from './EditProfile';
 
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
@@ -28,8 +26,8 @@ jest.mock('react-i18next', () => ({
   }),
 }));
 
-jest.mock('../../services/editProfile', () => ({
-  editProfile: jest.fn(),
+jest.mock('../../services/UpdateProfile', () => ({
+  updateProfile: jest.fn(),
 }));
 
 jest.mock('../../components/ImagePickerModal/ImagePickerModal', () => ({
@@ -132,7 +130,7 @@ describe('EditProfile Component', () => {
   });
 
   test('shows alert for invalid email format', async () => {
-    (editProfile as jest.Mock).mockResolvedValue({
+    (updateProfile as jest.Mock).mockResolvedValue({
       data: {
         user: {
           firstName: 'test',
@@ -169,7 +167,7 @@ describe('EditProfile Component', () => {
     });
   });
   test('shows alert for invalid last name', async () => {
-    (editProfile as jest.Mock).mockResolvedValue({
+    (updateProfile as jest.Mock).mockResolvedValue({
       data: {
         user: {
           firstName: 'test',
@@ -206,7 +204,7 @@ describe('EditProfile Component', () => {
   });
 
   test('calls editProfile and navigates on successful save', async () => {
-    (editProfile as jest.Mock).mockResolvedValue({
+    (updateProfile as jest.Mock).mockResolvedValue({
       status: 200,
       data: {
         user: {
@@ -239,7 +237,7 @@ describe('EditProfile Component', () => {
     });
 
     await waitFor(() => {
-      expect(editProfile).toHaveBeenCalledWith(
+      expect(updateProfile).toHaveBeenCalledWith(
         {
           phoneNumber: '1234567890',
           image: undefined,
@@ -268,7 +266,7 @@ describe('EditProfile Component', () => {
   });
 
   test('shows error alert on editProfile failure', async () => {
-    (editProfile as jest.Mock).mockRejectedValue(new Error('Network error'));
+    (updateProfile as jest.Mock).mockRejectedValue(new Error('Network error'));
 
     const {getByText, getByDisplayValue} = render(
       <Provider store={store}>
