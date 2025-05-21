@@ -1,7 +1,7 @@
 import { Text, View } from 'react-native';
 import { TimeStamp } from '../TimeStamp/TimeStamp';
 
-import { useThemeColors } from '../../constants/colors';
+import { useThemeColors } from '../../themes/colors';
 import { ReceivedMessageProps } from '../../types/messsage.types';
 import { receivedMessageStyles } from './ReceivedMessage.styles';
 

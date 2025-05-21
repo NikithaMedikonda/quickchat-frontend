@@ -34,7 +34,7 @@ jest.mock('react-native-phone-input', () => {
   const React = require('react');
   const {TextInput} = require('react-native');
   const MockPhoneInput = React.forwardRef(
-    (props: {value: string; onChangePhoneNumber: ()=>{}}, ref: string) => {
+    (props: {value: string; onChangePhoneNumber: () => {}}, ref: string) => {
       return (
         <TextInput
           ref={ref}
@@ -65,8 +65,9 @@ describe('InitialStacks', () => {
 
   it('should show loading initially', async () => {
     const {getByTestId} = renderWithProviders();
-
-    expect(getByTestId('loading-spinner')).toBeTruthy();
+    await waitFor(() => {
+      expect(getByTestId('loading-spinner')).toBeTruthy();
+    });
   });
 
   it('should show Welcome screen if no tokens are found', async () => {

@@ -1,5 +1,5 @@
 import { Image, Platform, Text, View } from 'react-native';
-import { useThemeColors } from '../../constants/colors';
+import { useThemeColors } from '../../themes/colors';
 import { UserDetails } from '../../types/user.types';
 import { individualChatHeaderStyles } from './IndividualChatHeader.styles';
 
@@ -19,7 +19,7 @@ export const IndividualChatHeader = ({name, profilePicture}: UserDetails) => {
         style={styles.backArrow}
        />
        <Image source={{uri: profilePicture}} style={styles.profilePicture} accessibilityHint="profile-picture" />
-       <Text style={styles.username} accessibilityHint="username-text">{name}</Text>
+       <Text style={styles.userName} accessibilityHint="username-text">{name}</Text>
        <Image
         source={require('../../assets/more-options-icon.png')}
         style={styles.moreOptionsIcon}

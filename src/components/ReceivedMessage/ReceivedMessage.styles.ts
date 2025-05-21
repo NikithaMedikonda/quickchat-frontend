@@ -1,5 +1,5 @@
 import {StyleSheet, Dimensions} from 'react-native';
-import {Colors} from '../../constants/colors';
+import {Colors} from '../../themes/colors';
 
 const {width} = Dimensions.get('window');
 
@@ -7,7 +7,7 @@ export const receivedMessageStyles = (colors: Colors) => {
   return StyleSheet.create({
     receivedMessageContainer: {
       alignSelf: 'flex-start',
-      backgroundColor: colors.white,
+      backgroundColor: colors.text,
       borderTopRightRadius: 12,
       borderBottomRightRadius: 12,
       borderBottomLeftRadius: 12,

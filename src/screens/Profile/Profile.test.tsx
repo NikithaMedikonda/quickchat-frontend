@@ -1,4 +1,5 @@
 import {
+  act,
   fireEvent,
   render,
   screen,
@@ -126,14 +127,16 @@ describe('Profile Screen', () => {
     expect(image).toBeTruthy();
   });
 
-  it('opens the modal when dots image is pressed', async () => {
-      await waitFor(() => {
+it('opens the modal when dots image is pressed', async () => {
+    await waitFor(() => {
       renderComponent();
     });
     const headerRight = mockNavigate.mock.calls[0][0].headerRight();
     const {getByA11yHint} = render(headerRight);
     const dotsButton = getByA11yHint('dots-image');
-    fireEvent.press(dotsButton);
+    await act(async () => {
+      fireEvent.press(dotsButton);
+    });
     const {getByText} = render(
       <Provider store={store}>
         <ProfileMoreOptionsModal visible={true} onClose={() => {}} />
@@ -142,8 +145,7 @@ describe('Profile Screen', () => {
     const modal = await waitFor(() => getByText('Delete Account'));
     expect(modal).toBeTruthy();
   });
-
-  it('calls onClose when bin is pressed', () => {
+  it('calls onClose when bin is pressed', async () => {
     const onClose = jest.fn();
     render(
       <Provider store={store}>
@@ -151,7 +153,9 @@ describe('Profile Screen', () => {
       </Provider>,
     );
     const binButton = screen.getByA11yHint('bin-image');
-    fireEvent.press(binButton);
+    await act(async () => {
+      fireEvent.press(binButton);
+    });
     expect(onClose).toHaveBeenCalled();
   });
 });

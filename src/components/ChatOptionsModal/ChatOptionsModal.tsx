@@ -26,11 +26,11 @@ export const ChatOptionsModal = ({visible, onClose}: Props) => {
   const [message, setMessage] = useState('');
   const [buttonTypes, setButtonTypes] = useState('');
 
-  const showConfirmation = (type: 'Block' | 'Delete', message: string) => {
+  const showConfirmation = (type: 'Block' | 'Delete', msg: string) => {
     onClose();
     setModalVisible(true);
     setButtonTypes(type);
-    setMessage(message);
+    setMessage(msg);
   };
 
   const handleModalClose = () => {

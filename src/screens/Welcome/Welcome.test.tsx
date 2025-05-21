@@ -1,5 +1,10 @@
-import { fireEvent, render,screen } from '@testing-library/react-native';
-import { Welcome } from './Welcome';
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react-native';
+import {Welcome} from './Welcome';
 
 const mockNavigate = jest.fn();
 jest.mock('@react-navigation/native', () => ({
@@ -22,10 +27,12 @@ describe('Welcome Screen', () => {
     expect(getByText('Get Started')).toBeTruthy();
   });
 
-  it('navigates to register screen on button press', () => {
+  it('navigates to register screen on button press', async () => {
     const {getByText} = render(<Welcome />);
     const button = getByText('Get Started');
-    fireEvent.press(button);
+    await waitFor(() => {
+      fireEvent.press(button);
+    });
     expect(mockNavigate).toHaveBeenCalledWith('register');
   });
 });

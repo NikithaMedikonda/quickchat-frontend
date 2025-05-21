@@ -32,6 +32,6 @@ export const useImagesColors = (): {
     bin:  BinDark ,
     pencil:  PencilDark ,
     logoutImage:  LogoutDark,
-    chatblockImage : chatblockDark
+    chatblockImage : chatblockDark,
   };
 };

@@ -1,7 +1,7 @@
 import { View } from 'react-native';
 import { IndividualChatHeader } from '../../components/IndividualChatHeader/IndividualChatHeader';
 import { MessageInput } from '../../components/MessageInput/MessageInput';
-import { useThemeColors } from '../../constants/colors';
+import { useThemeColors } from '../../themes/colors';
 import { UserDetails } from '../../types/user.types';
 import { individualChatstyles } from './IndividualChat.styles';
 

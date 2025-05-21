@@ -1,5 +1,5 @@
 import { Dimensions, StyleSheet } from 'react-native';
-import { Colors } from '../../constants/colors';
+import { Colors } from '../../themes/colors';
 
 const {width, height} = Dimensions.get('window');
 
@@ -21,7 +21,7 @@ export const messageInputStyles = (colors: Colors) => {
       padding: 4,
       color: colors.gray,
       margin: height * 0.02,
-      backgroundColor: colors.white,
+      backgroundColor: colors.text,
       alignSelf: 'flex-end',
     },
     placeholder: {

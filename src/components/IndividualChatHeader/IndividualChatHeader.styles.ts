@@ -1,5 +1,5 @@
 import {Dimensions, Platform, StyleSheet} from 'react-native';
-import {Colors} from '../../constants/colors';
+import {Colors} from '../../themes/colors';
 const {width} = Dimensions.get('window');
 
 export const individualChatHeaderStyles = (colors: Colors) => {
@@ -26,7 +26,7 @@ export const individualChatHeaderStyles = (colors: Colors) => {
       borderRadius: width * 0.06,
       marginHorizontal: 10,
     },
-    username: {
+    userName: {
       flex: 1,
       color: colors.text,
       fontSize: 25,
