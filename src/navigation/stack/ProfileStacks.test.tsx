@@ -15,7 +15,7 @@ jest.mock('../../screens/Profile/Profile', () => {
           <mockReactNative.Text>Profile Screen</mockReactNative.Text>
           <mockReactNative.Button
             title="Edit Profile"
-            onPress={() => navigation.navigate('editProfile')}
+            onPress={() => navigation.navigate('editProfileScreen')}
           />
         </>
       );
