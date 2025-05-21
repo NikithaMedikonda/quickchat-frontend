@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react-native';
-import PlusIcon from './PlusIcon';
+import {PlusIcon} from './PlusIcon';
 
 jest.mock('@react-navigation/native', () => {
     const actualNav = jest.requireActual('@react-navigation/native');
