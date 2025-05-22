@@ -15,7 +15,7 @@ describe('MessageStatusTicks Test Suit', () => {
     const tickElement = screen.getByText('✓✓');
     expect(tickElement).toBeOnTheScreen();
     expect(tickElement.props.style).toEqual(
-      expect.arrayContaining([expect.objectContaining({color: '#0084FF'})]),
+      expect.arrayContaining([expect.objectContaining({color: '#FFFFFF'})]),
     );
   });
   test('should not render anything upon invalid status', () => {

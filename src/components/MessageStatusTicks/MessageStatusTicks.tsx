@@ -18,10 +18,10 @@ export const MessageStatusTicks = ({status}: Props) => {
 const styles = StyleSheet.create({
   tick: {
     fontSize: 12,
-    color: '#777',
+    color: '#FFFFFf',
     marginLeft: 4,
   },
   readTick: {
-    color: '#0084FF',
+    color: '#FFFFFF',
   },
 });
