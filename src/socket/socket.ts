@@ -1,6 +1,7 @@
 import io from 'socket.io-client';
 import {SentPrivateMessage} from '../types/messsage.types';
-export const newSocket = io('http://192.168.0.2:5050');
+import { API_URL } from '../constants/api';
+export const newSocket = io(`${API_URL}`);
 
 export async function socketConnection(userPhoneNumber: string) {
   newSocket.emit('join', userPhoneNumber);
