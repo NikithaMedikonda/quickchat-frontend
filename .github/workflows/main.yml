@@ -4,8 +4,7 @@ on:
   push:
     branches:
       - main
-      - update-custom-alerts
-      
+      - feature/socket.io-private-messaging
 jobs:
   lint-and-test:
     uses: ./.github/workflows/lint-and-test.yml

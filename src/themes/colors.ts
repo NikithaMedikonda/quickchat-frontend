@@ -11,6 +11,8 @@ export const useThemeColors = () => {
     modalOverlayBackground: 'rgba(0, 0, 0, 0.6)',
     darkGray: '##3C4142',
     messageTextBox: '#FFFFFF',
+    sendMessage: '#1877F2',
+    receiveMessage: '#FFFFFF',
   };
 };
 
@@ -21,9 +23,11 @@ export type Colors = {
   text: string;
   placeholder: string;
   profileOptionsText: string;
-  buttonText:string;
+  buttonText: string;
   inputText: string;
   modalOverlayBackground: string;
   darkGray: string;
-  messageTextBox:string,
+  messageTextBox: string;
+  sendMessage: string;
+  receiveMessage: string;
 };

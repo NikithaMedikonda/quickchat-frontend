@@ -1,6 +1,6 @@
-import {StyleSheet} from 'react-native';
+import {Dimensions, StyleSheet} from 'react-native';
 import {Colors} from '../../themes/colors';
-
+const {width, height} = Dimensions.get('window');
 export const individualChatstyles = (colors: Colors) => {
   return StyleSheet.create({
     container: {
@@ -9,13 +9,11 @@ export const individualChatstyles = (colors: Colors) => {
       backgroundColor: colors.background,
     },
     InputContainer: {
-      flex: 1,
       justifyContent: 'flex-end',
       marginBottom: 17,
     },
     chatContainer: {
       flex: 1,
-      marginBottom: 10,
     },
     messageBlock: {
       padding: 10,
@@ -24,11 +22,12 @@ export const individualChatstyles = (colors: Colors) => {
       maxWidth: '75%',
     },
     sentMessage: {
-      backgroundColor: '#DCF8C6',
+      backgroundColor: colors.sendMessage,
       alignSelf: 'flex-end',
     },
     receivedMessage: {
-      backgroundColor: '#E1E1E1',
+      backgroundColor: colors.receiveMessage,
+      color: colors.background,
       alignSelf: 'flex-start',
     },
     messageText: {
@@ -39,6 +38,30 @@ export const individualChatstyles = (colors: Colors) => {
       color: 'gray',
       marginTop: 5,
       textAlign: 'right',
+    },
+    infoMessage: {
+      color: 'white',
+      fontSize: 12,
+      paddingBottom: 10,
+    },
+    infoContainer: {
+      width: width,
+      height: height,
+      flex:1,
+      justifyContent:'flex-start',
+      alignItems:'center',
+      paddingVertical:50,
+    },
+    sentMessageText: {
+      color: colors.text,
+    },
+    receiveMessageText: {
+      color: colors.background,
+    },
+    timestampContainer: {
+      flexDirection: 'row',
+      justifyContent: 'flex-end',
+      alignItems: 'center',
     },
   });
 };

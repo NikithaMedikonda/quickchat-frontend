@@ -21,8 +21,10 @@ export const messageInputStyles = (colors: Colors) => {
       paddingHorizontal: 16,
       color: colors.gray,
       backgroundColor: colors.messageTextBox,
-      alignSelf: 'flex-start',
       marginRight: 6,
+      textAlign: 'left',
+      textAlignVertical: 'bottom',
+      paddingVertical: 0,
     },
     placeholder: {
       color: colors.gray,

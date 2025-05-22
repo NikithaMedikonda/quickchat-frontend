@@ -5,13 +5,15 @@ import {useThemeColors} from '../../themes/colors';
 
 export const TimeStamp = ({
   messageTime,
+  isSent,
 }: {
-  messageTime: Date | string
+  messageTime: Date | string;
+  isSent: boolean;
 }) => {
   const colors = useThemeColors();
   const styles = Timestampstyle(colors);
   let displayTime;
-   const currentTime = moment();
+  const currentTime = moment();
   const messageReceivedTime = moment(messageTime);
   if (messageReceivedTime.isSame(currentTime, 'day')) {
     displayTime = messageReceivedTime.format('h:mm a');
@@ -29,7 +31,9 @@ export const TimeStamp = ({
   }
   return (
     <View>
-      <Text style={styles.color}>{displayTime}</Text>
+      <Text style={!isSent ? styles.color : styles.sentColor}>
+        {displayTime}
+      </Text>
     </View>
   );
 };
