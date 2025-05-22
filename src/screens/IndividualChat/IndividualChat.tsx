@@ -166,7 +166,7 @@ export const IndividualChat = ({route}: Props) => {
         {allMessages.length === 0 && (
           <View style={styles.infoContainer}>
             <Text style={styles.infoMessage}>
-              You have no messages start messaging
+              📝 Ready to chat? Start typing and hit send!
             </Text>
           </View>
         )}

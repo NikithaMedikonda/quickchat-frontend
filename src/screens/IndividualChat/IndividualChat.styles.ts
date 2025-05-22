@@ -41,14 +41,16 @@ export const individualChatstyles = (colors: Colors) => {
     },
     infoMessage: {
       color: 'white',
-      fontSize: 17,
+      fontSize: 12,
       paddingBottom: 10,
     },
     infoContainer: {
       width: width,
       height: height,
-      justifyContent: 'center',
-      alignItems: 'center',
+      flex:1,
+      justifyContent:'flex-start',
+      alignItems:'center',
+      paddingVertical:50,
     },
     sentMessageText: {
       color: colors.text,
