@@ -1,5 +1,5 @@
-import { crypto_box_keypair, to_base64 } from 'react-native-libsodium';
-import { keyGeneration } from '../keyGeneration';
+import {crypto_box_keypair, to_base64} from 'react-native-libsodium';
+import {keyGeneration} from '../keyGeneration';
 
 jest.mock('react-native-libsodium', () => ({
   crypto_box_keypair: jest.fn(),
@@ -29,6 +29,8 @@ describe('KeyGeneration', () => {
       throw new Error('Error occured while generating Keys');
     });
 
-    await expect(keyGeneration()).rejects.toThrow('Error occured while generating Keys');
+    await expect(keyGeneration()).rejects.toThrow(
+      'Error occured while generating Keys',
+    );
   });
 });
