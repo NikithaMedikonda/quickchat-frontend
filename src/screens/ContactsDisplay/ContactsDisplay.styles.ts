@@ -18,20 +18,23 @@ export const getStyles = (colors: Colors) =>
     },
     loadingContactsText: {
       color: colors.text,
-      paddingHorizontal:0.04 * width,
+      paddingHorizontal: 0.04 * width,
     },
     title: {
       color: colors.text,
       left: 0.05 * width,
       fontWeight: 'bold',
-      paddingTop:0.03 * height,
-      paddingBottom:0.03 * height,
-      fontSize:18,
+      paddingTop: 0.03 * height,
+      paddingBottom: 0.03 * height,
+      fontSize: 18,
     },
     contactDetailsContainer: {
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'flex-start',
       gap: 0.03 * height,
+    },
+    scroll: {
+      flexGrow: 1,
     },
   });
