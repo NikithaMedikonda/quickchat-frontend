@@ -1,11 +1,13 @@
-import {Alert} from 'react-native';
 import Contacts from 'react-native-contacts';
 import {cleanup, render, screen, waitFor} from '@testing-library/react-native';
 import {useNavigation} from '@react-navigation/native';
-import {ContactsDisplay} from './ContactsDisplay';
+import {Provider} from 'react-redux';
 import {getContacts} from '../../services/GetContacts';
 import {useThemeColors} from '../../themes/colors';
-
+import {AlertNotificationRoot, Dialog} from 'react-native-alert-notification';
+import {resetForm} from '../../store/slices/registrationSlice';
+import {store} from '../../store/store';
+import {ContactsDisplay} from './ContactsDisplay';
 
 jest.mock('@react-navigation/native', () => ({
   useNavigation: jest.fn(),
@@ -23,12 +25,23 @@ jest.mock('../../services/GetContacts', () => ({
   getContacts: jest.fn(),
 }));
 
+jest.mock('react-native-alert-notification', () => ({
+  ALERT_TYPE: {
+    DANGER: 'DANGER',
+  },
+  Dialog: {
+    show: jest.fn(),
+  },
+  AlertNotificationRoot: ({children}: {children: React.ReactNode}) => children,
+}));
+
 describe('ContactsDisplay Component', () => {
   let mockNavigation: any;
 
   beforeEach(() => {
     mockNavigation = {setOptions: jest.fn()};
     (useNavigation as jest.Mock).mockReturnValue(mockNavigation);
+    store.dispatch(resetForm());
   });
   afterEach(() => {
     cleanup();
@@ -41,10 +54,13 @@ describe('ContactsDisplay Component', () => {
         unRegisteredUsers: [],
       },
     });
-
-    // await act(async () => {
-    render(<ContactsDisplay />);
-    // });
+    render(
+      <Provider store={store}>
+        <AlertNotificationRoot>
+          <ContactsDisplay />
+        </AlertNotificationRoot>
+      </Provider>,
+    );
     await waitFor(() => {
       expect(screen.getByText('Loading Contacts...')).toBeTruthy();
     });
@@ -80,7 +96,13 @@ describe('ContactsDisplay Component', () => {
       {givenName: 'Usha', displayName: 'Usha'},
     ]);
 
-    const {getByText} = render(<ContactsDisplay />);
+    const {getByText} = render(
+      <Provider store={store}>
+        <AlertNotificationRoot>
+          <ContactsDisplay />
+        </AlertNotificationRoot>
+      </Provider>,
+    );
 
     await waitFor(() => {
       expect(getByText('Contacts on Quick Chat')).toBeTruthy();
@@ -96,7 +118,13 @@ describe('ContactsDisplay Component', () => {
       },
     });
 
-    const {getByText} = render(<ContactsDisplay />);
+    const {getByText} = render(
+      <Provider store={store}>
+        <AlertNotificationRoot>
+          <ContactsDisplay />
+        </AlertNotificationRoot>
+      </Provider>,
+    );
 
     await waitFor(() => {
       expect(
@@ -116,7 +144,13 @@ describe('ContactsDisplay Component', () => {
       },
     });
 
-    const {getByText} = render(<ContactsDisplay />);
+    const {getByText} = render(
+      <Provider store={store}>
+        <AlertNotificationRoot>
+          <ContactsDisplay />
+        </AlertNotificationRoot>
+      </Provider>,
+    );
 
     await waitFor(() => {
       expect(
@@ -140,7 +174,13 @@ describe('ContactsDisplay Component', () => {
       {displayName: ''}, // no givenName
     ]);
 
-    const {getByText} = render(<ContactsDisplay />);
+    const {getByText} = render(
+      <Provider store={store}>
+        <AlertNotificationRoot>
+          <ContactsDisplay />
+        </AlertNotificationRoot>
+      </Provider>,
+    );
 
     await waitFor(() => {
       expect(getByText('unknown')).toBeTruthy();
@@ -152,7 +192,13 @@ describe('ContactsDisplay Component', () => {
       Promise.resolve({data: {registeredUsers: [], unRegisteredUsers: []}}),
     );
 
-    render(<ContactsDisplay />);
+    render(
+      <Provider store={store}>
+        <AlertNotificationRoot>
+          <ContactsDisplay />
+        </AlertNotificationRoot>
+      </Provider>,
+    );
 
     await waitFor(() => {
       expect(mockNavigation.setOptions).toHaveBeenCalledWith(
@@ -174,15 +220,25 @@ describe('ContactsDisplay Component', () => {
   });
 
   it('should show alert when getContacts throws error', async () => {
-    (getContacts as jest.Mock).mockRejectedValue(new Error('Network Error'));
+    (getContacts as jest.Mock).mockRejectedValue(new Error('Failed to fetch'));
 
-    const alertSpy = jest.spyOn(Alert, 'alert');
-
-    render(<ContactsDisplay />);
+    render(
+      <Provider store={store}>
+        <AlertNotificationRoot>
+          <ContactsDisplay />
+        </AlertNotificationRoot>
+      </Provider>,
+    );
 
     await waitFor(() => {
-      expect(alertSpy).toHaveBeenCalledWith(
-        'Error while fetching the contacts',
+      expect(Dialog.show).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'DANGER',
+          title: 'Error',
+          textBody: 'Error occured while fetching the contacts',
+          button: 'close',
+          closeOnOverlayTap: true,
+        }),
       );
     });
   });
