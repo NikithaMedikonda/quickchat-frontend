@@ -1,11 +1,16 @@
-import { Alert, Image, Linking, Platform, Text, View } from 'react-native';
+import { Image, Linking, Platform, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { ALERT_TYPE, AlertNotificationRoot, Dialog } from 'react-native-alert-notification';
+import { useDispatch } from 'react-redux';
+import { useThemeColors } from '../../themes/colors';
+import { hide } from '../../store/slices/loadingSlice';
 import { ContactDetails } from '../../types/contact.types';
 import { DEFAULT_PROFILE_IMAGE } from '../../constants/defaultImage';
 import { getStyles } from './Contact.styles';
-import { useThemeColors } from '../../themes/colors';
+
 
 export const Contact = ({contactDetails}: {contactDetails: ContactDetails}) => {
+   const dispatch = useDispatch();
   const openSMS = async (phoneNumber: string, body: string) => {
     const url = `sms:${phoneNumber}${
       Platform.OS === 'android' ? '?body=' : '&body='
@@ -13,7 +18,14 @@ export const Contact = ({contactDetails}: {contactDetails: ContactDetails}) => {
     try {
       await Linking.openURL(url);
     } catch (error) {
-      Alert.alert('Unable to process the request');
+        dispatch(hide());
+    Dialog.show({
+      type: ALERT_TYPE.DANGER,
+      title: 'Contacts fetching is failed',
+      textBody: 'Unable to process your request',
+      button: 'close',
+      closeOnOverlayTap: true,
+    });
     }
   };
 
@@ -22,6 +34,28 @@ export const Contact = ({contactDetails}: {contactDetails: ContactDetails}) => {
   const {t} = useTranslation('contact');
 
   return (
+    <AlertNotificationRoot
+          theme="dark"
+          colors={[
+            {
+              label: '#000000',
+              card: '#FFFFFF',
+              overlay: 'rgba(0, 0, 0, 0.5)',
+              success: '#4CAF50',
+              danger: '#F44336',
+              warning: '#1877F2',
+              info: '#000000',
+            },
+            {
+              label: '#000000',
+              card: '#FFFFFF',
+              overlay: 'rgba(255, 255, 255, 0.5)',
+              success: '#4CAF50',
+              danger: '#F44336',
+              warning: '#FFFFFF',
+              info: '#000000',
+            },
+          ]}>
     <View style={styles.contactContainer}>
       <View style={styles.leftBlock}>
         <Image
@@ -56,5 +90,8 @@ export const Contact = ({contactDetails}: {contactDetails: ContactDetails}) => {
         </View>
       )}
     </View>
+    </AlertNotificationRoot>
   );
 };
+
+

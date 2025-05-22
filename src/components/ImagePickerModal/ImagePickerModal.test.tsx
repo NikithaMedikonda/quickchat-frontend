@@ -1,21 +1,25 @@
-import {Alert, Platform} from 'react-native';
+import { Alert, Platform } from 'react-native';
 import {
   fireEvent,
   render,
   screen,
   waitFor,
 } from '@testing-library/react-native';
+import { AlertNotificationRoot, Dialog } from 'react-native-alert-notification';
 import ImageCropPicker from 'react-native-image-crop-picker';
 import RNFS from 'react-native-fs';
-import {useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { store } from '../../store/store';
 import {
   setImage,
   setImageUri,
   setIsVisible,
   setImageDeleted,
+  resetForm,
 } from '../../store/slices/registrationSlice';
-import {ImagePickerModal} from './ImagePickerModal';
-import {DEFAULT_PROFILE_IMAGE} from '../../constants/defaultImage';
+import { ImagePickerModal } from './ImagePickerModal';
+import { DEFAULT_PROFILE_IMAGE } from '../../constants/defaultImage';
+
 
 jest.mock('react-native-fs', () => ({
   readFile: jest.fn().mockResolvedValue('mocked-base64-string'),
@@ -28,6 +32,16 @@ jest.mock('react-native-image-crop-picker', () => ({
 
 jest.mock('../../permissions/ImagePermissions', () => ({
   requestPermissions: jest.fn().mockResolvedValue(false),
+}));
+
+jest.mock('react-native-alert-notification', () => ({
+  ALERT_TYPE: {
+    DANGER: 'DANGER',
+  },
+  Dialog: {
+    show: jest.fn(),
+  },
+  AlertNotificationRoot: ({children}: {children: React.ReactNode}) => children,
 }));
 
 jest.mock('react-redux', () => ({
@@ -52,6 +66,7 @@ describe('ImagePickerModal', () => {
 
   beforeEach(() => {
     useDispatchMock.mockImplementation(() => mockDispatch);
+    store.dispatch(resetForm());
     useSelectorMock.mockImplementation((selector: any) =>
       selector({
         registration: {
@@ -66,29 +81,47 @@ describe('ImagePickerModal', () => {
   });
 
   it('renders modal and displays correct content', () => {
-    render(<ImagePickerModal />);
+    render(
+        <AlertNotificationRoot>
+          <ImagePickerModal />
+        </AlertNotificationRoot>
+    );
     expect(screen.getByText('Choose Profile')).toBeTruthy();
     expect(screen.getByA11yHint('camera-image')).toBeTruthy();
     expect(screen.getByA11yHint('gallery-image')).toBeTruthy();
   });
 
   it('closes modal when pressing the cancel button', () => {
-    render(<ImagePickerModal />);
+    render(
+        <AlertNotificationRoot>
+          <ImagePickerModal />
+        </AlertNotificationRoot>
+    );
     const cancelButton = screen.getByA11yHint('cross-icon');
     fireEvent.press(cancelButton);
     expect(mockDispatch).toHaveBeenCalledWith(setIsVisible(false));
   });
 
   it('shows delete button when `showDeleteOption` is true', () => {
-    render(<ImagePickerModal showDeleteOption={true} />);
+    render(
+        <AlertNotificationRoot>
+          <ImagePickerModal showDeleteOption={true} />
+        </AlertNotificationRoot>
+    );
     expect(screen.getByA11yHint('delete-image')).toBeTruthy();
   });
 
   it('handles image deletion correctly', () => {
-    render(<ImagePickerModal showDeleteOption={true} />);
+    render(
+        <AlertNotificationRoot>
+          <ImagePickerModal showDeleteOption={true} />
+        </AlertNotificationRoot>
+    );
     const deleteButton = screen.getByA11yHint('delete-image');
     fireEvent.press(deleteButton);
-    expect(mockDispatch).toHaveBeenCalledWith(setImageUri(DEFAULT_PROFILE_IMAGE));
+    expect(mockDispatch).toHaveBeenCalledWith(
+      setImageUri(DEFAULT_PROFILE_IMAGE),
+    );
     expect(mockDispatch).toHaveBeenCalledWith(setImage(DEFAULT_PROFILE_IMAGE));
     expect(mockDispatch).toHaveBeenCalledWith(setImageDeleted(true));
     expect(mockDispatch).toHaveBeenCalledWith(setIsVisible(false));
@@ -99,14 +132,24 @@ describe('ImagePickerModal', () => {
     const {requestPermissions} = require('../../permissions/ImagePermissions');
     requestPermissions.mockResolvedValue(false);
 
-    render(<ImagePickerModal />);
+    render(
+        <AlertNotificationRoot>
+          <ImagePickerModal />
+        </AlertNotificationRoot>
+    );
     const galleryButton = screen.getByA11yHint('gallery-image');
     fireEvent.press(galleryButton);
 
     await waitFor(() => {
-      expect(Alert.alert).toHaveBeenCalledWith(
-        'Permission Denied',
-        'We need access to your photos to continue.',
+      expect(Dialog.show).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'DANGER',
+          title: 'Error',
+          textBody:
+            'Permission Denied, We need access to your photos to continue.',
+          button: 'close',
+          closeOnOverlayTap: true,
+        }),
       );
     });
   });
@@ -116,14 +159,23 @@ describe('ImagePickerModal', () => {
     const {requestPermissions} = require('../../permissions/ImagePermissions');
     requestPermissions.mockResolvedValue(true);
 
-    render(<ImagePickerModal />);
+    render(
+        <AlertNotificationRoot>
+          <ImagePickerModal />
+        </AlertNotificationRoot>
+    );
     const galleryButton = screen.getByA11yHint('gallery-image');
     fireEvent.press(galleryButton);
-
     await waitFor(() => {
-      expect(Alert.alert).toHaveBeenCalledWith(
-        'Permission Denied',
-        'We need access to your photos to continue.',
+      expect(Dialog.show).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'DANGER',
+          title: 'Error',
+          textBody:
+            'Permission Denied, We need access to your photos to continue.',
+          button: 'close',
+          closeOnOverlayTap: true,
+        }),
       );
     });
   });
@@ -133,7 +185,11 @@ describe('ImagePickerModal', () => {
     requestPermissions.mockResolvedValue(true);
     Platform.OS = 'ios';
 
-    render(<ImagePickerModal />);
+    render(
+        <AlertNotificationRoot>
+          <ImagePickerModal />
+        </AlertNotificationRoot>
+    );
     const galleryButton = screen.getByA11yHint('gallery-image');
     fireEvent.press(galleryButton);
 
@@ -144,8 +200,13 @@ describe('ImagePickerModal', () => {
         cropping: true,
         includeBase64: false,
       });
-      expect(RNFS.readFile).toHaveBeenCalledWith('mocked/image/path.jpg', 'base64');
-      expect(mockDispatch).toHaveBeenCalledWith(setImageUri('mocked/image/path.jpg'));
+      expect(RNFS.readFile).toHaveBeenCalledWith(
+        'mocked/image/path.jpg',
+        'base64',
+      );
+      expect(mockDispatch).toHaveBeenCalledWith(
+        setImageUri('mocked/image/path.jpg'),
+      );
       expect(mockDispatch).toHaveBeenCalledWith(
         setImage('data:image/jpeg;base64,mocked-base64-string'),
       );
@@ -159,7 +220,11 @@ describe('ImagePickerModal', () => {
     requestPermissions.mockResolvedValue(true);
     Platform.OS = 'ios';
 
-    render(<ImagePickerModal />);
+    render(
+        <AlertNotificationRoot>
+          <ImagePickerModal />
+        </AlertNotificationRoot>
+    );
     const cameraButton = screen.getByA11yHint('camera-image');
     fireEvent.press(cameraButton);
 
@@ -170,8 +235,13 @@ describe('ImagePickerModal', () => {
         cropping: true,
         includeBase64: false,
       });
-      expect(RNFS.readFile).toHaveBeenCalledWith('mocked/image/path.jpg', 'base64');
-      expect(mockDispatch).toHaveBeenCalledWith(setImageUri('mocked/image/path.jpg'));
+      expect(RNFS.readFile).toHaveBeenCalledWith(
+        'mocked/image/path.jpg',
+        'base64',
+      );
+      expect(mockDispatch).toHaveBeenCalledWith(
+        setImageUri('mocked/image/path.jpg'),
+      );
       expect(mockDispatch).toHaveBeenCalledWith(
         setImage('data:image/jpeg;base64,mocked-base64-string'),
       );
