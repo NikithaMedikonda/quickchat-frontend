@@ -146,7 +146,7 @@ try {
       closeOnOverlayTap: true,
     });
   }
-} catch (e) {
+} catch (error:any) {
   dispatch(hide());
   Dialog.show({
     type: ALERT_TYPE.DANGER,
