@@ -1,32 +1,32 @@
-import { useEffect, useRef, useState } from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import {useEffect, useRef, useState} from 'react';
+import {ScrollView, Text, View} from 'react-native';
 
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
 
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { IndividualChatHeader } from '../../components/IndividualChatHeader/IndividualChatHeader';
-import { MessageInput } from '../../components/MessageInput/MessageInput';
-import { MessageStatusTicks } from '../../components/MessageStatusTicks/MessageStatusTicks';
-import { TimeStamp } from '../../components/TimeStamp/TimeStamp';
+import {IndividualChatHeader} from '../../components/IndividualChatHeader/IndividualChatHeader';
+import {MessageInput} from '../../components/MessageInput/MessageInput';
+import {MessageStatusTicks} from '../../components/MessageStatusTicks/MessageStatusTicks';
+import {TimeStamp} from '../../components/TimeStamp/TimeStamp';
 
-import { Socket } from 'socket.io-client';
-import { getMessagesBetween } from '../../services/GetMessagesBetween';
-import { updateMessageStatus } from '../../services/UpdateMessageStatus';
+import {Socket} from 'socket.io-client';
+import {getMessagesBetween} from '../../services/GetMessagesBetween';
+import {updateMessageStatus} from '../../services/UpdateMessageStatus';
 import {
   newSocket,
   receivePrivateMessage,
   sendPrivateMessage,
 } from '../../socket/socket';
-import { useThemeColors } from '../../themes/colors';
+import {useThemeColors} from '../../themes/colors';
 import {
   AllMessages,
   Chats,
   ReceivePrivateMessage,
   SentPrivateMessage,
 } from '../../types/messsage.types';
-import { HomeStackParamList } from '../../types/usenavigation.type';
-import { User } from '../Profile/Profile';
-import { individualChatstyles } from './IndividualChat.styles';
+import {HomeStackParamList} from '../../types/usenavigation.type';
+import {User} from '../Profile/Profile';
+import {individualChatstyles} from './IndividualChat.styles';
 
 type Props = NativeStackScreenProps<HomeStackParamList, 'individualChat'>;
 export const IndividualChat = ({route}: Props) => {
@@ -153,10 +153,16 @@ export const IndividualChat = ({route}: Props) => {
                   styles.messageBlock,
                   isSent ? styles.sentMessage : styles.receivedMessage,
                 ]}>
-                <Text style={styles.messageText}>{msg.message}</Text>
-
-                <TimeStamp messageTime={msg.timestamp} />
-                {isSent && <MessageStatusTicks status={msg.status} />}
+                <Text
+                  style={
+                    isSent ? styles.sentMessageText : styles.receiveMessageText
+                  }>
+                  {msg.message}
+                </Text>
+                <View style={styles.timestampContainer}>
+                  <TimeStamp messageTime={msg.timestamp} isSent={isSent} />
+                  {isSent && <MessageStatusTicks status={msg.status} />}
+                </View>
               </View>
             );
           })}

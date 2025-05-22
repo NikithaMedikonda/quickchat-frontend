@@ -22,11 +22,12 @@ export const individualChatstyles = (colors: Colors) => {
       maxWidth: '75%',
     },
     sentMessage: {
-      backgroundColor: '#DCF8C6',
+      backgroundColor: colors.sendMessage,
       alignSelf: 'flex-end',
     },
     receivedMessage: {
-      backgroundColor: '#E1E1E1',
+      backgroundColor: colors.receiveMessage,
+      color: colors.background,
       alignSelf: 'flex-start',
     },
     messageText: {
@@ -47,6 +48,17 @@ export const individualChatstyles = (colors: Colors) => {
       width: width,
       height: height,
       justifyContent: 'center',
+      alignItems: 'center',
+    },
+    sentMessageText: {
+      color: colors.text,
+    },
+    receiveMessageText: {
+      color: colors.background,
+    },
+    timestampContainer: {
+      flexDirection: 'row',
+      justifyContent: 'flex-end',
       alignItems: 'center',
     },
   });
