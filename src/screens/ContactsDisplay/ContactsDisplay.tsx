@@ -72,7 +72,7 @@ export const ContactsDisplay = () => {
         Dialog.show({
           type: ALERT_TYPE.DANGER,
           title: 'Error',
-          textBody: 'Error occured while fetching the contacts',
+          textBody: 'Error occurred while fetching the contacts',
           button: 'close',
           closeOnOverlayTap: true,
         });
