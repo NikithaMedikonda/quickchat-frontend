@@ -5,14 +5,30 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react-native';
+import {Provider} from 'react-redux';
+import {AlertNotificationRoot, Dialog} from 'react-native-alert-notification';
 import {ContactDetails} from '../../types/contact.types';
 import {Contact} from './Contact';
 import {DEFAULT_PROFILE_IMAGE} from '../../constants/defaultImage';
+import {resetForm} from '../../store/slices/registrationSlice';
+import {store} from '../../store/store';
+
 
 Linking.openURL = jest.fn();
 Alert.alert = jest.fn();
 
+jest.mock('react-native-alert-notification', () => ({
+  AlertNotificationRoot: ({children}: any) => <>{children}</>,
+  Toast: {show: jest.fn()},
+  Dialog: {show: jest.fn()},
+  ALERT_TYPE: {SUCCESS: 'success', DANGER: 'danger'},
+}));
+
 describe('Contact Component', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    store.dispatch(resetForm());
+  });
   const invitedContact: ContactDetails = {
     name: 'TestUser',
     phoneNumber: '+91123456789',
@@ -28,7 +44,13 @@ describe('Contact Component', () => {
   };
 
   it('renders name, phone number, profile image of registered candidate', () => {
-    const {getByText} = render(<Contact contactDetails={registeredContact} />);
+    const {getByText} = render(
+      <Provider store={store}>
+        <AlertNotificationRoot>
+          <Contact contactDetails={registeredContact} />
+        </AlertNotificationRoot>
+      </Provider>,
+    );
     expect(getByText('registeredUser')).toBeTruthy();
     expect(getByText('+91987654321')).toBeTruthy();
     const image = screen.getByA11yHint('profile-image');
@@ -36,7 +58,13 @@ describe('Contact Component', () => {
   });
 
   it('renders default profile image for invited contact', () => {
-    const {getByText} = render(<Contact contactDetails={invitedContact} />);
+    const {getByText} = render(
+      <Provider store={store}>
+        <AlertNotificationRoot>
+          <Contact contactDetails={invitedContact} />
+        </AlertNotificationRoot>
+      </Provider>,
+    );
     expect(getByText('TestUser')).toBeTruthy();
     expect(getByText('+91123456789')).toBeTruthy();
     const image = screen.getByA11yHint('default-image');
@@ -63,38 +91,46 @@ describe('Contact Component', () => {
         "sms:+911112223334&body=Welcome to Quick Chat. Let's have fun with this chating app",
       );
     }
-    const {getByText} = render(<Contact contactDetails={contact} />);
+    const {getByText} = render(
+      <Provider store={store}>
+        <AlertNotificationRoot>
+          <Contact contactDetails={contact} />
+        </AlertNotificationRoot>
+      </Provider>,
+    );
     fireEvent.press(getByText('Invite'));
-
     await waitFor(() => {
       expect(Linking.openURL).toHaveBeenCalledWith(url);
     });
   });
 
-  it('should show alert if SMS open fails', async () => {
-    const contact = {
-      name: 'David',
-      phoneNumber: '+919999999999',
-      profilePicture: '',
-      toBeInvited: true,
-    };
-    (Linking.openURL as jest.Mock).mockRejectedValueOnce(new Error('Fail'));
-    const {getByText} = render(<Contact contactDetails={contact} />);
-    fireEvent.press(getByText('Invite'));
-    const url = `sms:+911112223334${
-      Platform.OS === 'android' ? '?body=' : '&body='
-    }Welcome to Quick Chat. Let's have fun with this chating app`;
-    if (Platform.OS === 'android') {
-      expect(url).toBe(
-        "sms:+911112223334?body=Welcome to Quick Chat. Let's have fun with this chating app",
-      );
-    } else {
-      expect(url).toBe(
-        "sms:+911112223334&body=Welcome to Quick Chat. Let's have fun with this chating app",
-      );
-    }
-    await waitFor(() => {
-      expect(Alert.alert).toHaveBeenCalledWith('Unable to process the request');
+it('should show alert if SMS open fails', async () => {
+  const contact = {
+    name: 'David',
+    phoneNumber: '+919999999999',
+    profilePicture: '',
+    toBeInvited: true,
+  };
+  (Linking.openURL as jest.Mock).mockRejectedValueOnce(new Error('Fail'));
+
+  const {getByText} = render(
+    <Provider store={store}>
+      <AlertNotificationRoot>
+        <Contact contactDetails={contact} />
+      </AlertNotificationRoot>
+    </Provider>,
+  );
+
+  fireEvent.press(getByText('Invite'));
+
+  await waitFor(() => {
+    expect(Dialog.show).toHaveBeenCalledWith({
+      type: 'danger',
+      title: 'Contacts fetching is failed',
+      textBody: 'Unable to process your request',
+      button: 'close',
+      closeOnOverlayTap: true,
     });
   });
+});
 });
