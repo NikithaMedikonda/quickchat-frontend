@@ -3,8 +3,7 @@ name: QuickChat-frontend CI/CD
 on:
   push:
     branches:
-      # - main
-      - registration-encryption
+      - main
       
 jobs:
   lint-and-test:
