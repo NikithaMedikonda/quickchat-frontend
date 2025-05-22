@@ -110,6 +110,27 @@ jest.mock('i18next', () => {
   };
 });
 
+jest.mock('react-native-rsa', () => {
+  return jest.fn().mockImplementation(() => ({
+    encrypt: jest.fn((data) => `mock-rsa-encrypted(${data})`),
+    decrypt: jest.fn((data) => data.replace('mock-rsa-encrypted(', '').replace(')', '')),
+  }));
+});
+jest.mock('crypto-js', () => ({
+  AES: {
+    encrypt: jest.fn(() => ({
+      toString: jest.fn(() => 'mock-encrypted-value'),
+    })),
+  },
+}));
+jest.mock('crypto-js', () => ({
+  AES: {
+    decrypt: jest.fn(() => ({
+      toString: jest.fn(() => 'secret-key'),
+    })),
+  },
+}));
+
 test('runs useEffect on mount and sets language', async () => {
   render(<App />);
   await waitFor(() => {
