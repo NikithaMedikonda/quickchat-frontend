@@ -1,10 +1,14 @@
-/* eslint-disable react-native/no-inline-styles */
-import {useNavigation} from '@react-navigation/native';
 import {useEffect, useLayoutEffect, useState} from 'react';
+import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 import {useTranslation} from 'react-i18next';
-import {Alert, ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {
+  ALERT_TYPE,
+  AlertNotificationRoot,
+  Dialog,
+} from 'react-native-alert-notification';
 import Contacts from 'react-native-contacts';
-
+import {useDispatch} from 'react-redux';
 import {Contact} from '../../components/Contact/Contact';
 import {DEFAULT_PROFILE_IMAGE} from '../../constants/defaultImage';
 import {getContacts} from '../../services/GetContacts';
@@ -12,12 +16,13 @@ import {useThemeColors} from '../../themes/colors';
 import {ContactDetails} from '../../types/contact.types';
 import {HomeStackProps, HomeTabsProps} from '../../types/usenavigation.type';
 import {getStyles} from './ContactsDisplay.styles';
-
+import {hide} from '../../store/slices/loadingSlice';
 
 export const ContactsDisplay = () => {
   const [appContacts, setAppContacts] = useState<ContactDetails[] | []>([]);
   const [phoneContacts, setPhoneContacts] = useState<ContactDetails[] | []>([]);
   const [loading, setLoading] = useState<Boolean>(true);
+  const dispatch = useDispatch();
   const colors = useThemeColors();
   const styles = getStyles(colors);
   const navigation = useNavigation<HomeTabsProps>();
@@ -62,73 +67,107 @@ export const ContactsDisplay = () => {
           }
         }
         setPhoneContacts(unRegunRegisteredContactDetails);
-      } catch (error) {
-        Alert.alert(t('Error while fetching the contacts'));
+      } catch (error: any) {
+        dispatch(hide());
+        Dialog.show({
+          type: ALERT_TYPE.DANGER,
+          title: 'Error',
+          textBody: 'Error occurred while fetching the contacts',
+          button: 'close',
+          closeOnOverlayTap: true,
+        });
       } finally {
         setLoading(false);
       }
     };
     fetchContacts();
-  }, [t]);
+  }, [dispatch, t]);
 
   return (
-    <View style={styles.contactsContainer}>
-      <ScrollView contentContainerStyle={{flexGrow: 1}}>
-        {loading ? (
-          <View style={styles.loadingContactsDisplay}>
-            <Text style={styles.loadingContactsText}>Loading Contacts...</Text>
-          </View>
-        ) : (
-          <View>
-            <Text style={styles.title}>{t('Contacts on Quick Chat')}</Text>
-            {appContacts.length > 0 ? (
-              <View style={styles.contactDetailsContainer}>
-                {appContacts.map((contact: ContactDetails, index: number) => (
-                  <TouchableOpacity
-                    key={`${contact.name}-${index}`}
-                    onPress={() => {
-                      homeStackNavigation.navigate('individualChat', {
-                        user: {
-                          name: contact.name,
-                          profilePicture: contact.profilePicture,
-                        },
-                      });
-                    }}>
-                    <Contact contactDetails={contact} />
-                  </TouchableOpacity>
-                ))}
-              </View>
-            ) : (
-              <View style={styles.loadingContactsDisplay}>
-                <Text style={styles.loadingContactsText}>
-                  {t(
-                    "It's so sad that, we have no one on Quick Chat. Share about Quick Chat",
+    <AlertNotificationRoot
+      theme="dark"
+      colors={[
+        {
+          label: '#000000',
+          card: '#FFFFFF',
+          overlay: 'rgba(0, 0, 0, 0.5)',
+          success: '#4CAF50',
+          danger: '#F44336',
+          warning: '#1877F2',
+          info: '#000000',
+        },
+        {
+          label: '#000000',
+          card: '#FFFFFF',
+          overlay: 'rgba(255, 255, 255, 0.5)',
+          success: '#4CAF50',
+          danger: '#F44336',
+          warning: '#FFFFFF',
+          info: '#000000',
+        },
+      ]}>
+      <View style={styles.contactsContainer}>
+        <ScrollView contentContainerStyle={{flexGrow: 1}}>
+          {loading ? (
+            <View style={styles.loadingContactsDisplay}>
+              <Text style={styles.loadingContactsText}>
+                Loading Contacts...
+              </Text>
+            </View>
+          ) : (
+            <View>
+              <Text style={styles.title}>{t('Contacts on Quick Chat')}</Text>
+              {appContacts.length > 0 ? (
+                <View style={styles.contactDetailsContainer}>
+                  {appContacts.map((contact: ContactDetails, index: number) => (
+                    <TouchableOpacity
+                      key={`${contact.name}-${index}`}
+                      onPress={() => {
+                        homeStackNavigation.navigate('individualChat', {
+                          user: {
+                            name: contact.name,
+                            profilePicture: contact.profilePicture,
+                          },
+                        });
+                      }}>
+                      <Contact contactDetails={contact} />
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              ) : (
+                <View style={styles.loadingContactsDisplay}>
+                  <Text style={styles.loadingContactsText}>
+                    {t(
+                      "It's so sad that, we have no one on Quick Chat. Share about Quick Chat",
+                    )}
+                  </Text>
+                </View>
+              )}
+              <Text style={styles.title}>{t('Invite to Quick Chat')}</Text>
+              {phoneContacts.length === 0 ? (
+                <View style={styles.loadingContactsDisplay}>
+                  <Text style={styles.loadingContactsText}>
+                    {t(
+                      "It's good to see that, all of your contact are onuick Chat.",
+                    )}
+                  </Text>
+                </View>
+              ) : (
+                <View style={styles.contactDetailsContainer}>
+                  {phoneContacts.map(
+                    (contact: ContactDetails, index: number) => (
+                      <Contact
+                        key={`${index}-${contact}`}
+                        contactDetails={contact}
+                      />
+                    ),
                   )}
-                </Text>
-              </View>
-            )}
-            <Text style={styles.title}>{t('Invite to Quick Chat')}</Text>
-            {phoneContacts.length === 0 ? (
-              <View style={styles.loadingContactsDisplay}>
-                <Text style={styles.loadingContactsText}>
-                  {t(
-                    "It's good to see that, all of your contact are onuick Chat.",
-                  )}
-                </Text>
-              </View>
-            ) : (
-              <View style={styles.contactDetailsContainer}>
-                {phoneContacts.map((contact: ContactDetails, index: number) => (
-                  <Contact
-                    key={`${index}-${contact}`}
-                    contactDetails={contact}
-                  />
-                ))}
-              </View>
-            )}
-          </View>
-        )}
-      </ScrollView>
-    </View>
+                </View>
+              )}
+            </View>
+          )}
+        </ScrollView>
+      </View>
+    </AlertNotificationRoot>
   );
 };

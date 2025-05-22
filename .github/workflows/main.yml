@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - update-custom-alerts
       
 jobs:
   lint-and-test:
