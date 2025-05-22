@@ -107,7 +107,7 @@ export const ContactsDisplay = () => {
         },
       ]}>
       <View style={styles.contactsContainer}>
-        <ScrollView contentContainerStyle={{flexGrow: 1}}>
+        <ScrollView contentContainerStyle={styles.scroll}>
           {loading ? (
             <View style={styles.loadingContactsDisplay}>
               <Text style={styles.loadingContactsText}>
@@ -127,7 +127,7 @@ export const ContactsDisplay = () => {
                           user: {
                             name: contact.name,
                             profilePicture: contact.profilePicture,
-                            phoneNumber:contact.phoneNumber
+                            phoneNumber: contact.phoneNumber,
                           },
                         });
                       }}>
