@@ -1,4 +1,7 @@
+import { useNavigation } from '@react-navigation/native';
+import phone from 'phone';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Image,
   KeyboardAvoidingView,
@@ -8,28 +11,25 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { useDispatch, useSelector } from 'react-redux';
-import { useTranslation } from 'react-i18next';
-import phone from 'phone';
-import PhoneInput from 'react-native-phone-input';
-import EncryptedStorage from 'react-native-encrypted-storage';
 import {
+  ALERT_TYPE,
   AlertNotificationRoot,
   Dialog,
-  ALERT_TYPE,
 } from 'react-native-alert-notification';
-import { loginUser } from '../../services/LoginUser';
-import { keyDecryption } from '../../services/KeyDecryption';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import PhoneInput from 'react-native-phone-input';
+import { useDispatch, useSelector } from 'react-redux';
 import { Button } from '../../components/Button/Button';
 import { Placeholder } from '../../components/InputField/InputField';
+import { keyDecryption } from '../../services/KeyDecryption';
+import { loginUser } from '../../services/LoginUser';
+import { hide, show } from '../../store/slices/loadingSlice';
 import {
-  setLoginField,
-  setLoginErrors,
   resetLoginForm,
+  setLoginErrors,
+  setLoginField,
   setLoginSuccess,
 } from '../../store/slices/loginSlice';
-import { show, hide } from '../../store/slices/loadingSlice';
 import { RootState } from '../../store/store';
 import { useThemeColors } from '../../themes/colors';
 import { useImagesColors } from '../../themes/images';

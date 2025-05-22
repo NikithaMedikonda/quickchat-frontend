@@ -1,4 +1,4 @@
-import { NavigationContainer } from '@react-navigation/native';
+import {NavigationContainer} from '@react-navigation/native';
 import {
   fireEvent,
   render,
@@ -6,11 +6,11 @@ import {
   waitFor,
 } from '@testing-library/react-native';
 import phone from 'phone';
-import { AlertNotificationRoot, Dialog } from 'react-native-alert-notification';
-import { Provider } from 'react-redux';
-import { loginUser } from '../../services/LoginUser';
-import { store } from '../../store/store';
-import { Login } from './Login';
+import {AlertNotificationRoot, Dialog} from 'react-native-alert-notification';
+import {Provider} from 'react-redux';
+import {loginUser} from '../../services/LoginUser';
+import {store} from '../../store/store';
+import {Login} from './Login';
 
 jest.mock('react-native-phone-input', () => {
   const {useState, forwardRef} = require('react');
@@ -59,8 +59,8 @@ jest.mock('../../services/LoginUser', () => ({
   loginUser: jest.fn(),
 }));
 jest.mock('../../services/KeyDecryption', () => ({
-  keyDecryption: ()=>({
-    decryptedPrivateKey : 'decryptedPrivateKey'
+  keyDecryption: () => ({
+    decryptedPrivateKey: 'decryptedPrivateKey',
   }),
 }));
 
@@ -73,7 +73,6 @@ jest.mock('crypto-js', () => ({
     })),
   },
 }));
-
 
 jest.mock('react-native-alert-notification', () => ({
   AlertNotificationRoot: ({children}: any) => <>{children}</>,
@@ -172,7 +171,7 @@ describe('Login Screen', () => {
       isValid: true,
       phoneNumber: '+918522041688',
     });
-   (loginUser as jest.Mock).mockResolvedValue({
+    (loginUser as jest.Mock).mockResolvedValue({
       status: 404,
       data: {
         accessToken: 'some-token',
@@ -232,7 +231,7 @@ describe('Login Screen', () => {
       });
     });
   });
-      test('should navigate to the hometabs upon successful login', async () => {
+  test('should navigate to the hometabs upon successful login', async () => {
     (phone as jest.Mock).mockReturnValue({
       isValid: true,
       phoneNumber: '+918522041688',
@@ -291,6 +290,4 @@ describe('Login Screen', () => {
       });
     });
   });
-
-
 });
