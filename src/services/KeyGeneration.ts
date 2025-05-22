@@ -1,15 +1,23 @@
-import Rsa from 'react-native-rsa';
+import {crypto_box_keypair, to_base64} from 'react-native-libsodium';
 
 export const keyGeneration = async () => {
-  const rsa = new Rsa();
-  const bits = 2048;
-  const exponent = '10001';
   try {
-    const keys: { public: string; private: string } = await rsa.generateKeys(bits, exponent);
-    const publicKey = keys.public;
-    const privateKey = keys.private;
-    return { publicKey, privateKey };
+    const keys = await crypto_box_keypair();
+
+    const publicKey =
+      typeof keys.publicKey === 'string'
+        ? keys.publicKey
+        : await to_base64(keys.publicKey);
+
+    const privateKey =
+      typeof keys.privateKey === 'string'
+        ? keys.privateKey
+        : await to_base64(keys.privateKey);
+
+    return {publicKey, privateKey};
   } catch (error) {
-    throw new Error('Error occured while generating Keys');
+    throw new Error(
+      `Error while generating the keys ${(error as Error).message}`,
+    );
   }
 };
