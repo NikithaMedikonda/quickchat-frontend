@@ -13,7 +13,6 @@ export const useThemeColors = () => {
     messageTextBox: '#FFFFFF',
     sendMessage: '#1877F2',
     receiveMessage: '#FFFFFF',
-  
   };
 };
 
@@ -31,5 +30,4 @@ export type Colors = {
   messageTextBox: string;
   sendMessage: string;
   receiveMessage: string;
- 
 };
