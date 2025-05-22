@@ -58,6 +58,7 @@ jest.mock('react-native-encrypted-storage', () => ({
 jest.mock('../../services/LoginUser', () => ({
   loginUser: jest.fn(),
 }));
+
 jest.mock('../../services/KeyDecryption', () => ({
   keyDecryption: () => ({
     decryptedPrivateKey: 'decryptedPrivateKey',
@@ -66,12 +67,11 @@ jest.mock('../../services/KeyDecryption', () => ({
 
 jest.mock('phone');
 
-jest.mock('crypto-js', () => ({
-  AES: {
-    decrypt: jest.fn(() => ({
-      toString: jest.fn(() => 'secret-key'),
-    })),
-  },
+jest.mock('react-native-libsodium', () => ({
+  to_base64: jest.fn((input: Uint8Array) => Buffer.from(input).toString('base64')),
+  from_base64: jest.fn((input: string) => Uint8Array.from(Buffer.from(input, 'base64'))),
+  crypto_generichash: jest.fn(() => new Uint8Array(32).fill(1)),
+  crypto_secretbox_open_easy: jest.fn(() =>  Uint8Array.from(Buffer.from('secret-key'))),
 }));
 
 jest.mock('react-native-alert-notification', () => ({

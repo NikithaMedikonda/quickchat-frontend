@@ -79,7 +79,7 @@ export function Login() {
       const result = await loginUser({...form});
       const user = result?.data?.user;
       const privateKey = await keyDecryption({
-        encryptedPrivateKey: user.privateKey,
+        encryptedPrivateKeyData: user.privateKey,
         password: form.password,
       });
       if (result.status === 200) {

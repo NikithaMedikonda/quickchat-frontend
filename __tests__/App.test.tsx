@@ -110,27 +110,14 @@ jest.mock('i18next', () => {
   };
 });
 
-jest.mock('react-native-rsa', () => {
-  return jest.fn().mockImplementation(() => ({
-    encrypt: jest.fn((data) => `mock-rsa-encrypted(${data})`),
-    decrypt: jest.fn((data) => data.replace('mock-rsa-encrypted(', '').replace(')', '')),
-  }));
-});
-
-jest.mock('crypto-js', () => ({
-  AES: {
-    encrypt: jest.fn(() => ({
-      toString: jest.fn(() => 'mock-encrypted-value'),
-    })),
-  },
-}));
-
-jest.mock('crypto-js', () => ({
-  AES: {
-    decrypt: jest.fn(() => ({
-      toString: jest.fn(() => 'secret-key'),
-    })),
-  },
+jest.mock('react-native-libsodium', () => ({
+  crypto_box_keypair: jest.fn(),
+  to_base64: jest.fn((input: Uint8Array) => Buffer.from(input).toString('base64')),
+  crypto_generichash: jest.fn(() => new Uint8Array(32).fill(1)),
+  crypto_secretbox_easy: jest.fn(() => new Uint8Array(64).fill(2)),
+  randombytes_buf: jest.fn(() => new Uint8Array(24).fill(3)),
+  from_base64: jest.fn((input: string) => Uint8Array.from(Buffer.from(input, 'base64'))),
+  crypto_secretbox_open_easy: jest.fn(() => new Uint8Array(Buffer.from('secret-key'))),
 }));
 
 test('runs useEffect on mount and sets language', async () => {

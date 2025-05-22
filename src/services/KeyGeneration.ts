@@ -1,7 +1,9 @@
 import {crypto_box_keypair, to_base64} from 'react-native-libsodium';
+
 export const keyGeneration = async () => {
   try {
     const keys = await crypto_box_keypair();
+
     const publicKey =
       typeof keys.publicKey === 'string'
         ? keys.publicKey
