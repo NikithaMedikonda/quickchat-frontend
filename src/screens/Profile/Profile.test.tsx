@@ -10,9 +10,20 @@ import {Profile} from './Profile';
 import {ProfileMoreOptionsModal} from '../../components/ProfileMoreOptionsModal/ProfileMoreOptionsModal';
 import {Provider} from 'react-redux';
 import {store} from '../../store/store';
+import {AlertNotificationRoot} from 'react-native-alert-notification';
 
 jest.mock('react-native-encrypted-storage', () => ({
   getItem: jest.fn(),
+}));
+
+jest.mock('react-native-alert-notification', () => ({
+  ALERT_TYPE: {
+    DANGER: 'DANGER',
+  },
+  Dialog: {
+    show: jest.fn(),
+  },
+  AlertNotificationRoot: ({children}: {children: React.ReactNode}) => children,
 }));
 
 const mockNavigate = jest.fn();
@@ -47,10 +58,12 @@ describe('Profile Screen', () => {
   const renderComponent = () =>
     render(
       <Provider store={store}>
-        <Profile />
+        <AlertNotificationRoot>
+          <Profile />
+        </AlertNotificationRoot>
       </Provider>,
     );
-  it('renders the dot image', async() => {
+  it('renders the dot image', async () => {
     await waitFor(() => {
       renderComponent();
     });
@@ -105,7 +118,7 @@ describe('Profile Screen', () => {
   });
 
   it('renders the phone number section correctly', async () => {
-      await waitFor(() => {
+    await waitFor(() => {
       renderComponent();
     });
     expect(await screen.findByText('Phone Number')).toBeTruthy();
@@ -120,14 +133,14 @@ describe('Profile Screen', () => {
     (EncryptedStorage.getItem as jest.Mock).mockResolvedValueOnce(
       JSON.stringify(mockUser),
     );
-      await waitFor(() => {
+    await waitFor(() => {
       renderComponent();
     });
     const image = await waitFor(() => screen.getByA11yHint('profile-image'));
     expect(image).toBeTruthy();
   });
 
-it('opens the modal when dots image is pressed', async () => {
+  it('opens the modal when dots image is pressed', async () => {
     await waitFor(() => {
       renderComponent();
     });
@@ -139,7 +152,9 @@ it('opens the modal when dots image is pressed', async () => {
     });
     const {getByText} = render(
       <Provider store={store}>
-        <ProfileMoreOptionsModal visible={true} onClose={() => {}} />
+        <AlertNotificationRoot>
+          <ProfileMoreOptionsModal visible={true} onClose={() => {}} />
+        </AlertNotificationRoot>
       </Provider>,
     );
     const modal = await waitFor(() => getByText('Delete Account'));
@@ -149,7 +164,9 @@ it('opens the modal when dots image is pressed', async () => {
     const onClose = jest.fn();
     render(
       <Provider store={store}>
-        <ProfileMoreOptionsModal visible={true} onClose={onClose} />
+        <AlertNotificationRoot>
+          <ProfileMoreOptionsModal visible={true} onClose={onClose} />
+        </AlertNotificationRoot>
       </Provider>,
     );
     const binButton = screen.getByA11yHint('bin-image');
