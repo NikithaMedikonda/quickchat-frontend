@@ -1,5 +1,5 @@
+import React from 'react';
 import {
-  Alert,
   Image,
   Modal,
   Platform,
@@ -11,9 +11,13 @@ import {
 import ImageCropPicker from 'react-native-image-crop-picker';
 import RNFS from 'react-native-fs';
 import { useDispatch, useSelector } from 'react-redux';
+import {
+  ALERT_TYPE,
+  AlertNotificationRoot,
+  Dialog,
+} from 'react-native-alert-notification';
 import { DEFAULT_PROFILE_IMAGE } from '../../constants/defaultImage';
-import { getStyles } from './ImagePickerModal.styles';
-import { requestPermissions } from '../../permissions/ImagePermissions';
+import { useThemeColors } from '../../themes/colors';
 import { RootState } from '../../store/store';
 import {
   setImage,
@@ -22,7 +26,10 @@ import {
   setIsVisible,
 } from '../../store/slices/registrationSlice';
 import { updateProfilePicture } from '../../store/slices/loginSlice';
-import { useThemeColors } from '../../themes/colors';
+import { hide } from '../../store/slices/loadingSlice';
+import { requestPermissions } from '../../permissions/ImagePermissions';
+import { getStyles } from './ImagePickerModal.styles';
+
 
 export function ImagePickerModal({
   showDeleteOption = false,
@@ -52,17 +59,24 @@ export function ImagePickerModal({
   const handlePickImage = async (from: 'camera' | 'gallery') => {
     const permissionsGranted = await requestPermissions(from);
     if (Platform.OS === 'android' && permissionsGranted) {
-      Alert.alert(
-        'Permission Denied',
-        'We need access to your photos to continue.',
-      );
+    dispatch(hide());
+     Dialog.show({
+          type: ALERT_TYPE.DANGER,
+          title: 'Error',
+          textBody:'Permission Denied, We need access to your photos to continue.',
+          button: 'close',
+          closeOnOverlayTap: true,
+        });
       return;
     }
     if (Platform.OS === 'ios' && !permissionsGranted) {
-      Alert.alert(
-        'Permission Denied',
-        'We need access to your photos to continue.',
-      );
+       Dialog.show({
+          type: ALERT_TYPE.DANGER,
+          title: 'Error',
+          textBody:'Permission Denied, We need access to your photos to continue.',
+          button: 'close',
+          closeOnOverlayTap: true,
+        });
       return;
     }
 
@@ -90,11 +104,39 @@ export function ImagePickerModal({
       dispatch(setIsVisible(false));
     } catch (error: any) {
       handleClose();
-      Alert.alert('Error', error?.message || 'Image selection failed.');
+       Dialog.show({
+          type: ALERT_TYPE.DANGER,
+          title: 'Error',
+          textBody:'Image selection failed',
+          button: 'close',
+          closeOnOverlayTap: true,
+        });
     }
   };
 
   return (
+       <AlertNotificationRoot
+              theme="dark"
+              colors={[
+                {
+                  label: '#000000',
+                  card: '#FFFFFF',
+                  overlay: 'rgba(0, 0, 0, 0.5)',
+                  success: '#4CAF50',
+                  danger: '#F44336',
+                  warning: '#1877F2',
+                  info: '#000000',
+                },
+                {
+                  label: '#000000',
+                  card: '#FFFFFF',
+                  overlay: 'rgba(255, 255, 255, 0.5)',
+                  success: '#4CAF50',
+                  danger: '#F44336',
+                  warning: '#FFFFFF',
+                  info: '#000000',
+                },
+              ]}>
     <Modal animationType="slide" transparent={true} visible={isVisible}>
       <TouchableWithoutFeedback onPress={handleClose}>
         <View style={styles.centeredView}>
@@ -141,5 +183,6 @@ export function ImagePickerModal({
         </View>
       </TouchableWithoutFeedback>
     </Modal>
+    </AlertNotificationRoot>
   );
 }

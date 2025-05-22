@@ -1,4 +1,5 @@
 import { API_URL } from '../constants/api';
+import { keyEncryption } from './KeyEncryption';
 
 export const registerUser = async (payload: {
   image: string;
@@ -7,7 +8,15 @@ export const registerUser = async (payload: {
   phoneNumber: string;
   password: string;
   email: string;
+}, keys: {
+  publicKey: string;
+  privateKey : string;
 }) => {
+  const encryptedPrivateKey = await keyEncryption({
+    privateKey: keys.privateKey,
+    password: payload.password,
+  });
+
   const userData = {
     phoneNumber: payload.phoneNumber,
     firstName: payload.firstName,
@@ -15,6 +24,8 @@ export const registerUser = async (payload: {
     profilePicture: payload.image,
     email: payload.email,
     password: payload.password,
+    publicKey: keys.publicKey,
+    privateKey: encryptedPrivateKey,
   };
 
   try {
