@@ -1,4 +1,5 @@
-import React from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 import {
   Image,
   KeyboardAvoidingView,
@@ -8,33 +9,32 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
-import {useDispatch, useSelector} from 'react-redux';
 import {
   ALERT_TYPE,
   AlertNotificationRoot,
   Dialog,
 } from 'react-native-alert-notification';
+import EncryptedStorage from 'react-native-encrypted-storage';
 import PhoneInput from 'react-native-phone-input';
-import {useTranslation} from 'react-i18next';
-import {Button} from '../../components/Button/Button';
-import {ImagePickerModal} from '../../components/ImagePickerModal/ImagePickerModal';
-import {Placeholder} from '../../components/InputField/InputField';
-import {registerUser} from '../../services/RegisterUser';
-import {show, hide} from '../../store/slices/loadingSlice';
-import {setLoginSuccess} from '../../store/slices/loginSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { Button } from '../../components/Button/Button';
+import { ImagePickerModal } from '../../components/ImagePickerModal/ImagePickerModal';
+import { Placeholder } from '../../components/InputField/InputField';
+import { DEFAULT_PROFILE_IMAGE } from '../../constants/defaultImage';
+import { keyGeneration } from '../../services/KeyGeneration';
+import { registerUser } from '../../services/RegisterUser';
+import { hide, show } from '../../store/slices/loadingSlice';
+import { setLoginSuccess } from '../../store/slices/loginSlice';
 import {
   resetForm,
   setErrors,
   setFormField,
   setIsVisible,
 } from '../../store/slices/registrationSlice';
-import EncryptedStorage from 'react-native-encrypted-storage';
-import {useThemeColors} from '../../themes/colors';
-import {getStyles} from './Registration.styles';
-import {RootState} from '../../store/store';
-import {HomeTabsProps, NavigationProps} from '../../types/usenavigation.type';
-import { DEFAULT_PROFILE_IMAGE } from '../../constants/defaultImage';
+import { RootState } from '../../store/store';
+import { useThemeColors } from '../../themes/colors';
+import { HomeTabsProps, NavigationProps } from '../../types/usenavigation.type';
+import { getStyles } from './Registration.styles';
 
 export const Registration = () => {
   const navigation = useNavigation<NavigationProps>();
@@ -107,7 +107,11 @@ export const Registration = () => {
     }
 
 try {
-  const result = await registerUser({ ...form, image });
+  const keys = await keyGeneration();
+  const result = await registerUser({ ...form, image},{
+    publicKey: keys.publicKey,
+    privateKey: keys.privateKey,
+  });
   if (result.status === 409) {
     dispatch(hide());
     Dialog.show({
@@ -129,6 +133,7 @@ try {
     await EncryptedStorage.setItem('authToken', result.data.accessToken);
     await EncryptedStorage.setItem('refreshToken', result.data.refreshToken);
     await EncryptedStorage.setItem('user', JSON.stringify(result.data.user));
+    await EncryptedStorage.setItem('privateKey',keys.privateKey);
     homeNavigation.replace('hometabs');
     dispatch(resetForm());
   } else {
@@ -186,8 +191,7 @@ try {
         },
       ]}>
     <KeyboardAvoidingView
-      // eslint-disable-next-line react-native/no-inline-styles
-      style={{flex: 1}}
+      style={styles.keyboardView}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}>
       <ScrollView

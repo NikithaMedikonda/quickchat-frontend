@@ -116,6 +116,7 @@ jest.mock('react-native-rsa', () => {
     decrypt: jest.fn((data) => data.replace('mock-rsa-encrypted(', '').replace(')', '')),
   }));
 });
+
 jest.mock('crypto-js', () => ({
   AES: {
     encrypt: jest.fn(() => ({
@@ -123,6 +124,7 @@ jest.mock('crypto-js', () => ({
     })),
   },
 }));
+
 jest.mock('crypto-js', () => ({
   AES: {
     decrypt: jest.fn(() => ({
