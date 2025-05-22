@@ -6,11 +6,13 @@ import {
   within,
 } from '@testing-library/react-native';
 import {Alert} from 'react-native';
+import {AlertNotificationRoot, Dialog} from 'react-native-alert-notification';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {Provider} from 'react-redux';
 import {deleteUser} from '../../services/DeleteUser';
-import {ProfileMoreOptionsModal} from './ProfileMoreOptionsModal';
 import {store} from '../../store/store';
+import {ProfileMoreOptionsModal} from './ProfileMoreOptionsModal';
+
 
 const mockReplace = jest.fn();
 jest.mock('@react-navigation/native', () => ({
@@ -18,6 +20,15 @@ jest.mock('@react-navigation/native', () => ({
     navigate: jest.fn(),
     replace: mockReplace,
   }),
+}));
+jest.mock('react-native-alert-notification', () => ({
+  ALERT_TYPE: {
+    DANGER: 'DANGER',
+  },
+  Dialog: {
+    show: jest.fn(),
+  },
+  AlertNotificationRoot: ({children}: {children: React.ReactNode}) => children,
 }));
 jest.mock('react-native-encrypted-storage', () => ({
   setItem: jest.fn(),
@@ -48,7 +59,9 @@ describe('Profile More Options Modal', () => {
   const renderComponent = () =>
     render(
       <Provider store={store}>
-        <ProfileMoreOptionsModal visible={true} onClose={mockOnClose} />
+        <AlertNotificationRoot>
+          <ProfileMoreOptionsModal visible={true} onClose={mockOnClose} />
+        </AlertNotificationRoot>
       </Provider>,
     );
   it('should renders the delete account text and bin image', async () => {
@@ -92,7 +105,7 @@ describe('Profile More Options Modal', () => {
     expect(mockOnClose).toHaveBeenCalledTimes(1);
   });
 
-  it('should calls onClose when "Logout" is pressed', async() => {
+  it('should calls onClose when "Logout" is pressed', async () => {
     await waitFor(() => {
       renderComponent();
     });
@@ -100,7 +113,7 @@ describe('Profile More Options Modal', () => {
     expect(mockOnClose).toHaveBeenCalledTimes(1);
   });
 
-  it('should calls onClose when "Edit Profile" is pressed',async () => {
+  it('should calls onClose when "Edit Profile" is pressed', async () => {
     await waitFor(() => {
       renderComponent();
     });
@@ -151,13 +164,21 @@ describe('Profile More Options Modal', () => {
     for (const {status, expected} of responses) {
       (deleteUser as jest.Mock).mockResolvedValue({status});
       await waitFor(() => {
-      renderComponent();
-    });
+        renderComponent();
+      });
       fireEvent.press(screen.getByText('Delete Account'));
       const confirmButton = await screen.findByText('Delete');
       fireEvent.press(confirmButton);
       await waitFor(() => {
-        expect(Alert.alert).toHaveBeenCalledWith(expected);
+        expect(Dialog.show).toHaveBeenCalledWith(
+          expect.objectContaining({
+            type: 'DANGER',
+            title: 'Error',
+            textBody: expected,
+            button: 'close',
+            closeOnOverlayTap: true,
+          }),
+        );
       });
     }
   });
@@ -171,7 +192,13 @@ describe('Profile More Options Modal', () => {
     const confirmButton = await screen.findByText('Delete');
     fireEvent.press(confirmButton);
     await waitFor(() => {
-      expect(Alert.alert).toHaveBeenCalledWith('Custom error');
+      expect(Dialog.show).toHaveBeenCalledWith({
+        type: 'DANGER',
+        title: 'Error',
+        textBody: 'Something went wrong!',
+        button: 'close',
+        closeOnOverlayTap: true,
+      });
     });
   });
 
@@ -227,7 +254,13 @@ describe('Profile More Options Modal', () => {
     const confirmButton = await screen.findByText('Delete');
     fireEvent.press(confirmButton);
     await waitFor(() => {
-      expect(Alert.alert).toHaveBeenCalledWith(errorMessage);
+      expect(Dialog.show).toHaveBeenCalledWith({
+        type: 'DANGER',
+        title: 'Error',
+        textBody: 'Something went wrong!',
+        button: 'close',
+        closeOnOverlayTap: true,
+      });
     });
   });
 });
