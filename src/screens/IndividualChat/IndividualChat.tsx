@@ -120,9 +120,6 @@ export const IndividualChat = ({route}: Props) => {
   }, [message, recipientPhoneNumber, socket]);
 
   useEffect(() => {
-    console.log('received_messages:', receivedMessages);
-    console.log('sent_messages:', sendMessages);
-    console.log('fetch_messages', fetchMessages);
     const all = [...fetchMessages, ...sendMessages, ...receivedMessages];
     const Messages = all.sort(
       (a, b) =>

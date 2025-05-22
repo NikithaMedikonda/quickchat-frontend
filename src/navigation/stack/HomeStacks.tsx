@@ -15,7 +15,6 @@ export const HomeStacks = () => {
       const user = await EncryptedStorage.getItem('user');
       if (user) {
         const parsedUser: User = JSON.parse(user);
-        console.log('phoneNumber:', parsedUser.phoneNumber);
         await socketConnection(parsedUser.phoneNumber);
       }
     }
