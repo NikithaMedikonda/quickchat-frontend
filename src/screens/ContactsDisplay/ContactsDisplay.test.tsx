@@ -232,13 +232,13 @@ describe('ContactsDisplay Component', () => {
 
     await waitFor(() => {
       expect(Dialog.show).toHaveBeenCalledWith(
-        expect.objectContaining({
+       {
           type: 'DANGER',
           title: 'Error',
-          textBody: 'Error occured while fetching the contacts',
+          textBody: 'Error occurred while fetching the contacts',
           button: 'close',
           closeOnOverlayTap: true,
-        }),
+        },
       );
     });
   });
