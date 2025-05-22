@@ -1,4 +1,5 @@
-import React from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 import {
   Image,
   KeyboardAvoidingView,
@@ -8,34 +9,32 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
-import {useDispatch, useSelector} from 'react-redux';
 import {
   ALERT_TYPE,
   AlertNotificationRoot,
   Dialog,
 } from 'react-native-alert-notification';
+import EncryptedStorage from 'react-native-encrypted-storage';
 import PhoneInput from 'react-native-phone-input';
-import {useTranslation} from 'react-i18next';
-import {Button} from '../../components/Button/Button';
-import {ImagePickerModal} from '../../components/ImagePickerModal/ImagePickerModal';
-import {Placeholder} from '../../components/InputField/InputField';
-import {registerUser} from '../../services/RegisterUser';
-import {show, hide} from '../../store/slices/loadingSlice';
-import {setLoginSuccess} from '../../store/slices/loginSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { Button } from '../../components/Button/Button';
+import { ImagePickerModal } from '../../components/ImagePickerModal/ImagePickerModal';
+import { Placeholder } from '../../components/InputField/InputField';
+import { DEFAULT_PROFILE_IMAGE } from '../../constants/defaultImage';
+import { keyGeneration } from '../../services/KeyGeneration';
+import { registerUser } from '../../services/RegisterUser';
+import { hide, show } from '../../store/slices/loadingSlice';
+import { setLoginSuccess } from '../../store/slices/loginSlice';
 import {
   resetForm,
   setErrors,
   setFormField,
   setIsVisible,
 } from '../../store/slices/registrationSlice';
-import EncryptedStorage from 'react-native-encrypted-storage';
-import {useThemeColors} from '../../themes/colors';
-import {getStyles} from './Registration.styles';
-import {RootState} from '../../store/store';
-import {HomeTabsProps, NavigationProps} from '../../types/usenavigation.type';
-import { DEFAULT_PROFILE_IMAGE } from '../../constants/defaultImage';
-import { keyGeneration } from '../../services/KeyGeneration';
+import { RootState } from '../../store/store';
+import { useThemeColors } from '../../themes/colors';
+import { HomeTabsProps, NavigationProps } from '../../types/usenavigation.type';
+import { getStyles } from './Registration.styles';
 
 export const Registration = () => {
   const navigation = useNavigation<NavigationProps>();

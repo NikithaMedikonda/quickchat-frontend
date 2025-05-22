@@ -1,10 +1,10 @@
-import {fireEvent, render, waitFor} from '@testing-library/react-native';
-import {NavigationContainer} from '@react-navigation/native';
-import {Provider} from 'react-redux';
-import {store} from '../../store/store';
-import {Registration} from './Registration';
-import {AlertNotificationRoot, Dialog} from 'react-native-alert-notification';
-import {resetForm} from '../../store/slices/registrationSlice';
+import { NavigationContainer } from '@react-navigation/native';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { AlertNotificationRoot, Dialog } from 'react-native-alert-notification';
+import { Provider } from 'react-redux';
+import { resetForm } from '../../store/slices/registrationSlice';
+import { store } from '../../store/store';
+import { Registration } from './Registration';
 
 jest.mock('react-native-image-crop-picker', () => ({
   openPicker: jest.fn().mockResolvedValue({path: 'mocked/image/path.jpg'}),
