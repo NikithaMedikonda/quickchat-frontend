@@ -1,18 +1,17 @@
 /* eslint-disable react-native/no-inline-styles */
-import {useNavigation} from '@react-navigation/native';
-import {useEffect, useLayoutEffect, useState} from 'react';
-import {useTranslation} from 'react-i18next';
-import {Alert, ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { useEffect, useLayoutEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Alert, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import Contacts from 'react-native-contacts';
 
-import {Contact} from '../../components/Contact/Contact';
-import {DEFAULT_PROFILE_IMAGE} from '../../constants/defaultImage';
-import {getContacts} from '../../services/GetContacts';
-import {useThemeColors} from '../../themes/colors';
-import {ContactDetails} from '../../types/contact.types';
-import {HomeStackProps, HomeTabsProps} from '../../types/usenavigation.type';
-import {getStyles} from './ContactsDisplay.styles';
-
+import { Contact } from '../../components/Contact/Contact';
+import { DEFAULT_PROFILE_IMAGE } from '../../constants/defaultImage';
+import { getContacts } from '../../services/GetContacts';
+import { useThemeColors } from '../../themes/colors';
+import { ContactDetails } from '../../types/contact.types';
+import { HomeStackProps, HomeTabsProps } from '../../types/usenavigation.type';
+import { getStyles } from './ContactsDisplay.styles';
 
 export const ContactsDisplay = () => {
   const [appContacts, setAppContacts] = useState<ContactDetails[] | []>([]);
@@ -91,6 +90,7 @@ export const ContactsDisplay = () => {
                         user: {
                           name: contact.name,
                           profilePicture: contact.profilePicture,
+                          phoneNumber: contact.phoneNumber,
                         },
                       });
                     }}>
