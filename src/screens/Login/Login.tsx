@@ -1,3 +1,7 @@
+import { useNavigation } from '@react-navigation/native';
+import phone from 'phone';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Image,
   KeyboardAvoidingView,
@@ -7,40 +11,37 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-
 import {
   ALERT_TYPE,
   AlertNotificationRoot,
   Dialog,
 } from 'react-native-alert-notification';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {phone} from 'phone';
 import PhoneInput from 'react-native-phone-input';
-import {useNavigation} from '@react-navigation/native';
-import {useDispatch, useSelector} from 'react-redux';
-import {useTranslation} from 'react-i18next';
-import {Button} from '../../components/Button/Button';
-import {hide, show} from '../../store/slices/loadingSlice';
-import {HomeTabsProps, NavigationProps} from '../../types/usenavigation.type';
-import {loginUser} from '../../services/LoginUser';
-import {loginStyles} from './Login.styles';
-import {Placeholder} from '../../components/InputField/InputField';
-import {RootState} from '../../store/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { Button } from '../../components/Button/Button';
+import { Placeholder } from '../../components/InputField/InputField';
+import { keyDecryption } from '../../services/KeyDecryption';
+import { loginUser } from '../../services/LoginUser';
+import { hide, show } from '../../store/slices/loadingSlice';
 import {
   resetLoginForm,
   setLoginErrors,
   setLoginField,
   setLoginSuccess,
 } from '../../store/slices/loginSlice';
-import {useThemeColors} from '../../themes/colors';
+import { RootState } from '../../store/store';
+import { useThemeColors } from '../../themes/colors';
 import { useImagesColors } from '../../themes/images';
+import { HomeTabsProps, NavigationProps } from '../../types/usenavigation.type';
+import { loginStyles } from './Login.styles';
 
 export function Login() {
   const homeNavigation = useNavigation<HomeTabsProps>();
   const navigate = useNavigation<NavigationProps>();
   const dispatch = useDispatch();
   const colors = useThemeColors();
-  const { logo } = useImagesColors();
+  const {logo} = useImagesColors();
   const styles = loginStyles(colors);
   const {t} = useTranslation('auth');
   const {form, errors} = useSelector((state: RootState) => state.login);
@@ -76,6 +77,11 @@ export function Login() {
     }
     try {
       const result = await loginUser({...form});
+      const user = result?.data?.user;
+      const privateKey = await keyDecryption({
+        encryptedPrivateKey: user.privateKey,
+        password: form.password,
+      });
       if (result.status === 200) {
         dispatch(hide());
         dispatch(
@@ -93,6 +99,10 @@ export function Login() {
         await EncryptedStorage.setItem(
           'user',
           JSON.stringify(result.data.user),
+        );
+        await EncryptedStorage.setItem(
+          'privateKey',
+          privateKey,
         );
         dispatch(resetLoginForm());
         homeNavigation.replace('hometabs');
@@ -216,4 +226,3 @@ export function Login() {
     </AlertNotificationRoot>
   );
 }
-
