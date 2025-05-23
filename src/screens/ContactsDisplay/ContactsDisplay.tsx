@@ -121,6 +121,7 @@ export const ContactsDisplay = () => {
                 <View style={styles.contactDetailsContainer}>
                   {appContacts.map((contact: ContactDetails, index: number) => (
                     <TouchableOpacity
+                      accessibilityHint="contact-label"
                       key={`${contact.name}-${index}`}
                       onPress={() => {
                         homeStackNavigation.navigate('individualChat', {
