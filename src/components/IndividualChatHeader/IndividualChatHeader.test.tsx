@@ -5,8 +5,8 @@ import {
   waitFor,
 } from '@testing-library/react-native';
 
-import {IndividualChatHeader} from './IndividualChatHeader';
-import {Platform} from 'react-native';
+import { Platform } from 'react-native';
+import { IndividualChatHeader } from './IndividualChatHeader';
 const mockNavigate = jest.fn();
 const mockGoBack = jest.fn();
 jest.mock('@react-navigation/native', () => ({
@@ -75,7 +75,7 @@ describe('Platform-specific back arrow image tests', () => {
     );
     const backArrow = screen.getByA11yHint('back-arrow-icon');
     expect(backArrow.props.source).toEqual(
-      require('../../assets/iOS-back-arrow.png'),
+      require('../../../src/assets/IOSBackArrowDark.png'),
     );
   });
 
@@ -92,7 +92,7 @@ describe('Platform-specific back arrow image tests', () => {
     );
     const backArrow = screen.getByA11yHint('back-arrow-icon');
     expect(backArrow.props.source).toEqual(
-      require('../../assets/android-back-arrow.png'),
+      require('../../../src/assets/AndroidBackArrowDark.png'),
     );
   });
 });
