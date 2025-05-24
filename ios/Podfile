@@ -60,6 +60,15 @@ target 'Frontend' do
       config[:reactNativePath],
       :mac_catalyst_enabled => false,
       # :ccache_enabled => true
-    )
+      )
+      installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+      config.build_settings['OTHER_CFLAGS'] ||= ['$(inherited)']
+      config.build_settings['OTHER_CFLAGS'] << '-Wno-deprecated-declarations'
+
+      config.build_settings['OTHER_CPLUSPLUSFLAGS'] ||= ['$(inherited)']
+      config.build_settings['OTHER_CPLUSPLUSFLAGS'] << '-Wno-deprecated-declarations'
+     end
+    end
   end
 end
