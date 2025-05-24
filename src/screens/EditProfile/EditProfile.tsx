@@ -232,9 +232,7 @@ export const EditProfile = () => {
           info: '#000000',
         },
       ]}>
-      <KeyboardAvoidingView
-        // eslint-disable-next-line react-native/no-inline-styles
-        style={{flex: 1}}
+      <KeyboardAvoidingView style={styles.keyboardView}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}>
         <ScrollView contentContainerStyle={styles.container}>
