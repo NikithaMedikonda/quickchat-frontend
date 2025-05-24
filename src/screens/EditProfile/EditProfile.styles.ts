@@ -1,6 +1,6 @@
-import {StyleSheet} from 'react-native';
+import {Dimensions, StyleSheet} from 'react-native';
 import {Colors} from '../../themes/colors';
-
+const {width} = Dimensions.get('window');
 export const getStyles = (colors: Colors) =>
   StyleSheet.create({
     container: {
@@ -45,9 +45,11 @@ export const getStyles = (colors: Colors) =>
       alignSelf: 'center',
     },
     errorText: {
-      color: colors.primaryBlue,
-      fontSize: 12,
-      marginTop: 4,
+      color: '#FF0000',
+      fontSize: 15,
+      alignSelf: 'flex-start',
+      width: width * 0.75,
+      marginLeft: width * 0.08,
     },
     buttonRow: {
       flexDirection: 'row',
