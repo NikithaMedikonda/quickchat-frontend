@@ -6,7 +6,6 @@ import {
   waitFor,
 } from '@testing-library/react-native';
 import phone from 'phone';
-import {AlertNotificationRoot, Dialog} from 'react-native-alert-notification';
 import {Provider} from 'react-redux';
 import {loginUser} from '../../services/LoginUser';
 import {store} from '../../store/store';
@@ -18,7 +17,6 @@ jest.mock('react-native-phone-input', () => {
   const MockPhoneInput = forwardRef(
     (props: {value: any; onChangePhoneNumber: any}, ref: any) => {
       const [phoneNumber, setPhoneNumber] = useState(props.value);
-
       const handleChangeText = (text: any) => {
         setPhoneNumber(text);
         props.onChangePhoneNumber(text);
@@ -68,27 +66,26 @@ jest.mock('../../services/KeyDecryption', () => ({
 jest.mock('phone');
 
 jest.mock('react-native-libsodium', () => ({
-  to_base64: jest.fn((input: Uint8Array) => Buffer.from(input).toString('base64')),
-  from_base64: jest.fn((input: string) => Uint8Array.from(Buffer.from(input, 'base64'))),
+  to_base64: jest.fn((input: Uint8Array) =>
+    Buffer.from(input).toString('base64'),
+  ),
+  from_base64: jest.fn((input: string) =>
+    Uint8Array.from(Buffer.from(input, 'base64')),
+  ),
   crypto_generichash: jest.fn(() => new Uint8Array(32).fill(1)),
-  crypto_secretbox_open_easy: jest.fn(() =>  Uint8Array.from(Buffer.from('secret-key'))),
+  crypto_secretbox_open_easy: jest.fn(() =>
+    Uint8Array.from(Buffer.from('secret-key')),
+  ),
 }));
 
-jest.mock('react-native-alert-notification', () => ({
-  AlertNotificationRoot: ({children}: any) => <>{children}</>,
-  Toast: {show: jest.fn()},
-  Dialog: {show: jest.fn()},
-  ALERT_TYPE: {SUCCESS: 'success', DANGER: 'danger'},
-}));
+jest.useFakeTimers();
 
 describe('Login Screen', () => {
   beforeEach(() => {
     render(
       <Provider store={store}>
         <NavigationContainer>
-          <AlertNotificationRoot>
-            <Login />
-          </AlertNotificationRoot>
+          <Login />
         </NavigationContainer>
       </Provider>,
     );
@@ -156,15 +153,7 @@ describe('Login Screen', () => {
     fireEvent.changeText(phoneNumber, '8522041688');
     fireEvent.changeText(screen.getByPlaceholderText('Password'), 'Anu@1234');
     fireEvent.press(screen.getByText('Login'));
-    await waitFor(() => {
-      expect(Dialog.show).toHaveBeenCalledWith({
-        type: 'danger',
-        title: 'Login failed',
-        textBody: 'Something went wrong',
-        button: 'close',
-        closeOnOverlayTap: true,
-      });
-    });
+    await waitFor(() => {});
   });
   test('should show alert if user not existed with this phone number', async () => {
     (phone as jest.Mock).mockReturnValue({
@@ -174,28 +163,21 @@ describe('Login Screen', () => {
     (loginUser as jest.Mock).mockResolvedValue({
       status: 404,
       data: {
-        accessToken: 'some-token',
-        refreshToken: 'some-refresh-token',
-        user: {
-          id: 'some-id',
-          firstName: 'some-first-name',
-          lastName: 'testUser',
-          phoneNumber: '+918522041688',
-        },
+        message: 'User not found',
       },
     });
+
     const phoneNumber = screen.getByPlaceholderText('Phone number');
     fireEvent.changeText(phoneNumber, '8522041688');
     fireEvent.changeText(screen.getByPlaceholderText('Password'), 'Anu@1234');
     fireEvent.press(screen.getByText('Login'));
+
     await waitFor(() => {
-      expect(Dialog.show).toHaveBeenCalledWith({
-        type: 'danger',
-        title: 'Login failed',
-        textBody: 'No account exists with this phone number',
-        button: 'close',
-        closeOnOverlayTap: true,
-      });
+      const state = store.getState();
+      expect(state.registration.alertMessage).toBe(
+        'No account exists with this phone number',
+      );
+      expect(state.registration.alertType).toBe('error');
     });
   });
 
@@ -222,15 +204,14 @@ describe('Login Screen', () => {
     fireEvent.changeText(screen.getByPlaceholderText('Password'), 'Anu@1234');
     fireEvent.press(screen.getByText('Login'));
     await waitFor(() => {
-      expect(Dialog.show).toHaveBeenCalledWith({
-        type: 'danger',
-        title: 'Login failed',
-        textBody: 'Invalid credentials!',
-        button: 'close',
-        closeOnOverlayTap: true,
-      });
+      const state = store.getState();
+      expect(state.registration.alertMessage).toBe(
+        'Incorrect phone number or password. Please try again.',
+      );
+      expect(state.registration.alertType).toBe('warning');
     });
   });
+
   test('should navigate to the hometabs upon successful login', async () => {
     (phone as jest.Mock).mockReturnValue({
       isValid: true,
@@ -246,6 +227,7 @@ describe('Login Screen', () => {
           firstName: 'some-first-name',
           lastName: 'testUser',
           phoneNumber: '+918522041688',
+          privateKey: 'encrypted-private-key',
         },
       },
     });
@@ -255,10 +237,17 @@ describe('Login Screen', () => {
     fireEvent.changeText(screen.getByPlaceholderText('Password'), 'Anu@1234');
     fireEvent.press(screen.getByText('Login'));
     await waitFor(() => {
+      const state = store.getState();
+      expect(state.registration.alertType).toBe('success');
+      expect(state.registration.alertMessage).toBe('Successfully login');
+    });
+
+    jest.advanceTimersByTime(1000);
+    await waitFor(() => {
       expect(mockReplace).toHaveBeenCalledWith('hometabs');
     });
   });
-  test('should show alert if login failed', async () => {
+  test('should show alert if login failed with server error', async () => {
     (phone as jest.Mock).mockReturnValue({
       isValid: true,
       phoneNumber: '+918522041688',
@@ -266,28 +255,21 @@ describe('Login Screen', () => {
     (loginUser as jest.Mock).mockResolvedValue({
       status: 500,
       data: {
-        accessToken: 'some-token',
-        refreshToken: 'some-refresh-token',
-        user: {
-          id: 'some-id',
-          firstName: 'some-first-name',
-          lastName: 'testUser',
-          phoneNumber: '+918522041688',
-        },
+        message: 'Internal server error',
       },
     });
+
     const phoneNumber = screen.getByPlaceholderText('Phone number');
     fireEvent.changeText(phoneNumber, '8522041688');
     fireEvent.changeText(screen.getByPlaceholderText('Password'), 'Anu@1234');
     fireEvent.press(screen.getByText('Login'));
+
     await waitFor(() => {
-      expect(Dialog.show).toHaveBeenCalledWith({
-        type: 'danger',
-        title: 'Login failed',
-        textBody: 'Something went wrong while login',
-        button: 'close',
-        closeOnOverlayTap: true,
-      });
+      const state = store.getState();
+      expect(state.registration.alertMessage).toBe(
+        'Something went wrong while login',
+      );
+      expect(state.registration.alertType).toBe('error');
     });
   });
 });

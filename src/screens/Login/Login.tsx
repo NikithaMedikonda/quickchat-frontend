@@ -1,7 +1,6 @@
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import phone from 'phone';
-import React from 'react';
-import { useTranslation } from 'react-i18next';
+import {useTranslation} from 'react-i18next';
 import {
   Image,
   KeyboardAvoidingView,
@@ -11,30 +10,32 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {
-  ALERT_TYPE,
-  AlertNotificationRoot,
-  Dialog,
-} from 'react-native-alert-notification';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import PhoneInput from 'react-native-phone-input';
-import { useDispatch, useSelector } from 'react-redux';
-import { Button } from '../../components/Button/Button';
-import { Placeholder } from '../../components/InputField/InputField';
-import { keyDecryption } from '../../services/KeyDecryption';
-import { loginUser } from '../../services/LoginUser';
-import { hide, show } from '../../store/slices/loadingSlice';
+import {useDispatch, useSelector} from 'react-redux';
+import {Button} from '../../components/Button/Button';
+import {Placeholder} from '../../components/InputField/InputField';
+import {keyDecryption} from '../../services/KeyDecryption';
+import {loginUser} from '../../services/LoginUser';
+import {hide, show} from '../../store/slices/loadingSlice';
 import {
   resetLoginForm,
   setLoginErrors,
   setLoginField,
   setLoginSuccess,
 } from '../../store/slices/loginSlice';
-import { RootState } from '../../store/store';
-import { useThemeColors } from '../../themes/colors';
-import { useImagesColors } from '../../themes/images';
-import { HomeTabsProps, NavigationProps } from '../../types/usenavigation.type';
-import { loginStyles } from './Login.styles';
+import {RootState} from '../../store/store';
+import {useThemeColors} from '../../themes/colors';
+import {useImagesColors} from '../../themes/images';
+import {HomeTabsProps, NavigationProps} from '../../types/usenavigation.type';
+import {loginStyles} from './Login.styles';
+import {
+  setAlertTitle,
+  setAlertType,
+  setAlertVisible,
+  setAlertMessage,
+} from '../../store/slices/registrationSlice';
+import {CustomAlert} from '../../components/CustomAlert/CustomAlert';
 
 export function Login() {
   const homeNavigation = useNavigation<HomeTabsProps>();
@@ -45,6 +46,15 @@ export function Login() {
   const styles = loginStyles(colors);
   const {t} = useTranslation('auth');
   const {form, errors} = useSelector((state: RootState) => state.login);
+  const {alertType, alertTitle, alertMessage} = useSelector(
+    (state: RootState) => state.registration,
+  );
+  const showAlert = (type: string, title: string, message: string) => {
+    dispatch(setAlertType(type));
+    dispatch(setAlertTitle(title));
+    dispatch(setAlertMessage(message));
+    dispatch(setAlertVisible(true));
+  };
 
   const handleInputChange = (key: keyof typeof form, value: string) => {
     dispatch(setLoginField({key, value}));
@@ -71,158 +81,130 @@ export function Login() {
   async function handleLogin() {
     dispatch(setLoginErrors({}));
     dispatch(show());
+
     if (!validateForm()) {
       dispatch(hide());
       return;
     }
+
     try {
       const result = await loginUser({...form});
-      const user = result?.data?.user;
-      const privateKey = await keyDecryption({
-        encryptedPrivateKeyData: user.privateKey,
-        password: form.password,
-      });
+
       if (result.status === 200) {
+        const user = result?.data?.user;
+        const privateKey = await keyDecryption({
+          encryptedPrivateKeyData: user.privateKey,
+          password: form.password,
+        });
+
         dispatch(hide());
+        dispatch(setAlertVisible(true));
+        showAlert('success', 'Login', 'Successfully login');
+
         dispatch(
           setLoginSuccess({
             accessToken: result.data.accessToken,
             refreshToken: result.data.refreshToken,
-            user: result.data.user,
+            user,
           }),
         );
+
+        setTimeout(() => {
+          dispatch(setAlertVisible(false));
+          homeNavigation.replace('hometabs');
+        }, 1000);
+
         await EncryptedStorage.setItem('authToken', result.data.accessToken);
         await EncryptedStorage.setItem(
           'refreshToken',
           result.data.refreshToken,
         );
-        await EncryptedStorage.setItem(
-          'user',
-          JSON.stringify(result.data.user),
-        );
-        await EncryptedStorage.setItem(
-          'privateKey',
-          privateKey,
-        );
+        await EncryptedStorage.setItem('user', JSON.stringify(user));
+        await EncryptedStorage.setItem('privateKey', privateKey);
+
         dispatch(resetLoginForm());
-        homeNavigation.replace('hometabs');
       } else if (result.status === 404) {
         dispatch(hide());
-        Dialog.show({
-          type: ALERT_TYPE.DANGER,
-          title: 'Login failed',
-          textBody: 'No account exists with this phone number',
-          button: 'close',
-          closeOnOverlayTap: true,
-        });
+        showAlert(
+          'error',
+          'Login failed',
+          'No account exists with this phone number',
+        );
       } else if (result.status === 401) {
         dispatch(hide());
-        Dialog.show({
-          type: ALERT_TYPE.DANGER,
-          title: 'Login failed',
-          textBody: 'Invalid credentials!',
-          button: 'close',
-          closeOnOverlayTap: true,
-        });
+        showAlert(
+          'warning',
+          'Login failed',
+          'Incorrect phone number or password. Please try again.',
+        );
       } else {
         dispatch(hide());
-        Dialog.show({
-          type: ALERT_TYPE.DANGER,
-          title: 'Login failed',
-          textBody: 'Something went wrong while login',
-          button: 'close',
-          closeOnOverlayTap: true,
-        });
+        showAlert('error', 'Login failed', 'Something went wrong while login');
       }
     } catch (error: any) {
       dispatch(hide());
-      Dialog.show({
-        type: ALERT_TYPE.DANGER,
-        title: 'Login failed',
-        textBody: 'Something went wrong',
-        button: 'close',
-        closeOnOverlayTap: true,
-      });
+      showAlert(
+        'info',
+        'Login failed',
+        'Something went wrong. Check your connection.',
+      );
     }
   }
+
   return (
-    <AlertNotificationRoot
-      theme="dark"
-      colors={[
-        {
-          label: '#000000',
-          card: '#FFFFFF',
-          overlay: 'rgba(0, 0, 0, 0.5)',
-          success: '#4CAF50',
-          danger: '#F44336',
-          warning: '#1877F2',
-          info: '#000000',
-        },
-        {
-          label: '#000000',
-          card: '#FFFFFF',
-          overlay: 'rgb(255, 254, 254)',
-          success: '#4CAF50',
-          danger: '#F44336',
-          warning: '#FFFFFF',
-          info: '#000000',
-        },
-      ]}>
-      <KeyboardAvoidingView
-        style={styles.keyboardAvoidView}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}>
-        <ScrollView
-          contentContainerStyle={styles.loginMainContainer}
-          keyboardShouldPersistTaps="handled">
-          <Image
-            style={styles.image}
-            source={logo}
-            accessibilityHint="logo-image"
-          />
-          <PhoneInput
-            style={styles.phoneNumber}
-            initialCountry={'in'}
-            initialValue={form.phoneNumber}
-            textProps={{
-              placeholder: 'Phone number',
-            }}
-            onChangePhoneNumber={(text: string) => {
-              handleInputChange('phoneNumber', text);
-            }}
-            onPressFlag={() => {}}
-          />
-          {errors.phoneNumber && (
-            <Text style={styles.error}>{t(`${errors.phoneNumber}`)}</Text>
-          )}
-          <Placeholder
-            title="Password"
-            value={form.password}
-            onChange={(text: string) => {
-              handleInputChange('password', text);
-            }}
-            secureTextEntry={true}
-          />
-          {errors.password && (
-            <Text style={styles.error}>{t(`${errors.password}`)}</Text>
-          )}
-          <View style={styles.loginButtonContainer}>
-            <Button title="Login" onPress={handleLogin} />
-          </View>
-          <View style={styles.messageView}>
-            <Text style={styles.messageText}>
-              {t("Don't have an account?")}
-            </Text>
-            <TouchableOpacity
-              style={styles.signUpContainer}
-              onPress={() => {
-                navigate.navigate('register');
-              }}>
-              <Text style={styles.validationText}>{t(' Sign up')}</Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </AlertNotificationRoot>
+    <KeyboardAvoidingView
+      style={styles.keyboardAvoidView}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}>
+      <ScrollView
+        contentContainerStyle={styles.loginMainContainer}
+        keyboardShouldPersistTaps="handled">
+        <Image
+          style={styles.image}
+          source={logo}
+          accessibilityHint="logo-image"
+        />
+        <PhoneInput
+          style={styles.phoneNumber}
+          initialCountry={'in'}
+          initialValue={form.phoneNumber}
+          textProps={{
+            placeholder: 'Phone number',
+          }}
+          onChangePhoneNumber={(text: string) => {
+            handleInputChange('phoneNumber', text);
+          }}
+          onPressFlag={() => {}}
+        />
+        {errors.phoneNumber && (
+          <Text style={styles.error}>{t(`${errors.phoneNumber}`)}</Text>
+        )}
+        <Placeholder
+          title="Password"
+          value={form.password}
+          onChange={(text: string) => {
+            handleInputChange('password', text);
+          }}
+          secureTextEntry={true}
+        />
+        {errors.password && (
+          <Text style={styles.error}>{t(`${errors.password}`)}</Text>
+        )}
+        <View style={styles.loginButtonContainer}>
+          <Button title="Login" onPress={handleLogin} />
+        </View>
+        <View style={styles.messageView}>
+          <Text style={styles.messageText}>{t("Don't have an account?")}</Text>
+          <TouchableOpacity
+            style={styles.signUpContainer}
+            onPress={() => {
+              navigate.navigate('register');
+            }}>
+            <Text style={styles.validationText}>{t(' Sign up')}</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+      <CustomAlert type={alertType} title={alertTitle} message={alertMessage} />
+    </KeyboardAvoidingView>
   );
 }
