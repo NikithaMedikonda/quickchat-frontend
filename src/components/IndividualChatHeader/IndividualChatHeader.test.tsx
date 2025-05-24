@@ -6,6 +6,7 @@ import {
 } from '@testing-library/react-native';
 
 import {IndividualChatHeader} from './IndividualChatHeader';
+import {Platform} from 'react-native';
 const mockNavigate = jest.fn();
 const mockGoBack = jest.fn();
 jest.mock('@react-navigation/native', () => ({
@@ -50,5 +51,48 @@ describe('IndividualChatHeader', () => {
       fireEvent.press(backArrow);
     });
     expect(mockGoBack).toHaveBeenCalledTimes(1);
+  });
+});
+describe('Platform-specific back arrow image tests', () => {
+  const originalPlatform = Platform.OS;
+
+  afterEach(() => {
+    Object.defineProperty(Platform, 'OS', {
+      get: () => originalPlatform,
+    });
+  });
+
+  test('back arrow image on iOS', () => {
+    Object.defineProperty(Platform, 'OS', {
+      get: () => 'ios',
+    });
+    render(
+      <IndividualChatHeader
+        name="Test"
+        profilePicture="someUri"
+        phoneNumber=""
+      />,
+    );
+    const backArrow = screen.getByA11yHint('back-arrow-icon');
+    expect(backArrow.props.source).toEqual(
+      require('../../assets/iOS-back-arrow.png'),
+    );
+  });
+
+  test('back arrow image on Android', () => {
+    Object.defineProperty(Platform, 'OS', {
+      get: () => 'android',
+    });
+    render(
+      <IndividualChatHeader
+        name="Test"
+        profilePicture="someUri"
+        phoneNumber=""
+      />,
+    );
+    const backArrow = screen.getByA11yHint('back-arrow-icon');
+    expect(backArrow.props.source).toEqual(
+      require('../../assets/android-back-arrow.png'),
+    );
   });
 });
