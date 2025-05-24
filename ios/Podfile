@@ -54,21 +54,32 @@ target 'Frontend' do
   )
   # pod 'react-native-splash-screen', :path => '../node_modules/react-native-splash-screen'
   post_install do |installer|
-    # https://github.com/facebook/react-native/blob/main/packages/react-native/scripts/react_native_pods.rb#L197-L202
-    react_native_post_install(
-      installer,
-      config[:reactNativePath],
-      :mac_catalyst_enabled => false,
-      # :ccache_enabled => true
-      )
-      installer.pods_project.targets.each do |target|
-      target.build_configurations.each do |config|
-      config.build_settings['OTHER_CFLAGS'] ||= ['$(inherited)']
-      config.build_settings['OTHER_CFLAGS'] << '-Wno-deprecated-declarations'
+  react_native_post_install(
+    installer,
+    config[:reactNativePath],
+    :mac_catalyst_enabled => false,
+  )
 
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+      config.build_settings['OTHER_CFLAGS'] ||= ['$(inherited)']
       config.build_settings['OTHER_CPLUSPLUSFLAGS'] ||= ['$(inherited)']
-      config.build_settings['OTHER_CPLUSPLUSFLAGS'] << '-Wno-deprecated-declarations'
-     end
+
+      # Fix malformed warning flag
+      if config.build_settings['OTHER_CFLAGS'].is_a?(Array)
+        config.build_settings['OTHER_CFLAGS'].map! do |flag|
+          flag.gsub('-Wno-shorten-64-to-32-Wno-deprecated-declarations', '-Wno-shorten-64-to-32 -Wno-deprecated-declarations')
+        end
+      elsif config.build_settings['OTHER_CFLAGS'].is_a?(String)
+        config.build_settings['OTHER_CFLAGS'] = config.build_settings['OTHER_CFLAGS']
+          .gsub('-Wno-shorten-64-to-32-Wno-deprecated-declarations', '-Wno-shorten-64-to-32 -Wno-deprecated-declarations')
+      end
+
+      # Add safe flags (in case not already included)
+      config.build_settings['OTHER_CFLAGS'] << '-Wno-deprecated-declarations' unless config.build_settings['OTHER_CFLAGS'].include?('-Wno-deprecated-declarations')
+      config.build_settings['OTHER_CPLUSPLUSFLAGS'] << '-Wno-deprecated-declarations' unless config.build_settings['OTHER_CPLUSPLUSFLAGS'].include?('-Wno-deprecated-declarations')
     end
   end
 end
+
+end 
