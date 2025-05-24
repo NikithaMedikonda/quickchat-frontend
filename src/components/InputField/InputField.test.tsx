@@ -1,7 +1,7 @@
 import {render} from '@testing-library/react-native';
 import {Placeholder} from './InputField';
 
-describe('Input Field', () => {
+describe('Test for Input Field component', () => {
   it('renders input fields', () => {
     const {getByPlaceholderText, getByDisplayValue} = render(
       <Placeholder
@@ -15,15 +15,11 @@ describe('Input Field', () => {
     expect(getByDisplayValue('TestUser')).toBeTruthy();
   });
   it('defaults secureTextEntry to false when not provided', () => {
-  const { getByPlaceholderText } = render(
-    <Placeholder
-      title="Email"
-      value=""
-      onChange={() => {}}
-    />
-  );
+    const {getByPlaceholderText} = render(
+      <Placeholder title="Email" value="" onChange={() => {}} />,
+    );
 
-  const input = getByPlaceholderText('Email');
-  expect(input.props.secureTextEntry).toBe(false);
-});
+    const input = getByPlaceholderText('Email');
+    expect(input.props.secureTextEntry).toBe(false);
+  });
 });
