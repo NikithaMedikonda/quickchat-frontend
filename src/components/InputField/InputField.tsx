@@ -12,7 +12,7 @@ export const Placeholder = ({
   title: string;
   value: string;
   onChange: (text: string) => void;
-  secureTextEntry: boolean;
+  secureTextEntry?: boolean;
 }) => {
 
   const colors = useThemeColors();
