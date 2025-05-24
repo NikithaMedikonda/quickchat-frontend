@@ -16,7 +16,7 @@ jest.mock('@react-navigation/native', () => ({
     goBack: mockGoBack,
   }),
 }));
-describe('IndividualChatHeader', () => {
+describe('Test for IndividualChatHeader component', () => {
   const userDetails = {
     name: 'Chitty',
     profilePicture: '../../assets/user.png',
