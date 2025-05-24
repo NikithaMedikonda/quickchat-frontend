@@ -58,8 +58,7 @@ export const EditProfile = () => {
         lastName = '',
         email = '',
         profilePhoto = '',
-        // eslint-disable-next-line @typescript-eslint/no-shadow
-        phoneNumber = '',
+        phoneNumber : storedPhoneNumber = '',
       } = userData;
 
       setInputFirstName(firstName);
@@ -67,7 +66,7 @@ export const EditProfile = () => {
       setInputEmail(email);
       setImageURL(profilePhoto);
       setToken(AccessToken);
-      setPhoneNumber(phoneNumber);
+      setPhoneNumber(storedPhoneNumber);
       setUser(userData);
     } catch (error) {
       throw error;
