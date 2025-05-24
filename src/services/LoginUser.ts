@@ -15,9 +15,16 @@ export const loginUser = async (payload: {
     },
     body: JSON.stringify(userData),
   });
-  const data = await response.json();
-  return {
-    status: response.status,
-    data,
-  };
+    let data;
+    try {
+      data = await response.json();
+    } catch {
+      data = {};
+    }
+    console.log(response.status);
+    console.log(data)
+    return {
+      status: response.status,
+      data,
+    };
 };
