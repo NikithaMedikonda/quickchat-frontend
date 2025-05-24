@@ -1,6 +1,5 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
-import { AlertNotificationRoot, Dialog } from 'react-native-alert-notification';
 import { Provider } from 'react-redux';
 import { resetForm } from '../../store/slices/registrationSlice';
 import { store } from '../../store/store';
@@ -81,12 +80,6 @@ jest.mock('react-i18next', () => ({
   }),
 }));
 
-jest.mock('react-native-alert-notification', () => ({
-  AlertNotificationRoot: ({children}: any) => <>{children}</>,
-  Toast: {show: jest.fn()},
-  Dialog: {show: jest.fn()},
-  ALERT_TYPE: {SUCCESS: 'success', DANGER: 'danger'},
-}));
 
 const mockNavigate = jest.fn();
 const mockReplace = jest.fn();
@@ -101,9 +94,7 @@ describe('Registration Screen', () => {
     render(
       <Provider store={store}>
         <NavigationContainer>
-          <AlertNotificationRoot>
             <Registration />
-          </AlertNotificationRoot>
         </NavigationContainer>
       </Provider>,
     );
@@ -129,6 +120,14 @@ describe('Registration Screen', () => {
       expect(getByText('Invalid password!')).toBeTruthy();
     });
   });
+it('should activate image picker modal', async () => {
+  const {getByAccessibilityHint} = renderComponent();
+  fireEvent.press(getByAccessibilityHint('logo'));
+  await waitFor(() => {
+    const state = store.getState();
+    expect(state.registration.isVisible).toBe(true);
+  });
+});
 
   it('shows password mismatch error', async () => {
     const {getByPlaceholderText, getByText} = renderComponent();
@@ -149,6 +148,24 @@ describe('Registration Screen', () => {
     fireEvent.press(getByText('Register'));
     await waitFor(() => {
       expect(getByText('Invalid password!')).toBeTruthy();
+    });
+  });
+
+    it('should check the phone number', async () => {
+    const {getByPlaceholderText, getByText} = renderComponent();
+    fireEvent.changeText(getByPlaceholderText('Phone number'), '');
+    fireEvent.press(getByText('Register'));
+    await waitFor(() => {
+      expect(getByText('Phone number required!')).toBeTruthy();
+    });
+  });
+
+      it('should check the lenght of phone number', async () => {
+    const {getByPlaceholderText, getByText} = renderComponent();
+    fireEvent.changeText(getByPlaceholderText('Phone number'), '123456');
+    fireEvent.press(getByText('Register'));
+    await waitFor(() => {
+      expect(getByText('Invalid phone number!')).toBeTruthy();
     });
   });
 
@@ -229,15 +246,10 @@ describe('Registration Screen', () => {
     fireEvent.press(getByText('Register'));
 
     await waitFor(() => {
-      expect(registerUser).toHaveBeenCalled();
-      expect(Dialog.show).toHaveBeenCalledWith({
-        type: 'danger',
-        title: 'Registration failed',
-        textBody: 'User already exists with this number or email',
-        button: 'close',
-        closeOnOverlayTap: true,
-      });
-    });
+    const state = store.getState();
+    expect(state.registration.alertMessage).toBe('User already exists with this number or email');
+    expect(state.registration.alertType).toBe('error');
+  });
   });
 
   it('shows generic error if server fails', async () => {
@@ -265,14 +277,41 @@ describe('Registration Screen', () => {
 
     await waitFor(() => {
       expect(registerUser).toHaveBeenCalled();
-      expect(Dialog.show).toHaveBeenCalledWith({
-        type: 'danger',
-        title: 'Registration failed',
-        textBody: 'Something went wrong while registering',
-        button: 'close',
-        closeOnOverlayTap: true,
-      });
+const state = store.getState();
+    expect(state.registration.alertMessage).toBe('Something went wrong while registering');
+    expect(state.registration.alertType).toBe('error');
+    });
+  });
+
+    it('shows generic error if server fails', async () => {
+    const {registerUser} = require('../../services/RegisterUser.ts');
+    registerUser.mockRejectedValue(new Error('Server failure'));
+
+    const {getByPlaceholderText, getByText} = renderComponent();
+
+    fireEvent.changeText(getByPlaceholderText('First Name'), 'Test');
+    fireEvent.changeText(getByPlaceholderText('Last Name'), 'User');
+    fireEvent.changeText(getByPlaceholderText('Phone number'), '1234567890');
+    fireEvent.changeText(getByPlaceholderText('Password'), 'Password@123');
+    fireEvent.changeText(
+      getByPlaceholderText('Confirm Password'),
+      'Password@123',
+    );
+    fireEvent.changeText(
+      getByPlaceholderText('Email (Optional)'),
+      'user@gmail.com',
+    );
+
+    fireEvent.press(getByText('Register'));
+
+    await waitFor(() => {
+      expect(registerUser).toHaveBeenCalled();
+    const state = store.getState();
+    expect(state.registration.alertMessage).toBe('Please check your internet');
+    expect(state.registration.alertType).toBe('info');
     });
   });
 });
+
+
 

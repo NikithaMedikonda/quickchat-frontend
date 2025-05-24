@@ -33,7 +33,7 @@ export const getStyles = (colors: Colors) =>
       marginTop: height * 0.02,
     },
     errorText: {
-      color: 'red',
+      color: 'FFA2A2',
       fontSize: 15,
       alignSelf: 'flex-start',
       width: width * 0.75,
