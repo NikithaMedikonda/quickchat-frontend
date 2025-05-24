@@ -168,7 +168,7 @@ describe('Registration Screen', () => {
     const {getByText} = renderComponent();
     fireEvent.press(getByText('Sign in'));
     await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith('login');
+      expect(mockReplace).toHaveBeenCalledWith('login');
     });
   });
 
