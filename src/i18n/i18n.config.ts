@@ -29,7 +29,7 @@ export const resources = {
   },
 };
 
-const languageCode = RNLocalize.getLocales()[0]?.languageCode || 'en';
+const languageCode = RNLocalize.getLocales()[0]?.languageCode;
 
 i18next.use(initReactI18next).init({
   debug: true,
