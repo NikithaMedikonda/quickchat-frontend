@@ -138,7 +138,7 @@ describe('IndividualChat', () => {
     });
   });
 
-  test('Should render the message input component', () => {
+  test('Should render the message input component', async() => {
     (getMessagesBetween as jest.Mock).mockResolvedValueOnce({
       status: 200,
       data: {
@@ -176,10 +176,12 @@ describe('IndividualChat', () => {
         />
       </NavigationContainer>,
     );
+    await waitFor(() => {
     const inputBox = screen.getByPlaceholderText('Type a message..');
     expect(inputBox).toBeTruthy();
 
     const sendIcon = screen.getByA11yHint('send-message-icon');
     expect(sendIcon).toBeTruthy();
+  });
   });
 });
