@@ -14,4 +14,16 @@ describe('Input Field', () => {
     expect(getByPlaceholderText('First Name')).toBeTruthy();
     expect(getByDisplayValue('TestUser')).toBeTruthy();
   });
+  it('defaults secureTextEntry to false when not provided', () => {
+  const { getByPlaceholderText } = render(
+    <Placeholder
+      title="Email"
+      value=""
+      onChange={() => {}}
+    />
+  );
+
+  const input = getByPlaceholderText('Email');
+  expect(input.props.secureTextEntry).toBe(false);
+});
 });
