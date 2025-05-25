@@ -6,11 +6,9 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react-native';
-import {AlertNotificationRoot, Dialog} from 'react-native-alert-notification';
 import Contacts from 'react-native-contacts';
 import {Provider} from 'react-redux';
 import {getContacts} from '../../services/GetContacts';
-import {useThemeColors} from '../../themes/colors';
 import {resetForm} from '../../store/slices/registrationSlice';
 import {store} from '../../store/store';
 import {useThemeColors} from '../../themes/colors';
@@ -208,7 +206,7 @@ describe('ContactsDisplay Component', () => {
       expect(state.registration.alertMessage).toBe('Network error');
       expect(state.registration.alertType).toBe('info');
   });
-
+});
 
   it('should navigate to individual chat screen when it is clicked on contact', async () => {
     (getContacts as jest.Mock).mockResolvedValue({
@@ -242,4 +240,5 @@ describe('ContactsDisplay Component', () => {
       });
     });
   });
-});
+
+})
