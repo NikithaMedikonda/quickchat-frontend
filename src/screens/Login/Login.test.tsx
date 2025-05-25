@@ -35,9 +35,6 @@ jest.mock('react-native-phone-input', () => {
   return MockPhoneInput;
 });
 
-const mockNavigate = jest.fn();
-const mockReplace = jest.fn();
-
 jest.mock('@react-navigation/native', () => {
   const actualNav = jest.requireActual('@react-navigation/native');
   return {
@@ -48,6 +45,8 @@ jest.mock('@react-navigation/native', () => {
     }),
   };
 });
+const mockNavigate = jest.fn();
+const mockReplace = jest.fn();
 
 jest.mock('react-native-encrypted-storage', () => ({
   setItem: jest.fn(),
