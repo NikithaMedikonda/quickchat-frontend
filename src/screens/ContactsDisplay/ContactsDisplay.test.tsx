@@ -129,8 +129,7 @@ describe('ContactsDisplay Component', () => {
     await waitFor(() => {
       expect(
         getByText(
-          // eslint-disable-next-line no-useless-escape
-          `It\'s so sad that, we have no one on Quick Chat. Share about Quick Chat`,
+          `It's so sad that, we have no one on Quick Chat. Share about Quick Chat`,
         ),
       ).toBeTruthy();
     });

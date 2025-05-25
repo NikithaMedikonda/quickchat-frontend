@@ -1,4 +1,4 @@
-import {useEffect, useLayoutEffect, useState} from 'react';
+import {useEffect, useLayoutEffect, useRef, useState} from 'react';
 import {
   Image,
   KeyboardAvoidingView,
@@ -41,11 +41,12 @@ export const EditProfile = () => {
   const [inputFirstName, setInputFirstName] = useState('');
   const [inputLastName, setInputLastName] = useState('');
   const [inputEmail, setInputEmail] = useState('');
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [imageURL, setImageURL] = useState('');
+
+  const imageURLRef = useRef('');
   const [token, setToken] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [user, setUser] = useState<any>(null);
+
 
   const getUserData = async () => {
     try {
@@ -58,16 +59,15 @@ export const EditProfile = () => {
         lastName = '',
         email = '',
         profilePhoto = '',
-        // eslint-disable-next-line @typescript-eslint/no-shadow
-        phoneNumber = '',
+        phoneNumber : storedPhoneNumber = '',
       } = userData;
 
       setInputFirstName(firstName);
       setInputLastName(lastName);
       setInputEmail(email);
-      setImageURL(profilePhoto);
+      imageURLRef.current = profilePhoto;
       setToken(AccessToken);
-      setPhoneNumber(phoneNumber);
+      setPhoneNumber(storedPhoneNumber);
       setUser(userData);
     } catch (error) {
       throw error;
@@ -232,9 +232,7 @@ export const EditProfile = () => {
           info: '#000000',
         },
       ]}>
-      <KeyboardAvoidingView
-        // eslint-disable-next-line react-native/no-inline-styles
-        style={{flex: 1}}
+      <KeyboardAvoidingView style={styles.keyboardView}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}>
         <ScrollView contentContainerStyle={styles.container}>
