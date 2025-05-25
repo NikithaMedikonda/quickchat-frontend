@@ -131,6 +131,7 @@ describe('IndividualChat', () => {
         />
       </NavigationContainer>,
     );
+    await waitFor(() => {
     const username = screen.getByA11yHint('username-text');
     expect(username).toBeTruthy();
 
@@ -142,7 +143,6 @@ describe('IndividualChat', () => {
 
     const moreOptions = screen.getByA11yHint('more-options-icon');
     expect(moreOptions).toBeTruthy();
-    await waitFor(() => {
       expect(screen.getByText('Hii')).toBeTruthy();
       expect(screen.getByText('Hello back')).toBeTruthy();
     });
