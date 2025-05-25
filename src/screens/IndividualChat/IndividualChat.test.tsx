@@ -228,6 +228,53 @@ describe('IndividualChat', () => {
       expect(getByText('Hello!')).toBeTruthy();
     });
   });
+  
+  test('calls sendPrivateMessage and updates sendMessages when message is sent', async () => {
+    (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(
+      JSON.stringify({
+        phoneNumber: '1234567890',
+      }),
+    );
+
+    const mockSend = socket.sendPrivateMessage as jest.Mock;
+    mockSend.mockResolvedValue({});
+
+    const {getByPlaceholderText, getByText} = render(
+      <NavigationContainer>
+        <IndividualChat
+          navigation={
+            mockNavigation as NativeStackNavigationProp<
+              HomeStackParamList,
+              'individualChat'
+            >
+          }
+          route={mockRoute}
+        />
+      </NavigationContainer>,
+    );
+
+    await waitFor(() =>
+      expect(EncryptedStorage.getItem).toHaveBeenCalledWith('user'),
+    );
+
+    const {getByText} = render(
+      <NavigationContainer>
+        <IndividualChat
+          navigation={
+            mockNavigation as NativeStackNavigationProp<
+              HomeStackParamList,
+              'individualChat'
+            >
+          }
+          route={mockRoute}
+        />
+      </NavigationContainer>,
+    );
+
+    await waitFor(() => {
+      expect(getByText('Hello!')).toBeTruthy();
+    });
+  });
   test('calls sendPrivateMessage and updates sendMessages when message is sent', async () => {
     (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(
       JSON.stringify({
@@ -270,6 +317,7 @@ describe('IndividualChat', () => {
     expect(calledPayload.recipientPhoneNumber).toBe('+918522041688');
     expect(calledPayload.status).toBe('sent');
   });
+  
   test('should set the current user phone when the user exists', async () => {
     (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(
       JSON.stringify({
@@ -312,6 +360,7 @@ describe('IndividualChat', () => {
       expect(getByText('Hello there!')).toBeTruthy();
     });
   });
+  
   test('should not set the current user phone when the user not exists', async () => {
     (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(null);
     (getMessagesBetween as jest.Mock).mockResolvedValue({
@@ -350,6 +399,7 @@ describe('IndividualChat', () => {
       expect(getByText('Hello there!')).toBeTruthy();
     });
   });
+  
   test('should not render the fetched messages when the status is not 200', async () => {
     (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(
       JSON.stringify({
@@ -388,6 +438,7 @@ describe('IndividualChat', () => {
       expect(queryByText('Hello there!')).toBeNull();
     });
   });
+  
   test('should not render the empty message ', async () => {
     (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(
       JSON.stringify({

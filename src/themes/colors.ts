@@ -13,6 +13,7 @@ export const useThemeColors = () => {
     messageTextBox: '#FFFFFF',
     sendMessage: '#1877F2',
     receiveMessage: '#FFFFFF',
+    chatBackground:'#1E1E1E',
   };
 };
 
@@ -30,4 +31,5 @@ export type Colors = {
   messageTextBox: string;
   sendMessage: string;
   receiveMessage: string;
+  chatBackground:string;
 };

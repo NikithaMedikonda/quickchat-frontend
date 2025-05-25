@@ -26,12 +26,15 @@ import {
 } from '../../types/messsage.types';
 import {HomeStackParamList} from '../../types/usenavigation.type';
 import {User} from '../Profile/Profile';
-import {individualChatstyles} from './IndividualChat.styles';
+import {individualChatStyles} from './IndividualChat.styles';
 
 type Props = NativeStackScreenProps<HomeStackParamList, 'individualChat'>;
+
 export const IndividualChat = ({route}: Props) => {
   const [message, setMessage] = useState('');
-  const [receivedMessages, setReceivedMessages] = useState<any[]>([]);
+  const [receivedMessages, setReceivedMessages] = useState<
+    ReceivePrivateMessage[]
+  >([]);
   const [sendMessages, setSendMessages] = useState<SentPrivateMessage[]>([]);
   const [fetchMessages, setFetchMessages] = useState<ReceivePrivateMessage[]>(
     [],
@@ -42,7 +45,13 @@ export const IndividualChat = ({route}: Props) => {
   const user = route.params.user;
   const recipientPhoneNumber = user.phoneNumber;
   const colors = useThemeColors();
-  const styles = individualChatstyles(colors);
+  const styles = individualChatStyles(colors);
+  const scrollViewRef = useRef<ScrollView>(null);
+  const scrollToBottom = async () => {
+    if (scrollViewRef.current) {
+      scrollViewRef.current.scrollToEnd({animated: true});
+    }
+  };
   useEffect(() => {
     setSocket(newSocket);
     async function getMessages() {
@@ -59,18 +68,19 @@ export const IndividualChat = ({route}: Props) => {
       const messages = await getMessagesBetween(userData);
       if (messages.status === 200) {
         const data = messages.data;
-        const formatted = data.chats.map((msg: Chats) => ({
+        const formattedMessages = data.chats.map((msg: Chats) => ({
           senderPhoneNumber: msg.sender.phoneNumber,
           recipientPhoneNumber: msg.receiver.phoneNumber,
           message: msg.content,
           timestamp: msg.createdAt,
           status: msg.status,
         }));
-        setFetchMessages(formatted);
+        setFetchMessages(formattedMessages);
       }
     }
 
     getMessages();
+
     async function receiveMessage() {
       const handleNewMessage = (data: SentPrivateMessage) => {
         setReceivedMessages(prev => [...prev, data]);
@@ -93,7 +103,7 @@ export const IndividualChat = ({route}: Props) => {
         const payload: SentPrivateMessage = {
           recipientPhoneNumber,
           senderPhoneNumber: currentUserPhoneNumberRef.current,
-          message: message,
+          message: message.trim(),
           timestamp,
           status: 'sent',
         };
@@ -130,49 +140,60 @@ export const IndividualChat = ({route}: Props) => {
 
   return (
     <View style={styles.container}>
-      <View>
+      <View style={styles.chatHeaderContainer}>
         <IndividualChatHeader
           name={user.name}
           profilePicture={user.profilePicture}
           phoneNumber={user.phoneNumber}
         />
       </View>
-      <ScrollView style={styles.chatContainer}>
-        {allMessages.length > 0 &&
-          allMessages.map((msg: any, index: any) => {
-            const isSent =
-              msg.senderPhoneNumber === currentUserPhoneNumberRef.current;
+      <View style={styles.chatMainContainer}>
+        <View style={styles.chatInnerContainer}>
+          <ScrollView
+            ref={scrollViewRef}
+            style={styles.chatContainer}
+            onContentSizeChange={scrollToBottom}>
+            {allMessages.length > 0 &&
+              allMessages.map((msg: any, index: any) => {
+                const isSent =
+                  msg.senderPhoneNumber === currentUserPhoneNumberRef.current;
 
-            return (
-              <View
-                key={index}
-                style={[
-                  styles.messageBlock,
-                  isSent ? styles.sentMessage : styles.receivedMessage,
-                ]}>
-                <Text
-                  style={
-                    isSent ? styles.sentMessageText : styles.receiveMessageText
-                  }>
-                  {msg.message}
+                return (
+                  <View
+                    key={index}
+                    style={[
+                      isSent
+                        ? styles.sentMessageBlock
+                        : styles.receiveMessageBlock,
+                      isSent ? styles.sentMessage : styles.receivedMessage,
+                    ]}>
+                    <Text
+                      style={
+                        isSent
+                          ? styles.sentMessageText
+                          : styles.receiveMessageText
+                      }>
+                      {msg.message}
+                    </Text>
+                    <View style={styles.timestampContainer}>
+                      <TimeStamp messageTime={msg.timestamp} isSent={isSent} />
+                      {isSent && <MessageStatusTicks status={msg.status} />}
+                    </View>
+                  </View>
+                );
+              })}
+            {allMessages.length === 0 && (
+              <View style={styles.infoContainer}>
+                <Text style={styles.infoMessage}>
+                  Ready to chat? Start typing and hit send!
                 </Text>
-                <View style={styles.timestampContainer}>
-                  <TimeStamp messageTime={msg.timestamp} isSent={isSent} />
-                  {isSent && <MessageStatusTicks status={msg.status} />}
-                </View>
               </View>
-            );
-          })}
-        {allMessages.length === 0 && (
-          <View style={styles.infoContainer}>
-            <Text style={styles.infoMessage}>
-              📝 Ready to chat? Start typing and hit send!
-            </Text>
+            )}
+          </ScrollView>
+          <View style={styles.InputContainer}>
+            <MessageInput setMessage={setMessage} />
           </View>
-        )}
-      </ScrollView>
-      <View style={styles.InputContainer}>
-        <MessageInput setMessage={setMessage} />
+        </View>
       </View>
     </View>
   );

@@ -1,4 +1,4 @@
-import { ImageSourcePropType } from 'react-native';
+import {ImageSourcePropType} from 'react-native';
 import AndroidBackArrowDark from '../assets/AndroidBackArrowDark.png';
 import BinDark from '../assets/BinDark.png';
 import chatblockDark from '../assets/chatblockDark.png';
@@ -11,6 +11,7 @@ import QuickChatDarkLogo from '../assets/QuickChatDarkLogo.png';
 import TabMessageDark from '../assets/TabMessageDark.png';
 import TabProfileDark from '../assets/TabProfileDark.png';
 import TabUnreadDark from '../assets/TabUnreadDark.png';
+
 
 export const useImagesColors = (): {
   logo: ImageSourcePropType;
