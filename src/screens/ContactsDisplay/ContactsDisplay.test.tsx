@@ -1,12 +1,18 @@
-import Contacts from 'react-native-contacts';
-import {cleanup, render, screen, waitFor} from '@testing-library/react-native';
 import {useNavigation} from '@react-navigation/native';
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react-native';
+import {AlertNotificationRoot, Dialog} from 'react-native-alert-notification';
+import Contacts from 'react-native-contacts';
 import {Provider} from 'react-redux';
 import {getContacts} from '../../services/GetContacts';
-import {useThemeColors} from '../../themes/colors';
-import {AlertNotificationRoot, Dialog} from 'react-native-alert-notification';
 import {resetForm} from '../../store/slices/registrationSlice';
 import {store} from '../../store/store';
+import {useThemeColors} from '../../themes/colors';
 import {ContactsDisplay} from './ContactsDisplay';
 
 jest.mock('@react-navigation/native', () => ({
@@ -15,9 +21,6 @@ jest.mock('@react-navigation/native', () => ({
 
 jest.mock('react-native-contacts', () => ({
   getAll: jest.fn(),
-}));
-
-jest.mock('react-native-contacts', () => ({
   getContactsByPhoneNumber: jest.fn(),
 }));
 
@@ -36,13 +39,23 @@ jest.mock('react-native-alert-notification', () => ({
 }));
 
 describe('ContactsDisplay Component', () => {
-  let mockNavigation: any;
+  const renderComponent = () => {
+    render(
+      <Provider store={store}>
+        <AlertNotificationRoot>
+          <ContactsDisplay />
+        </AlertNotificationRoot>
+      </Provider>,
+    );
+  };
 
+  let mockNavigation: any;
   beforeEach(() => {
-    mockNavigation = {setOptions: jest.fn()};
+    mockNavigation = {setOptions: jest.fn(), navigate: jest.fn()};
     (useNavigation as jest.Mock).mockReturnValue(mockNavigation);
     store.dispatch(resetForm());
   });
+
   afterEach(() => {
     cleanup();
   });
@@ -54,13 +67,8 @@ describe('ContactsDisplay Component', () => {
         unRegisteredUsers: [],
       },
     });
-    render(
-      <Provider store={store}>
-        <AlertNotificationRoot>
-          <ContactsDisplay />
-        </AlertNotificationRoot>
-      </Provider>,
-    );
+
+    renderComponent();
     await waitFor(() => {
       expect(screen.getByText('Loading Contacts...')).toBeTruthy();
     });
@@ -84,6 +92,9 @@ describe('ContactsDisplay Component', () => {
         toBeInvited: true,
       },
     ];
+    await waitFor(() => {
+      renderComponent();
+    });
 
     (getContacts as jest.Mock).mockResolvedValue({
       data: {
@@ -96,17 +107,9 @@ describe('ContactsDisplay Component', () => {
       {givenName: 'Usha', displayName: 'Usha'},
     ]);
 
-    const {getByText} = render(
-      <Provider store={store}>
-        <AlertNotificationRoot>
-          <ContactsDisplay />
-        </AlertNotificationRoot>
-      </Provider>,
-    );
-
     await waitFor(() => {
-      expect(getByText('Contacts on Quick Chat')).toBeTruthy();
-      expect(getByText('Invite to Quick Chat')).toBeTruthy();
+      expect(screen.getByText('Contacts on Quick Chat')).toBeTruthy();
+      expect(screen.getByText('Invite to Quick Chat')).toBeTruthy();
     });
   });
 
@@ -117,18 +120,12 @@ describe('ContactsDisplay Component', () => {
         unRegisteredUsers: [],
       },
     });
-
-    const {getByText} = render(
-      <Provider store={store}>
-        <AlertNotificationRoot>
-          <ContactsDisplay />
-        </AlertNotificationRoot>
-      </Provider>,
-    );
-
+    await waitFor(() => {
+      renderComponent();
+    });
     await waitFor(() => {
       expect(
-        getByText(
+        screen.getByText(
           `It's so sad that, we have no one on Quick Chat. Share about Quick Chat`,
         ),
       ).toBeTruthy();
@@ -143,17 +140,12 @@ describe('ContactsDisplay Component', () => {
       },
     });
 
-    const {getByText} = render(
-      <Provider store={store}>
-        <AlertNotificationRoot>
-          <ContactsDisplay />
-        </AlertNotificationRoot>
-      </Provider>,
-    );
-
+    await waitFor(() => {
+      renderComponent();
+    });
     await waitFor(() => {
       expect(
-        getByText(
+        screen.getByText(
           "It's good to see that, all of your contact are onuick Chat.",
         ),
       ).toBeTruthy();
@@ -168,21 +160,15 @@ describe('ContactsDisplay Component', () => {
       },
     });
 
-    // givenName is missing
+    await waitFor(() => {
+      renderComponent();
+    });
     (Contacts.getContactsByPhoneNumber as jest.Mock).mockResolvedValue([
-      {displayName: ''}, // no givenName
+      {displayName: ''},
     ]);
 
-    const {getByText} = render(
-      <Provider store={store}>
-        <AlertNotificationRoot>
-          <ContactsDisplay />
-        </AlertNotificationRoot>
-      </Provider>,
-    );
-
     await waitFor(() => {
-      expect(getByText('unknown')).toBeTruthy();
+      expect(screen.getByText('unknown')).toBeTruthy();
     });
   });
 
@@ -191,13 +177,9 @@ describe('ContactsDisplay Component', () => {
       Promise.resolve({data: {registeredUsers: [], unRegisteredUsers: []}}),
     );
 
-    render(
-      <Provider store={store}>
-        <AlertNotificationRoot>
-          <ContactsDisplay />
-        </AlertNotificationRoot>
-      </Provider>,
-    );
+    await waitFor(() => {
+      renderComponent();
+    });
 
     await waitFor(() => {
       expect(mockNavigation.setOptions).toHaveBeenCalledWith(
@@ -209,10 +191,10 @@ describe('ContactsDisplay Component', () => {
         }),
       );
     });
-
-    const optionsArg = mockNavigation.setOptions.mock.calls[0][0];
-    const HeaderLeftComponent = optionsArg.headerLeft?.();
+    const HeaderLeftComponent =
+      mockNavigation.setOptions.mock.calls[0][0].headerLeft();
     const {getByText} = render(<>{HeaderLeftComponent}</>);
+
     await waitFor(() => {
       expect(getByText('く')).toBeTruthy();
     });
@@ -220,25 +202,50 @@ describe('ContactsDisplay Component', () => {
 
   it('should show alert when getContacts throws error', async () => {
     (getContacts as jest.Mock).mockRejectedValue(new Error('Failed to fetch'));
+    await waitFor(() => {
+      renderComponent();
+    });
+    await waitFor(() => {
+      expect(Dialog.show).toHaveBeenCalledWith({
+        type: 'DANGER',
+        title: 'Error',
+        textBody: 'Error occurred while fetching the contacts',
+        button: 'close',
+        closeOnOverlayTap: true,
+      });
+    });
+  });
 
-    render(
-      <Provider store={store}>
-        <AlertNotificationRoot>
-          <ContactsDisplay />
-        </AlertNotificationRoot>
-      </Provider>,
-    );
+  it('should navigate to individual chat screen when it is clicked on contact', async () => {
+    (getContacts as jest.Mock).mockResolvedValue({
+      data: {
+        registeredUsers: [
+          {
+            name: 'Mamatha',
+            profilePicture: 'https://mamatha.profile.come',
+            phoneNumber: '+916303974914',
+          },
+        ],
+        unRegisteredUsers: [],
+      },
+    });
+    await waitFor(() => {
+      renderComponent();
+    });
+    await waitFor(() => {
+      expect(screen.getByText('Mamatha')).toBeTruthy();
+    });
+
+    fireEvent.press(screen.getByAccessibilityHint('contact-label'));
 
     await waitFor(() => {
-      expect(Dialog.show).toHaveBeenCalledWith(
-       {
-          type: 'DANGER',
-          title: 'Error',
-          textBody: 'Error occurred while fetching the contacts',
-          button: 'close',
-          closeOnOverlayTap: true,
+      expect(mockNavigation.navigate).toHaveBeenCalledWith('individualChat', {
+        user: {
+          name: 'Mamatha',
+          profilePicture: 'https://mamatha.profile.come',
+          phoneNumber: '+916303974914',
         },
-      );
+      });
     });
   });
 });

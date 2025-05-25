@@ -11,6 +11,8 @@ import {ProfileMoreOptionsModal} from '../../components/ProfileMoreOptionsModal/
 import {Provider} from 'react-redux';
 import {store} from '../../store/store';
 import {AlertNotificationRoot} from 'react-native-alert-notification';
+import { DEFAULT_PROFILE_IMAGE } from '../../constants/defaultImage';
+import React from 'react';
 
 jest.mock('react-native-encrypted-storage', () => ({
   getItem: jest.fn(),
@@ -47,6 +49,22 @@ const mockUserData = {
   email: 'anoosha@gmail.com',
   phoneNumber: '9988334455',
   isDeleted: false,
+};
+
+const TestWrapper = () => {
+  const [modalVisible, setModalVisible] = React.useState(true);
+
+  const onClose = () => {
+    setModalVisible(false);
+  };
+
+  return (
+    <Provider store={store}>
+      <AlertNotificationRoot>
+        <ProfileMoreOptionsModal visible={modalVisible} onClose={onClose} />
+      </AlertNotificationRoot>
+    </Provider>
+  );
 };
 
 describe('Profile Screen', () => {
@@ -161,18 +179,79 @@ describe('Profile Screen', () => {
     expect(modal).toBeTruthy();
   });
   it('calls onClose when bin is pressed', async () => {
-    const onClose = jest.fn();
-    render(
-      <Provider store={store}>
-        <AlertNotificationRoot>
-          <ProfileMoreOptionsModal visible={true} onClose={onClose} />
-        </AlertNotificationRoot>
-      </Provider>,
-    );
+    const {queryByText} = render(<TestWrapper />);
+
     const binButton = screen.getByA11yHint('bin-image');
+
     await act(async () => {
       fireEvent.press(binButton);
     });
-    expect(onClose).toHaveBeenCalled();
+
+    await waitFor(() => {
+      expect(queryByText('Delete Account')).toBeNull();
+    });
+  });
+
+  it('renders profile picture when userData.profilePicture is present', async () => {
+    const mockUser = {
+      firstName: 'Anoosha',
+      lastName: 'Sanugula',
+      email: 'anu@gmail.com',
+      phoneNumber: '1234567890',
+      profilePicture: 'profile.jpg',
+      isDeleted: false,
+    };
+
+    (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(
+      JSON.stringify(mockUser),
+    );
+
+    await waitFor(() => {
+      renderComponent();
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.getByAccessibilityHint('profile-image').props.source.uri,
+      ).toBe(mockUser.profilePicture);
+    });
+  });
+  it('shows default image when profile picture is null', async () => {
+    const mockUser = {
+      firstName: 'Anoosha',
+      lastName: 'Sanugula',
+      email: 'anu@gmail.com',
+      phoneNumber: '1234567890',
+      profilePicture: null,
+      isDeleted: false,
+    };
+
+    (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(
+      JSON.stringify(mockUser),
+    );
+
+    const {getByA11yHint} = renderComponent();
+    const profileImage = await waitFor(() => getByA11yHint('profile-image'));
+
+    expect(profileImage.props.source.uri).toBe(DEFAULT_PROFILE_IMAGE);
+  });
+  it('does not render email field when email is not present', async () => {
+    const mockUser = {
+      firstName: 'Jane',
+      lastName: 'Doe',
+      email: '',
+      phoneNumber: '1234567890',
+      profilePicture: null,
+      isDeleted: false,
+    };
+
+    (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(
+      JSON.stringify(mockUser),
+    );
+
+    const {queryByText} = renderComponent();
+    await waitFor(() => {
+      expect(queryByText('Email')).toBeNull();
+    });
   });
 });
