@@ -5,14 +5,11 @@ import {
   waitFor,
   within,
 } from '@testing-library/react-native';
-import {Alert} from 'react-native';
-import {AlertNotificationRoot, Dialog} from 'react-native-alert-notification';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {Provider} from 'react-redux';
 import {deleteUser} from '../../services/DeleteUser';
 import {store} from '../../store/store';
 import {ProfileMoreOptionsModal} from './ProfileMoreOptionsModal';
-
 
 const mockReplace = jest.fn();
 jest.mock('@react-navigation/native', () => ({
@@ -21,15 +18,7 @@ jest.mock('@react-navigation/native', () => ({
     replace: mockReplace,
   }),
 }));
-jest.mock('react-native-alert-notification', () => ({
-  ALERT_TYPE: {
-    DANGER: 'DANGER',
-  },
-  Dialog: {
-    show: jest.fn(),
-  },
-  AlertNotificationRoot: ({children}: {children: React.ReactNode}) => children,
-}));
+
 jest.mock('react-native-encrypted-storage', () => ({
   setItem: jest.fn(),
   clear: jest.fn(),
@@ -47,7 +36,7 @@ jest.mock('../../services/DeleteUser', () => ({
   deleteUser: jest.fn(),
 }));
 
-jest.spyOn(Alert, 'alert');
+jest.useFakeTimers();
 
 describe('Profile More Options Modal', () => {
   const mockOnClose = jest.fn();
@@ -59,9 +48,7 @@ describe('Profile More Options Modal', () => {
   const renderComponent = () =>
     render(
       <Provider store={store}>
-        <AlertNotificationRoot>
-          <ProfileMoreOptionsModal visible={true} onClose={mockOnClose} />
-        </AlertNotificationRoot>
+        <ProfileMoreOptionsModal visible={true} onClose={mockOnClose} />
       </Provider>,
     );
   it('should renders the delete account text and bin image', async () => {
@@ -134,7 +121,13 @@ describe('Profile More Options Modal', () => {
     const confirmButton = within(confirmModal!).getByText('Logout');
     fireEvent.press(confirmButton);
     await waitFor(() => {
-      expect(EncryptedStorage.clear).toHaveBeenCalledTimes(1);
+      const state = store.getState();
+      expect(state.registration.alertType).toBe('success');
+      expect(state.registration.alertMessage).toBe('Successfully logout');
+    });
+
+    jest.advanceTimersByTime(1000);
+    await waitFor(() => {
       expect(mockReplace).toHaveBeenCalledWith('login');
     });
   });
@@ -149,19 +142,28 @@ describe('Profile More Options Modal', () => {
     const confirmButton = await screen.findByText('Delete');
     fireEvent.press(confirmButton);
     await waitFor(() => {
+      const state = store.getState();
+      expect(state.registration.alertType).toBe('success');
+      expect(state.registration.alertMessage).toBe(
+        'Successfully deleted account',
+      );
+    });
+
+    jest.advanceTimersByTime(1000);
+    await waitFor(() => {
       expect(mockReplace).toHaveBeenCalledWith('welcome');
     });
   });
 
   it('handles delete error responses (404, 412, 401, 403)', async () => {
     const responses = [
-      {status: 404, expected: 'Invalid Phone number'},
-      {status: 412, expected: 'Invalid secret key'},
-      {status: 401, expected: 'Invalid token'},
-      {status: 403, expected: 'Authentication failed'},
-      {status: 500, expected: 'Something went wrong while deleting'},
+      {status: 404},
+      {status: 412},
+      {status: 401},
+      {status: 403},
+      {status: 500},
     ];
-    for (const {status, expected} of responses) {
+    for (const {status} of responses) {
       (deleteUser as jest.Mock).mockResolvedValue({status});
       await waitFor(() => {
         renderComponent();
@@ -170,15 +172,9 @@ describe('Profile More Options Modal', () => {
       const confirmButton = await screen.findByText('Delete');
       fireEvent.press(confirmButton);
       await waitFor(() => {
-        expect(Dialog.show).toHaveBeenCalledWith(
-          expect.objectContaining({
-            type: 'DANGER',
-            title: 'Error',
-            textBody: expected,
-            button: 'close',
-            closeOnOverlayTap: true,
-          }),
-        );
+        const state = store.getState();
+        expect(state.registration.alertMessage).toBe('Something went wrong');
+        expect(state.registration.alertType).toBe('warning');
       });
     }
   });
@@ -192,13 +188,9 @@ describe('Profile More Options Modal', () => {
     const confirmButton = await screen.findByText('Delete');
     fireEvent.press(confirmButton);
     await waitFor(() => {
-      expect(Dialog.show).toHaveBeenCalledWith({
-        type: 'DANGER',
-        title: 'Error',
-        textBody: 'Something went wrong!',
-        button: 'close',
-        closeOnOverlayTap: true,
-      });
+      const state = store.getState();
+      expect(state.registration.alertMessage).toBe('Network error');
+      expect(state.registration.alertType).toBe('info');
     });
   });
 
@@ -254,13 +246,9 @@ describe('Profile More Options Modal', () => {
     const confirmButton = await screen.findByText('Delete');
     fireEvent.press(confirmButton);
     await waitFor(() => {
-      expect(Dialog.show).toHaveBeenCalledWith({
-        type: 'DANGER',
-        title: 'Error',
-        textBody: 'Something went wrong!',
-        button: 'close',
-        closeOnOverlayTap: true,
-      });
+      const state = store.getState();
+      expect(state.registration.alertMessage).toBe('Network error');
+      expect(state.registration.alertType).toBe('info');
     });
   });
 });
