@@ -1,25 +1,27 @@
-import { Alert, Platform } from 'react-native';
+import {Alert, Platform} from 'react-native';
 import {
   fireEvent,
   render,
   screen,
   waitFor,
 } from '@testing-library/react-native';
-import { AlertNotificationRoot, Dialog } from 'react-native-alert-notification';
 import ImageCropPicker from 'react-native-image-crop-picker';
 import RNFS from 'react-native-fs';
-import { useDispatch, useSelector } from 'react-redux';
-import { store } from '../../store/store';
+import {useDispatch, useSelector} from 'react-redux';
+import {store} from '../../store/store';
 import {
   setImage,
   setImageUri,
   setIsVisible,
   setImageDeleted,
   resetForm,
+  setAlertTitle,
+  setAlertMessage,
+  setAlertVisible,
+  setAlertType,
 } from '../../store/slices/registrationSlice';
-import { ImagePickerModal } from './ImagePickerModal';
-import { DEFAULT_PROFILE_IMAGE } from '../../constants/defaultImage';
-
+import {ImagePickerModal} from './ImagePickerModal';
+import {DEFAULT_PROFILE_IMAGE} from '../../constants/defaultImage';
 
 jest.mock('react-native-fs', () => ({
   readFile: jest.fn().mockResolvedValue('mocked-base64-string'),
@@ -32,16 +34,6 @@ jest.mock('react-native-image-crop-picker', () => ({
 
 jest.mock('../../permissions/ImagePermissions', () => ({
   requestPermissions: jest.fn().mockResolvedValue(false),
-}));
-
-jest.mock('react-native-alert-notification', () => ({
-  ALERT_TYPE: {
-    DANGER: 'DANGER',
-  },
-  Dialog: {
-    show: jest.fn(),
-  },
-  AlertNotificationRoot: ({children}: {children: React.ReactNode}) => children,
 }));
 
 jest.mock('react-redux', () => ({
@@ -71,6 +63,9 @@ describe('ImagePickerModal', () => {
       selector({
         registration: {
           isVisible: true,
+          alertType: '',
+          alertTitle: '',
+          alertMessage: '',
         },
         login: {
           user: mockUser,
@@ -81,42 +76,26 @@ describe('ImagePickerModal', () => {
   });
 
   it('renders modal and displays correct content', () => {
-    render(
-        <AlertNotificationRoot>
-          <ImagePickerModal />
-        </AlertNotificationRoot>
-    );
+    render(<ImagePickerModal />);
     expect(screen.getByText('Choose Profile')).toBeTruthy();
     expect(screen.getByA11yHint('camera-image')).toBeTruthy();
     expect(screen.getByA11yHint('gallery-image')).toBeTruthy();
   });
 
   it('closes modal when pressing the cancel button', () => {
-    render(
-        <AlertNotificationRoot>
-          <ImagePickerModal />
-        </AlertNotificationRoot>
-    );
+    render(<ImagePickerModal />);
     const cancelButton = screen.getByA11yHint('cross-icon');
     fireEvent.press(cancelButton);
     expect(mockDispatch).toHaveBeenCalledWith(setIsVisible(false));
   });
 
   it('shows delete button when `showDeleteOption` is true', () => {
-    render(
-        <AlertNotificationRoot>
-          <ImagePickerModal showDeleteOption={true} />
-        </AlertNotificationRoot>
-    );
+    render(<ImagePickerModal showDeleteOption={true} />);
     expect(screen.getByA11yHint('delete-image')).toBeTruthy();
   });
 
   it('handles image deletion correctly', () => {
-    render(
-        <AlertNotificationRoot>
-          <ImagePickerModal showDeleteOption={true} />
-        </AlertNotificationRoot>
-    );
+    render(<ImagePickerModal showDeleteOption={true} />);
     const deleteButton = screen.getByA11yHint('delete-image');
     fireEvent.press(deleteButton);
     expect(mockDispatch).toHaveBeenCalledWith(
@@ -128,68 +107,56 @@ describe('ImagePickerModal', () => {
   });
 
   it('shows alert when permission denied on iOS', async () => {
-    Platform.OS = 'ios';
+    Object.defineProperty(Platform, 'OS', {
+      get: jest.fn(() => 'ios'),
+      configurable: true,
+    });
     const {requestPermissions} = require('../../permissions/ImagePermissions');
     requestPermissions.mockResolvedValue(false);
 
-    render(
-        <AlertNotificationRoot>
-          <ImagePickerModal />
-        </AlertNotificationRoot>
-    );
+    render(<ImagePickerModal />);
     const galleryButton = screen.getByA11yHint('gallery-image');
     fireEvent.press(galleryButton);
 
     await waitFor(() => {
-      expect(Dialog.show).toHaveBeenCalledWith(
-        expect.objectContaining({
-          type: 'DANGER',
-          title: 'Error',
-          textBody:
-            'Permission Denied, We need access to your photos to continue.',
-          button: 'close',
-          closeOnOverlayTap: true,
-        }),
+      expect(mockDispatch).toHaveBeenCalledWith(setAlertType('warning'));
+      expect(mockDispatch).toHaveBeenCalledWith(setAlertTitle('Permission denied'));
+      expect(mockDispatch).toHaveBeenCalledWith(
+        setAlertMessage('Permission Denied, We need access to your photos to continue.')
       );
+      expect(mockDispatch).toHaveBeenCalledWith(setAlertVisible(true));
     });
   });
 
-  it('shows alert when permission denied on Android', async () => {
-    Platform.OS = 'android';
+   it('shows alert when permission denied on Android', async () => {
+    Object.defineProperty(Platform, 'OS', {
+      get: jest.fn(() => 'android'),
+      configurable: true,
+    });
     const {requestPermissions} = require('../../permissions/ImagePermissions');
     requestPermissions.mockResolvedValue(true);
 
-    render(
-        <AlertNotificationRoot>
-          <ImagePickerModal />
-        </AlertNotificationRoot>
-    );
+    render(<ImagePickerModal />);
     const galleryButton = screen.getByA11yHint('gallery-image');
     fireEvent.press(galleryButton);
     await waitFor(() => {
-      expect(Dialog.show).toHaveBeenCalledWith(
-        expect.objectContaining({
-          type: 'DANGER',
-          title: 'Error',
-          textBody:
-            'Permission Denied, We need access to your photos to continue.',
-          button: 'close',
-          closeOnOverlayTap: true,
-        }),
+      expect(mockDispatch).toHaveBeenCalledWith(setAlertType('warning'));
+      expect(mockDispatch).toHaveBeenCalledWith(setAlertTitle('Permission denied'));
+      expect(mockDispatch).toHaveBeenCalledWith(
+        setAlertMessage('Permission Denied, We need access to your photos to continue.')
       );
+      expect(mockDispatch).toHaveBeenCalledWith(setAlertVisible(true));
     });
   });
 
   it('handles image picking from gallery', async () => {
+    Object.defineProperty(Platform, 'OS', {
+      get: jest.fn(() => 'ios'),
+      configurable: true,
+    });
     const {requestPermissions} = require('../../permissions/ImagePermissions');
     requestPermissions.mockResolvedValue(true);
-    Platform.OS = 'ios';
-
-    render(
-        <AlertNotificationRoot>
-          <ImagePickerModal />
-        </AlertNotificationRoot>
-    );
+    render(<ImagePickerModal />);
     const galleryButton = screen.getByA11yHint('gallery-image');
     fireEvent.press(galleryButton);
 
@@ -214,17 +181,15 @@ describe('ImagePickerModal', () => {
       expect(mockDispatch).toHaveBeenCalledWith(setIsVisible(false));
     });
   });
-
   it('handles image picking from camera', async () => {
+    Object.defineProperty(Platform, 'OS', {
+      get: jest.fn(() => 'ios'),
+      configurable: true,
+    });
     const {requestPermissions} = require('../../permissions/ImagePermissions');
     requestPermissions.mockResolvedValue(true);
-    Platform.OS = 'ios';
 
-    render(
-        <AlertNotificationRoot>
-          <ImagePickerModal />
-        </AlertNotificationRoot>
-    );
+    render(<ImagePickerModal />);
     const cameraButton = screen.getByA11yHint('camera-image');
     fireEvent.press(cameraButton);
 

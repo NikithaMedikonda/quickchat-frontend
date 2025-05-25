@@ -8,15 +8,27 @@ interface RegistrationForm {
   confirmPassword: string;
   email: string;
 }
-
+interface editProfileForm {
+  phoneNumber: string;
+  image: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  token: string;
+}
 interface RegistrationState {
   form: RegistrationForm;
+  editProfileForm: editProfileForm;
   errors: Partial<RegistrationForm>;
   imageUri: string;
   image: string;
   imageBase64: string;
   isVisible: boolean;
   imageDeleted: boolean;
+  alertVisible: boolean;
+  alertType: string;
+  alertTitle: string;
+  alertMessage: string;
 }
 
 const initialState: RegistrationState = {
@@ -28,12 +40,24 @@ const initialState: RegistrationState = {
     confirmPassword: '',
     email: '',
   },
+  editProfileForm: {
+    phoneNumber: '',
+    image: '',
+    firstName: '',
+    lastName: '',
+    email: '',
+    token: '',
+  },
   errors: {},
   imageUri: '',
   image: '',
   imageBase64: '',
   isVisible: false,
   imageDeleted: false,
+  alertVisible: false,
+  alertType: '',
+  alertTitle: '',
+  alertMessage: '',
 };
 
 const registrationSlice = createSlice({
@@ -45,6 +69,12 @@ const registrationSlice = createSlice({
       action: PayloadAction<{key: keyof RegistrationForm; value: string}>,
     ) => {
       state.form[action.payload.key] = action.payload.value;
+    },
+    setEditProfileForm: (
+      state,
+      action: PayloadAction<{key: keyof editProfileForm; value: string}>,
+    ) => {
+      state.editProfileForm[action.payload.key] = action.payload.value;
     },
     setErrors: (state, action: PayloadAction<Partial<RegistrationForm>>) => {
       state.errors = action.payload;
@@ -61,8 +91,20 @@ const registrationSlice = createSlice({
     setIsVisible: (state, action: PayloadAction<boolean>) => {
       state.isVisible = action.payload;
     },
+    setAlertVisible: (state, action: PayloadAction<boolean>) => {
+      state.alertVisible = action.payload;
+    },
     setImageDeleted: (state, action) => {
       state.imageDeleted = action.payload;
+    },
+    setAlertType: (state, action: PayloadAction<string>) => {
+      state.alertType = action.payload;
+    },
+    setAlertTitle: (state, action: PayloadAction<string>) => {
+      state.alertTitle = action.payload;
+    },
+    setAlertMessage: (state, action: PayloadAction<string>) => {
+      state.alertMessage = action.payload;
     },
     resetForm: () => initialState,
   },
@@ -70,6 +112,7 @@ const registrationSlice = createSlice({
 
 export const {
   setFormField,
+  setEditProfileForm,
   setErrors,
   setImageUri,
   resetForm,
@@ -77,6 +120,10 @@ export const {
   setImageBase64,
   setIsVisible,
   setImageDeleted,
+  setAlertVisible,
+  setAlertType,
+  setAlertMessage,
+  setAlertTitle,
 } = registrationSlice.actions;
 
 export const registrationReducer = registrationSlice.reducer;

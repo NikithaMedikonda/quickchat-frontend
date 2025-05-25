@@ -6,23 +6,16 @@ import {
   waitFor,
 } from '@testing-library/react-native';
 import {Provider} from 'react-redux';
-import {AlertNotificationRoot, Dialog} from 'react-native-alert-notification';
 import {ContactDetails} from '../../types/contact.types';
-import {Contact} from './Contact';
 import {DEFAULT_PROFILE_IMAGE} from '../../constants/defaultImage';
 import {resetForm} from '../../store/slices/registrationSlice';
 import {store} from '../../store/store';
+import {Contact} from './Contact';
 
 
 Linking.openURL = jest.fn();
 Alert.alert = jest.fn();
 
-jest.mock('react-native-alert-notification', () => ({
-  AlertNotificationRoot: ({children}: any) => <>{children}</>,
-  Toast: {show: jest.fn()},
-  Dialog: {show: jest.fn()},
-  ALERT_TYPE: {SUCCESS: 'success', DANGER: 'danger'},
-}));
 
 describe('Contact Component', () => {
   beforeEach(() => {
@@ -46,9 +39,7 @@ describe('Contact Component', () => {
   it('renders name, phone number, profile image of registered candidate', () => {
     const {getByText} = render(
       <Provider store={store}>
-        <AlertNotificationRoot>
           <Contact contactDetails={registeredContact} />
-        </AlertNotificationRoot>
       </Provider>,
     );
     expect(getByText('registeredUser')).toBeTruthy();
@@ -60,9 +51,7 @@ describe('Contact Component', () => {
   it('renders default profile image for invited contact', () => {
     const {getByText} = render(
       <Provider store={store}>
-        <AlertNotificationRoot>
           <Contact contactDetails={invitedContact} />
-        </AlertNotificationRoot>
       </Provider>,
     );
     expect(getByText('TestUser')).toBeTruthy();
@@ -93,9 +82,7 @@ describe('Contact Component', () => {
     }
     const {getByText} = render(
       <Provider store={store}>
-        <AlertNotificationRoot>
           <Contact contactDetails={contact} />
-        </AlertNotificationRoot>
       </Provider>,
     );
     fireEvent.press(getByText('Invite'));
@@ -115,22 +102,16 @@ it('should show alert if SMS open fails', async () => {
 
   const {getByText} = render(
     <Provider store={store}>
-      <AlertNotificationRoot>
         <Contact contactDetails={contact} />
-      </AlertNotificationRoot>
     </Provider>,
   );
 
   fireEvent.press(getByText('Invite'));
 
-  await waitFor(() => {
-    expect(Dialog.show).toHaveBeenCalledWith({
-      type: 'danger',
-      title: 'Contacts fetching is failed',
-      textBody: 'Unable to process your request',
-      button: 'close',
-      closeOnOverlayTap: true,
+   await waitFor(() => {
+      const state = store.getState();
+      expect(state.registration.alertMessage).toBe('Unable to process your request.');
+      expect(state.registration.alertType).toBe('info');
     });
-  });
 });
 });

@@ -1,7 +1,7 @@
 import {API_URL} from '../constants/api';
 
 export const updateProfile = async (
-  payload: {
+  editProfileForm: {
     phoneNumber: string;
     image: string;
     firstName: string;
@@ -18,30 +18,30 @@ export const updateProfile = async (
   },
 ) => {
   const userData: any = {};
-  if (user.phoneNumber === payload.phoneNumber) {
-    userData.phoneNumber = payload.phoneNumber;
+  if (user.phoneNumber === editProfileForm.phoneNumber) {
+    userData.phoneNumber = editProfileForm.phoneNumber;
   }
-  if (user.firstName !== payload.firstName) {
-    userData.firstName = payload.firstName;
-  }
-
-  if (user.lastName !== payload.lastName) {
-    userData.lastName = payload.lastName;
+  if (user.firstName !== editProfileForm.firstName) {
+    userData.firstName = editProfileForm.firstName;
   }
 
-  if (user.email !== payload.email) {
-    userData.email = payload.email;
+  if (user.lastName !== editProfileForm.lastName) {
+    userData.lastName = editProfileForm.lastName;
   }
 
-  if (user.image !== payload.image) {
-    userData.profilePicture = payload.image;
+  if (user.email !== editProfileForm.email) {
+    userData.email = editProfileForm.email;
   }
 
+  if (user.image !== editProfileForm.image) {
+    userData.profilePicture = editProfileForm.image;
+  }
+  console.log(userData.image);
   const response = await fetch(`${API_URL}/api/user`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
-      authorization: `Bearer ${payload.token}`,
+      authorization: `Bearer ${editProfileForm.token}`,
     },
     body: JSON.stringify(userData),
   });

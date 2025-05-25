@@ -1,5 +1,5 @@
-import { useNavigation } from '@react-navigation/native';
-import { useTranslation } from 'react-i18next';
+import {useNavigation} from '@react-navigation/native';
+import {useTranslation} from 'react-i18next';
 import {
   Image,
   KeyboardAvoidingView,
@@ -9,34 +9,37 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {
-  ALERT_TYPE,
-  AlertNotificationRoot,
-  Dialog,
-} from 'react-native-alert-notification';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import PhoneInput from 'react-native-phone-input';
-import { useDispatch, useSelector } from 'react-redux';
-import { Button } from '../../components/Button/Button';
-import { ImagePickerModal } from '../../components/ImagePickerModal/ImagePickerModal';
-import { Placeholder } from '../../components/InputField/InputField';
-import { DEFAULT_PROFILE_IMAGE } from '../../constants/defaultImage';
-import { keyGeneration } from '../../services/KeyGeneration';
-import { registerUser } from '../../services/RegisterUser';
-import { hide, show } from '../../store/slices/loadingSlice';
-import { setLoginSuccess } from '../../store/slices/loginSlice';
+import {useDispatch, useSelector} from 'react-redux';
+import {Button} from '../../components/Button/Button';
+import {ImagePickerModal} from '../../components/ImagePickerModal/ImagePickerModal';
+import {Placeholder} from '../../components/InputField/InputField';
+import {DEFAULT_PROFILE_IMAGE} from '../../constants/defaultImage';
+import {keyGeneration} from '../../services/KeyGeneration';
+import {registerUser} from '../../services/RegisterUser';
+import {hide, show} from '../../store/slices/loadingSlice';
+import {setLoginSuccess} from '../../store/slices/loginSlice';
 import {
   resetForm,
+  setAlertMessage,
+  setAlertTitle,
+  setAlertType,
+  setAlertVisible,
   setErrors,
   setFormField,
   setIsVisible,
 } from '../../store/slices/registrationSlice';
-import { RootState } from '../../store/store';
-import { useThemeColors } from '../../themes/colors';
-import { HomeTabsProps, NavigationProps } from '../../types/usenavigation.type';
-import { getStyles } from './Registration.styles';
+import {RootState} from '../../store/store';
+import {useThemeColors} from '../../themes/colors';
+import {HomeTabsProps, NavigationProps} from '../../types/usenavigation.type';
+import {CustomAlert} from '../../components/CustomAlert/CustomAlert';
+import {getStyles} from './Registration.styles';
 
 export const Registration = () => {
+  const {alertType, alertTitle, alertMessage} = useSelector(
+    (state: RootState) => state.registration,
+  );
   const navigation = useNavigation<NavigationProps>();
   const homeNavigation = useNavigation<HomeTabsProps>();
   const dispatch = useDispatch();
@@ -47,6 +50,12 @@ export const Registration = () => {
   const styles = getStyles(colors);
   const {t} = useTranslation('auth');
 
+  const showAlert = (type: string, title: string, message: string) => {
+    dispatch(setAlertType(type));
+    dispatch(setAlertTitle(title));
+    dispatch(setAlertMessage(message));
+    dispatch(setAlertVisible(true));
+  };
   const handleOpenImageSelector = async () => {
     dispatch(setIsVisible(true));
   };
@@ -106,56 +115,65 @@ export const Registration = () => {
       return;
     }
 
-try {
-  const keys = await keyGeneration();
-  const result = await registerUser({ ...form, image},{
-    publicKey: keys.publicKey,
-    privateKey: keys.privateKey,
-  });
-  if (result.status === 409) {
-    dispatch(hide());
-    Dialog.show({
-      type: ALERT_TYPE.DANGER,
-      title: 'Registration failed',
-      textBody: 'User already exists with this number or email',
-      button: 'close',
-      closeOnOverlayTap: true,
-    });
-  } else if (result.status === 200) {
-    dispatch(hide());
-    dispatch(
-      setLoginSuccess({
-        accessToken: result.data.accessToken,
-        refreshToken: result.data.refreshToken,
-        user: result.data.user,
-      }),
-    );
-    await EncryptedStorage.setItem('authToken', result.data.accessToken);
-    await EncryptedStorage.setItem('refreshToken', result.data.refreshToken);
-    await EncryptedStorage.setItem('user', JSON.stringify(result.data.user));
-    await EncryptedStorage.setItem('privateKey',keys.privateKey);
-    homeNavigation.replace('hometabs');
-    dispatch(resetForm());
-  } else {
-    dispatch(hide());
-    Dialog.show({
-      type: ALERT_TYPE.DANGER,
-      title: 'Registration failed',
-      textBody: 'Something went wrong while registering',
-      button: 'close',
-      closeOnOverlayTap: true,
-    });
-  }
-} catch (error) {
-  dispatch(hide());
-  Dialog.show({
-    type: ALERT_TYPE.DANGER,
-    title: 'Registration failed',
-    textBody: 'Network error or something unexpected happened',
-    button: 'close',
-    closeOnOverlayTap: true,
-  });
-}
+    try {
+      const keys = await keyGeneration();
+      const result = await registerUser(
+        {...form, image},
+        {
+          publicKey: keys.publicKey,
+          privateKey: keys.privateKey,
+        },
+      );
+      if (result.status === 409) {
+        dispatch(hide());
+        dispatch(setAlertVisible(true));
+        showAlert(
+          'error',
+          'Registration failed',
+          'User already exists with this number or email',
+        );
+      } else if (result.status === 200) {
+        dispatch(hide());
+        dispatch(setAlertVisible(true));
+        dispatch(
+          setLoginSuccess({
+            accessToken: result.data.accessToken,
+            refreshToken: result.data.refreshToken,
+            user: result.data.user,
+          }),
+        );
+        setTimeout(() => {
+              dispatch(setAlertVisible(false));
+            }, 2000);
+        await EncryptedStorage.setItem('authToken', result.data.accessToken);
+        await EncryptedStorage.setItem(
+          'refreshToken',
+          result.data.refreshToken,
+        );
+        await EncryptedStorage.setItem(
+          'user',
+          JSON.stringify(result.data.user),
+        );
+        await EncryptedStorage.setItem('privateKey', keys.privateKey);
+        showAlert(
+          'success',
+          'Registration success',
+          'Registration completed successfully',
+        );
+        homeNavigation.replace('hometabs');
+        dispatch(resetForm());
+      } else {
+        dispatch(hide());
+        showAlert(
+          'error',
+          'Registration failed',
+          'Something went wrong while registering',
+        );
+      }
+    } catch (error) {
+      dispatch(hide());
+      showAlert('info', 'Network error', 'Please check your internet');
+    }
   };
 
   const inputFields = [
@@ -167,31 +185,9 @@ try {
   ] as const;
 
   return (
-
-    <AlertNotificationRoot
-      theme="dark"
-      colors={[
-        {
-          label: '#000000',
-          card: '#FFFFFF',
-          overlay: 'rgba(0, 0, 0, 0.5)',
-          success: '#4CAF50',
-          danger: '#F44336',
-          warning: '#1877F2',
-          info: '#000000',
-        },
-        {
-          label: '#000000',
-          card: '#FFFFFF',
-          overlay: 'rgba(255, 255, 255, 0.5)',
-          success: '#4CAF50',
-          danger: '#F44336',
-          warning: '#FFFFFF',
-          info: '#000000',
-        },
-      ]}>
     <KeyboardAvoidingView
       style={styles.keyboardView}
+      testID="keyboard-avoiding-view"
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}>
       <ScrollView
@@ -200,11 +196,10 @@ try {
         <TouchableOpacity onPress={handleOpenImageSelector}>
           <Image
             style={styles.logo}
-            source={
-              imageUri ? {uri: imageUri} : {uri: DEFAULT_PROFILE_IMAGE}
-            }
+            source={imageUri ? {uri: imageUri} : {uri: DEFAULT_PROFILE_IMAGE}}
             resizeMode="contain"
             accessibilityHint="logo"
+            accessibilityLabel="imageLogo"
           />
         </TouchableOpacity>
         <View>
@@ -233,29 +228,28 @@ try {
               onChange={(text: string) => handleInputChange(field.key, text)}
               secureTextEntry={
                 field.key === 'password' || field.key === 'confirmPassword'
-                }
-              />
-              {errors[field.key] && (
-                <Text style={styles.errorText}>
-                  {t(`${errors[field.key]}`)}
-                </Text>
-              )}
-            </View>
-          ))}
-          <View style={styles.registerButtonContainer}>
-            <Button title="Register" onPress={handleRegister} />
+              }
+            />
+            {errors[field.key] && (
+              <Text style={styles.errorText}>{t(`${errors[field.key]}`)}</Text>
+            )}
           </View>
-          <View style={styles.loginButtonContainer}>
-            <Text style={styles.loginButtontext}>
-              {t('Already have an account?')}{' '}
-            </Text>
-            <TouchableOpacity onPress={() => navigation.replace('login')}>
-              <Text style={styles.loginButtonSignInText}>{t('Sign in')}</Text>
-            </TouchableOpacity>
-          </View>
-          {isVisible && <ImagePickerModal />}
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </AlertNotificationRoot>
+        ))}
+        <View style={styles.registerButtonContainer}>
+          <Button title="Register" onPress={handleRegister} />
+        </View>
+        <View style={styles.loginButtonContainer}>
+          <Text style={styles.loginButtontext}>
+            {t('Already have an account?')}{' '}
+          </Text>
+          <TouchableOpacity onPress={() => navigation.navigate('login')}>
+            <Text style={styles.loginButtonSignInText}>{t('Sign in')}</Text>
+          </TouchableOpacity>
+        </View>
+        {isVisible && <ImagePickerModal />}
+      </ScrollView>
+      <CustomAlert type={alertType} title={alertTitle} message={alertMessage} />
+    </KeyboardAvoidingView>
+
   );
 };

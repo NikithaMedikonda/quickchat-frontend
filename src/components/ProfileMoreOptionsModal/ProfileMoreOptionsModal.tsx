@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -9,25 +9,31 @@ import {
   Platform,
 } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { useNavigation } from '@react-navigation/native';
-import { useTranslation } from 'react-i18next';
-import { useDispatch } from 'react-redux';
-import { ALERT_TYPE, AlertNotificationRoot, Dialog } from 'react-native-alert-notification';
-import { ConfirmModal } from '../GenericConfirmModal/ConfirmModal';
-import { hide, show } from '../../store/slices/loadingSlice';
-import { logout } from '../../store/slices/loginSlice';
-import { resetForm } from '../../store/slices/registrationSlice';
-import { deleteUser } from '../../services/DeleteUser';
+import {useNavigation} from '@react-navigation/native';
+import {useTranslation} from 'react-i18next';
+import {useDispatch, useSelector} from 'react-redux';
+import {ConfirmModal} from '../GenericConfirmModal/ConfirmModal';
+import {hide, show} from '../../store/slices/loadingSlice';
+import {logout} from '../../store/slices/loginSlice';
+import {
+  resetForm,
+  setAlertTitle,
+  setAlertType,
+  setAlertMessage,
+  setAlertVisible,
+} from '../../store/slices/registrationSlice';
+import {deleteUser} from '../../services/DeleteUser';
 import {
   InitialStackProps,
   NavigationProps,
   ProfileScreenNavigationProp,
 } from '../../types/usenavigation.type';
-import { User } from '../../screens/Profile/Profile';
-import { useThemeColors } from '../../themes/colors';
-import { useImagesColors } from '../../themes/images';
-import { getStyles } from './ProfileMoreOptionsModal.styles';
-
+import {User} from '../../screens/Profile/Profile';
+import {useThemeColors} from '../../themes/colors';
+import {useImagesColors} from '../../themes/images';
+import {getStyles} from './ProfileMoreOptionsModal.styles';
+import {CustomAlert} from '../CustomAlert/CustomAlert';
+import {RootState} from '../../store/store';
 
 export const ProfileMoreOptionsModal = ({
   visible,
@@ -49,6 +55,9 @@ export const ProfileMoreOptionsModal = ({
   const profileNavigation: ProfileScreenNavigationProp = useNavigation();
   const initialStackNavigation: InitialStackProps = useNavigation();
   const {t} = useTranslation('profile');
+  const {alertType, alertTitle, alertMessage} = useSelector(
+    (state: RootState) => state.registration,
+  );
 
   useEffect(() => {
     const getUserPhoneNumber = async () => {
@@ -66,6 +75,13 @@ export const ProfileMoreOptionsModal = ({
     };
     getUserPhoneNumber();
   }, [phoneNumber]);
+
+  const showAlert = (type: string, title: string, message: string) => {
+    dispatch(setAlertType(type));
+    dispatch(setAlertTitle(title));
+    dispatch(setAlertMessage(message));
+    dispatch(setAlertVisible(true));
+  };
   const handleDeleteAccountConfirmation = () => {
     onClose();
     setModalVisible(true);
@@ -86,76 +102,45 @@ export const ProfileMoreOptionsModal = ({
   const onConfirmLogout = async () => {
     handleModalClose();
     dispatch(logout());
+    dispatch(setAlertVisible(true));
+    showAlert('success', 'Login out', 'Successfully logout');
     await EncryptedStorage.clear();
-    navigation.replace('login');
+    setTimeout(() => {
+      dispatch(setAlertVisible(false));
+      navigation.replace('login');
+    }, 1000);
   };
   const onConfirmDelete = async () => {
     handleModalClose();
     dispatch(show());
     try {
       const result: any = await deleteUser({phoneNumber, authToken});
-      if (result.status === 404) {
+      if (
+        result.status === 404 ||
+        result.status === 412 ||
+        result.status === 401 ||
+        result.status === 403
+      ) {
         dispatch(hide());
-         Dialog.show({
-          type: ALERT_TYPE.DANGER,
-          title: 'Error',
-          textBody: 'Invalid Phone number',
-          button: 'close',
-          closeOnOverlayTap: true,
-        });
+        showAlert('warning', 'Delete account failed', 'Something went wrong');
       } else if (result.status === 200) {
         dispatch(hide());
         dispatch(resetForm());
         dispatch(logout());
         await EncryptedStorage.clear();
-        initialStackNavigation.replace('welcome');
-      } else if (result.status === 412) {
-        dispatch(hide());
-        Dialog.show({
-          type: ALERT_TYPE.DANGER,
-          title: 'Error',
-          textBody: 'Invalid secret key',
-          button: 'close',
-          closeOnOverlayTap: true,
-        });
-      } else if (result.status === 401) {
-        dispatch(hide());
-          Dialog.show({
-          type: ALERT_TYPE.DANGER,
-          title: 'Error',
-          textBody: 'Invalid token',
-          button: 'close',
-          closeOnOverlayTap: true,
-        });
-      } else if (result.status === 403) {
-        dispatch(hide());
-        dispatch(hide());
-          Dialog.show({
-          type: ALERT_TYPE.DANGER,
-          title: 'Error',
-          textBody: 'Authentication failed',
-          button: 'close',
-          closeOnOverlayTap: true,
-        });
+        showAlert('success', 'Delete Account', 'Successfully deleted account');
+        await EncryptedStorage.clear();
+        setTimeout(() => {
+          dispatch(setAlertVisible(false));
+          initialStackNavigation.replace('welcome');
+        }, 1000);
       } else {
         dispatch(hide());
-         Dialog.show({
-          type: ALERT_TYPE.DANGER,
-          title: 'Error',
-          textBody: 'Something went wrong while deleting',
-          button: 'close',
-          closeOnOverlayTap: true,
-        });
+        showAlert('warning', 'Delete account failed', 'Something went wrong');
       }
     } catch (error: any) {
       dispatch(hide());
-      Dialog.show({
-          type: ALERT_TYPE.DANGER,
-          title: 'Error',
-          textBody: 'Something went wrong!',
-          button: 'close',
-          closeOnOverlayTap: true,
-        });
+      showAlert('info', 'Delete account failed', 'Network error');
     }
   };
   const handleEditProfile = () => {
@@ -168,28 +153,6 @@ export const ProfileMoreOptionsModal = ({
     default: styles.defaultModal,
   });
   return (
-    <AlertNotificationRoot
-          theme="dark"
-          colors={[
-            {
-              label: '#000000',
-              card: '#FFFFFF',
-              overlay: 'rgba(0, 0, 0, 0.5)',
-              success: '#4CAF50',
-              danger: '#F44336',
-              warning: '#1877F2',
-              info: '#000000',
-            },
-            {
-              label: '#000000',
-              card: '#FFFFFF',
-              overlay: 'rgba(255, 255, 255, 0.5)',
-              success: '#4CAF50',
-              danger: '#F44336',
-              warning: '#FFFFFF',
-              info: '#000000',
-            },
-          ]}>
     <View>
       <Modal transparent={true} visible={visible}>
         <TouchableWithoutFeedback onPress={onClose}>
@@ -198,7 +161,7 @@ export const ProfileMoreOptionsModal = ({
               <View style={styles.textContainer}>
                 <TouchableOpacity
                   onPress={handleEditProfile}
-                  style={ styles.optionsView}>
+                  style={styles.optionsView}>
                   <Text style={styles.modalText}>Edit Profile</Text>
                   <Image
                     source={pencil}
@@ -218,7 +181,7 @@ export const ProfileMoreOptionsModal = ({
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={handleLogoutConfirmation}
-                  style={ styles.optionsView}>
+                  style={styles.optionsView}>
                   <Text style={styles.modalText}>Logout</Text>
                   <Image
                     source={logoutImage}
@@ -249,7 +212,7 @@ export const ProfileMoreOptionsModal = ({
           onConfirm={onConfirmDelete}
         />
       )}
+      <CustomAlert type={alertType} title={alertTitle} message={alertMessage} />
     </View>
-    </AlertNotificationRoot>
   );
 };

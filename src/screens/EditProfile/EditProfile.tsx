@@ -8,12 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
-import {
-  ALERT_TYPE,
-  AlertNotificationRoot,
-  Dialog,
-} from 'react-native-alert-notification';
+import {useDispatch, useSelector} from 'react-redux';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {useNavigation} from '@react-navigation/native';
 import {useTranslation} from 'react-i18next';
@@ -22,10 +17,19 @@ import {useThemeColors} from '../../themes/colors';
 import {getStyles} from './EditProfile.styles';
 import {Placeholder} from '../../components/InputField/InputField';
 import {ImagePickerModal} from '../../components/ImagePickerModal/ImagePickerModal';
-import {setIsVisible} from '../../store/slices/registrationSlice';
-import { updateProfile } from '../../services/UpdateProfile';
+import {
+  setIsVisible,
+  setAlertVisible,
+  setAlertType,
+  setAlertTitle,
+  setAlertMessage,
+  setErrors,
+  setEditProfileForm,
+} from '../../store/slices/registrationSlice';
+import {updateProfile} from '../../services/UpdateProfile';
 import {ProfileScreenNavigationProp} from '../../types/usenavigation.type';
-import { DEFAULT_PROFILE_IMAGE } from '../../constants/defaultImage';
+import {DEFAULT_PROFILE_IMAGE} from '../../constants/defaultImage';
+import {CustomAlert} from '../../components/CustomAlert/CustomAlert';
 
 export const EditProfile = () => {
   const colors = useThemeColors();
@@ -36,15 +40,21 @@ export const EditProfile = () => {
   const imageUri = useSelector(
     (state: RootState) => state.registration.imageUri,
   );
-  const image = useSelector((state: RootState) => state.registration.image);
 
-  const [inputFirstName, setInputFirstName] = useState('');
-  const [inputLastName, setInputLastName] = useState('');
-  const [inputEmail, setInputEmail] = useState('');
+  const {alertType, alertTitle, alertMessage, errors, editProfileForm} =
+    useSelector((state: RootState) => state.registration);
+  const editedImage = useSelector(
+    (state: RootState) => state.registration.image,
+  );
 
-  const imageURLRef = useRef('');
-  const [token, setToken] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
+  const handleInputChange = (
+    key: keyof typeof editProfileForm,
+    value: string,
+  ) => {
+    dispatch(setEditProfileForm({key, value}));
+  };
+  const [, setToken] = useState('');
+
   const [user, setUser] = useState<any>(null);
 
 
@@ -53,29 +63,33 @@ export const EditProfile = () => {
       const userDataString = await EncryptedStorage.getItem('user');
       const AccessToken = (await EncryptedStorage.getItem('authToken')) || '';
       const userData = userDataString ? JSON.parse(userDataString) : {};
-
-      const {
-        firstName = '',
-        lastName = '',
-        email = '',
-        profilePhoto = '',
-        phoneNumber : storedPhoneNumber = '',
-      } = userData;
-
-      setInputFirstName(firstName);
-      setInputLastName(lastName);
-      setInputEmail(email);
-      imageURLRef.current = profilePhoto;
       setToken(AccessToken);
-      setPhoneNumber(storedPhoneNumber);
+
       setUser(userData);
+      dispatch(
+        setEditProfileForm({key: 'firstName', value: userData.firstName || ''}),
+      );
+      dispatch(
+        setEditProfileForm({key: 'lastName', value: userData.lastName || ''}),
+      );
+      dispatch(setEditProfileForm({key: 'email', value: userData.email || ''}));
+      dispatch(
+        setEditProfileForm({
+          key: 'phoneNumber',
+          value: userData.phoneNumber || '',
+        }),
+      );
+      dispatch(setEditProfileForm({key: 'token', value: AccessToken}));
+      dispatch(setEditProfileForm({key: 'image', value: editedImage}));
     } catch (error) {
-      throw error;
+      dispatch(setAlertVisible(true));
+      showAlert('error', 'Error', 'Something went wrong');
     }
   };
 
   useEffect(() => {
     getUserData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   useLayoutEffect(() => {
     profileNavigation.setOptions({
@@ -88,192 +102,133 @@ export const EditProfile = () => {
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   const validateForm = () => {
-    if (!inputFirstName) {
-      Dialog.show({
-        type: ALERT_TYPE.DANGER,
-        title: 'Error',
-        textBody: 'First name is required',
-        button: 'close',
-        closeOnOverlayTap: true,
-      });
-      return false;
+    const newErrors: Partial<typeof editProfileForm> = {};
+    let isValid = true;
+    if (!editProfileForm.firstName) {
+      newErrors.firstName = 'First name required!';
+      isValid = false;
     }
-    if (!inputLastName) {
-      Dialog.show({
-        type: ALERT_TYPE.DANGER,
-        title: 'Error',
-        textBody: 'Last name is required',
-        button: 'close',
-        closeOnOverlayTap: true,
-      });
-      return false;
+    if (!editProfileForm.lastName) {
+      newErrors.lastName = 'Last name required!';
+      isValid = false;
     }
-    if (inputEmail && !validateEmail(inputEmail)) {
-      Dialog.show({
-        type: ALERT_TYPE.DANGER,
-        title: 'Error',
-        textBody: 'Invalid email format',
-        button: 'close',
-        closeOnOverlayTap: true,
-      });
-      return false;
+    if (!editProfileForm.email && !validateEmail(editProfileForm.email)) {
+      newErrors.email = 'Invalid email format!';
+      isValid = false;
     }
-    return true;
+    dispatch(setErrors(newErrors));
+    return isValid;
+  };
+
+    const showAlert = (type: string, title: string, message: string) => {
+    dispatch(setAlertType(type));
+    dispatch(setAlertTitle(title));
+    dispatch(setAlertMessage(message));
+    dispatch(setAlertVisible(true));
   };
 
   const handleSave = async () => {
+    const payloadToUpdate = {
+      ...editProfileForm,
+      image: editedImage,
+    };
     if (validateForm()) {
-      const payload = {
-        phoneNumber: phoneNumber,
-        image: image,
-        firstName: inputFirstName,
-        lastName: inputLastName,
-        email: inputEmail,
-        token: token,
-      };
-
       if (user) {
         try {
-          const result = await updateProfile(payload, user);
+          const result = await updateProfile(payloadToUpdate, user);
           if (result.status === 200) {
+            dispatch(setAlertVisible(true));
             await EncryptedStorage.setItem(
               'user',
               JSON.stringify(result.data.user),
             );
-            Dialog.show({
-            type: ALERT_TYPE.SUCCESS,
-            title: 'Success',
-            textBody: 'Profile updated successfully',
-            button: 'close',
-            closeOnOverlayTap: true,
-          });
-          setTimeout(() => {
-            profileNavigation.replace('profileScreen');
-          }, 4000);
+            showAlert('success', 'Success', 'Profile updated successfully');
+            setTimeout(() => {
+              dispatch(setAlertVisible(false));
+              profileNavigation.replace('profileScreen');
+            }, 1000);
           } else if (result.status === 400) {
-          Dialog.show({
-            type: ALERT_TYPE.DANGER,
-            title: 'Error',
-            textBody: 'Phone Number is required to change the profile image.',
-            button: 'close',
-            closeOnOverlayTap: true,
-          });
+            dispatch(setAlertVisible(true));
+            showAlert(
+              'error',
+              'Error',
+              'Phone Number is required to change the profile image.',
+            );
           } else if (result.status === 404) {
-            Dialog.show({
-            type: ALERT_TYPE.DANGER,
-            title: 'Error',
-            textBody: 'No user exists with the given phone number.',
-            button: 'close',
-            closeOnOverlayTap: true,
-          });
+            dispatch(setAlertVisible(true));
+            showAlert(
+              'error',
+              'Error',
+              'No user exists with the given phone number.',
+            );
           }
-        } catch (err) {
-          Dialog.show({
-            type: ALERT_TYPE.DANGER,
-            title: 'Error',
-            textBody: 'Failed to update profile',
-            button: 'close',
-            closeOnOverlayTap: true,
-          });
+        } catch (error) {
+          dispatch(setAlertVisible(true));
+          showAlert('error', 'Error', 'Failed to update profile');
         }
-      } else {
-        Dialog.show({
-          type: ALERT_TYPE.DANGER,
-          title: 'Error',
-          textBody: 'User data not loaded, Please try again.',
-          button: 'close',
-          closeOnOverlayTap: true,
-        });
       }
     }
   };
-
   const inputFields = [
     {
       key: 'firstName',
-      label: 'First Name',
-      value: inputFirstName,
-      setter: setInputFirstName,
+      title: 'First Name',
     },
     {
       key: 'lastName',
-      label: 'Last Name',
-      value: inputLastName,
-      setter: setInputLastName,
+      title: 'Last Name',
     },
     {
       key: 'email',
-      label: 'Email',
-      value: inputEmail,
-      setter: setInputEmail,
+      title: 'Email',
     },
-  ];
+  ] as const;
 
   return (
-    <AlertNotificationRoot
-      theme="dark"
-      colors={[
-        {
-          label: '#000000',
-          card: '#FFFFFF',
-          overlay: '#FFFFFF',
-          success: '#4CAF50',
-          danger: '#F44336',
-          warning: '#1877F2',
-          info: '#000000',
-        },
-        {
-          label: '#000000',
-          card: '#FFFFFF',
-          overlay: 'rgba(239, 238, 238, 0.5)',
-          success: '#4CAF50',
-          danger: '#F44336',
-          warning: '#1877F2',
-          info: '#000000',
-        },
-      ]}>
-      <KeyboardAvoidingView style={styles.keyboardView}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}>
-        <ScrollView contentContainerStyle={styles.container}>
-          <TouchableOpacity
-            onPress={() => dispatch(setIsVisible(true))}
-            accessibilityHint="edit-profile-button">
-            <Image
-              source={{
-                uri:
-                  imageUri ||
-                  user?.profilePicture || DEFAULT_PROFILE_IMAGE,
-              }}
-              accessibilityHint="Profile-Picture"
-              style={styles.profileImage}
-            />
-          </TouchableOpacity>
-          {inputFields.map(field => (
-            <View key={field.key} style={styles.fieldContainer}>
-              <View style={styles.fieldTextContainer}>
-                <Text style={styles.label}>{t(field.label)}</Text>
-              </View>
 
-              <Placeholder
-                title={field.label}
-                value={field.value}
-                onChange={text => field.setter(text)}
-                secureTextEntry={false}
-              />
+    <KeyboardAvoidingView
+      // eslint-disable-next-line react-native/no-inline-styles
+      style={{flex: 1}}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}>
+      <ScrollView contentContainerStyle={styles.container}>
+        <TouchableOpacity
+          onPress={() => dispatch(setIsVisible(true))}
+          accessibilityHint="edit-profile-button">
+          <Image
+            source={{
+              uri: imageUri || user?.profilePicture || DEFAULT_PROFILE_IMAGE,
+            }}
+            accessibilityHint="Profile-Picture"
+            style={styles.profileImage}
+          />
+        </TouchableOpacity>
+        {inputFields.map(field => (
+          <View key={field.key} style={styles.fieldContainer}>
+            <View style={styles.fieldTextContainer}>
+              <Text style={styles.label}>{t(field.title)}</Text>
             </View>
-          ))}
-          <View style={styles.buttonRow}>
-            <TouchableOpacity
-              style={styles.touchableButton}
-              onPress={handleSave}>
-              <Text style={styles.buttonText}>{t('Save')}</Text>
-            </TouchableOpacity>
-          </View>
 
-          <ImagePickerModal showDeleteOption />
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </AlertNotificationRoot>
+            <Placeholder
+              title={field.title}
+              value={editProfileForm[field.key]}
+              onChange={(text: string) => handleInputChange(field.key, text)}
+              secureTextEntry={false}
+            />
+
+            {errors[field.key] && (
+              <Text style={styles.errorText}>{t(`${errors[field.key]}`)}</Text>
+            )}
+          </View>
+        ))}
+        <View style={styles.buttonRow}>
+          <TouchableOpacity style={styles.touchableButton} onPress={handleSave}>
+            <Text style={styles.buttonText}>{t('Save')}</Text>
+          </TouchableOpacity>
+        </View>
+        <ImagePickerModal showDeleteOption />
+      </ScrollView>
+      <CustomAlert type={alertType} title={alertTitle} message={alertMessage} />
+    </KeyboardAvoidingView>
   );
 };

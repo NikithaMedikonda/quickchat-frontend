@@ -10,6 +10,7 @@ import {AlertNotificationRoot, Dialog} from 'react-native-alert-notification';
 import Contacts from 'react-native-contacts';
 import {Provider} from 'react-redux';
 import {getContacts} from '../../services/GetContacts';
+import {useThemeColors} from '../../themes/colors';
 import {resetForm} from '../../store/slices/registrationSlice';
 import {store} from '../../store/store';
 import {useThemeColors} from '../../themes/colors';
@@ -42,9 +43,7 @@ describe('ContactsDisplay Component', () => {
   const renderComponent = () => {
     render(
       <Provider store={store}>
-        <AlertNotificationRoot>
           <ContactsDisplay />
-        </AlertNotificationRoot>
       </Provider>,
     );
   };
@@ -67,7 +66,6 @@ describe('ContactsDisplay Component', () => {
         unRegisteredUsers: [],
       },
     });
-
     renderComponent();
     await waitFor(() => {
       expect(screen.getByText('Loading Contacts...')).toBeTruthy();
@@ -139,7 +137,6 @@ describe('ContactsDisplay Component', () => {
         unRegisteredUsers: [],
       },
     });
-
     await waitFor(() => {
       renderComponent();
     });
@@ -166,7 +163,6 @@ describe('ContactsDisplay Component', () => {
     (Contacts.getContactsByPhoneNumber as jest.Mock).mockResolvedValue([
       {displayName: ''},
     ]);
-
     await waitFor(() => {
       expect(screen.getByText('unknown')).toBeTruthy();
     });
@@ -202,19 +198,17 @@ describe('ContactsDisplay Component', () => {
 
   it('should show alert when getContacts throws error', async () => {
     (getContacts as jest.Mock).mockRejectedValue(new Error('Failed to fetch'));
+    render(
+      <Provider store={store}>
+          <ContactsDisplay />
+      </Provider>,
+    );
     await waitFor(() => {
-      renderComponent();
-    });
-    await waitFor(() => {
-      expect(Dialog.show).toHaveBeenCalledWith({
-        type: 'DANGER',
-        title: 'Error',
-        textBody: 'Error occurred while fetching the contacts',
-        button: 'close',
-        closeOnOverlayTap: true,
-      });
-    });
+      const state = store.getState();
+      expect(state.registration.alertMessage).toBe('Network error');
+      expect(state.registration.alertType).toBe('info');
   });
+
 
   it('should navigate to individual chat screen when it is clicked on contact', async () => {
     (getContacts as jest.Mock).mockResolvedValue({
