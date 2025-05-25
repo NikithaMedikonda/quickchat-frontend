@@ -434,4 +434,3 @@ describe('IndividualChat', () => {
     });
   });
 });
-});
