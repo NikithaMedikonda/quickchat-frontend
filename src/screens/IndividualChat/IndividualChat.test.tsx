@@ -148,7 +148,7 @@ describe('IndividualChat', () => {
     });
   });
 
-  test('Should render the message input component', async () => {
+  test('Should render the message input component',async() => {
     (getMessagesBetween as jest.Mock).mockResolvedValueOnce({
       status: 200,
       data: {
@@ -433,4 +433,5 @@ describe('IndividualChat', () => {
       expect(queryByText('')).toBeNull();
     });
   });
+});
 });

@@ -249,7 +249,7 @@ try {
             <Text style={styles.loginButtontext}>
               {t('Already have an account?')}{' '}
             </Text>
-            <TouchableOpacity onPress={() => navigation.navigate('login')}>
+            <TouchableOpacity onPress={() => navigation.replace('login')}>
               <Text style={styles.loginButtonSignInText}>{t('Sign in')}</Text>
             </TouchableOpacity>
           </View>
