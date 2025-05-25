@@ -200,7 +200,7 @@ export function Login() {
           <TouchableOpacity
             style={styles.signUpContainer}
             onPress={() => {
-              navigate.navigate('register');
+              navigate.replace('register');
             }}>
             <Text style={styles.validationText}>{t(' Sign up')}</Text>
           </TouchableOpacity>
