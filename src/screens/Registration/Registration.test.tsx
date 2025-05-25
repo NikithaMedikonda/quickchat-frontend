@@ -328,4 +328,4 @@ const state = store.getState();
     expect(state.registration.alertType).toBe('info');
     });
   });
-
+})
