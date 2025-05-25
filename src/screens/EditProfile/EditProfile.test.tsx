@@ -3,8 +3,8 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import {Provider} from 'react-redux';
 import {updateProfile} from '../../services/UpdateProfile';
 import {store} from '../../store/store';
-import {EditProfile} from './EditProfile';
 import {resetForm} from '../../store/slices/registrationSlice';
+import {EditProfile} from './EditProfile';
 
 jest.mock('react-native-encrypted-storage', () => ({
   setItem: jest.fn(),

@@ -33,8 +33,8 @@ import {
 import {RootState} from '../../store/store';
 import {useThemeColors} from '../../themes/colors';
 import {HomeTabsProps, NavigationProps} from '../../types/usenavigation.type';
-import {getStyles} from './Registration.styles';
 import {CustomAlert} from '../../components/CustomAlert/CustomAlert';
+import {getStyles} from './Registration.styles';
 
 export const Registration = () => {
   const {alertType, alertTitle, alertMessage} = useSelector(

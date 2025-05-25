@@ -7,10 +7,10 @@ import {
 } from '@testing-library/react-native';
 import {Provider} from 'react-redux';
 import {ContactDetails} from '../../types/contact.types';
-import {Contact} from './Contact';
 import {DEFAULT_PROFILE_IMAGE} from '../../constants/defaultImage';
 import {resetForm} from '../../store/slices/registrationSlice';
 import {store} from '../../store/store';
+import {Contact} from './Contact';
 
 
 Linking.openURL = jest.fn();

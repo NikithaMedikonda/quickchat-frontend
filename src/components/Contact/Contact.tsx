@@ -5,10 +5,10 @@ import { useThemeColors } from '../../themes/colors';
 import { hide } from '../../store/slices/loadingSlice';
 import { ContactDetails } from '../../types/contact.types';
 import { DEFAULT_PROFILE_IMAGE } from '../../constants/defaultImage';
-import { getStyles } from './Contact.styles';
 import { setAlertMessage, setAlertTitle, setAlertType, setAlertVisible } from '../../store/slices/registrationSlice';
 import { CustomAlert } from '../CustomAlert/CustomAlert';
 import { RootState } from '../../store/store';
+import { getStyles } from './Contact.styles';
 
 
 export const Contact = ({contactDetails}: {contactDetails: ContactDetails}) => {

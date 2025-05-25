@@ -28,7 +28,6 @@ import {RootState} from '../../store/store';
 import {useThemeColors} from '../../themes/colors';
 import {useImagesColors} from '../../themes/images';
 import {HomeTabsProps, NavigationProps} from '../../types/usenavigation.type';
-import {loginStyles} from './Login.styles';
 import {
   setAlertTitle,
   setAlertType,
@@ -36,6 +35,7 @@ import {
   setAlertMessage,
 } from '../../store/slices/registrationSlice';
 import {CustomAlert} from '../../components/CustomAlert/CustomAlert';
+import {loginStyles} from './Login.styles';
 
 export function Login() {
   const homeNavigation = useNavigation<HomeTabsProps>();
