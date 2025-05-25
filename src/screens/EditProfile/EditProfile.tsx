@@ -41,11 +41,12 @@ export const EditProfile = () => {
   const [inputFirstName, setInputFirstName] = useState('');
   const [inputLastName, setInputLastName] = useState('');
   const [inputEmail, setInputEmail] = useState('');
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [imageURL, setImageURL] = useState('');
+
+  const [ ,setImageURL] = useState('');
   const [token, setToken] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [user, setUser] = useState<any>(null);
+
 
   const getUserData = async () => {
     try {
