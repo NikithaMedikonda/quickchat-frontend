@@ -1,4 +1,4 @@
-import {useEffect, useLayoutEffect, useState} from 'react';
+import {useEffect, useLayoutEffect, useRef, useState} from 'react';
 import {
   Image,
   KeyboardAvoidingView,
@@ -42,7 +42,8 @@ export const EditProfile = () => {
   const [inputLastName, setInputLastName] = useState('');
   const [inputEmail, setInputEmail] = useState('');
 
-  const [ ,setImageURL] = useState('');
+  // const [ ,setImageURL] = useState('');
+  const imageURLRef = useRef('');
   const [token, setToken] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [user, setUser] = useState<any>(null);
@@ -65,7 +66,8 @@ export const EditProfile = () => {
       setInputFirstName(firstName);
       setInputLastName(lastName);
       setInputEmail(email);
-      setImageURL(profilePhoto);
+      imageURLRef.current = profilePhoto;
+      // setImageURL(profilePhoto);
       setToken(AccessToken);
       setPhoneNumber(storedPhoneNumber);
       setUser(userData);
