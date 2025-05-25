@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - improve-test-coverage
 
 jobs:
   lint-and-test:

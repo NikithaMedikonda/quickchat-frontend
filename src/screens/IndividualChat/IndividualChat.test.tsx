@@ -186,6 +186,7 @@ describe('IndividualChat', () => {
         />
       </NavigationContainer>,
     );
+    await waitFor(() => {
     const inputBox = screen.getByPlaceholderText('Type a message..');
     await waitFor(() => {
       expect(inputBox).toBeTruthy();
@@ -431,5 +432,6 @@ describe('IndividualChat', () => {
     await waitFor(() => {
       expect(queryByText('')).toBeNull();
     });
+  });
   });
 });
