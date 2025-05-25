@@ -1,16 +1,27 @@
 import { Image, Linking, Platform, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { ALERT_TYPE, AlertNotificationRoot, Dialog } from 'react-native-alert-notification';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useThemeColors } from '../../themes/colors';
 import { hide } from '../../store/slices/loadingSlice';
 import { ContactDetails } from '../../types/contact.types';
 import { DEFAULT_PROFILE_IMAGE } from '../../constants/defaultImage';
 import { getStyles } from './Contact.styles';
+import { setAlertMessage, setAlertTitle, setAlertType, setAlertVisible } from '../../store/slices/registrationSlice';
+import { CustomAlert } from '../CustomAlert/CustomAlert';
+import { RootState } from '../../store/store';
 
 
 export const Contact = ({contactDetails}: {contactDetails: ContactDetails}) => {
    const dispatch = useDispatch();
+   const {alertType, alertTitle, alertMessage} = useSelector(
+    (state: RootState) => state.registration,
+  );
+     const showAlert = (type: string, title: string, message: string) => {
+       dispatch(setAlertType(type));
+       dispatch(setAlertTitle(title));
+       dispatch(setAlertMessage(message));
+       dispatch(setAlertVisible(true));
+     };
   const openSMS = async (phoneNumber: string, body: string) => {
     const url = `sms:${phoneNumber}${
       Platform.OS === 'android' ? '?body=' : '&body='
@@ -19,13 +30,7 @@ export const Contact = ({contactDetails}: {contactDetails: ContactDetails}) => {
       await Linking.openURL(url);
     } catch (error) {
         dispatch(hide());
-    Dialog.show({
-      type: ALERT_TYPE.DANGER,
-      title: 'Contacts fetching is failed',
-      textBody: 'Unable to process your request',
-      button: 'close',
-      closeOnOverlayTap: true,
-    });
+        showAlert('info', 'Contacts fetching is failed', 'Unable to process your request.');
     }
   };
 
@@ -34,28 +39,7 @@ export const Contact = ({contactDetails}: {contactDetails: ContactDetails}) => {
   const {t} = useTranslation('contact');
 
   return (
-    <AlertNotificationRoot
-          theme="dark"
-          colors={[
-            {
-              label: '#000000',
-              card: '#FFFFFF',
-              overlay: 'rgba(0, 0, 0, 0.5)',
-              success: '#4CAF50',
-              danger: '#F44336',
-              warning: '#1877F2',
-              info: '#000000',
-            },
-            {
-              label: '#000000',
-              card: '#FFFFFF',
-              overlay: 'rgba(255, 255, 255, 0.5)',
-              success: '#4CAF50',
-              danger: '#F44336',
-              warning: '#FFFFFF',
-              info: '#000000',
-            },
-          ]}>
+
     <View style={styles.contactContainer}>
       <View style={styles.leftBlock}>
         <Image
@@ -89,8 +73,8 @@ export const Contact = ({contactDetails}: {contactDetails: ContactDetails}) => {
           </Text>
         </View>
       )}
+        <CustomAlert type={alertType} title={alertTitle} message={alertMessage} />
     </View>
-    </AlertNotificationRoot>
   );
 };
 
