@@ -1,10 +1,10 @@
-import { NavigationContainer } from '@react-navigation/native';
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
-import { AlertNotificationRoot, Dialog } from 'react-native-alert-notification';
-import { Provider } from 'react-redux';
-import { resetForm } from '../../store/slices/registrationSlice';
-import { store } from '../../store/store';
-import { Registration } from './Registration';
+import {NavigationContainer} from '@react-navigation/native';
+import {fireEvent, render, waitFor} from '@testing-library/react-native';
+import {AlertNotificationRoot, Dialog} from 'react-native-alert-notification';
+import {Provider} from 'react-redux';
+import {resetForm} from '../../store/slices/registrationSlice';
+import {store} from '../../store/store';
+import {Registration} from './Registration';
 
 jest.mock('react-native-image-crop-picker', () => ({
   openPicker: jest.fn().mockResolvedValue({path: 'mocked/image/path.jpg'}),
@@ -18,7 +18,10 @@ jest.mock('react-native-phone-input', () => {
   const React = require('react');
   const {TextInput} = require('react-native');
   const MockPhoneInput = React.forwardRef(
-    (props: {value?: string; onChangePhoneNumber: (value: string) => void;}, ref: string) => {
+    (
+      props: {value?: string; onChangePhoneNumber: (value: string) => void},
+      ref: string,
+    ) => {
       const [text, setText] = React.useState('');
       return (
         <TextInput
@@ -69,7 +72,9 @@ jest.mock('../../services/KeyGeneration', () => ({
 
 jest.mock('react-native-libsodium', () => ({
   crypto_box_keypair: jest.fn(),
-  to_base64: jest.fn((input: Uint8Array) => Buffer.from(input).toString('base64')),
+  to_base64: jest.fn((input: Uint8Array) =>
+    Buffer.from(input).toString('base64'),
+  ),
   crypto_generichash: jest.fn(() => new Uint8Array(32).fill(1)),
   crypto_secretbox_easy: jest.fn(() => new Uint8Array(64).fill(2)),
   randombytes_buf: jest.fn(() => new Uint8Array(24).fill(3)),
@@ -130,6 +135,15 @@ describe('Registration Screen', () => {
     });
   });
 
+  it('should activate image picker modal', async () => {
+    const {getByAccessibilityHint} = renderComponent();
+    fireEvent.press(getByAccessibilityHint('logo'));
+    await waitFor(() => {
+      const state = store.getState();
+      expect(state.registration.isVisible).toBe(true);
+    });
+  });
+
   it('shows password mismatch error', async () => {
     const {getByPlaceholderText, getByText} = renderComponent();
     fireEvent.changeText(getByPlaceholderText('Password'), 'Password@1');
@@ -152,6 +166,24 @@ describe('Registration Screen', () => {
     });
   });
 
+  it('should check the phone number', async () => {
+    const {getByPlaceholderText, getByText} = renderComponent();
+    fireEvent.changeText(getByPlaceholderText('Phone number'), '');
+    fireEvent.press(getByText('Register'));
+    await waitFor(() => {
+      expect(getByText('Phone number required!')).toBeTruthy();
+    });
+  });
+
+  it('should check the length of phone number', async () => {
+    const {getByPlaceholderText, getByText} = renderComponent();
+    fireEvent.changeText(getByPlaceholderText('Phone number'), '123456');
+    fireEvent.press(getByText('Register'));
+    await waitFor(() => {
+      expect(getByText('Invalid phone number!')).toBeTruthy();
+    });
+  });
+
   it('shows invalid email error', async () => {
     const {getByPlaceholderText, getByText} = renderComponent();
     fireEvent.changeText(
@@ -168,7 +200,7 @@ describe('Registration Screen', () => {
     const {getByText} = renderComponent();
     fireEvent.press(getByText('Sign in'));
     await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith('login');
+      expect(mockReplace).toHaveBeenCalledWith('login');
     });
   });
 
@@ -274,5 +306,37 @@ describe('Registration Screen', () => {
       });
     });
   });
-});
 
+  it('shows generic error if server fails to connect', async () => {
+    const {registerUser} = require('../../services/RegisterUser.ts');
+    registerUser.mockRejectedValue(new Error('Server failure'));
+
+    const {getByPlaceholderText, getByText} = renderComponent();
+
+    fireEvent.changeText(getByPlaceholderText('First Name'), 'Test');
+    fireEvent.changeText(getByPlaceholderText('Last Name'), 'User');
+    fireEvent.changeText(getByPlaceholderText('Phone number'), '1234567890');
+    fireEvent.changeText(getByPlaceholderText('Password'), 'Password@123');
+    fireEvent.changeText(
+      getByPlaceholderText('Confirm Password'),
+      'Password@123',
+    );
+    fireEvent.changeText(
+      getByPlaceholderText('Email (Optional)'),
+      'user@gmail.com',
+    );
+
+    fireEvent.press(getByText('Register'));
+
+    await waitFor(() => {
+      expect(registerUser).toHaveBeenCalled();
+      expect(Dialog.show).toHaveBeenCalledWith({
+        type: 'danger',
+        title: 'Registration failed',
+        textBody: 'Network error or something unexpected happened',
+        button: 'close',
+        closeOnOverlayTap: true,
+      });
+    });
+  });
+});

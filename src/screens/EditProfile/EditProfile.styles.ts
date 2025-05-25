@@ -79,4 +79,7 @@ export const getStyles = (colors: Colors) =>
       gap: 6,
       marginRight: 12,
     },
+    keyboardView:{
+    flex: 1,
+    },
   });

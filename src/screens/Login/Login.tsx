@@ -1,7 +1,7 @@
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import phone from 'phone';
 import React from 'react';
-import { useTranslation } from 'react-i18next';
+import {useTranslation} from 'react-i18next';
 import {
   Image,
   KeyboardAvoidingView,
@@ -18,23 +18,23 @@ import {
 } from 'react-native-alert-notification';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import PhoneInput from 'react-native-phone-input';
-import { useDispatch, useSelector } from 'react-redux';
-import { Button } from '../../components/Button/Button';
-import { Placeholder } from '../../components/InputField/InputField';
-import { keyDecryption } from '../../services/KeyDecryption';
-import { loginUser } from '../../services/LoginUser';
-import { hide, show } from '../../store/slices/loadingSlice';
+import {useDispatch, useSelector} from 'react-redux';
+import {Button} from '../../components/Button/Button';
+import {Placeholder} from '../../components/InputField/InputField';
+import {keyDecryption} from '../../services/KeyDecryption';
+import {loginUser} from '../../services/LoginUser';
+import {hide, show} from '../../store/slices/loadingSlice';
 import {
   resetLoginForm,
   setLoginErrors,
   setLoginField,
   setLoginSuccess,
 } from '../../store/slices/loginSlice';
-import { RootState } from '../../store/store';
-import { useThemeColors } from '../../themes/colors';
-import { useImagesColors } from '../../themes/images';
-import { HomeTabsProps, NavigationProps } from '../../types/usenavigation.type';
-import { loginStyles } from './Login.styles';
+import {RootState} from '../../store/store';
+import {useThemeColors} from '../../themes/colors';
+import {useImagesColors} from '../../themes/images';
+import {HomeTabsProps, NavigationProps} from '../../types/usenavigation.type';
+import {loginStyles} from './Login.styles';
 
 export function Login() {
   const homeNavigation = useNavigation<HomeTabsProps>();
@@ -100,10 +100,7 @@ export function Login() {
           'user',
           JSON.stringify(result.data.user),
         );
-        await EncryptedStorage.setItem(
-          'privateKey',
-          privateKey,
-        );
+        await EncryptedStorage.setItem('privateKey', privateKey);
         dispatch(resetLoginForm());
         homeNavigation.replace('hometabs');
       } else if (result.status === 404) {
@@ -211,14 +208,14 @@ export function Login() {
           </View>
           <View style={styles.messageView}>
             <Text style={styles.messageText}>
-              {t("Don't have an account?")}
+              {t("Don't have an account?")}{' '}
             </Text>
             <TouchableOpacity
               style={styles.signUpContainer}
               onPress={() => {
-                navigate.navigate('register');
+                navigate.replace('register');
               }}>
-              <Text style={styles.validationText}>{t(' Sign up')}</Text>
+              <Text style={styles.validationText}>{t('Sign up')}</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>

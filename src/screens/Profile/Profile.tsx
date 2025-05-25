@@ -1,4 +1,10 @@
-import {useEffect, useLayoutEffect, useState} from 'react';
+import {
+  useEffect,
+  useLayoutEffect,
+  useState,
+  useMemo,
+  useCallback,
+} from 'react';
 import {View, Image, Text, TouchableOpacity} from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {useTranslation} from 'react-i18next';
@@ -6,8 +12,8 @@ import {useNavigation} from '@react-navigation/native';
 import {getStyles} from './Profile.styles';
 import {ProfileMoreOptionsModal} from '../../components/ProfileMoreOptionsModal/ProfileMoreOptionsModal';
 import {useThemeColors} from '../../themes/colors';
-import { useImagesColors } from '../../themes/images';
-import { DEFAULT_PROFILE_IMAGE } from '../../constants/defaultImage';
+import {useImagesColors} from '../../themes/images';
+import {DEFAULT_PROFILE_IMAGE} from '../../constants/defaultImage';
 
 export interface User {
   firstName: string;
@@ -17,37 +23,49 @@ export interface User {
   phoneNumber: string;
   isDeleted: boolean;
 }
+const ProfileHeaderRight = ({onPress}: {onPress: () => void}) => {
+  const {profileDots} = useImagesColors();
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
+
+  return (
+    <View style={styles.headerRight}>
+      <TouchableOpacity onPress={onPress}>
+        <Image
+          source={profileDots}
+          accessibilityHint="dots-image"
+          style={styles.profileDots}
+        />
+      </TouchableOpacity>
+    </View>
+  );
+};
+
 export const Profile = () => {
   const colors = useThemeColors();
   const styles = getStyles(colors);
-  const {profileDots} = useImagesColors();
   const {t} = useTranslation('auth');
   const [userData, setUserData] = useState<User | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const navigation = useNavigation();
-  const handleMoreOptionsModal = () => {
+  const handleMoreOptionsModal = useCallback(() => {
     setModalVisible(true);
-  };
-  const onClose = () => {
+  }, []);
+
+  const onClose = useCallback(() => {
     setModalVisible(false);
-  };
+  }, []);
+  const headerRightComponent = useMemo(
+    () => <ProfileHeaderRight onPress={handleMoreOptionsModal} />,
+    [handleMoreOptionsModal],
+  );
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitleAlign: 'center',
-      // eslint-disable-next-line react/no-unstable-nested-components
-      headerRight: () => (
-        <View style={styles.headerRight}>
-          <TouchableOpacity onPress={handleMoreOptionsModal}>
-            <Image
-              source={profileDots}
-              accessibilityHint="dots-image"
-              style={styles.profileDots}
-            />
-          </TouchableOpacity>
-        </View>
-      ),
+      headerRight: () => headerRightComponent,
     });
-  }, [navigation, styles.profileDots, styles.headerRight, profileDots]);
+  }, [navigation, headerRightComponent]);
   useEffect(() => {
     const getUserData = async () => {
       const userDataString = await EncryptedStorage.getItem('user');
@@ -62,22 +80,22 @@ export const Profile = () => {
     <View style={styles.container}>
       <View style={styles.innerContainer}>
         <View style={styles.profileImageContainer}>
-        {userData?.profilePicture && (
-          <Image
-            source={{uri: `${userData?.profilePicture}`}}
-            accessibilityHint="profile-image"
-            style={styles.profileImage}
-          />
-        )}
-        {!userData?.profilePicture && (
-          <Image
-            source={{
-              uri: DEFAULT_PROFILE_IMAGE,
-            }}
-            accessibilityHint="profile-image"
-            style={styles.profileImage}
-          />
-        )}
+          {userData?.profilePicture && (
+            <Image
+              source={{uri: `${userData?.profilePicture}`}}
+              accessibilityHint="profile-image"
+              style={styles.profileImage}
+            />
+          )}
+          {!userData?.profilePicture && (
+            <Image
+              source={{
+                uri: DEFAULT_PROFILE_IMAGE,
+              }}
+              accessibilityHint="profile-image"
+              style={styles.profileImage}
+            />
+          )}
         </View>
       </View>
 

@@ -1,4 +1,4 @@
-import {useEffect, useLayoutEffect, useState} from 'react';
+import {useCallback, useEffect, useLayoutEffect, useState} from 'react';
 import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {useTranslation} from 'react-i18next';
@@ -18,6 +18,19 @@ import {HomeStackProps, HomeTabsProps} from '../../types/usenavigation.type';
 import {getStyles} from './ContactsDisplay.styles';
 import {hide} from '../../store/slices/loadingSlice';
 
+const LeftHeader = ({onPress}: {onPress: () => void}) => {
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
+
+  return (
+    <View>
+      <TouchableOpacity onPress={onPress}>
+        <Text style={styles.loadingContactsText}>く</Text>
+      </TouchableOpacity>
+    </View>
+  );
+};
+
 export const ContactsDisplay = () => {
   const [appContacts, setAppContacts] = useState<ContactDetails[] | []>([]);
   const [phoneContacts, setPhoneContacts] = useState<ContactDetails[] | []>([]);
@@ -28,6 +41,14 @@ export const ContactsDisplay = () => {
   const navigation = useNavigation<HomeTabsProps>();
   const {t} = useTranslation('contact');
   const homeStackNavigation = useNavigation<HomeStackProps>();
+  const handleGoBack = useCallback(() => {
+    navigation.goBack();
+  }, [navigation]);
+
+  const renderHeaderLeft = useCallback(() => {
+    return <LeftHeader onPress={handleGoBack} />;
+  }, [handleGoBack]);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: t('Contacts'),
@@ -38,14 +59,9 @@ export const ContactsDisplay = () => {
       headerTitleStyle: {
         color: colors.text,
       },
-      // eslint-disable-next-line react/no-unstable-nested-components
-      headerLeft: () => (
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={styles.loadingContactsText}>く</Text>
-        </TouchableOpacity>
-      ),
+      headerLeft: renderHeaderLeft,
     });
-  });
+  }, [navigation, colors.background, colors.text, t, renderHeaderLeft]);
 
   useEffect(() => {
     const fetchContacts = async () => {
@@ -121,6 +137,7 @@ export const ContactsDisplay = () => {
                 <View style={styles.contactDetailsContainer}>
                   {appContacts.map((contact: ContactDetails, index: number) => (
                     <TouchableOpacity
+                      accessibilityHint="contact-label"
                       key={`${contact.name}-${index}`}
                       onPress={() => {
                         homeStackNavigation.navigate('individualChat', {
