@@ -1,5 +1,5 @@
-import { NavigationContainer, RouteProp } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import {NavigationContainer, RouteProp} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {
   fireEvent,
   render,
@@ -7,12 +7,12 @@ import {
   waitFor,
 } from '@testing-library/react-native';
 
-import { getMessagesBetween } from '../../services/GetMessagesBetween';
-import { HomeStackParamList } from '../../types/usenavigation.type';
-import { IndividualChat } from './IndividualChat';
+import {getMessagesBetween} from '../../services/GetMessagesBetween';
+import {HomeStackParamList} from '../../types/usenavigation.type';
+import {IndividualChat} from './IndividualChat';
 
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { updateMessageStatus } from '../../services/UpdateMessageStatus';
+import {updateMessageStatus} from '../../services/UpdateMessageStatus';
 import * as socket from '../../socket/socket';
 type IndividualChatRouteProp = RouteProp<HomeStackParamList, 'individualChat'>;
 const mockRoute: IndividualChatRouteProp = {
@@ -186,7 +186,6 @@ describe('IndividualChat', () => {
         />
       </NavigationContainer>,
     );
-    await waitFor(() => {
     const inputBox = screen.getByPlaceholderText('Type a message..');
     await waitFor(() => {
       expect(inputBox).toBeTruthy();
@@ -195,6 +194,7 @@ describe('IndividualChat', () => {
       expect(sendIcon).toBeTruthy();
     });
   });
+
   test('adds message to receivedMessages if message is not empty', async () => {
     (socket.receivePrivateMessage as jest.Mock).mockImplementation(
       async (_recipient, callback) => {
@@ -432,6 +432,5 @@ describe('IndividualChat', () => {
     await waitFor(() => {
       expect(queryByText('')).toBeNull();
     });
-  });
   });
 });
