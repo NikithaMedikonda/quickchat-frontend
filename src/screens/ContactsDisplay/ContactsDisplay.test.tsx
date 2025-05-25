@@ -4,7 +4,6 @@ import {useNavigation} from '@react-navigation/native';
 import {Provider} from 'react-redux';
 import {getContacts} from '../../services/GetContacts';
 import {useThemeColors} from '../../themes/colors';
-import {AlertNotificationRoot, Dialog} from 'react-native-alert-notification';
 import {resetForm} from '../../store/slices/registrationSlice';
 import {store} from '../../store/store';
 import {ContactsDisplay} from './ContactsDisplay';
@@ -56,9 +55,7 @@ describe('ContactsDisplay Component', () => {
     });
     render(
       <Provider store={store}>
-        <AlertNotificationRoot>
           <ContactsDisplay />
-        </AlertNotificationRoot>
       </Provider>,
     );
     await waitFor(() => {
@@ -98,9 +95,7 @@ describe('ContactsDisplay Component', () => {
 
     const {getByText} = render(
       <Provider store={store}>
-        <AlertNotificationRoot>
           <ContactsDisplay />
-        </AlertNotificationRoot>
       </Provider>,
     );
 
@@ -120,16 +115,13 @@ describe('ContactsDisplay Component', () => {
 
     const {getByText} = render(
       <Provider store={store}>
-        <AlertNotificationRoot>
           <ContactsDisplay />
-        </AlertNotificationRoot>
       </Provider>,
     );
 
     await waitFor(() => {
       expect(
         getByText(
-          // eslint-disable-next-line no-useless-escape
           `It\'s so sad that, we have no one on Quick Chat. Share about Quick Chat`,
         ),
       ).toBeTruthy();
@@ -146,9 +138,7 @@ describe('ContactsDisplay Component', () => {
 
     const {getByText} = render(
       <Provider store={store}>
-        <AlertNotificationRoot>
           <ContactsDisplay />
-        </AlertNotificationRoot>
       </Provider>,
     );
 
@@ -168,17 +158,13 @@ describe('ContactsDisplay Component', () => {
         unRegisteredUsers: ['67890'],
       },
     });
-
-    // givenName is missing
     (Contacts.getContactsByPhoneNumber as jest.Mock).mockResolvedValue([
-      {displayName: ''}, // no givenName
+      {displayName: ''}, 
     ]);
 
     const {getByText} = render(
       <Provider store={store}>
-        <AlertNotificationRoot>
           <ContactsDisplay />
-        </AlertNotificationRoot>
       </Provider>,
     );
 
@@ -194,9 +180,7 @@ describe('ContactsDisplay Component', () => {
 
     render(
       <Provider store={store}>
-        <AlertNotificationRoot>
           <ContactsDisplay />
-        </AlertNotificationRoot>
       </Provider>,
     );
 
@@ -224,22 +208,13 @@ describe('ContactsDisplay Component', () => {
 
     render(
       <Provider store={store}>
-        <AlertNotificationRoot>
           <ContactsDisplay />
-        </AlertNotificationRoot>
       </Provider>,
     );
-
     await waitFor(() => {
-      expect(Dialog.show).toHaveBeenCalledWith(
-       {
-          type: 'DANGER',
-          title: 'Error',
-          textBody: 'Error occurred while fetching the contacts',
-          button: 'close',
-          closeOnOverlayTap: true,
-        },
-      );
+      const state = store.getState();
+      expect(state.registration.alertMessage).toBe('Network error');
+      expect(state.registration.alertType).toBe('info');
     });
   });
 });
