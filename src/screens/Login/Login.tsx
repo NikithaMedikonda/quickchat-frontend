@@ -35,6 +35,7 @@ import {
   setAlertMessage,
 } from '../../store/slices/registrationSlice';
 import {CustomAlert} from '../../components/CustomAlert/CustomAlert';
+
 import {loginStyles} from './Login.styles';
 
 export function Login() {
@@ -122,6 +123,7 @@ export function Login() {
         await EncryptedStorage.setItem('user', JSON.stringify(user));
         await EncryptedStorage.setItem('privateKey', privateKey);
 
+
         dispatch(resetLoginForm());
       } else if (result.status === 404) {
         dispatch(hide());
@@ -206,5 +208,6 @@ export function Login() {
       </ScrollView>
       <CustomAlert type={alertType} title={alertTitle} message={alertMessage} />
     </KeyboardAvoidingView>
+
   );
 }

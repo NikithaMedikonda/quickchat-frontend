@@ -12,7 +12,7 @@ import {store} from './src/store/store';
 export const App = () => {
   useEffect(() => {
     SplashScreen.hide();
-    const languageCode = RNLocalize.getLocales()[0].languageCode || 'en';
+    const languageCode = RNLocalize.getLocales()[0].languageCode;
     i18next.changeLanguage(languageCode);
   }, []);
 

@@ -107,7 +107,7 @@ describe('Login Screen', () => {
   test('should navigate to the register', () => {
     const signUp = screen.getByText('Sign up');
     fireEvent.press(signUp);
-    expect(mockNavigate).toHaveBeenCalledWith('register');
+    expect(mockReplace).toHaveBeenCalledWith('register');
   });
 
   test('show the validation errors on empty form submission', async () => {

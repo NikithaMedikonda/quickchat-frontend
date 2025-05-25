@@ -1,4 +1,4 @@
-import {PermissionsAndroid} from 'react-native';
+import {PermissionsAndroid, Platform} from 'react-native';
 import Contacts from 'react-native-contacts';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {API_URL} from '../../constants/api';
@@ -28,7 +28,7 @@ jest.mock('react-native', () => ({
 
 global.fetch = jest.fn();
 
-describe('getContacts', () => {
+describe('Tests for getContacts function', () => {
   const mockContacts = [
     {
       phoneNumbers: [{number: '(555) 123-4567'}, {number: '123-456-7890'}],
@@ -132,5 +132,34 @@ describe('getContacts', () => {
     (EncryptedStorage.getItem as jest.Mock).mockResolvedValue('token');
     (fetch as jest.Mock).mockRejectedValueOnce('Network failed');
     await expect(getContacts()).rejects.toThrow('Network failed');
+  });
+
+  it('should throw error when permission is denied', async () => {
+    (PermissionsAndroid.request as jest.Mock).mockResolvedValue('denied');
+    await expect(getContacts()).rejects.toThrow('Contacts permission denied');
+  });
+
+  it('should skip permission check on iOS', async () => {
+    Platform.OS = 'ios';
+    (Contacts.getAll as jest.Mock).mockResolvedValue(mockContacts);
+    (EncryptedStorage.getItem as jest.Mock).mockResolvedValue('token');
+    (fetch as jest.Mock).mockResolvedValue({
+      status: 200,
+      json: async () => ({
+        data: {
+          registeredUsers: ['5551234567', '1234567890'],
+          unRegisteredusers: ['+18005551212'],
+        },
+      }),
+    });
+    const result = await getContacts();
+    expect(PermissionsAndroid.request).not.toHaveBeenCalled();
+    expect(result).toEqual({
+      status: 200,
+      data: {
+        registeredUsers: ['5551234567', '1234567890'],
+        unRegisteredusers: ['+18005551212'],
+      },
+    });
   });
 });

@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - custom-alert
 jobs:
   lint-and-test:
     uses: ./.github/workflows/lint-and-test.yml

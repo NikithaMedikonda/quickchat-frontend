@@ -250,5 +250,6 @@ export const Registration = () => {
       </ScrollView>
       <CustomAlert type={alertType} title={alertTitle} message={alertMessage} />
     </KeyboardAvoidingView>
+
   );
 };

@@ -8,12 +8,21 @@ export const individualChatHeaderStyles = (colors: Colors) => {
     content: {
       flexDirection: 'row',
       alignItems: 'center',
+      justifyContent: 'space-between',
       paddingTop: height * 0.07,
+      paddingRight: height * 0.02,
+      paddingLeft: height * 0.02,
+    },
+    container: {
+      flex: 1,
+      justifyContent: 'space-evenly',
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 10,
     },
     backArrow: {
-      width: width * 0.04,
-      height: width * 0.05,
-      tintColor: colors.text,
+      width: width * 0.03,
+      height: width * 0.04,
       resizeMode: 'contain',
     },
     profilePicture: {

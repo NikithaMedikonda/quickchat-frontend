@@ -1,4 +1,4 @@
-import {useEffect, useLayoutEffect, useState} from 'react';
+import {useEffect, useLayoutEffect, useRef, useState} from 'react';
 import {
   Image,
   KeyboardAvoidingView,
@@ -54,7 +54,9 @@ export const EditProfile = () => {
     dispatch(setEditProfileForm({key, value}));
   };
   const [, setToken] = useState('');
+
   const [user, setUser] = useState<any>(null);
+
 
   const getUserData = async () => {
     try {
@@ -62,6 +64,7 @@ export const EditProfile = () => {
       const AccessToken = (await EncryptedStorage.getItem('authToken')) || '';
       const userData = userDataString ? JSON.parse(userDataString) : {};
       setToken(AccessToken);
+
       setUser(userData);
       dispatch(
         setEditProfileForm({key: 'firstName', value: userData.firstName || ''}),
@@ -182,6 +185,7 @@ export const EditProfile = () => {
   ] as const;
 
   return (
+
     <KeyboardAvoidingView
       // eslint-disable-next-line react-native/no-inline-styles
       style={{flex: 1}}
