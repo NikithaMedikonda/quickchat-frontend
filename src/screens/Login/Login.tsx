@@ -208,7 +208,7 @@ export function Login() {
           </View>
           <View style={styles.messageView}>
             <Text style={styles.messageText}>
-              {t("Don't have an account?")}
+              {t("Don't have an account?")}{' '}
             </Text>
             <TouchableOpacity
               style={styles.signUpContainer}
