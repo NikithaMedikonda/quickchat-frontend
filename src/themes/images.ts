@@ -5,9 +5,9 @@ import TabUnreadDark from '../assets/TabUnreadDark.png';
 import TabProfileDark from '../assets/TabProfileDark.png';
 import HomeAddDark from '../assets/HomeAddDark.png';
 import ProfileDotsDark from '../assets/ProfileDotsDark.png';
-import BinDark from '../assets/BinDark.png';
-import PencilDark from '../assets/PencilDark.png';
-import LogoutDark from '../assets/LogoutDark.png';
+import BinDark from '../assets/BinLight.png';
+import PencilDark from '../assets/PencilLight.png';
+import LogoutDark from '../assets/LogOutLight.png';
 import chatblockDark from '../assets/chatblockDark.png';
 
 export const useImagesColors = (): {
