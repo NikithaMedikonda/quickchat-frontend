@@ -42,7 +42,6 @@ export const EditProfile = () => {
   const [inputLastName, setInputLastName] = useState('');
   const [inputEmail, setInputEmail] = useState('');
 
-  // const [ ,setImageURL] = useState('');
   const imageURLRef = useRef('');
   const [token, setToken] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -67,7 +66,6 @@ export const EditProfile = () => {
       setInputLastName(lastName);
       setInputEmail(email);
       imageURLRef.current = profilePhoto;
-      // setImageURL(profilePhoto);
       setToken(AccessToken);
       setPhoneNumber(storedPhoneNumber);
       setUser(userData);
