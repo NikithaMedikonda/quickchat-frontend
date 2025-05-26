@@ -17,7 +17,7 @@ describe('blockUser', () => {
       status: 200,
       json: jest
         .fn()
-        .mockResolvedValue({message: 'Account deleted succesfully'}),
+        .mockResolvedValue({message: 'Account blocked succesfully'}),
     });
 
     const result = await checkBlockStatus(payload);

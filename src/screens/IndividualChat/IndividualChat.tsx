@@ -71,7 +71,7 @@ useEffect(() => {
         }
       }
     } catch (error) {
-      console.error('Error checking block status:', error);
+      throw error;
     }
   };
 

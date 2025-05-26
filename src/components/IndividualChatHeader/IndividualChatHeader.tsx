@@ -1,3 +1,4 @@
+import {useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import {Image, Platform, Text, TouchableOpacity, View} from 'react-native';
 import {useThemeColors} from '../../themes/colors';
@@ -6,7 +7,6 @@ import {HomeStackProps} from '../../types/usenavigation.type';
 import {UserDetails} from '../../types/user.types';
 import {ChatOptionsModal} from '../ChatOptionsModal/ChatOptionsModal';
 import {individualChatHeaderStyles} from './IndividualChatHeader.styles';
-import {useState} from 'react';
 
 export const IndividualChatHeader = ({name, profilePicture,isBlocked}: UserDetails) => {
   const [modalVisible, setModalVisible] = useState(false);

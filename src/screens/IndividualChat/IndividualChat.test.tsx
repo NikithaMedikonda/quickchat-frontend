@@ -11,7 +11,6 @@ import {getMessagesBetween} from '../../services/GetMessagesBetween';
 import {checkBlockStatus} from '../../services/CheckBlockStatus';
 import {HomeStackParamList} from '../../types/usenavigation.type';
 import {IndividualChat} from './IndividualChat';
-
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {updateMessageStatus} from '../../services/UpdateMessageStatus';
 import * as socket from '../../socket/socket';
@@ -182,8 +181,6 @@ describe('IndividualChat', () => {
 
       await waitFor(() => {
         expect(checkBlockStatus).toHaveBeenCalled();
-        // You can verify the blocked state is passed to the header component
-        // This assumes your IndividualChatHeader component has some way to test the blocked state
       });
     });
 
@@ -209,7 +206,6 @@ describe('IndividualChat', () => {
 
       await waitFor(() => {
         expect(checkBlockStatus).toHaveBeenCalled();
-        // Verify that the component behaves correctly when user is not blocked
       });
     });
 
@@ -316,8 +312,6 @@ describe('IndividualChat', () => {
 
       await waitFor(() => {
         expect(checkBlockStatus).toHaveBeenCalled();
-        // The component should not update isUserBlocked when status is not 200
-        // You can verify this by checking that the default state remains unchanged
       });
     });
 
@@ -340,7 +334,6 @@ describe('IndividualChat', () => {
         expect(checkBlockStatus).toHaveBeenCalledTimes(1);
       });
 
-      // Change the user phone number
       const newMockRoute = {
         ...mockRoute,
         params: {
@@ -376,7 +369,6 @@ describe('IndividualChat', () => {
     });
   });
 
-  // Existing tests...
   test('Should render the header component with user details', async () => {
     (getMessagesBetween as jest.Mock).mockResolvedValueOnce({
       status: 200,
