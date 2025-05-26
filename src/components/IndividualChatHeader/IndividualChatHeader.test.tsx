@@ -1,12 +1,13 @@
 import {
+  act,
   fireEvent,
   render,
   screen,
   waitFor,
 } from '@testing-library/react-native';
 
-import { Platform } from 'react-native';
-import { IndividualChatHeader } from './IndividualChatHeader';
+import {Platform} from 'react-native';
+import {IndividualChatHeader} from './IndividualChatHeader';
 const mockNavigate = jest.fn();
 const mockGoBack = jest.fn();
 jest.mock('@react-navigation/native', () => ({
@@ -21,6 +22,7 @@ describe('Test for IndividualChatHeader component', () => {
     name: 'Chitty',
     profilePicture: '../../assets/user.png',
     phoneNumber: '',
+    isBlocked: false,
   };
   beforeEach(() => {
     render(<IndividualChatHeader {...userDetails} />);
@@ -71,6 +73,7 @@ describe('Platform-specific back arrow image tests', () => {
         name="Test"
         profilePicture="someUri"
         phoneNumber=""
+        isBlocked
       />,
     );
     const backArrow = screen.getByA11yHint('back-arrow-icon');
@@ -88,11 +91,54 @@ describe('Platform-specific back arrow image tests', () => {
         name="Test"
         profilePicture="someUri"
         phoneNumber=""
+        isBlocked
       />,
     );
     const backArrow = screen.getByA11yHint('back-arrow-icon');
     expect(backArrow.props.source).toEqual(
       require('../../../src/assets/AndroidBackArrowDark.png'),
     );
+  });
+
+  test('Should open modal when more options icon is pressed (modelVisible function)', async () => {
+    Object.defineProperty(Platform, 'OS', {
+      get: () => 'android',
+    });
+    const {queryByText} = render(
+      <IndividualChatHeader
+        name="Test"
+        profilePicture="someUri"
+        phoneNumber=""
+        isBlocked
+      />,
+    );
+    const moreOptionsIcon = screen.getByA11yHint('more-options-icon');
+     await act(async () => {
+      fireEvent.press(moreOptionsIcon);
+    });
+    await waitFor(() => {
+      expect(queryByText('Delete Chat')).toBeTruthy();
+    });
+  });
+
+  test('Should close modal when onClose function is called', async () => {
+       Object.defineProperty(Platform, 'OS', {
+      get: () => 'android',
+    });
+    const {queryByText} = render(
+      <IndividualChatHeader
+        name="Test"
+        profilePicture="someUri"
+        phoneNumber=""
+        isBlocked
+      />,
+    );
+    const closeButton = screen.getByA11yHint('back-arrow-icon');
+     await act(async () => {
+      fireEvent.press(closeButton);
+    });
+    await waitFor(() => {
+      expect(queryByText('Delete Chat')).toBeNull();
+    });
   });
 });
