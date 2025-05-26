@@ -132,23 +132,23 @@ describe('IndividualChat', () => {
       </NavigationContainer>,
     );
     await waitFor(() => {
-    const username = screen.getByA11yHint('username-text');
-    expect(username).toBeTruthy();
+      const username = screen.getByA11yHint('username-text');
+      expect(username).toBeTruthy();
 
-    const profilePicture = screen.getByA11yHint('profile-picture');
-    expect(profilePicture).toBeTruthy();
+      const profilePicture = screen.getByA11yHint('profile-picture');
+      expect(profilePicture).toBeTruthy();
 
-    const backArrow = screen.getByA11yHint('back-arrow-icon');
-    expect(backArrow).toBeTruthy();
+      const backArrow = screen.getByA11yHint('back-arrow-icon');
+      expect(backArrow).toBeTruthy();
 
-    const moreOptions = screen.getByA11yHint('more-options-icon');
-    expect(moreOptions).toBeTruthy();
+      const moreOptions = screen.getByA11yHint('more-options-icon');
+      expect(moreOptions).toBeTruthy();
       expect(screen.getByText('Hii')).toBeTruthy();
       expect(screen.getByText('Hello back')).toBeTruthy();
     });
   });
 
-  test('Should render the message input component',async() => {
+  test('Should render the message input component', async () => {
     (getMessagesBetween as jest.Mock).mockResolvedValueOnce({
       status: 200,
       data: {
@@ -266,10 +266,12 @@ describe('IndividualChat', () => {
     });
 
     const calledPayload = mockSend.mock.calls[0][0];
-    expect(calledPayload.message).toBe('Hello, test!');
-    expect(calledPayload.senderPhoneNumber).toBe('1234567890');
-    expect(calledPayload.recipientPhoneNumber).toBe('+918522041688');
-    expect(calledPayload.status).toBe('sent');
+    await waitFor(() => {
+      expect(calledPayload.message).toBe('Hello, test!');
+      expect(calledPayload.senderPhoneNumber).toBe('1234567890');
+      expect(calledPayload.recipientPhoneNumber).toBe('+918522041688');
+      expect(calledPayload.status).toBe('sent');
+    });
   });
 
   test('should set the current user phone when the user exists', async () => {
