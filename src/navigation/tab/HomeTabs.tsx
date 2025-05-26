@@ -123,8 +123,8 @@ export const HomeTabs = () => {
           tabBarLabel: t('Profile'),
         }}
         listeners={({navigation}) => ({
-          tabPress: e => {
-            e.preventDefault();
+          tabPress: event => {
+            event.preventDefault();
             navigation.navigate('profileStack', {
               screen: 'profileScreen',
             });
