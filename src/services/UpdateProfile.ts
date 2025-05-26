@@ -36,7 +36,6 @@ export const updateProfile = async (
   if (user.image !== editProfileForm.image) {
     userData.profilePicture = editProfileForm.image;
   }
-  console.log(userData.image);
   const response = await fetch(`${API_URL}/api/user`, {
     method: 'PUT',
     headers: {

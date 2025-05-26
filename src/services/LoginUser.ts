@@ -21,8 +21,6 @@ export const loginUser = async (payload: {
     } catch {
       data = {};
     }
-    console.log(response.status);
-    console.log(data)
     return {
       status: response.status,
       data,
