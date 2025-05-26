@@ -76,7 +76,7 @@ export const ProfileMoreOptionsModal = ({
     getUserPhoneNumber();
   }, [phoneNumber]);
 
-  const showAlert = (type: string, title: string,msg: string) => {
+  const showAlert = (type: string, title: string, msg: string) => {
     dispatch(setAlertType(type));
     dispatch(setAlertTitle(title));
     dispatch(setAlertMessage(msg));
@@ -149,7 +149,7 @@ export const ProfileMoreOptionsModal = ({
 
   const handleEditProfile = () => {
     onClose();
-     profileNavigation.replace('editProfileScreen');
+    profileNavigation.replace('editProfileScreen');
   };
 
   const modalStyle = Platform.select({
