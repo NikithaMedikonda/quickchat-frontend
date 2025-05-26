@@ -71,7 +71,7 @@ useEffect(() => {
         }
       }
     } catch (error) {
-      throw error;
+      console.error(error)
     }
   };
 

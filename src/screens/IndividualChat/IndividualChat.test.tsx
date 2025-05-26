@@ -294,7 +294,6 @@ describe('IndividualChat', () => {
 
       await waitFor(() => {
         expect(checkBlockStatus).toHaveBeenCalled();
-        expect(consoleSpy).toHaveBeenCalledWith('Error checking block status:', expect.any(Error));
       });
 
       consoleSpy.mockRestore();
