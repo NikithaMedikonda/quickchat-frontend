@@ -141,7 +141,7 @@ export const EditProfile = () => {
       newErrors.lastName = 'Last name required!';
       isValid = false;
     }
-    if (!editProfileForm.email && !validateEmail(editProfileForm.email)) {
+    if (editProfileForm.email && !validateEmail(editProfileForm.email)) {
       newErrors.email = 'Invalid email format!';
       isValid = false;
     }

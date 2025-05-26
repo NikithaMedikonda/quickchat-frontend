@@ -16,9 +16,10 @@ import {useThemeColors} from '../../themes/colors';
 type Props = {
   visible: boolean;
   onClose: () => void;
+  isBlocked: boolean;
 };
 
-export const ChatOptionsModal = ({visible, onClose}: Props) => {
+export const ChatOptionsModal = ({visible, onClose, isBlocked}: Props) => {
   const colors = useThemeColors();
   const styles = getStyles(colors);
   const {bin, chatblockImage} = useImagesColors();
@@ -68,7 +69,9 @@ export const ChatOptionsModal = ({visible, onClose}: Props) => {
                     )
                   }
                   style={styles.optionsView}>
-                  <Text style={styles.modalText}>Block User</Text>
+                  <Text style={styles.modalText}>
+                    {isBlocked ? 'Unblock User' : 'Block User'}
+                  </Text>
                   <Image
                     source={chatblockImage}
                     style={styles.blockImage}

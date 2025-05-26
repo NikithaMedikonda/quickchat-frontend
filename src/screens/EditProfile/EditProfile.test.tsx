@@ -102,7 +102,6 @@ describe('EditProfile Component', () => {
     await waitFor(() => {
       expect(getByText('First name required!')).toBeTruthy();
       expect(getByText('Last name required!')).toBeTruthy();
-      expect(getByText('Invalid email format!')).toBeTruthy();
     });
   });
 
@@ -125,7 +124,10 @@ describe('EditProfile Component', () => {
     await waitFor(() => getByText('Save'));
     fireEvent.changeText(getByDisplayValue('test'), 'test');
     fireEvent.changeText(getByDisplayValue('user'), 'user');
-    fireEvent.changeText(getByDisplayValue('testuser@gmail.com'), '');
+    fireEvent.changeText(
+      getByDisplayValue('testuser@gmail.com'),
+      'testuser@gmail.',
+    );
     fireEvent.press(getByText('Save'));
     await waitFor(() => {
       expect(getByText('Invalid email format!')).toBeTruthy();
