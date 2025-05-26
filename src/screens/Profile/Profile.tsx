@@ -55,6 +55,7 @@ export const Profile = () => {
   const onClose = useCallback(() => {
     setModalVisible(false);
   }, []);
+
   const headerRightComponent = useMemo(
     () => <ProfileHeaderRight onPress={handleMoreOptionsModal} />,
     [handleMoreOptionsModal],
@@ -66,6 +67,7 @@ export const Profile = () => {
       headerRight: () => headerRightComponent,
     });
   }, [navigation, headerRightComponent]);
+
   useEffect(() => {
     const getUserData = async () => {
       const userDataString = await EncryptedStorage.getItem('user');
@@ -76,6 +78,7 @@ export const Profile = () => {
     };
     getUserData();
   }, []);
+
   return (
     <View style={styles.container}>
       <View style={styles.innerContainer}>
