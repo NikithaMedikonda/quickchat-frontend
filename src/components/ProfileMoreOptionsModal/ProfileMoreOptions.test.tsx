@@ -59,7 +59,7 @@ describe('Profile More Options Modal', () => {
     expect(screen.getByText('Delete Account')).toBeTruthy();
     const binImage = screen.getByA11yHint('bin-image');
     expect(binImage.props.source).toEqual({
-      testUri: '../../../src/assets/BinDark.png',
+      testUri: '../../../src/assets/BinLight.png',
     });
   });
 
@@ -70,7 +70,7 @@ describe('Profile More Options Modal', () => {
     expect(screen.getByText('Logout')).toBeTruthy();
     const logoutImage = screen.getByA11yHint('logout-image');
     expect(logoutImage.props.source).toEqual({
-      testUri: '../../../src/assets/LogoutDark.png',
+      testUri: '../../../src/assets/LogOutLight.png',
     });
   });
 
@@ -81,7 +81,7 @@ describe('Profile More Options Modal', () => {
     expect(screen.getByText('Edit Profile')).toBeTruthy();
     const binImage = screen.getByA11yHint('edit-image');
     expect(binImage.props.source).toEqual({
-      testUri: '../../../src/assets/PencilDark.png',
+      testUri: '../../../src/assets/PencilLight.png',
     });
   });
 
