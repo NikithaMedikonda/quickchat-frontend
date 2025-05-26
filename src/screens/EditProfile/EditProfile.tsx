@@ -14,9 +14,9 @@ import {useNavigation} from '@react-navigation/native';
 import {useTranslation} from 'react-i18next';
 import {RootState} from '../../store/store';
 import {useThemeColors} from '../../themes/colors';
-import {getStyles} from './EditProfile.styles';
 import {Placeholder} from '../../components/InputField/InputField';
 import {ImagePickerModal} from '../../components/ImagePickerModal/ImagePickerModal';
+import {getStyles} from './EditProfile.styles';
 import {
   setIsVisible,
   setAlertVisible,
@@ -30,6 +30,25 @@ import {updateProfile} from '../../services/UpdateProfile';
 import {ProfileScreenNavigationProp} from '../../types/usenavigation.type';
 import {DEFAULT_PROFILE_IMAGE} from '../../constants/defaultImage';
 import {CustomAlert} from '../../components/CustomAlert/CustomAlert';
+import {useImagesColors} from '../../themes/images';
+
+export const BackButton = () => {
+  const colors = useThemeColors();
+  const {androidBackArrow, iOSBackArrow} = useImagesColors();
+  const profileNavigation = useNavigation<ProfileScreenNavigationProp>();
+  const styles = getStyles(colors);
+
+  return (
+    <TouchableOpacity
+      onPress={() => profileNavigation.navigate('profileScreen')}>
+      <Image
+        source={Platform.OS === 'android' ? androidBackArrow : iOSBackArrow}
+        accessibilityHint="back-arrow-icon"
+        style={styles.backArrow}
+      />
+    </TouchableOpacity>
+  );
+};
 
 export const EditProfile = () => {
   const colors = useThemeColors();
@@ -95,7 +114,7 @@ export const EditProfile = () => {
       showAlert('error', 'Error', 'Something went wrong');
     }
   }, [dispatch, editedImage, showAlert]);
-
+  const renderHeaderLeft = useCallback(() => <BackButton />, []);
   useEffect(() => {
     getUserData();
   }, [getUserData]);
@@ -104,8 +123,9 @@ export const EditProfile = () => {
     profileNavigation.setOptions({
       headerTitleAlign: 'center',
       headerTitle: 'Edit Profile',
+      headerLeft: renderHeaderLeft,
     });
-  });
+  }, [profileNavigation, renderHeaderLeft]);
 
   const validateEmail = (email: string) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);

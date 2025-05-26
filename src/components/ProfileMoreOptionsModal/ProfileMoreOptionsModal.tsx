@@ -76,7 +76,7 @@ export const ProfileMoreOptionsModal = ({
     getUserPhoneNumber();
   }, [phoneNumber]);
 
-  const showAlert = (type: string, title: string,msg: string) => {
+  const showAlert = (type: string, title: string, msg: string) => {
     dispatch(setAlertType(type));
     dispatch(setAlertTitle(title));
     dispatch(setAlertMessage(msg));

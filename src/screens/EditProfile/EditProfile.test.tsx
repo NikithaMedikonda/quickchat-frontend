@@ -5,6 +5,7 @@ import {updateProfile} from '../../services/UpdateProfile';
 import {store} from '../../store/store';
 import {resetForm} from '../../store/slices/registrationSlice';
 import {EditProfile} from './EditProfile';
+import {BackButton} from './EditProfile';
 
 jest.mock('react-native-encrypted-storage', () => ({
   setItem: jest.fn(),
@@ -25,7 +26,11 @@ jest.mock('../../components/ImagePickerModal/ImagePickerModal', () => ({
   ImagePickerModal: () => <></>,
 }));
 
-const mockNavigation = {setOptions: jest.fn(), replace: jest.fn()};
+const mockNavigation = {
+  setOptions: jest.fn(),
+  replace: jest.fn(),
+  navigate: jest.fn(),
+};
 jest.mock('@react-navigation/native', () => {
   const actualNav = jest.requireActual('@react-navigation/native');
   return {
@@ -343,6 +348,7 @@ describe('EditProfile Component', () => {
       expect(mockNavigation.setOptions).toHaveBeenCalledWith({
         headerTitleAlign: 'center',
         headerTitle: 'Edit Profile',
+        headerLeft: expect.any(Function),
       });
     });
   });
@@ -639,6 +645,20 @@ describe('EditProfile Component', () => {
 
     await waitFor(() => {
       expect(updateProfile).toHaveBeenCalled();
+    });
+  });
+
+  test('should navigate to profileScreen when back button is pressed', async () => {
+    const {getByA11yHint} = render(
+      <Provider store={store}>
+        <BackButton />
+      </Provider>,
+    );
+    const backArrowButton = getByA11yHint('back-arrow-icon');
+
+    fireEvent.press(backArrowButton);
+    await waitFor(() => {
+      expect(mockNavigation.navigate).toHaveBeenCalledWith('profileScreen');
     });
   });
 });
