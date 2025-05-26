@@ -76,18 +76,20 @@ export const ProfileMoreOptionsModal = ({
     getUserPhoneNumber();
   }, [phoneNumber]);
 
-  const showAlert = (type: string, title: string, message: string) => {
+  const showAlert = (type: string, title: string,msg: string) => {
     dispatch(setAlertType(type));
     dispatch(setAlertTitle(title));
-    dispatch(setAlertMessage(message));
+    dispatch(setAlertMessage(msg));
     dispatch(setAlertVisible(true));
   };
+
   const handleDeleteAccountConfirmation = () => {
     onClose();
     setModalVisible(true);
     setButtonTypes('Delete');
     setMessage(t('Are you sure want to delete this account?'));
   };
+
   const handleLogoutConfirmation = () => {
     onClose();
     setModalVisible(true);
@@ -110,6 +112,7 @@ export const ProfileMoreOptionsModal = ({
       navigation.replace('login');
     }, 1000);
   };
+
   const onConfirmDelete = async () => {
     handleModalClose();
     dispatch(show());
@@ -143,10 +146,12 @@ export const ProfileMoreOptionsModal = ({
       showAlert('info', 'Delete account failed', 'Network error');
     }
   };
+
   const handleEditProfile = () => {
     onClose();
     profileNavigation.replace('editProfileScreen');
   };
+
   const modalStyle = Platform.select({
     ios: styles.iosModal,
     android: styles.androidModal,
