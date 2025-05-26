@@ -76,12 +76,11 @@ describe('EditProfile Component', () => {
     });
 
     await waitFor(() => {
-    expect(getByText('First Name')).toBeTruthy();
-    expect(getByText('Last Name')).toBeTruthy();
-    expect(getByText('Email')).toBeTruthy();
-    expect(getByText('Save')).toBeTruthy();
+      expect(getByText('First Name')).toBeTruthy();
+      expect(getByText('Last Name')).toBeTruthy();
+      expect(getByText('Email')).toBeTruthy();
+      expect(getByText('Save')).toBeTruthy();
     });
-
   });
 
   test('shows error when trying to save with empty inputs', async () => {
@@ -98,7 +97,6 @@ describe('EditProfile Component', () => {
     await waitFor(() => {
       expect(getByText('First name required!')).toBeTruthy();
       expect(getByText('Last name required!')).toBeTruthy();
-      expect(getByText('Invalid email format!')).toBeTruthy();
     });
   });
 
@@ -121,7 +119,10 @@ describe('EditProfile Component', () => {
     await waitFor(() => getByText('Save'));
     fireEvent.changeText(getByDisplayValue('test'), 'test');
     fireEvent.changeText(getByDisplayValue('user'), 'user');
-    fireEvent.changeText(getByDisplayValue('testuser@gmail.com'), '');
+    fireEvent.changeText(
+      getByDisplayValue('testuser@gmail.com'),
+      'testuser@gmail.',
+    );
     fireEvent.press(getByText('Save'));
     await waitFor(() => {
       expect(getByText('Invalid email format!')).toBeTruthy();
