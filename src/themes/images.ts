@@ -1,7 +1,7 @@
 import {ImageSourcePropType} from 'react-native';
 import AndroidBackArrowDark from '../assets/AndroidBackArrowDark.png';
+import chatblockLight from '../assets/chatblockLight.png';
 import BinLight from '../assets/BinLight.png';
-import chatblockDark from '../assets/chatblockDark.png';
 import HomeAddDark from '../assets/HomeAddDark.png';
 import IOSBackArrowDark from '../assets/IOSBackArrowDark.png';
 import LogOutLight from '../assets/LogOutLight.png';
@@ -11,7 +11,6 @@ import QuickChatDarkLogo from '../assets/QuickChatDarkLogo.png';
 import TabMessageDark from '../assets/TabMessageDark.png';
 import TabProfileDark from '../assets/TabProfileDark.png';
 import TabUnreadDark from '../assets/TabUnreadDark.png';
-
 
 export const useImagesColors = (): {
   logo: ImageSourcePropType;
@@ -37,7 +36,7 @@ export const useImagesColors = (): {
     bin: BinLight,
     pencil: PencilLight,
     logoutImage: LogOutLight,
-    chatblockImage: chatblockDark,
+    chatblockImage: chatblockLight,
     androidBackArrow: AndroidBackArrowDark,
     iOSBackArrow: IOSBackArrowDark,
   };
