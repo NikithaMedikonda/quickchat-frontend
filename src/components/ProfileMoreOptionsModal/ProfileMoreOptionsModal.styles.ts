@@ -65,8 +65,8 @@ export const getStyles = (color: Colors) =>
       fontWeight: 'bold',
       color: color.profileOptionsText,
     },
-    bacKArrow:{
+    bacKArrow: {
       color: color.text,
-      paddingHorizontal: 0.02 * width,
+      paddingHorizontal: width * 0.02,
     },
   });
