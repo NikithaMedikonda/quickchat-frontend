@@ -10,9 +10,18 @@ module.exports = {
   moduleNameMapper: {
     '/.(png|jpg|jpeg|svg)$/': '<rootDir>/__mocks__/fileMock.js',
   },
-   setupFiles: ['<rootDir>/jest.global-mocks.ts'],
-   coveragePathIgnorePatterns: [
+  setupFiles: ['<rootDir>/jest.global-mocks.ts'],
+  coveragePathIgnorePatterns: [
     '<rootDir>/src/assets/',
     '<rootDir>/src/constants/',
   ],
+  collectCoverage: true,
+  coverageThreshold: {
+    global: {
+      branches: 90,
+      functions: 95,
+      lines: 95,
+      statements: 95,
+    },
+  },
 };
