@@ -95,18 +95,22 @@ describe('Login Screen', () => {
     jest.resetAllMocks();
   });
 
-  test('should render the elements correctly', () => {
-    expect(screen.getByPlaceholderText('Phone number')).toBeOnTheScreen();
-    expect(screen.getByPlaceholderText('Password')).toBeOnTheScreen();
-    expect(screen.getByText('Login')).toBeOnTheScreen();
-    expect(screen.getByText('Sign up')).toBeOnTheScreen();
-    expect(screen.getByText("Don't have an account?")).toBeOnTheScreen();
+  test('should render the elements correctly', async() => {
+    await waitFor(() => {
+      expect(screen.getByPlaceholderText('Phone number')).toBeOnTheScreen();
+      expect(screen.getByPlaceholderText('Password')).toBeOnTheScreen();
+      expect(screen.getByText('Login')).toBeOnTheScreen();
+      expect(screen.getByText('Sign up')).toBeOnTheScreen();
+      expect(screen.getByText("Don't have an account?")).toBeOnTheScreen();
+    });
   });
 
-  test('should navigate to the register', () => {
+  test('should navigate to the register', async () => {
     const signUp = screen.getByText('Sign up');
     fireEvent.press(signUp);
-    expect(mockReplace).toHaveBeenCalledWith('register');
+    await waitFor(() => {
+      expect(mockReplace).toHaveBeenCalledWith('register');
+    });
   });
 
   test('show the validation errors on empty form submission', async () => {
@@ -140,6 +144,7 @@ describe('Login Screen', () => {
       expect(screen.getByText('Invalid phone number!')).toBeOnTheScreen();
     });
   });
+
   test('should show alert if something went wrong int the fetch call', async () => {
     (phone as jest.Mock).mockReturnValue({
       isValid: true,
@@ -154,6 +159,7 @@ describe('Login Screen', () => {
     fireEvent.press(screen.getByText('Login'));
     await waitFor(() => {});
   });
+
   test('should show alert if user not existed with this phone number', async () => {
     (phone as jest.Mock).mockReturnValue({
       isValid: true,
@@ -241,11 +247,12 @@ describe('Login Screen', () => {
       expect(state.registration.alertMessage).toBe('Successfully login');
     });
 
-    jest.advanceTimersByTime(1000);
     await waitFor(() => {
+      jest.advanceTimersByTime(1000);
       expect(mockReplace).toHaveBeenCalledWith('hometabs');
     });
   });
+
   test('should show alert if login failed with server error', async () => {
     (phone as jest.Mock).mockReturnValue({
       isValid: true,

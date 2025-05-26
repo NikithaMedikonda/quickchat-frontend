@@ -126,6 +126,7 @@ describe('Registration Screen', () => {
       expect(getByText('Invalid password!')).toBeTruthy();
     });
   });
+
 it('should activate image picker modal', async () => {
   const {getByAccessibilityHint} = renderComponent();
   fireEvent.press(getByAccessibilityHint('logo'));
@@ -134,15 +135,6 @@ it('should activate image picker modal', async () => {
     expect(state.registration.isVisible).toBe(true);
   });
 });
-
-  it('should activate image picker modal', async () => {
-    const {getByAccessibilityHint} = renderComponent();
-    fireEvent.press(getByAccessibilityHint('logo'));
-    await waitFor(() => {
-      const state = store.getState();
-      expect(state.registration.isVisible).toBe(true);
-    });
-  });
 
   it('shows password mismatch error', async () => {
     const {getByPlaceholderText, getByText} = renderComponent();
@@ -300,7 +292,7 @@ const state = store.getState();
     });
   });
 
-    it('shows generic error if server fails', async () => {
+    it('shows generic error if server fails with error message', async () => {
     const {registerUser} = require('../../services/RegisterUser.ts');
     registerUser.mockRejectedValue(new Error('Server failure'));
 
@@ -328,4 +320,4 @@ const state = store.getState();
     expect(state.registration.alertType).toBe('info');
     });
   });
-})
+});

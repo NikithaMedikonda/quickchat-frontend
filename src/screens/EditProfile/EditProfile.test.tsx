@@ -33,6 +33,7 @@ jest.mock('@react-navigation/native', () => {
     useNavigation: () => mockNavigation,
   };
 });
+
 describe('EditProfile Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -123,6 +124,7 @@ describe('EditProfile Component', () => {
       expect(getByText('Invalid email format!')).toBeTruthy();
     });
   });
+
   test('shows alert for invalid last name', async () => {
     (updateProfile as jest.Mock).mockResolvedValue({
       data: {
@@ -167,6 +169,7 @@ describe('EditProfile Component', () => {
     const state = store.getState();
     expect(state.registration.isVisible).toBe(true);
   });
+
   test('shows specific error for status 400 (phone number required)', async () => {
     (updateProfile as jest.Mock).mockResolvedValue({
       status: 400,
@@ -268,54 +271,6 @@ describe('EditProfile Component', () => {
     fireEvent.press(getByText('Save'));
   });
 
-  test('opens image picker modal when profile image is pressed', async () => {
-    const {getByAccessibilityHint} = render(
-      <Provider store={store}>
-        <EditProfile />
-      </Provider>,
-    );
-
-    await waitFor(() => {
-      const profileButton = getByAccessibilityHint('edit-profile-button');
-      fireEvent.press(profileButton);
-    });
-
-    const state = store.getState();
-    expect(state.registration.isVisible).toBe(true);
-  });
-
-  test('shows specific error for status 400 (phone number required)', async () => {
-    (updateProfile as jest.Mock).mockResolvedValue({
-      status: 400,
-      data: {},
-    });
-
-    const {getByText, getByDisplayValue} = render(
-      <Provider store={store}>
-        <EditProfile />
-      </Provider>,
-    );
-
-    await waitFor(() => getByText('Save'));
-
-    fireEvent.changeText(getByDisplayValue('test'), 'test');
-    fireEvent.changeText(getByDisplayValue('user'), 'user');
-    fireEvent.changeText(
-      getByDisplayValue('testuser@gmail.com'),
-      'testuser@gmail.com',
-    );
-
-    fireEvent.press(getByText('Save'));
-
-    await waitFor(() => {
-      const state = store.getState();
-      expect(state.registration.alertMessage).toBe(
-        'Phone Number is required to change the profile image.',
-      );
-      expect(state.registration.alertType).toBe('error');
-    });
-  });
-
   test('shows specific error for status 404 (user not found)', async () => {
     (updateProfile as jest.Mock).mockResolvedValue({
       status: 404,
@@ -386,61 +341,65 @@ describe('EditProfile Component', () => {
     });
   });
 
-
   test('shows error when user data is not loaded', async () => {
-  (EncryptedStorage.getItem as jest.Mock).mockImplementation(key => {
-    if (key === 'authToken') {
-       return Promise.reject(new Error('Failed to load'));
-    }
-  });
-  render(
-    <Provider store={store}>
-      <EditProfile />
-    </Provider>,
-  );
-  await waitFor(() => {
-    const state = store.getState();
-    expect(state.registration.alertMessage).toBe('Something went wrong');
-    expect(state.registration.alertType).toBe('error');
-  });
-});
-
-test('loads user data successfully and populates the store', async () => {
-  const mockUser = {
-    firstName: 'test',
-    lastName: 'user',
-    email: 'testuser@gmail.com',
-    phoneNumber: '1234567890',
-  };
-  const mockToken = 'mocked-access-token';
-
-  (EncryptedStorage.getItem as jest.Mock).mockImplementation((key: string) => {
-    if (key === 'user') {
-      return Promise.resolve(JSON.stringify(mockUser));
-    }
-    if (key === 'authToken') {
-      return Promise.resolve(mockToken);
-    }
-    return Promise.resolve(null);
+    (EncryptedStorage.getItem as jest.Mock).mockImplementation(key => {
+      if (key === 'authToken') {
+        return Promise.reject(new Error('Failed to load'));
+      }
+    });
+    render(
+      <Provider store={store}>
+        <EditProfile />
+      </Provider>,
+    );
+    await waitFor(() => {
+      const state = store.getState();
+      expect(state.registration.alertMessage).toBe('Something went wrong');
+      expect(state.registration.alertType).toBe('error');
+    });
   });
 
-  render(
-    <Provider store={store}>
-      <EditProfile />
-    </Provider>
-  );
+  test('loads user data successfully and populates the store', async () => {
+    const mockUser = {
+      firstName: 'test',
+      lastName: 'user',
+      email: 'testuser@gmail.com',
+      phoneNumber: '1234567890',
+    };
+    const mockToken = 'mocked-access-token';
 
-  await waitFor(() => {
-    const state = store.getState();
-    expect(state.registration.editProfileForm.firstName).toBe('test');
-    expect(state.registration.editProfileForm.lastName).toBe('user');
-    expect(state.registration.editProfileForm.email).toBe('testuser@gmail.com');
-    expect(state.registration.editProfileForm.phoneNumber).toBe('1234567890');
-    expect(state.registration.editProfileForm.token).toBe('mocked-access-token');
+    (EncryptedStorage.getItem as jest.Mock).mockImplementation(
+      (key: string) => {
+        if (key === 'user') {
+          return Promise.resolve(JSON.stringify(mockUser));
+        }
+        if (key === 'authToken') {
+          return Promise.resolve(mockToken);
+        }
+        return Promise.resolve(null);
+      },
+    );
+
+    render(
+      <Provider store={store}>
+        <EditProfile />
+      </Provider>,
+    );
+
+    await waitFor(() => {
+      const state = store.getState();
+      expect(state.registration.editProfileForm.firstName).toBe('test');
+      expect(state.registration.editProfileForm.lastName).toBe('user');
+      expect(state.registration.editProfileForm.email).toBe(
+        'testuser@gmail.com',
+      );
+      expect(state.registration.editProfileForm.phoneNumber).toBe('1234567890');
+      expect(state.registration.editProfileForm.token).toBe(
+        'mocked-access-token',
+      );
+    });
   });
-});
 
- // 3. Test when user data exists but some fields are undefined/null
   test('handles user data with undefined fields gracefully', async () => {
     (EncryptedStorage.getItem as jest.Mock).mockImplementation(key => {
       if (key === 'user') {
@@ -561,7 +520,6 @@ test('loads user data successfully and populates the store', async () => {
   });
 
   test('displays profile image correctly with different image sources', async () => {
-
     const {getByAccessibilityHint} = render(
       <Provider store={store}>
         <EditProfile />
@@ -632,7 +590,8 @@ test('loads user data successfully and populates the store', async () => {
 
     jest.useRealTimers();
   });
-    test('handles invalid JSON in stored user data', async () => {
+
+  test('handles invalid JSON in stored user data', async () => {
     (EncryptedStorage.getItem as jest.Mock).mockImplementation(key => {
       if (key === 'user') {
         return Promise.resolve('invalid-json-string');
@@ -656,7 +615,7 @@ test('loads user data successfully and populates the store', async () => {
     });
   });
 
-    test('handles unexpected status codes from updateProfile', async () => {
+  test('handles unexpected status codes from updateProfile', async () => {
     (updateProfile as jest.Mock).mockResolvedValue({
       status: 500,
       data: {},
@@ -670,12 +629,14 @@ test('loads user data successfully and populates the store', async () => {
     await waitFor(() => getByText('Save'));
     fireEvent.changeText(getByDisplayValue('test'), 'test');
     fireEvent.changeText(getByDisplayValue('user'), 'user');
-    fireEvent.changeText(getByDisplayValue('testuser@gmail.com'), 'test@example.com');
+    fireEvent.changeText(
+      getByDisplayValue('testuser@gmail.com'),
+      'test@example.com',
+    );
     fireEvent.press(getByText('Save'));
 
     await waitFor(() => {
       expect(updateProfile).toHaveBeenCalled();
     });
   });
-
 });
