@@ -26,12 +26,14 @@ import {
 } from '../../types/messsage.types';
 import {HomeStackParamList} from '../../types/usenavigation.type';
 import {User} from '../Profile/Profile';
+import {checkBlockStatus} from '../../services/CheckBlockStatus';
 import {individualChatStyles} from './IndividualChat.styles';
 
 type Props = NativeStackScreenProps<HomeStackParamList, 'individualChat'>;
 
 export const IndividualChat = ({route}: Props) => {
   const [message, setMessage] = useState('');
+  const [isUserBlocked, setIsUserBlocked] = useState(false);
   const [receivedMessages, setReceivedMessages] = useState<
     ReceivePrivateMessage[]
   >([]);
@@ -52,11 +54,34 @@ export const IndividualChat = ({route}: Props) => {
       scrollViewRef.current.scrollToEnd({animated: true});
     }
   };
+useEffect(() => {
+  const getBlockStatus = async () => {
+    try {
+      const currentUser = await EncryptedStorage.getItem('user');
+      const token = await EncryptedStorage.getItem('authToken');
+      if (currentUser && token) {
+        const userData = JSON.parse(currentUser);
+        const result = await checkBlockStatus({
+          blockerPhoneNumber: userData.phoneNumber,
+          blockedPhoneNumber: user.phoneNumber,
+          authToken: token,
+        });
+        if (result.status === 200) {
+          setIsUserBlocked(result.data.isBlocked);
+        }
+      }
+    } catch (error) {
+      console.error('Error checking block status:', error);
+    }
+  };
+
+  getBlockStatus();
+}, [user.phoneNumber]);
+
   useEffect(() => {
     setSocket(newSocket);
     async function getMessages() {
       const currentUser = await EncryptedStorage.getItem('user');
-
       if (currentUser) {
         const parsedUser: User = JSON.parse(currentUser);
         currentUserPhoneNumberRef.current = parsedUser.phoneNumber;
@@ -80,6 +105,8 @@ export const IndividualChat = ({route}: Props) => {
     }
 
     getMessages();
+
+
 
     async function receiveMessage() {
       const handleNewMessage = (data: SentPrivateMessage) => {
@@ -140,11 +167,12 @@ export const IndividualChat = ({route}: Props) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.chatHeaderContainer}>
+      <View style={styles.chatHeaderContainer} >
         <IndividualChatHeader
           name={user.name}
           profilePicture={user.profilePicture}
           phoneNumber={user.phoneNumber}
+          isBlocked={isUserBlocked}
         />
       </View>
       <View style={styles.chatMainContainer}>
