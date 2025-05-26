@@ -59,7 +59,7 @@ describe('Profile More Options Modal', () => {
     expect(screen.getByText('Delete Account')).toBeTruthy();
     const binImage = screen.getByA11yHint('bin-image');
     expect(binImage.props.source).toEqual({
-      testUri: '../../../src/assets/BinDark.png',
+      testUri: '../../../src/assets/BinLight.png',
     });
   });
 
