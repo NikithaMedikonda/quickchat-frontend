@@ -10,7 +10,7 @@ export const ProfileStack = () => {
   const colors = useThemeColors();
   const {t} = useTranslation('auth');
   return (
-    <Stack.Navigator>
+    <Stack.Navigator initialRouteName="profileScreen">
       <Stack.Screen
         name="profileScreen"
         component={Profile}
