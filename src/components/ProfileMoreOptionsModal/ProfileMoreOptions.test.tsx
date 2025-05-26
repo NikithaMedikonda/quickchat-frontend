@@ -32,6 +32,7 @@ jest.mock('react-native-encrypted-storage', () => ({
     return Promise.resolve(null);
   }),
 }));
+
 jest.mock('../../services/DeleteUser', () => ({
   deleteUser: jest.fn(),
 }));
@@ -89,7 +90,9 @@ describe('Profile More Options Modal', () => {
       renderComponent();
     });
     fireEvent.press(screen.getByText('Delete Account'));
-    expect(mockOnClose).toHaveBeenCalledTimes(1);
+    await waitFor(() => {
+      expect(mockOnClose).toHaveBeenCalledTimes(1);
+    });
   });
 
   it('should calls onClose when "Logout" is pressed', async () => {
@@ -97,7 +100,9 @@ describe('Profile More Options Modal', () => {
       renderComponent();
     });
     fireEvent.press(screen.getByText('Logout'));
-    expect(mockOnClose).toHaveBeenCalledTimes(1);
+    await waitFor(() => {
+      expect(mockOnClose).toHaveBeenCalledTimes(1);
+    });
   });
 
   it('should calls onClose when "Edit Profile" is pressed', async () => {
@@ -105,7 +110,9 @@ describe('Profile More Options Modal', () => {
       renderComponent();
     });
     fireEvent.press(screen.getByText('Edit Profile'));
-    expect(mockOnClose).toHaveBeenCalledTimes(1);
+    await waitFor(() => {
+      expect(mockOnClose).toHaveBeenCalledTimes(1);
+    });
   });
 
   it('opens and confirms logout modal', async () => {
@@ -113,7 +120,9 @@ describe('Profile More Options Modal', () => {
       renderComponent();
     });
     fireEvent.press(screen.getAllByText('Logout')[0]);
-    expect(mockOnClose).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(mockOnClose).toHaveBeenCalled();
+    });
     const confirmModalText = await screen.findByText(
       'Are you sure want to logout from this device?',
     );
@@ -126,8 +135,8 @@ describe('Profile More Options Modal', () => {
       expect(state.registration.alertMessage).toBe('Successfully logout');
     });
 
-    jest.advanceTimersByTime(1000);
     await waitFor(() => {
+      jest.advanceTimersByTime(1000);
       expect(mockReplace).toHaveBeenCalledWith('login');
     });
   });
@@ -138,7 +147,9 @@ describe('Profile More Options Modal', () => {
       renderComponent();
     });
     fireEvent.press(screen.getByText('Delete Account'));
-    expect(mockOnClose).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(mockOnClose).toHaveBeenCalled();
+    });
     const confirmButton = await screen.findByText('Delete');
     fireEvent.press(confirmButton);
     await waitFor(() => {
@@ -149,8 +160,8 @@ describe('Profile More Options Modal', () => {
       );
     });
 
-    jest.advanceTimersByTime(1000);
     await waitFor(() => {
+      jest.advanceTimersByTime(1000);
       expect(mockReplace).toHaveBeenCalledWith('welcome');
     });
   });
