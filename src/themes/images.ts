@@ -4,8 +4,8 @@ import chatblockLight from '../assets/chatblockLight.png';
 import BinLight from '../assets/BinLight.png';
 import HomeAddDark from '../assets/HomeAddDark.png';
 import IOSBackArrowDark from '../assets/IOSBackArrowDark.png';
-import LogoutDark from '../assets/LogoutDark.png';
-import PencilDark from '../assets/PencilDark.png';
+import LogOutLight from '../assets/LogOutLight.png';
+import PencilLight from '../assets/PencilLight.png';
 import ProfileDotsDark from '../assets/ProfileDotsDark.png';
 import QuickChatDarkLogo from '../assets/QuickChatDarkLogo.png';
 import TabMessageDark from '../assets/TabMessageDark.png';
@@ -34,8 +34,8 @@ export const useImagesColors = (): {
     homeAdd: HomeAddDark,
     profileDots: ProfileDotsDark,
     bin: BinLight,
-    pencil: PencilDark,
-    logoutImage: LogoutDark,
+    pencil: PencilLight,
+    logoutImage: LogOutLight,
     chatblockImage: chatblockLight,
     androidBackArrow: AndroidBackArrowDark,
     iOSBackArrow: IOSBackArrowDark,

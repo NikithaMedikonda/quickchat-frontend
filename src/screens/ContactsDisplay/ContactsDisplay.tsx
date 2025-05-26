@@ -47,12 +47,16 @@ export const ContactsDisplay = () => {
     (state: RootState) => state.registration,
   );
   const homeStackNavigation = useNavigation<HomeStackProps>();
-  const showAlert = (type: string, title: string, message: string) => {
+
+  const showAlert = useCallback((type: string, title: string, message: string) => {
     dispatch(setAlertType(type));
     dispatch(setAlertTitle(title));
     dispatch(setAlertMessage(message));
     dispatch(setAlertVisible(true));
-  };
+  },
+  [dispatch],
+);
+
   const handleGoBack = useCallback(() => {
     navigation.goBack();
   }, [navigation]);
@@ -103,8 +107,7 @@ export const ContactsDisplay = () => {
       }
     };
     fetchContacts();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch, t]);
+  }, [dispatch, showAlert, t]);
 
   return (
     <View style={styles.contactsContainer}>
