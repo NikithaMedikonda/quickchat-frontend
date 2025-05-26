@@ -149,7 +149,7 @@ export const ProfileMoreOptionsModal = ({
 
   const handleEditProfile = () => {
     onClose();
-    profileNavigation.replace('editProfileScreen');
+     profileNavigation.replace('editProfileScreen');
   };
 
   const modalStyle = Platform.select({

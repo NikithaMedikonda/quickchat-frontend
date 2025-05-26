@@ -1,7 +1,7 @@
 import {Dimensions, StyleSheet} from 'react-native';
 import {Colors} from '../../themes/colors';
 
-const {height} = Dimensions.get('window');
+const {height, width} = Dimensions.get('window');
 
 export const getStyles = (color: Colors) =>
   StyleSheet.create({
@@ -64,5 +64,9 @@ export const getStyles = (color: Colors) =>
       fontSize: 18,
       fontWeight: 'bold',
       color: color.profileOptionsText,
+    },
+    bacKArrow:{
+      color: color.text,
+      paddingHorizontal: 0.02 * width,
     },
   });
