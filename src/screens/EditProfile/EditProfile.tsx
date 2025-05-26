@@ -1,4 +1,4 @@
-import {useEffect, useLayoutEffect, useState} from 'react';
+import {useCallback, useEffect, useLayoutEffect, useRef, useState} from 'react';
 import {
   Image,
   KeyboardAvoidingView,
@@ -53,17 +53,26 @@ export const EditProfile = () => {
   ) => {
     dispatch(setEditProfileForm({key, value}));
   };
-  const [, setToken] = useState('');
+  const setToken = useRef('');
 
   const [user, setUser] = useState<any>(null);
 
+  const showAlert = useCallback(
+    (type: string, title: string, message: string) => {
+      dispatch(setAlertType(type));
+      dispatch(setAlertTitle(title));
+      dispatch(setAlertMessage(message));
+      dispatch(setAlertVisible(true));
+    },
+    [dispatch],
+  );
 
-  const getUserData = async () => {
+  const getUserData = useCallback(async () => {
     try {
       const userDataString = await EncryptedStorage.getItem('user');
       const AccessToken = (await EncryptedStorage.getItem('authToken')) || '';
       const userData = userDataString ? JSON.parse(userDataString) : {};
-      setToken(AccessToken);
+      setToken.current = AccessToken;
 
       setUser(userData);
       dispatch(
@@ -85,18 +94,18 @@ export const EditProfile = () => {
       dispatch(setAlertVisible(true));
       showAlert('error', 'Error', 'Something went wrong');
     }
-  };
+  }, [dispatch, editedImage, showAlert]);
 
   useEffect(() => {
     getUserData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [getUserData]);
+
   useLayoutEffect(() => {
     profileNavigation.setOptions({
       headerTitleAlign: 'center',
       headerTitle: 'Edit Profile',
     });
-  }, [profileNavigation]);
+  },);
 
   const validateEmail = (email: string) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -118,13 +127,6 @@ export const EditProfile = () => {
     }
     dispatch(setErrors(newErrors));
     return isValid;
-  };
-
-    const showAlert = (type: string, title: string, message: string) => {
-    dispatch(setAlertType(type));
-    dispatch(setAlertTitle(title));
-    dispatch(setAlertMessage(message));
-    dispatch(setAlertVisible(true));
   };
 
   const handleSave = async () => {
@@ -185,10 +187,8 @@ export const EditProfile = () => {
   ] as const;
 
   return (
-
     <KeyboardAvoidingView
-      // eslint-disable-next-line react-native/no-inline-styles
-      style={{flex: 1}}
+      style={styles.keyboardView}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}>
       <ScrollView contentContainerStyle={styles.container}>

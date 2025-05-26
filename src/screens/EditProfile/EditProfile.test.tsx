@@ -75,10 +75,13 @@ describe('EditProfile Component', () => {
       expect(getByAccessibilityHint('Profile-Picture')).toBeTruthy();
     });
 
+    await waitFor(() => {
     expect(getByText('First Name')).toBeTruthy();
     expect(getByText('Last Name')).toBeTruthy();
     expect(getByText('Email')).toBeTruthy();
     expect(getByText('Save')).toBeTruthy();
+    });
+
   });
 
   test('shows error when trying to save with empty inputs', async () => {
@@ -167,7 +170,9 @@ describe('EditProfile Component', () => {
     });
 
     const state = store.getState();
-    expect(state.registration.isVisible).toBe(true);
+    await waitFor(() => {
+      expect(state.registration.isVisible).toBe(true);
+    });
   });
 
   test('shows specific error for status 400 (phone number required)', async () => {
@@ -581,14 +586,10 @@ describe('EditProfile Component', () => {
     await waitFor(() => {
       const state = store.getState();
       expect(state.registration.alertType).toBe('success');
-    });
-    jest.advanceTimersByTime(1000);
-
-    await waitFor(() => {
+      jest.advanceTimersByTime(1000);
       expect(mockNavigation.replace).toHaveBeenCalledWith('profileScreen');
+      jest.useRealTimers();
     });
-
-    jest.useRealTimers();
   });
 
   test('handles invalid JSON in stored user data', async () => {

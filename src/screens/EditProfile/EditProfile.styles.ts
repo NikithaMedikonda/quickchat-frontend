@@ -84,4 +84,9 @@ export const getStyles = (colors: Colors) =>
     keyboardView:{
     flex: 1,
     },
+    backArrow: {
+      width: width * 0.03,
+      height: width * 0.04,
+      resizeMode: 'contain',
+    },
   });

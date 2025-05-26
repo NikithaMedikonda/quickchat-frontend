@@ -111,6 +111,16 @@ const setupMocks = () => {
   });
 };
 
+
+jest.mock('../../services/UpdateMessageStatus', () => ({
+  updateMessageStatus: jest.fn(),
+}));
+
+jest.mock('../../socket/socket', () => ({
+  receivePrivateMessage: jest.fn(),
+  sendPrivateMessage: jest.fn(),
+  newSocket: {},
+}));
 describe('IndividualChat', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -716,7 +726,9 @@ describe('IndividualChat', () => {
       expect(EncryptedStorage.getItem).toHaveBeenCalledWith('user'),
     );
     const mockSend = socket.sendPrivateMessage as jest.Mock;
+    await waitFor(() => {
     mockSend.mockResolvedValue({});
+    });
     const input = getByPlaceholderText('Type a message..');
     fireEvent.changeText(input, '');
     fireEvent.press(screen.getByAccessibilityHint('send-message-icon'));

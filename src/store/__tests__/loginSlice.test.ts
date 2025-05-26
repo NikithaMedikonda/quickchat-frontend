@@ -64,6 +64,8 @@ describe('login slice', () => {
           phoneNumber: '1234567890',
           email: 'example@gmail.com',
           profilePicture: '',
+          publicKey:'',
+          privateKey:'',
         },
       }),
     );
@@ -107,6 +109,8 @@ describe('login slice', () => {
         phoneNumber: '1234567890',
         email: 'test@example.com',
         profilePicture: 'old-picture.png',
+        publicKey:'',
+        privateKey:'',
       },
     };
 

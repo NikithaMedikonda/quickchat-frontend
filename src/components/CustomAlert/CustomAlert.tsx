@@ -17,9 +17,8 @@ export const CustomAlert = ({ type, title, message}: AlerTypes) => {
   const onConfirm = () => {
     dispatch(setAlertVisible(false));
   };
-  // eslint-disable-next-line @typescript-eslint/no-shadow
-  const getIconByType = (type:string) => {
-  switch (type) {
+  const getIconByType = (icontype:string) => {
+  switch (icontype) {
     case 'success':
       return successImage;
     case 'warning':
