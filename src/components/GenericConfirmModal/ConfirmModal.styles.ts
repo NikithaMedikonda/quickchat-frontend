@@ -1,9 +1,7 @@
-import { StyleSheet } from 'react-native';
-import { Colors } from '../../themes/colors';
+import {StyleSheet} from 'react-native';
+import {Colors} from '../../themes/colors';
 
-export const confirmModalStyles = (colors:Colors) => {
-
-
+export const confirmModalStyles = (colors: Colors) => {
   return StyleSheet.create({
     overlay: {
       flex: 1,
@@ -12,15 +10,18 @@ export const confirmModalStyles = (colors:Colors) => {
       backgroundColor: colors.modalOverlayBackground,
     },
     modal: {
-      backgroundColor: colors.gray,
+      backgroundColor: colors.modalBackground,
       padding: 20,
       borderRadius: 10,
       width: '80%',
       elevation: 5,
       shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
+      shadowOffset: {width: 0, height: 2},
       shadowOpacity: 0.3,
       shadowRadius: 4,
+      display:'flex',
+      justifyContent:'center',
+      alignItems:'center',
     },
     message: {
       fontSize: 16,
@@ -56,6 +57,11 @@ export const confirmModalStyles = (colors:Colors) => {
     },
     confirmText: {
       color: colors.buttonText,
+    },
+    image: {
+      width: 48,
+      height: 48,
+      marginBottom: 16,
     },
   });
 };
