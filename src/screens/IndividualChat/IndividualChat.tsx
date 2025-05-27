@@ -1,14 +1,15 @@
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {useCallback, useEffect, useRef, useState} from 'react';
 import {ScrollView, Text, View} from 'react-native';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {useDispatch, useSelector} from 'react-redux';
 import EncryptedStorage from 'react-native-encrypted-storage';
+import {useDispatch, useSelector} from 'react-redux';
+import {Socket} from 'socket.io-client';
 import {IndividualChatHeader} from '../../components/IndividualChatHeader/IndividualChatHeader';
 import {MessageInput} from '../../components/MessageInput/MessageInput';
 import {MessageStatusTicks} from '../../components/MessageStatusTicks/MessageStatusTicks';
 import {TimeStamp} from '../../components/TimeStamp/TimeStamp';
-
-import {Socket} from 'socket.io-client';
+import {CustomAlert} from '../../components/CustomAlert/CustomAlert';
+import {checkBlockStatus} from '../../services/CheckBlockStatus';
 import {getMessagesBetween} from '../../services/GetMessagesBetween';
 import {updateMessageStatus} from '../../services/UpdateMessageStatus';
 import {
@@ -16,6 +17,14 @@ import {
   receivePrivateMessage,
   sendPrivateMessage,
 } from '../../socket/socket';
+import {
+  setAlertMessage,
+  setAlertTitle,
+  setAlertType,
+  setAlertVisible,
+  setReceivePhoneNumber,
+} from '../../store/slices/registrationSlice';
+import {RootState} from '../../store/store';
 import {useThemeColors} from '../../themes/colors';
 import {
   AllMessages,
@@ -26,16 +35,6 @@ import {
 import {HomeStackParamList} from '../../types/usenavigation.type';
 import {User} from '../Profile/Profile';
 import {individualChatStyles} from './IndividualChat.styles';
-import {
-  setAlertMessage,
-  setAlertTitle,
-  setAlertType,
-  setAlertVisible,
-  setReceivePhoneNumber,
-} from '../../store/slices/registrationSlice';
-import {checkBlockStatus} from '../../services/CheckBlockStatus';
-import {CustomAlert} from '../../components/CustomAlert/CustomAlert';
-import {RootState} from '../../store/store';
 
 type Props = NativeStackScreenProps<HomeStackParamList, 'individualChat'>;
 
@@ -88,6 +87,13 @@ export const IndividualChat = ({route}: Props) => {
       try {
         const currentUser = await EncryptedStorage.getItem('user');
         const token = await EncryptedStorage.getItem('authToken');
+        if (!currentUser || !token) {
+          showAlert(
+            'info',
+            'Network Error',
+            'Unable to block or unblock the user',
+          );
+        }
         if (currentUser && token) {
           const userData = JSON.parse(currentUser);
           const result = await checkBlockStatus({
