@@ -5,15 +5,17 @@ export const individualChatStyles = (colors: Colors) => {
   return StyleSheet.create({
     container: {
       display: 'flex',
-      flex: 1,
       backgroundColor: colors.background,
+      height: height,
     },
     InputContainer: {
       justifyContent: 'flex-end',
       marginBottom: 17,
     },
+    safeareaView: {
+      flex: 1,
+    },
     chatContainer: {
-      paddingHorizontal: 20,
       paddingVertical: 10,
     },
     messageBlock: {
@@ -68,10 +70,10 @@ export const individualChatStyles = (colors: Colors) => {
     infoContainer: {
       width: width,
       height: height,
-      flex: 1,
+      display: 'flex',
       alignItems: 'center',
-      paddingRight: width * 0.2,
-      paddingTop: height * 0.65,
+      justifyContent: 'center',
+      backgroundColor: colors.chatBackground,
     },
     sentMessageText: {
       color: colors.text,
@@ -84,19 +86,39 @@ export const individualChatStyles = (colors: Colors) => {
       justifyContent: 'flex-end',
       alignItems: 'center',
     },
-    chatHeaderContainer: {
-      flex: 0.14,
-    },
     chatMainContainer: {
-      flex: 0.86,
-      paddingBottom: 50,
-      paddingHorizontal: 20,
+      flex: 1,
       borderColor: colors.receiveMessage,
     },
     chatInnerContainer: {
-      backgroundColor: colors.chatBackground,
-      flex: 1,
-      borderRadius: 15,
+      width: width,
+      height: height * 0.85,
+    },
+    ShowErrorContainer: {
+      backgroundColor: '#FFFBEB',
+      borderWidth: 1,
+      borderRadius: 12,
+      marginHorizontal: 16,
+      marginVertical: 8,
+      padding: 20,
+      alignItems: 'center',
+      shadowColor: '#000',
+      shadowOffset: {
+        width: 0,
+        height: 1,
+      },
+      shadowOpacity: 0.05,
+      shadowRadius: 2,
+      elevation: 2,
+    },
+
+    errorText: {
+      color: '#2D3748',
+      fontSize: 16,
+      fontWeight: '600',
+      textAlign: 'center',
+      marginBottom: 12,
+      lineHeight: 22,
     },
   });
 };
