@@ -309,9 +309,6 @@ describe('IndividualChat', () => {
     });
 
     test('should handle checkBlockStatus API error gracefully', async () => {
-      const consoleSpy = jest
-        .spyOn(console, 'error')
-        .mockImplementation(() => {});
       (checkBlockStatus as jest.Mock).mockRejectedValue(new Error('API Error'));
       render(
         <NavigationContainer>
@@ -329,11 +326,14 @@ describe('IndividualChat', () => {
         </NavigationContainer>,
       );
 
-      await waitFor(() => {
-        expect(checkBlockStatus).toHaveBeenCalled();
-      });
+          await waitFor(() => {
+      const state = store.getState();
+      expect(state.registration.alertMessage).toBe(
+        'Unable to fetch details',
+      );
+      expect(state.registration.alertType).toBe('info');
+    });
 
-      consoleSpy.mockRestore();
     });
 
     test('should handle non-200 status from checkBlockStatus', async () => {
