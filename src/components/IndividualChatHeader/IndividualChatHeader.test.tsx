@@ -7,10 +7,10 @@ import {
 } from '@testing-library/react-native';
 
 import {Platform} from 'react-native';
-import {IndividualChatHeader} from './IndividualChatHeader';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {Provider} from 'react-redux';
 import {store} from '../../store/store';
+import {IndividualChatHeader} from './IndividualChatHeader';
 const mockNavigate = jest.fn();
 const mockGoBack = jest.fn();
 jest.mock('@react-navigation/native', () => ({
