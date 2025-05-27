@@ -1,24 +1,29 @@
-import { useCallback, useState} from 'react';
+import {useCallback, useState} from 'react';
 import {
-  View,
-  Text,
-  Modal,
-  TouchableOpacity,
   Image,
-  TouchableWithoutFeedback,
+  Modal,
   Platform,
+  Text,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
 } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {useDispatch, useSelector} from 'react-redux';
-import {ConfirmModal} from '../GenericConfirmModal/ConfirmModal';
-import {getStyles} from './ChatOptionsModal.styles';
-import {useImagesColors} from '../../themes/images';
-import {useThemeColors} from '../../themes/colors';
-import {RootState} from '../../store/store';
-import {setAlertMessage, setAlertTitle, setAlertType, setAlertVisible} from '../../store/slices/registrationSlice';
 import {blockUser} from '../../services/UserBlock';
 import {unblockUser} from '../../services/UserUnblock';
-import { CustomAlert } from '../CustomAlert/CustomAlert';
+import {
+  setAlertMessage,
+  setAlertTitle,
+  setAlertType,
+  setAlertVisible,
+} from '../../store/slices/registrationSlice';
+import {RootState} from '../../store/store';
+import {useThemeColors} from '../../themes/colors';
+import {useImagesColors} from '../../themes/images';
+import {CustomAlert} from '../CustomAlert/CustomAlert';
+import {ConfirmModal} from '../GenericConfirmModal/ConfirmModal';
+import {getStyles} from './ChatOptionsModal.styles';
 
 type Props = {
   visible: boolean;
@@ -27,13 +32,19 @@ type Props = {
   onBlockStatusChange?: (isBlocked: boolean) => void;
 };
 
-export const ChatOptionsModal = ({visible, onClose, isUserBlocked, onBlockStatusChange}: Props) => {
+export const ChatOptionsModal = ({
+  visible,
+  onClose,
+  isUserBlocked,
+  onBlockStatusChange,
+}: Props) => {
   const receiverPhoneNumber = useSelector(
     (state: RootState) => state.registration.receivePhoneNumber,
   );
   const dispatch = useDispatch();
-      const {alertType, alertTitle, alertMessage} =
-    useSelector((state: RootState) => state.registration);
+  const {alertType, alertTitle, alertMessage} = useSelector(
+    (state: RootState) => state.registration,
+  );
   const colors = useThemeColors();
   const styles = getStyles(colors);
   const {bin, chatblockImage} = useImagesColors();
@@ -57,15 +68,15 @@ export const ChatOptionsModal = ({visible, onClose, isUserBlocked, onBlockStatus
       : showConfirmation('Block', 'Are you sure you want to block this user?');
   };
 
-      const showAlert = useCallback(
-        (type: string, title: string, message: string) => {
-          dispatch(setAlertType(type));
-          dispatch(setAlertTitle(title));
-          dispatch(setAlertMessage(message));
-          dispatch(setAlertVisible(true));
-        },
-        [dispatch],
-      );
+  const showAlert = useCallback(
+    (type: string, title: string, message: string) => {
+      dispatch(setAlertType(type));
+      dispatch(setAlertTitle(title));
+      dispatch(setAlertMessage(message));
+      dispatch(setAlertVisible(true));
+    },
+    [dispatch],
+  );
 
   const handleModalClose = () => {
     setModalVisible(false);
@@ -76,6 +87,13 @@ export const ChatOptionsModal = ({visible, onClose, isUserBlocked, onBlockStatus
     try {
       const currentUser = await EncryptedStorage.getItem('user');
       const token = await EncryptedStorage.getItem('authToken');
+      if (!currentUser || !token) {
+        showAlert(
+          'info',
+          'Network Error',
+          'Unable to block or unblock the user',
+        );
+      }
 
       if (currentUser && token) {
         const userData = JSON.parse(currentUser);
