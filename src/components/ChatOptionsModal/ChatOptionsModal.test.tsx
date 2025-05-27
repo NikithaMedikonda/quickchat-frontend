@@ -7,6 +7,9 @@ import {
 import {Provider} from 'react-redux';
 import {store} from '../../store/store';
 import {ChatOptionsModal} from './ChatOptionsModal';
+import EncryptedStorage from 'react-native-encrypted-storage';
+  import {blockUser} from '../../services/UserBlock';
+import { unblockUser } from '../../services/UserUnblock';
 
 jest.mock('../../themes/colors', () => ({
   useThemeColors: () => ({
@@ -21,6 +24,29 @@ jest.mock('../../themes/images', () => ({
     chatblockImage: {testUri: 'chatblock-icon'},
   }),
 }));
+jest.mock('react-native-encrypted-storage', () => ({
+  setItem: jest.fn(() => Promise.resolve()),
+  getItem: jest.fn(() => Promise.resolve(null)),
+  removeItem: jest.fn(() => Promise.resolve()),
+  clear: jest.fn(() => Promise.resolve()),
+}));
+jest.mock('../../services/UserBlock', () => ({
+  blockUser: jest.fn(() => Promise.resolve({ status: 200 })),
+}));
+
+jest.mock('../../services/UserUnblock', () => ({
+  unblockUser: jest.fn(() => Promise.resolve({ status: 200 })),
+}));
+
+(EncryptedStorage.getItem as jest.Mock).mockImplementation((key) => {
+  if (key === 'user') {
+    return Promise.resolve(JSON.stringify({ phoneNumber: '1234567890' }));
+  }
+  if (key === 'authToken') {
+    return Promise.resolve('mocked_token');
+  }
+  return Promise.resolve(null);
+});
 
 describe('ChatOptionsModal', () => {
   const mockOnClose = jest.fn();
@@ -28,7 +54,7 @@ describe('ChatOptionsModal', () => {
   const renderComponent = (visible = true) =>
     render(
       <Provider store={store}>
-        <ChatOptionsModal visible={visible} onClose={mockOnClose} />
+        <ChatOptionsModal visible={visible} onClose={mockOnClose} isUserBlocked={false} />
       </Provider>,
     );
 
@@ -47,6 +73,64 @@ describe('ChatOptionsModal', () => {
       testUri: 'bin-icon',
     });
   });
+
+
+it('calls blockUser and onBlockStatusChange(true) when confirming block', async () => {
+  const mockOnBlockStatusChange = jest.fn();
+
+  render(
+    <Provider store={store}>
+      <ChatOptionsModal
+        visible={true}
+        onClose={mockOnClose}
+        isUserBlocked={false}
+        onBlockStatusChange={mockOnBlockStatusChange}
+      />
+    </Provider>,
+  );
+
+  fireEvent.press(screen.getByText('Block User'));
+  const confirmButton = await screen.findByText('Block');
+  fireEvent.press(confirmButton);
+
+  await waitFor(() => {
+    expect(blockUser).toHaveBeenCalledWith({
+      blockerPhoneNumber: '1234567890',
+      blockedPhoneNumber: '',
+      authToken: 'mocked_token',
+    });
+    expect(mockOnBlockStatusChange).toHaveBeenCalledWith(true);
+  });
+});
+
+it('calls unblockUser and onBlockStatusChange(true) when confirming unblock', async () => {
+  const mockOnBlockStatusChange = jest.fn();
+
+  render(
+    <Provider store={store}>
+      <ChatOptionsModal
+        visible={true}
+        onClose={mockOnClose}
+        isUserBlocked={true}
+        onBlockStatusChange={mockOnBlockStatusChange}
+      />
+    </Provider>,
+  );
+
+  fireEvent.press(screen.getByText('Unblock User'));
+  const confirmButton = await screen.findByText('Unblock');
+  fireEvent.press(confirmButton);
+
+  await waitFor(() => {
+    expect(unblockUser).toHaveBeenCalledWith({
+      blockerPhoneNumber: '1234567890',
+      blockedPhoneNumber: '',
+      authToken: 'mocked_token',
+    });
+    expect(mockOnBlockStatusChange).toHaveBeenCalledWith(false);
+  });
+});
+
 
   it('calls onClose when tapping outside modal', async () => {
     renderComponent();
