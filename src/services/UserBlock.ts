@@ -9,9 +9,6 @@ export const blockUser = async ({
   blockedPhoneNumber: string;
   authToken: string;
 }) => {
-  console.log('Api hitted');
-  console.log(blockedPhoneNumber);
-  console.log(blockerPhoneNumber);
   const response = await fetch(`${API_URL}/api/block/users`, {
     method: 'POST',
     headers: {
@@ -24,7 +21,6 @@ export const blockUser = async ({
     }),
   });
   const data = await response.json();
-  console.log(response.status);
   return {
     status: response.status,
     data,
