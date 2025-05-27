@@ -8,6 +8,9 @@ import {
 
 import {Platform} from 'react-native';
 import {IndividualChatHeader} from './IndividualChatHeader';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import {Provider} from 'react-redux';
+import {store} from '../../store/store';
 const mockNavigate = jest.fn();
 const mockGoBack = jest.fn();
 jest.mock('@react-navigation/native', () => ({
@@ -17,6 +20,13 @@ jest.mock('@react-navigation/native', () => ({
     goBack: mockGoBack,
   }),
 }));
+jest.mock('react-native-encrypted-storage', () => ({
+  setItem: jest.fn(() => Promise.resolve()),
+  getItem: jest.fn(() => Promise.resolve(null)),
+  removeItem: jest.fn(() => Promise.resolve()),
+  clear: jest.fn(() => Promise.resolve()),
+}));
+
 describe('Test for IndividualChatHeader component', () => {
   const userDetails = {
     name: 'Chitty',
@@ -25,7 +35,28 @@ describe('Test for IndividualChatHeader component', () => {
     isBlocked: false,
   };
   beforeEach(() => {
-    render(<IndividualChatHeader {...userDetails} />);
+    render(
+        <Provider store={store}>
+      <IndividualChatHeader onBlockStatusChange={() => {}} {...userDetails} />,
+        </Provider>
+    );
+    (EncryptedStorage.getItem as jest.Mock).mockImplementation(key => {
+      if (key === 'user') {
+        return Promise.resolve(
+          JSON.stringify({
+            firstName: 'test',
+            lastName: 'user',
+            email: 'testuser@gmail.com',
+            profilePhoto: '',
+            phoneNumber: '1234567890',
+          }),
+        );
+      }
+      if (key === 'authToken') {
+        return Promise.resolve('mock-token');
+      }
+      return Promise.resolve(null);
+    });
   });
   test('Should render the back arrow icon', () => {
     const backArrow = screen.getByA11yHint('back-arrow-icon');
@@ -69,12 +100,16 @@ describe('Platform-specific back arrow image tests', () => {
       get: () => 'ios',
     });
     render(
-      <IndividualChatHeader
-        name="Test"
-        profilePicture="someUri"
-        phoneNumber=""
-        isBlocked
-      />,
+      <Provider store={store}>
+        <IndividualChatHeader
+          name="Test"
+          profilePicture="someUri"
+          phoneNumber=""
+          isBlocked={false}
+          onBlockStatusChange={() => {}}
+        />
+        ,
+      </Provider>,
     );
     const backArrow = screen.getByA11yHint('back-arrow-icon');
     expect(backArrow.props.source).toEqual(
@@ -87,12 +122,16 @@ describe('Platform-specific back arrow image tests', () => {
       get: () => 'android',
     });
     render(
-      <IndividualChatHeader
-        name="Test"
-        profilePicture="someUri"
-        phoneNumber=""
-        isBlocked
-      />,
+      <Provider store={store}>
+        <IndividualChatHeader
+          name="Test"
+          profilePicture="someUri"
+          phoneNumber=""
+          isBlocked={false}
+          onBlockStatusChange={() => {}}
+        />
+        ,
+      </Provider>,
     );
     const backArrow = screen.getByA11yHint('back-arrow-icon');
     expect(backArrow.props.source).toEqual(
@@ -105,15 +144,19 @@ describe('Platform-specific back arrow image tests', () => {
       get: () => 'android',
     });
     const {queryByText} = render(
-      <IndividualChatHeader
-        name="Test"
-        profilePicture="someUri"
-        phoneNumber=""
-        isBlocked
-      />,
+      <Provider store={store}>
+        <IndividualChatHeader
+          name="Test"
+          profilePicture="someUri"
+          phoneNumber=""
+          isBlocked={false}
+          onBlockStatusChange={() => {}}
+        />
+        ,
+      </Provider>,
     );
     const moreOptionsIcon = screen.getByA11yHint('more-options-icon');
-     await act(async () => {
+    await act(async () => {
       fireEvent.press(moreOptionsIcon);
     });
     await waitFor(() => {
@@ -122,19 +165,23 @@ describe('Platform-specific back arrow image tests', () => {
   });
 
   test('Should close modal when onClose function is called', async () => {
-       Object.defineProperty(Platform, 'OS', {
+    Object.defineProperty(Platform, 'OS', {
       get: () => 'android',
     });
     const {queryByText} = render(
-      <IndividualChatHeader
-        name="Test"
-        profilePicture="someUri"
-        phoneNumber=""
-        isBlocked
-      />,
+      <Provider store={store}>
+        <IndividualChatHeader
+          name="Test"
+          profilePicture="someUri"
+          phoneNumber=""
+          isBlocked={false}
+          onBlockStatusChange={() => {}}
+        />
+        ,
+      </Provider>,
     );
     const closeButton = screen.getByA11yHint('back-arrow-icon');
-     await act(async () => {
+    await act(async () => {
       fireEvent.press(closeButton);
     });
     await waitFor(() => {
