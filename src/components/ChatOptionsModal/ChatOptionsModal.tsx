@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import { useState} from 'react';
 import {
   View,
   Text,
@@ -12,14 +12,23 @@ import {ConfirmModal} from '../GenericConfirmModal/ConfirmModal';
 import {getStyles} from './ChatOptionsModal.styles';
 import {useImagesColors} from '../../themes/images';
 import {useThemeColors} from '../../themes/colors';
+import {useSelector} from 'react-redux';
+import {RootState} from '../../store/store';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import {blockUser} from '../../services/UserBlock';
+import {unblockUser} from '../../services/UserUnblock';
 
 type Props = {
   visible: boolean;
   onClose: () => void;
-  isBlocked: boolean;
+  isUserBlocked: boolean;
+  onBlockStatusChange?: (isBlocked: boolean) => void;
 };
 
-export const ChatOptionsModal = ({visible, onClose, isBlocked}: Props) => {
+export const ChatOptionsModal = ({visible, onClose, isUserBlocked, onBlockStatusChange}: Props) => {
+  const receiverPhoneNumber = useSelector(
+    (state: RootState) => state.registration.receivePhoneNumber,
+  );
   const colors = useThemeColors();
   const styles = getStyles(colors);
   const {bin, chatblockImage} = useImagesColors();
@@ -27,23 +36,70 @@ export const ChatOptionsModal = ({visible, onClose, isBlocked}: Props) => {
   const [message, setMessage] = useState('');
   const [buttonTypes, setButtonTypes] = useState('');
 
-  const showConfirmation = (type: 'Block' | 'Delete', msg: string) => {
+  const showConfirmation = (type: string, msg: string) => {
     onClose();
     setModalVisible(true);
     setButtonTypes(type);
     setMessage(msg);
   };
 
+  const blockOrUnblockUser = () => {
+    isUserBlocked
+      ? showConfirmation(
+          'Unblock',
+          'Are you sure you want to unblock this user?',
+        )
+      : showConfirmation('Block', 'Are you sure you want to block this user?');
+  };
+
   const handleModalClose = () => {
     setModalVisible(false);
   };
 
-  const onConfirmBlock = () => {
+  const onConfirmBlockOrUnblock = async () => {
     handleModalClose();
+    try {
+      const currentUser = await EncryptedStorage.getItem('user');
+      const token = await EncryptedStorage.getItem('authToken');
+
+      if (currentUser && token) {
+        const userData = JSON.parse(currentUser);
+
+        if (isUserBlocked) {
+          const result = await unblockUser({
+            blockerPhoneNumber: userData.phoneNumber,
+            blockedPhoneNumber: receiverPhoneNumber,
+            authToken: token,
+          });
+          if (result && result.status === 200) {
+            onBlockStatusChange?.(false);
+          }
+        } else {
+          const result = await blockUser({
+            blockerPhoneNumber: userData.phoneNumber,
+            blockedPhoneNumber: receiverPhoneNumber,
+            authToken: token,
+          });
+          if (result && result.status === 200) {
+            onBlockStatusChange?.(true);
+          }
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const onConfirmDelete = () => {
     handleModalClose();
+  };
+
+  const handleConfirm = () => {
+    if (buttonTypes === 'Delete') {
+      onConfirmDelete();
+    } else {
+      onConfirmBlockOrUnblock();
+    }
   };
 
   const modalStyle = Platform.select({
@@ -62,15 +118,10 @@ export const ChatOptionsModal = ({visible, onClose, isBlocked}: Props) => {
             <View style={styles.modalView}>
               <View style={styles.textContainer}>
                 <TouchableOpacity
-                  onPress={() =>
-                    showConfirmation(
-                      'Block',
-                      'Are you sure you want to block this user?',
-                    )
-                  }
+                  onPress={blockOrUnblockUser}
                   style={styles.optionsView}>
                   <Text style={styles.modalText}>
-                    {isBlocked ? 'Unblock User' : 'Block User'}
+                    {isUserBlocked ? 'Unblock User' : 'Block User'}
                   </Text>
                   <Image
                     source={chatblockImage}
@@ -98,24 +149,14 @@ export const ChatOptionsModal = ({visible, onClose, isBlocked}: Props) => {
           </View>
         </TouchableWithoutFeedback>
       </Modal>
-      {buttonTypes === 'Block' && (
-        <ConfirmModal
-          visible={modalVisible}
-          message={message}
-          confirmText={buttonTypes}
-          onClose={handleModalClose}
-          onConfirm={onConfirmBlock}
-        />
-      )}
-      {buttonTypes === 'Delete' && (
-        <ConfirmModal
-          visible={modalVisible}
-          message={message}
-          confirmText={buttonTypes}
-          onClose={handleModalClose}
-          onConfirm={onConfirmDelete}
-        />
-      )}
+
+      <ConfirmModal
+        visible={modalVisible}
+        message={message}
+        confirmText={buttonTypes}
+        onClose={handleModalClose}
+        onConfirm={handleConfirm}
+      />
     </View>
   );
 };
