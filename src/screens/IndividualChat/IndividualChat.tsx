@@ -26,18 +26,25 @@ import {
 import {HomeStackParamList} from '../../types/usenavigation.type';
 import {User} from '../Profile/Profile';
 import {individualChatStyles} from './IndividualChat.styles';
-import {setAlertMessage, setAlertTitle, setAlertType, setAlertVisible, setReceivePhoneNumber} from '../../store/slices/registrationSlice';
+import {
+  setAlertMessage,
+  setAlertTitle,
+  setAlertType,
+  setAlertVisible,
+  setReceivePhoneNumber,
+} from '../../store/slices/registrationSlice';
 import {checkBlockStatus} from '../../services/CheckBlockStatus';
-import { CustomAlert } from '../../components/CustomAlert/CustomAlert';
-import { RootState } from '../../store/store';
+import {CustomAlert} from '../../components/CustomAlert/CustomAlert';
+import {RootState} from '../../store/store';
 
 type Props = NativeStackScreenProps<HomeStackParamList, 'individualChat'>;
 
 export const IndividualChat = ({route}: Props) => {
   const dispatch = useDispatch();
-    const {alertType, alertTitle, alertMessage} =
-    useSelector((state: RootState) => state.registration);
-  const [message, setMessage] = useState('');
+  const {alertType, alertTitle, alertMessage} = useSelector(
+    (state: RootState) => state.registration,
+  );
+  const [messages, setMessage] = useState('');
   const [isBlocked, setIsUserBlocked] = useState(false);
   const [receivedMessages, setReceivedMessages] = useState<
     ReceivePrivateMessage[]
@@ -66,16 +73,15 @@ export const IndividualChat = ({route}: Props) => {
     setIsUserBlocked(newBlockStatus);
   };
 
-
-    const showAlert = useCallback(
-      (type: string, title: string, message: string) => {
-        dispatch(setAlertType(type));
-        dispatch(setAlertTitle(title));
-        dispatch(setAlertMessage(message));
-        dispatch(setAlertVisible(true));
-      },
-      [dispatch],
-    );
+  const showAlert = useCallback(
+    (type: string, title: string, message: string) => {
+      dispatch(setAlertType(type));
+      dispatch(setAlertTitle(title));
+      dispatch(setAlertMessage(message));
+      dispatch(setAlertVisible(true));
+    },
+    [dispatch],
+  );
 
   useEffect(() => {
     const getBlockStatus = async () => {
@@ -113,9 +119,9 @@ export const IndividualChat = ({route}: Props) => {
         senderPhoneNumber: currentUserPhoneNumberRef.current,
         receiverPhoneNumber: recipientPhoneNumber,
       };
-      const messages = await getMessagesBetween(userData);
-      if (messages.status === 200) {
-        const data = messages.data;
+      const Messages = await getMessagesBetween(userData);
+      if (Messages.status === 200) {
+        const data = Messages.data;
         const formattedMessages = data.chats.map((msg: Chats) => ({
           senderPhoneNumber: msg.sender.phoneNumber,
           recipientPhoneNumber: msg.receiver.phoneNumber,
@@ -146,12 +152,12 @@ export const IndividualChat = ({route}: Props) => {
 
   useEffect(() => {
     const sendMessage = async () => {
-      if (socket && message.trim() !== '') {
+      if (socket && messages.trim() !== '') {
         const timestamp = new Date().toISOString();
         const payload: SentPrivateMessage = {
           recipientPhoneNumber,
           senderPhoneNumber: currentUserPhoneNumberRef.current,
-          message: message.trim(),
+          message: messages.trim(),
           timestamp,
           status: 'sent',
         };
@@ -161,7 +167,7 @@ export const IndividualChat = ({route}: Props) => {
       }
     };
 
-    if (message) {
+    if (messages) {
       sendMessage();
     }
     const updateStatus = async () => {
@@ -175,7 +181,7 @@ export const IndividualChat = ({route}: Props) => {
       await updateMessageStatus(details);
     };
     updateStatus();
-  }, [message, recipientPhoneNumber, socket]);
+  }, [messages, recipientPhoneNumber, socket]);
 
   useEffect(() => {
     const all = [...fetchMessages, ...sendMessages, ...receivedMessages];
