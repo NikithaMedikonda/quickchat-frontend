@@ -5,9 +5,9 @@ import {
   waitFor,
 } from '@testing-library/react-native';
 import {Provider} from 'react-redux';
+import EncryptedStorage from 'react-native-encrypted-storage';
 import {store} from '../../store/store';
 import {ChatOptionsModal} from './ChatOptionsModal';
-import EncryptedStorage from 'react-native-encrypted-storage';
 import {blockUser} from '../../services/UserBlock';
 import {unblockUser} from '../../services/UserUnblock';
 
@@ -105,6 +105,8 @@ describe('ChatOptionsModal', () => {
       expect(mockOnBlockStatusChange).toHaveBeenCalledWith(true);
     });
   });
+
+  
 
   it('calls unblockUser and onBlockStatusChange(true) when confirming unblock', async () => {
     const mockOnBlockStatusChange = jest.fn();
