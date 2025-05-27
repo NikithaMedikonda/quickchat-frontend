@@ -29,6 +29,7 @@ interface RegistrationState {
   alertType: string;
   alertTitle: string;
   alertMessage: string;
+  receivePhoneNumber:string
 }
 
 const initialState: RegistrationState = {
@@ -58,6 +59,7 @@ const initialState: RegistrationState = {
   alertType: '',
   alertTitle: '',
   alertMessage: '',
+  receivePhoneNumber:'',
 };
 
 const registrationSlice = createSlice({
@@ -106,6 +108,9 @@ const registrationSlice = createSlice({
     setAlertMessage: (state, action: PayloadAction<string>) => {
       state.alertMessage = action.payload;
     },
+    setReceivePhoneNumber: (state, action: PayloadAction<string>) => {
+      state.receivePhoneNumber = action.payload;
+    },
     resetForm: () => initialState,
   },
 });
@@ -124,6 +129,7 @@ export const {
   setAlertType,
   setAlertMessage,
   setAlertTitle,
+  setReceivePhoneNumber,
 } = registrationSlice.actions;
 
 export const registrationReducer = registrationSlice.reducer;

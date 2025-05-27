@@ -3,4 +3,5 @@ export type UserDetails = {
   profilePicture: string;
   phoneNumber: string;
   isBlocked:boolean
+  onBlockStatusChange: (isBlocked: boolean) => void;
 };

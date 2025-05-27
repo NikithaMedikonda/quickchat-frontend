@@ -13,6 +13,7 @@ import {
   setAlertTitle,
   setAlertType,
   setEditProfileForm,
+  setReceivePhoneNumber,
 } from '../slices/registrationSlice';
 
 const initialState = {
@@ -42,6 +43,7 @@ const initialState = {
   alertType: '',
   alertTitle: '',
   alertMessage: '',
+  receivePhoneNumber:'',
 };
 
 describe('registration slice', () => {
@@ -122,6 +124,11 @@ describe('registration slice', () => {
     const newState = registrationReducer(initialState, setImage(imagepath));
     expect(newState.imageUri).toBe(imagepath);
   });
+    it('should handle receiver phone number', () => {
+    const receivePhoneNumber = '';
+    const newState = registrationReducer(initialState, setReceivePhoneNumber(receivePhoneNumber));
+    expect(newState.receivePhoneNumber).toBe(receivePhoneNumber);
+  });
   it('should handle alertType', () => {
     const alertType = 'hello';
     const newState = registrationReducer(initialState, setAlertType(alertType));
@@ -190,6 +197,7 @@ describe('registration slice', () => {
       alertType: '',
       alertTitle: '',
       alertMessage: '',
+      receivePhoneNumber:'',
     };
     const newState = registrationReducer(modifiedState, resetForm());
     expect(newState).toEqual(initialState);

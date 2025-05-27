@@ -5,10 +5,12 @@ import {
   Text,
   TouchableOpacity,
   TouchableWithoutFeedback,
+  Image,
 } from 'react-native';
 import {useTranslation} from 'react-i18next';
 import {confirmModalStyles} from './ConfirmModal.styles';
 import {useThemeColors} from '../../themes/colors';
+import warning from '../../assets/warning-2.png';
 
 interface ConfirmModalProps {
   visible: boolean;
@@ -38,6 +40,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
         <TouchableWithoutFeedback onPress={onClose}>
           <View style={styles.overlay}>
             <View style={styles.modal}>
+              <Image source={warning} style={styles.image} />
               <Text style={styles.message}>{message}</Text>
               <View style={styles.buttonContainer}>
                 <TouchableOpacity style={styles.cancelButton} onPress={onClose}>
