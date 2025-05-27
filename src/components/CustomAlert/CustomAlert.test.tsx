@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
-import { CustomAlert } from './CustomAlert';
 import * as reactRedux from 'react-redux';
+import { CustomAlert } from './CustomAlert';
 import { setAlertVisible } from '../../store/slices/registrationSlice';
 
 jest.mock('react-redux', () => ({
