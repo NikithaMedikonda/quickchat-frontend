@@ -8,8 +8,8 @@ import {Provider} from 'react-redux';
 import {store} from '../../store/store';
 import {ChatOptionsModal} from './ChatOptionsModal';
 import EncryptedStorage from 'react-native-encrypted-storage';
-  import {blockUser} from '../../services/UserBlock';
-import { unblockUser } from '../../services/UserUnblock';
+import {blockUser} from '../../services/UserBlock';
+import {unblockUser} from '../../services/UserUnblock';
 
 jest.mock('../../themes/colors', () => ({
   useThemeColors: () => ({
@@ -31,16 +31,16 @@ jest.mock('react-native-encrypted-storage', () => ({
   clear: jest.fn(() => Promise.resolve()),
 }));
 jest.mock('../../services/UserBlock', () => ({
-  blockUser: jest.fn(() => Promise.resolve({ status: 200 })),
+  blockUser: jest.fn(() => Promise.resolve({status: 200})),
 }));
 
 jest.mock('../../services/UserUnblock', () => ({
-  unblockUser: jest.fn(() => Promise.resolve({ status: 200 })),
+  unblockUser: jest.fn(() => Promise.resolve({status: 200})),
 }));
 
-(EncryptedStorage.getItem as jest.Mock).mockImplementation((key) => {
+(EncryptedStorage.getItem as jest.Mock).mockImplementation(key => {
   if (key === 'user') {
-    return Promise.resolve(JSON.stringify({ phoneNumber: '1234567890' }));
+    return Promise.resolve(JSON.stringify({phoneNumber: '1234567890'}));
   }
   if (key === 'authToken') {
     return Promise.resolve('mocked_token');
@@ -54,7 +54,11 @@ describe('ChatOptionsModal', () => {
   const renderComponent = (visible = true) =>
     render(
       <Provider store={store}>
-        <ChatOptionsModal visible={visible} onClose={mockOnClose} isUserBlocked={false} />
+        <ChatOptionsModal
+          visible={visible}
+          onClose={mockOnClose}
+          isUserBlocked={false}
+        />
       </Provider>,
     );
 
@@ -74,63 +78,89 @@ describe('ChatOptionsModal', () => {
     });
   });
 
+  it('calls blockUser and onBlockStatusChange(true) when confirming block', async () => {
+    const mockOnBlockStatusChange = jest.fn();
 
-it('calls blockUser and onBlockStatusChange(true) when confirming block', async () => {
-  const mockOnBlockStatusChange = jest.fn();
+    render(
+      <Provider store={store}>
+        <ChatOptionsModal
+          visible={true}
+          onClose={mockOnClose}
+          isUserBlocked={false}
+          onBlockStatusChange={mockOnBlockStatusChange}
+        />
+      </Provider>,
+    );
 
-  render(
-    <Provider store={store}>
-      <ChatOptionsModal
-        visible={true}
-        onClose={mockOnClose}
-        isUserBlocked={false}
-        onBlockStatusChange={mockOnBlockStatusChange}
-      />
-    </Provider>,
-  );
+    fireEvent.press(screen.getByText('Block User'));
+    const confirmButton = await screen.findByText('Block');
+    fireEvent.press(confirmButton);
 
-  fireEvent.press(screen.getByText('Block User'));
-  const confirmButton = await screen.findByText('Block');
-  fireEvent.press(confirmButton);
-
-  await waitFor(() => {
-    expect(blockUser).toHaveBeenCalledWith({
-      blockerPhoneNumber: '1234567890',
-      blockedPhoneNumber: '',
-      authToken: 'mocked_token',
+    await waitFor(() => {
+      expect(blockUser).toHaveBeenCalledWith({
+        blockerPhoneNumber: '1234567890',
+        blockedPhoneNumber: '',
+        authToken: 'mocked_token',
+      });
+      expect(mockOnBlockStatusChange).toHaveBeenCalledWith(true);
     });
-    expect(mockOnBlockStatusChange).toHaveBeenCalledWith(true);
   });
-});
 
-it('calls unblockUser and onBlockStatusChange(true) when confirming unblock', async () => {
-  const mockOnBlockStatusChange = jest.fn();
+  it('calls unblockUser and onBlockStatusChange(true) when confirming unblock', async () => {
+    const mockOnBlockStatusChange = jest.fn();
 
-  render(
-    <Provider store={store}>
-      <ChatOptionsModal
-        visible={true}
-        onClose={mockOnClose}
-        isUserBlocked={true}
-        onBlockStatusChange={mockOnBlockStatusChange}
-      />
-    </Provider>,
-  );
+    render(
+      <Provider store={store}>
+        <ChatOptionsModal
+          visible={true}
+          onClose={mockOnClose}
+          isUserBlocked={true}
+          onBlockStatusChange={mockOnBlockStatusChange}
+        />
+      </Provider>,
+    );
 
-  fireEvent.press(screen.getByText('Unblock User'));
-  const confirmButton = await screen.findByText('Unblock');
-  fireEvent.press(confirmButton);
+    fireEvent.press(screen.getByText('Unblock User'));
+    const confirmButton = await screen.findByText('Unblock');
+    fireEvent.press(confirmButton);
 
-  await waitFor(() => {
-    expect(unblockUser).toHaveBeenCalledWith({
-      blockerPhoneNumber: '1234567890',
-      blockedPhoneNumber: '',
-      authToken: 'mocked_token',
+    await waitFor(() => {
+      expect(unblockUser).toHaveBeenCalledWith({
+        blockerPhoneNumber: '1234567890',
+        blockedPhoneNumber: '',
+        authToken: 'mocked_token',
+      });
+      expect(mockOnBlockStatusChange).toHaveBeenCalledWith(false);
     });
-    expect(mockOnBlockStatusChange).toHaveBeenCalledWith(false);
   });
-});
 
+  it('should check if any error occur while getting block status', async () => {
+    const mockOnBlockStatusChange = jest.fn();
+    (unblockUser as jest.Mock).mockRejectedValue(new Error('API Error'));
+
+    render(
+      <Provider store={store}>
+        <ChatOptionsModal
+          visible={true}
+          onClose={mockOnClose}
+          isUserBlocked={true}
+          onBlockStatusChange={mockOnBlockStatusChange}
+        />
+      </Provider>,
+    );
+
+    fireEvent.press(screen.getByText('Unblock User'));
+    const confirmButton = await screen.findByText('Unblock');
+    fireEvent.press(confirmButton);
+
+    await waitFor(() => {
+      const state = store.getState();
+      expect(state.registration.alertMessage).toBe(
+        'Unable to block or unblock the user',
+      );
+      expect(state.registration.alertType).toBe('info');
+    });
+  });
 
   it('calls onClose when tapping outside modal', async () => {
     renderComponent();
