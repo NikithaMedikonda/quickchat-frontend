@@ -1,8 +1,7 @@
 import {useEffect, useRef, useState} from 'react';
 import {ScrollView, Text, View} from 'react-native';
-
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-
+import {useDispatch} from 'react-redux';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {IndividualChatHeader} from '../../components/IndividualChatHeader/IndividualChatHeader';
 import {MessageInput} from '../../components/MessageInput/MessageInput';
@@ -26,14 +25,16 @@ import {
 } from '../../types/messsage.types';
 import {HomeStackParamList} from '../../types/usenavigation.type';
 import {User} from '../Profile/Profile';
-import {checkBlockStatus} from '../../services/CheckBlockStatus';
 import {individualChatStyles} from './IndividualChat.styles';
+import {setReceivePhoneNumber} from '../../store/slices/registrationSlice';
+import {checkBlockStatus} from '../../services/CheckBlockStatus';
 
 type Props = NativeStackScreenProps<HomeStackParamList, 'individualChat'>;
 
 export const IndividualChat = ({route}: Props) => {
+  const dispatch = useDispatch();
   const [message, setMessage] = useState('');
-  const [isUserBlocked, setIsUserBlocked] = useState(false);
+  const [isBlocked, setIsUserBlocked] = useState(false);
   const [receivedMessages, setReceivedMessages] = useState<
     ReceivePrivateMessage[]
   >([]);
@@ -45,38 +46,45 @@ export const IndividualChat = ({route}: Props) => {
   const currentUserPhoneNumberRef = useRef<string>('');
   const [allMessages, setAllMessages] = useState<AllMessages[]>([]);
   const user = route.params.user;
+  dispatch(setReceivePhoneNumber(user.phoneNumber));
   const recipientPhoneNumber = user.phoneNumber;
   const colors = useThemeColors();
   const styles = individualChatStyles(colors);
   const scrollViewRef = useRef<ScrollView>(null);
+
   const scrollToBottom = async () => {
     if (scrollViewRef.current) {
       scrollViewRef.current.scrollToEnd({animated: true});
     }
   };
-useEffect(() => {
-  const getBlockStatus = async () => {
-    try {
-      const currentUser = await EncryptedStorage.getItem('user');
-      const token = await EncryptedStorage.getItem('authToken');
-      if (currentUser && token) {
-        const userData = JSON.parse(currentUser);
-        const result = await checkBlockStatus({
-          blockerPhoneNumber: userData.phoneNumber,
-          blockedPhoneNumber: user.phoneNumber,
-          authToken: token,
-        });
-        if (result.status === 200) {
-          setIsUserBlocked(result.data.isBlocked);
-        }
-      }
-    } catch (error) {
-      console.error(error)
-    }
+
+  const handleBlockStatusChange = (newBlockStatus: boolean) => {
+    setIsUserBlocked(newBlockStatus);
   };
 
-  getBlockStatus();
-}, [user.phoneNumber]);
+  useEffect(() => {
+    const getBlockStatus = async () => {
+      try {
+        const currentUser = await EncryptedStorage.getItem('user');
+        const token = await EncryptedStorage.getItem('authToken');
+        if (currentUser && token) {
+          const userData = JSON.parse(currentUser);
+          const result = await checkBlockStatus({
+            blockerPhoneNumber: userData.phoneNumber,
+            blockedPhoneNumber: user.phoneNumber,
+            authToken: token,
+          });
+          if (result.status === 200) {
+            setIsUserBlocked(result.data.isBlocked);
+          }
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    getBlockStatus();
+  }, [user.phoneNumber]);
 
   useEffect(() => {
     setSocket(newSocket);
@@ -105,8 +113,6 @@ useEffect(() => {
     }
 
     getMessages();
-
-
 
     async function receiveMessage() {
       const handleNewMessage = (data: SentPrivateMessage) => {
@@ -167,12 +173,13 @@ useEffect(() => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.chatHeaderContainer} >
+      <View>
         <IndividualChatHeader
           name={user.name}
           profilePicture={user.profilePicture}
           phoneNumber={user.phoneNumber}
-          isBlocked={isUserBlocked}
+          isBlocked={isBlocked}
+          onBlockStatusChange={handleBlockStatusChange}
         />
       </View>
       <View style={styles.chatMainContainer}>
@@ -218,9 +225,17 @@ useEffect(() => {
               </View>
             )}
           </ScrollView>
-          <View style={styles.InputContainer}>
-            <MessageInput setMessage={setMessage} />
-          </View>
+          {isBlocked ? (
+            <View style={styles.ShowErrorContainer}>
+              <Text style={styles.errorText}>
+                This user is currently blocked. Unblock them to send messages.
+              </Text>
+            </View>
+          ) : (
+            <View style={styles.InputContainer}>
+              <MessageInput setMessage={setMessage} />
+            </View>
+          )}
         </View>
       </View>
     </View>
