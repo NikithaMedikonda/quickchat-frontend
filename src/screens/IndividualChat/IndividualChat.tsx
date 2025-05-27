@@ -1,7 +1,7 @@
-import {useEffect, useRef, useState} from 'react';
+import {useCallback, useEffect, useRef, useState} from 'react';
 import {ScrollView, Text, View} from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {IndividualChatHeader} from '../../components/IndividualChatHeader/IndividualChatHeader';
 import {MessageInput} from '../../components/MessageInput/MessageInput';
@@ -26,13 +26,17 @@ import {
 import {HomeStackParamList} from '../../types/usenavigation.type';
 import {User} from '../Profile/Profile';
 import {individualChatStyles} from './IndividualChat.styles';
-import {setReceivePhoneNumber} from '../../store/slices/registrationSlice';
+import {setAlertMessage, setAlertTitle, setAlertType, setAlertVisible, setReceivePhoneNumber} from '../../store/slices/registrationSlice';
 import {checkBlockStatus} from '../../services/CheckBlockStatus';
+import { CustomAlert } from '../../components/CustomAlert/CustomAlert';
+import { RootState } from '../../store/store';
 
 type Props = NativeStackScreenProps<HomeStackParamList, 'individualChat'>;
 
 export const IndividualChat = ({route}: Props) => {
   const dispatch = useDispatch();
+    const {alertType, alertTitle, alertMessage} =
+    useSelector((state: RootState) => state.registration);
   const [message, setMessage] = useState('');
   const [isBlocked, setIsUserBlocked] = useState(false);
   const [receivedMessages, setReceivedMessages] = useState<
@@ -62,6 +66,17 @@ export const IndividualChat = ({route}: Props) => {
     setIsUserBlocked(newBlockStatus);
   };
 
+
+    const showAlert = useCallback(
+      (type: string, title: string, message: string) => {
+        dispatch(setAlertType(type));
+        dispatch(setAlertTitle(title));
+        dispatch(setAlertMessage(message));
+        dispatch(setAlertVisible(true));
+      },
+      [dispatch],
+    );
+
   useEffect(() => {
     const getBlockStatus = async () => {
       try {
@@ -79,12 +94,12 @@ export const IndividualChat = ({route}: Props) => {
           }
         }
       } catch (error) {
-        console.error(error);
+        showAlert('info', 'Network Error', 'Unable to fetch details');
       }
     };
 
     getBlockStatus();
-  }, [user.phoneNumber]);
+  }, [showAlert, user.phoneNumber]);
 
   useEffect(() => {
     setSocket(newSocket);
@@ -238,6 +253,7 @@ export const IndividualChat = ({route}: Props) => {
           )}
         </View>
       </View>
+      <CustomAlert type={alertType} title={alertTitle} message={alertMessage} />
     </View>
   );
 };
