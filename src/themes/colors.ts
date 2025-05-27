@@ -13,7 +13,8 @@ export const useThemeColors = () => {
     messageTextBox: '#FFFFFF',
     sendMessage: '#1877F2',
     receiveMessage: '#FFFFFF',
-    chatBackground:'#1E1E1E',
+    chatBackground:'#121212',
+    modalBackground: 'rgba(128, 128, 128, 0.2)',
   };
 };
 
@@ -32,4 +33,5 @@ export type Colors = {
   sendMessage: string;
   receiveMessage: string;
   chatBackground:string;
+  modalBackground:string
 };
