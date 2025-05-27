@@ -118,10 +118,18 @@ export const HomeTabs = () => {
         name="profileStack"
         component={ProfileStack}
         options={{
+          headerShown: false,
           tabBarIcon: ProfileTabIcon,
           tabBarLabel: t('Profile'),
-          headerShown: false,
         }}
+        listeners={({navigation}) => ({
+          tabPress: event => {
+            event.preventDefault();
+            navigation.navigate('profileStack', {
+              screen: 'profileScreen',
+            });
+          },
+        })}
       />
     </Tab.Navigator>
   );
