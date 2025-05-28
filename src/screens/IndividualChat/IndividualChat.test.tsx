@@ -121,19 +121,21 @@ describe('IndividualChat', () => {
         message: 'updated',
       },
     });
-    render(
-      <NavigationContainer>
-        <IndividualChat
-          navigation={
-            mockNavigation as NativeStackNavigationProp<
-              HomeStackParamList,
-              'individualChat'
-            >
-          }
-          route={mockRoute}
-        />
-      </NavigationContainer>,
-    );
+    await waitFor(() => {
+      render(
+        <NavigationContainer>
+          <IndividualChat
+            navigation={
+              mockNavigation as NativeStackNavigationProp<
+                HomeStackParamList,
+                'individualChat'
+              >
+            }
+            route={mockRoute}
+          />
+        </NavigationContainer>,
+      );
+    });
     await waitFor(() => {
       const username = screen.getByA11yHint('username-text');
       expect(username).toBeTruthy();
@@ -436,7 +438,7 @@ describe('IndividualChat', () => {
     );
     const mockSend = socket.sendPrivateMessage as jest.Mock;
     await waitFor(() => {
-    mockSend.mockResolvedValue({});
+      mockSend.mockResolvedValue({});
     });
     const input = getByPlaceholderText('Type a message..');
     fireEvent.changeText(input, '');
