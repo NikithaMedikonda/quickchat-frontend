@@ -65,7 +65,6 @@ const ProfileTabIcon = ({focused}: {focused: boolean}) => {
 
 export const HomeTabs = () => {
   useEffect(() => {
-    console.log('UseEffect');
     async function connect() {
       const user = await EncryptedStorage.getItem('user');
       if (user) {
