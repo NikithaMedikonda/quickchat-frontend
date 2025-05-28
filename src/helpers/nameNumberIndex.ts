@@ -2,11 +2,11 @@ import Contacts from 'react-native-contacts';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { normalise } from './normalisePhoneNumber';
 
-export const nameNumberIndex = async () => {
+export const numberNameIndex = async () => {
   try {
     const user = await EncryptedStorage.getItem('user');
     if (!user) {
-      throw new Error('User not present in local storage');
+      return null;
     }
     const myNumber = await JSON.parse(user!).phoneNumber;
     const book = await Contacts.getAllWithoutPhotos();
