@@ -6,10 +6,10 @@ import {
   waitFor,
 } from '@testing-library/react-native';
 import {Provider} from 'react-redux';
+import {numberNameIndex} from '../../helpers/nameNumberIndex';
+import {getAllChats} from '../../services/GetAllChats';
 import {store} from '../../store/store';
 import {AllChats, Chat} from './AllChats';
-import {getAllChats} from '../../services/GetAllChats';
-import {nameNumberIndex} from '../../helpers/nameNumberIndex';
 
 const mockChats = [
   {
@@ -42,18 +42,6 @@ const mockNavigate = jest.fn();
 const mockReplace = jest.fn();
 const mockSetOptions = jest.fn();
 
-jest.mock('../../services/GetAllChats', () => ({
-  getAllChats: jest.fn(),
-}));
-
-jest.mock('../../helpers/nameNumberIndex', () => ({
-  nameNumberIndex: jest.fn(),
-}));
-
-jest.mock('../../helpers/normalisePhoneNumber', () => ({
-  normalise: jest.fn(),
-}));
-
 jest.mock('@react-navigation/native', () => {
   const actualNav = jest.requireActual('@react-navigation/native');
   return {
@@ -66,12 +54,36 @@ jest.mock('@react-navigation/native', () => {
   };
 });
 
+jest.mock('react-native-encrypted-storage', () => ({
+  clear: jest.fn(),
+}));
+
+jest.useFakeTimers();
+
+jest.mock('../../helpers/nameNumberIndex', () => ({
+  numberNameIndex: jest.fn(),
+}));
+
+jest.mock('../../services/GetAllChats', () => ({
+  getAllChats: jest.fn(),
+}));
+
+jest.mock('../../helpers/normalisePhoneNumber', () => ({
+  normalise: jest.fn(),
+}));
+
 describe('AllChats Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   it('should display header title correctly', async () => {
+    (numberNameIndex as jest.Mock).mockResolvedValue({});
+    (getAllChats as jest.Mock).mockResolvedValue({
+      status: 200,
+      data: {chats: []},
+    });
+
     render(
       <Provider store={store}>
         <NavigationContainer>
@@ -90,13 +102,53 @@ describe('AllChats Component', () => {
     });
   });
 
+  it('should logout and redirect if numberNameIndex returns null', async () => {
+  (numberNameIndex as jest.Mock).mockResolvedValue(null);
+
+  render(
+    <Provider store={store}>
+      <NavigationContainer>
+        <AllChats />
+      </NavigationContainer>
+    </Provider>,
+  );
+
+  await waitFor(() => {
+    const state = store.getState();
+    expect(state.registration.alertType).toBe('error');
+    expect(state.registration.alertMessage).toBe('Please login again.');
+    jest.advanceTimersByTime(1000);
+    expect(mockReplace).toHaveBeenCalledWith('login');
+  });
+});
+
+  it('should logout and redirect to login on 401 response', async () => {
+    (numberNameIndex as jest.Mock).mockResolvedValue({});
+    (getAllChats as jest.Mock).mockResolvedValue({status: 401});
+
+    render(
+      <Provider store={store}>
+        <NavigationContainer>
+          <AllChats />
+        </NavigationContainer>
+      </Provider>,
+    );
+
+    await waitFor(() => {
+      const state = store.getState();
+      expect(state.registration.alertType).toBe('error');
+      expect(state.registration.alertMessage).toBe('Please login again.');
+      jest.advanceTimersByTime(1000);
+      expect(mockReplace).toHaveBeenCalledWith('login');
+    });
+  });
+
   it('should render Home component when no chats are available', async () => {
+    (numberNameIndex as jest.Mock).mockResolvedValue({});
     (getAllChats as jest.Mock).mockResolvedValue({
       status: 200,
       data: {chats: emptyChats},
     });
-
-   (nameNumberIndex as jest.Mock).mockResolvedValue({});
 
     render(
       <Provider store={store}>
@@ -115,17 +167,14 @@ describe('AllChats Component', () => {
   });
 
   it('should render all chats with correct information', async () => {
+    (numberNameIndex as jest.Mock).mockResolvedValue({});
+
     (getAllChats as jest.Mock).mockResolvedValue({
       status: 200,
       data: {chats: mockChats},
     });
 
-    (nameNumberIndex as jest.Mock).mockResolvedValue({
-      '+1234567890': 'Test User A',
-      '+1234567999': 'Test User B',
-    });
-
-   render(
+    render(
       <Provider store={store}>
         <NavigationContainer>
           <AllChats />
@@ -146,15 +195,12 @@ describe('AllChats Component', () => {
     });
   });
 
-    it('should navigate to individual chat when chatbox is pressed', async () => {
-      (getAllChats as jest.Mock).mockResolvedValue({
+  it('should navigate to individual chat when chatbox is pressed', async () => {
+    (numberNameIndex as jest.Mock).mockResolvedValue({});
+
+    (getAllChats as jest.Mock).mockResolvedValue({
       status: 200,
       data: {chats: mockChats},
-    });
-
-    (nameNumberIndex as jest.Mock).mockResolvedValue({
-      '+1234567890': 'Test User A',
-      '+1234567999': 'Test User B',
     });
 
     render(
@@ -210,12 +256,12 @@ describe('AllChats Component', () => {
   });
 
   it('should not set chats if response status is not 200', async () => {
+    (numberNameIndex as jest.Mock).mockResolvedValue({});
+
     (getAllChats as jest.Mock).mockResolvedValue({
       status: 500,
       data: {chats: mockChats},
     });
-
-    (nameNumberIndex as jest.Mock).mockResolvedValue({});
 
     render(
       <Provider store={store}>
