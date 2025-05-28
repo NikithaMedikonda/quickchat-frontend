@@ -1,3 +1,4 @@
+import {useNavigation} from '@react-navigation/native';
 import {useCallback, useState} from 'react';
 import {
   Image,
@@ -10,6 +11,7 @@ import {
 } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {useDispatch, useSelector} from 'react-redux';
+import {deleteChat} from '../../services/DeleteChat';
 import {blockUser} from '../../services/UserBlock';
 import {unblockUser} from '../../services/UserUnblock';
 import {
@@ -21,6 +23,7 @@ import {
 import {RootState} from '../../store/store';
 import {useThemeColors} from '../../themes/colors';
 import {useImagesColors} from '../../themes/images';
+import {HomeTabsProps} from '../../types/usenavigation.type';
 import {CustomAlert} from '../CustomAlert/CustomAlert';
 import {ConfirmModal} from '../GenericConfirmModal/ConfirmModal';
 import {getStyles} from './ChatOptionsModal.styles';
@@ -42,6 +45,8 @@ export const ChatOptionsModal = ({
     (state: RootState) => state.registration.receivePhoneNumber,
   );
   const dispatch = useDispatch();
+  const homeNavigation = useNavigation<HomeTabsProps>();
+
   const {alertType, alertTitle, alertMessage} = useSelector(
     (state: RootState) => state.registration,
   );
@@ -123,8 +128,36 @@ export const ChatOptionsModal = ({
     }
   };
 
-  const onConfirmDelete = () => {
+  const onConfirmDelete = async () => {
     handleModalClose();
+    try {
+      const currentUser = await EncryptedStorage.getItem('user');
+      const token = await EncryptedStorage.getItem('authToken');
+
+      if (currentUser && token) {
+        const userData = JSON.parse(currentUser);
+        const timestamp = Date.now();
+        const result = await deleteChat({
+          senderPhoneNumber: userData.phoneNumber,
+          receiverPhoneNumber,
+          timestamp,
+          authToken: token,
+        });
+
+        if (result && (result.status === 200 || result.status === 204)) {
+          showAlert('success', 'Deleted', 'Chat deleted successfully.');
+
+          setTimeout(() => {
+            dispatch(setAlertVisible(false));
+            homeNavigation.replace('hometabs');
+          }, 1000);
+        } else {
+          showAlert('warning', 'Failed', 'Failed to delete the chat.');
+        }
+      }
+    } catch (error) {
+      showAlert('info', 'Network Error', 'Unable to delete the chat');
+    }
   };
 
   const handleConfirm = () => {
