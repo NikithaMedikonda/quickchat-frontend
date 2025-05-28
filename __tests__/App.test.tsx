@@ -118,6 +118,8 @@ jest.mock('react-native-libsodium', () => ({
   randombytes_buf: jest.fn(() => new Uint8Array(24).fill(3)),
   from_base64: jest.fn((input: string) => Uint8Array.from(Buffer.from(input, 'base64'))),
   crypto_secretbox_open_easy: jest.fn(() => new Uint8Array(Buffer.from('secret-key'))),
+  crypto_box_open_easy: jest.fn(() => Uint8Array.from(Buffer.from('my-private-key')),),
+  crypto_box_easy: jest.fn(() => new Uint8Array(64).fill(1)),
 }));
 
 test('runs useEffect on mount and sets language', async () => {
