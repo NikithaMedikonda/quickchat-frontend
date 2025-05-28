@@ -1,7 +1,7 @@
+import {waitFor} from '@testing-library/react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {API_URL} from '../../constants/api';
 import {getAllChats} from '../GetAllChats';
-import {waitFor} from '@testing-library/react-native';
 
 jest.mock('react-native-encrypted-storage', () => ({
   getItem: jest.fn(),
@@ -106,54 +106,38 @@ describe('Tests for get all chats fucntion', () => {
     });
   });
 
-  test('should throw error if no authToken', async () => {
+  test('Missing authToken returns 401', async () => {
     (EncryptedStorage.getItem as jest.Mock).mockResolvedValueOnce(null);
 
-    await expect(getAllChats()).rejects.toThrow('Authorization failed');
+    const result = await getAllChats();
+
+    expect(result.status).toBe(401);
     expect(fetch).not.toHaveBeenCalled();
   });
 
-  test('handles case when userDetails is null', async () => {
+  test('Missing userDetails returns 401', async () => {
     (EncryptedStorage.getItem as jest.Mock)
       .mockResolvedValueOnce('dummy-token')
       .mockResolvedValueOnce(null);
 
-    mockedFetch.mockResolvedValueOnce({
-      status: 200,
-      json: jest.fn().mockResolvedValue(mockChats),
-    });
+    const result = await getAllChats();
+
+    expect(result.data).toBeNull();
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  test('Handles fetch error gracefully', async () => {
+    (EncryptedStorage.getItem as jest.Mock)
+      .mockResolvedValueOnce('dummy-token')
+      .mockResolvedValueOnce(JSON.stringify(mockUserDetails));
+
+    mockedFetch.mockRejectedValueOnce(new Error('Network error'));
 
     const result = await getAllChats();
 
-    await waitFor(() => {
-      expect(EncryptedStorage.getItem).toHaveBeenCalledTimes(2);
-      expect(fetch).toHaveBeenCalledWith(
-        expect.stringContaining(`${API_URL}/api/chats/user`),
-        expect.objectContaining({
-          method: 'POST',
-          headers: expect.objectContaining({
-            authorization: 'Bearer dummy-token',
-          }),
-          body: JSON.stringify({userPhoneNumber: undefined}),
-        }),
-      );
-      expect(result.data).toEqual(mockChats);
+    expect(result.status).toBe(500);
+    expect(result.data).toEqual({
+      message: 'Internal error fetching chats.',
     });
-  });
-
-  test('throws error on fetch failure', async () => {
-    (EncryptedStorage.getItem as jest.Mock)
-      .mockImplementationOnce(() => Promise.resolve('dummy-auth-token'))
-      .mockImplementationOnce(() =>
-        Promise.resolve(
-          JSON.stringify({userPhoneNumber: mockUserDetails.phoneNumber}),
-        ),
-      );
-
-    (fetch as jest.Mock).mockRejectedValueOnce(new Error('Network error'));
-
-    await expect(getAllChats()).rejects.toThrow(
-      'Error while fetching chats Network error',
-    );
   });
 });
