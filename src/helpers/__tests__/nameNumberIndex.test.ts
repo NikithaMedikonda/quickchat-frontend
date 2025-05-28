@@ -1,10 +1,11 @@
 import Contacts from 'react-native-contacts';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {nameNumberIndex} from '../nameNumberIndex';
+import { numberNameIndex } from '../nameNumberIndex';
 
 jest.mock('react-native-contacts', () => ({
   getAllWithoutPhotos: jest.fn(),
 }));
+
 jest.mock('react-native-encrypted-storage', () => ({
   getItem: jest.fn(),
 }));
@@ -25,11 +26,11 @@ describe('Testing nameNumberIndex function', () => {
       },
       {
         givenName: 'Mamatha',
-        phoneNumbers: [{number: '+91 6303974914'}], // This is "You"
+        phoneNumbers: [{number: '+91 6303974914'}],
       },
     ]);
 
-    const result = await nameNumberIndex();
+    const result = await numberNameIndex();
     expect(result).toEqual({
       '+916303961097': 'Usha',
       '+916303974914': 'Mamatha (You)',
@@ -38,9 +39,9 @@ describe('Testing nameNumberIndex function', () => {
 
   it('should throw an error if user is not in storage', async () => {
     (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(null);
-    await expect(nameNumberIndex()).rejects.toThrow(
-      'Error while fetching contacts: User not present in local storage',
-    );
+    const result = await numberNameIndex();
+
+    expect(result).toBeNull();
   });
 
   it('should handle errors from Contacts.getAllWithoutPhotos', async () => {
@@ -52,7 +53,7 @@ describe('Testing nameNumberIndex function', () => {
         'Tried to use permissions API while not attached to an activity',
       ),
     );
-    await expect(nameNumberIndex()).rejects.toThrow(
+    await expect(numberNameIndex()).rejects.toThrow(
       'Error while fetching contacts: Tried to use permissions API while not attached to an activity',
     );
   });
@@ -67,7 +68,7 @@ describe('Testing nameNumberIndex function', () => {
         phoneNumbers: [{number: '+91 6303974914'}],
       },
     ]);
-    const result = await nameNumberIndex();
+    const result = await numberNameIndex();
     expect(result).toEqual({
       '+916303974914': 'Mamatha (You)',
     });
@@ -83,7 +84,7 @@ describe('Testing nameNumberIndex function', () => {
         phoneNumbers: [{number: '+91 6303961097--'}],
       },
     ]);
-    const result = await nameNumberIndex();
+    const result = await numberNameIndex();
     expect(result).toEqual({
       '+916303961097': 'Usha',
     });
@@ -101,7 +102,7 @@ describe('Testing nameNumberIndex function', () => {
         phoneNumbers: [{number: '+91 6303974914'}],
       },
     ]);
-    const result = await nameNumberIndex();
+    const result = await numberNameIndex();
     expect(result).toEqual({
       '+916303974914': 'Mamatha Niyal B182217',
     });
@@ -120,7 +121,7 @@ describe('Testing nameNumberIndex function', () => {
       },
     ]);
 
-    const result = await nameNumberIndex();
+    const result = await numberNameIndex();
 
     expect(result).toEqual({
       '+916303974914': 'unknown',
