@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useLayoutEffect, useRef, useState} from 'react';
+import {useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState} from 'react';
 import {
   Image,
   KeyboardAvoidingView,
@@ -60,6 +60,10 @@ export const EditProfile = () => {
     (state: RootState) => state.registration.imageUri,
   );
 
+  const [initialValues, setInitialValues] = useState<
+    typeof editProfileForm | null
+  >(null);
+
   const {alertType, alertTitle, alertMessage, errors, editProfileForm} =
     useSelector((state: RootState) => state.registration);
   const editedImage = useSelector(
@@ -109,6 +113,15 @@ export const EditProfile = () => {
       );
       dispatch(setEditProfileForm({key: 'token', value: AccessToken}));
       dispatch(setEditProfileForm({key: 'image', value: editedImage}));
+
+      setInitialValues({
+        firstName: userData.firstName || '',
+        lastName: userData.lastName || '',
+        email: userData.email || '',
+        phoneNumber: userData.phoneNumber || '',
+        token: AccessToken,
+        image: editedImage,
+      });
     } catch (error) {
       dispatch(setAlertVisible(true));
       showAlert('error', 'Error', 'Something went wrong');
@@ -206,6 +219,19 @@ export const EditProfile = () => {
     },
   ] as const;
 
+  const isFormChanged = useMemo(() => {
+  if (!initialValues){
+    return false;
+  }
+  return (
+    initialValues.firstName !== editProfileForm.firstName ||
+    initialValues.lastName !== editProfileForm.lastName ||
+    initialValues.email !== editProfileForm.email ||
+    initialValues.phoneNumber !== editProfileForm.phoneNumber ||
+    initialValues.image !== editedImage
+  );
+}, [initialValues, editProfileForm, editedImage]);
+
   return (
     <KeyboardAvoidingView
       style={styles.keyboardView}
@@ -242,7 +268,13 @@ export const EditProfile = () => {
           </View>
         ))}
         <View style={styles.buttonRow}>
-          <TouchableOpacity style={styles.touchableButton} onPress={handleSave}>
+          <TouchableOpacity
+            style={[
+              styles.touchableButton,
+              !isFormChanged && {opacity: 0.5},
+            ]}
+            onPress={handleSave}
+            disabled={!isFormChanged}>
             <Text style={styles.buttonText}>{t('Save')}</Text>
           </TouchableOpacity>
         </View>
