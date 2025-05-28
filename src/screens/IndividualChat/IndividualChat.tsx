@@ -1,15 +1,15 @@
-import {useEffect, useRef, useState} from 'react';
-import {ScrollView, Text, View} from 'react-native';
-
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-
+import {useCallback, useEffect, useRef, useState} from 'react';
+import {ScrollView, Text, View} from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
+import {useDispatch, useSelector} from 'react-redux';
+import {Socket} from 'socket.io-client';
 import {IndividualChatHeader} from '../../components/IndividualChatHeader/IndividualChatHeader';
 import {MessageInput} from '../../components/MessageInput/MessageInput';
 import {MessageStatusTicks} from '../../components/MessageStatusTicks/MessageStatusTicks';
 import {TimeStamp} from '../../components/TimeStamp/TimeStamp';
-
-import {Socket} from 'socket.io-client';
+import {CustomAlert} from '../../components/CustomAlert/CustomAlert';
+import {checkBlockStatus} from '../../services/CheckBlockStatus';
 import {getMessagesBetween} from '../../services/GetMessagesBetween';
 import {updateMessageStatus} from '../../services/UpdateMessageStatus';
 import {
@@ -17,6 +17,14 @@ import {
   receivePrivateMessage,
   sendPrivateMessage,
 } from '../../socket/socket';
+import {
+  setAlertMessage,
+  setAlertTitle,
+  setAlertType,
+  setAlertVisible,
+  setReceivePhoneNumber,
+} from '../../store/slices/registrationSlice';
+import {RootState} from '../../store/store';
 import {useThemeColors} from '../../themes/colors';
 import {
   AllMessages,
@@ -31,7 +39,12 @@ import {individualChatStyles} from './IndividualChat.styles';
 type Props = NativeStackScreenProps<HomeStackParamList, 'individualChat'>;
 
 export const IndividualChat = ({route}: Props) => {
-  const [message, setMessage] = useState('');
+  const dispatch = useDispatch();
+  const {alertType, alertTitle, alertMessage} = useSelector(
+    (state: RootState) => state.registration,
+  );
+  const [messages, setMessage] = useState('');
+  const [isBlocked, setIsUserBlocked] = useState(false);
   const [receivedMessages, setReceivedMessages] = useState<
     ReceivePrivateMessage[]
   >([]);
@@ -43,20 +56,67 @@ export const IndividualChat = ({route}: Props) => {
   const currentUserPhoneNumberRef = useRef<string>('');
   const [allMessages, setAllMessages] = useState<AllMessages[]>([]);
   const user = route.params.user;
+  dispatch(setReceivePhoneNumber(user.phoneNumber));
   const recipientPhoneNumber = user.phoneNumber;
   const colors = useThemeColors();
   const styles = individualChatStyles(colors);
   const scrollViewRef = useRef<ScrollView>(null);
+
   const scrollToBottom = async () => {
     if (scrollViewRef.current) {
       scrollViewRef.current.scrollToEnd({animated: true});
     }
   };
+
+  const handleBlockStatusChange = (newBlockStatus: boolean) => {
+    setIsUserBlocked(newBlockStatus);
+  };
+
+  const showAlert = useCallback(
+    (type: string, title: string, message: string) => {
+      dispatch(setAlertType(type));
+      dispatch(setAlertTitle(title));
+      dispatch(setAlertMessage(message));
+      dispatch(setAlertVisible(true));
+    },
+    [dispatch],
+  );
+
+  useEffect(() => {
+    const getBlockStatus = async () => {
+      try {
+        const currentUser = await EncryptedStorage.getItem('user');
+        const token = await EncryptedStorage.getItem('authToken');
+        if (!currentUser || !token) {
+          showAlert(
+            'info',
+            'Network Error',
+            'Unable to block or unblock the user',
+          );
+        }
+        if (currentUser && token) {
+          const userData = JSON.parse(currentUser);
+          const result = await checkBlockStatus({
+            blockerPhoneNumber: userData.phoneNumber,
+            blockedPhoneNumber: user.phoneNumber,
+            authToken: token,
+          });
+          if (result.status === 200) {
+            setIsUserBlocked(result.data.isBlocked);
+          }
+        }
+      } catch (error) {
+        showAlert('info', 'Network Error', 'Unable to fetch details');
+      }
+    };
+
+    getBlockStatus();
+  }, [showAlert, user.phoneNumber]);
+
   useEffect(() => {
     setSocket(newSocket);
     async function getMessages() {
       const currentUser = await EncryptedStorage.getItem('user');
-
       if (currentUser) {
         const parsedUser: User = JSON.parse(currentUser);
         currentUserPhoneNumberRef.current = parsedUser.phoneNumber;
@@ -65,9 +125,9 @@ export const IndividualChat = ({route}: Props) => {
         senderPhoneNumber: currentUserPhoneNumberRef.current,
         receiverPhoneNumber: recipientPhoneNumber,
       };
-      const messages = await getMessagesBetween(userData);
-      if (messages.status === 200) {
-        const data = messages.data;
+      const Messages = await getMessagesBetween(userData);
+      if (Messages.status === 200) {
+        const data = Messages.data;
         const formattedMessages = data.chats.map((msg: Chats) => ({
           senderPhoneNumber: msg.sender.phoneNumber,
           recipientPhoneNumber: msg.receiver.phoneNumber,
@@ -98,12 +158,12 @@ export const IndividualChat = ({route}: Props) => {
 
   useEffect(() => {
     const sendMessage = async () => {
-      if (socket && message.trim() !== '') {
+      if (socket && messages.trim() !== '') {
         const timestamp = new Date().toISOString();
         const payload: SentPrivateMessage = {
           recipientPhoneNumber,
           senderPhoneNumber: currentUserPhoneNumberRef.current,
-          message: message.trim(),
+          message: messages.trim(),
           timestamp,
           status: 'sent',
         };
@@ -113,7 +173,7 @@ export const IndividualChat = ({route}: Props) => {
       }
     };
 
-    if (message) {
+    if (messages) {
       sendMessage();
     }
     const updateStatus = async () => {
@@ -127,7 +187,7 @@ export const IndividualChat = ({route}: Props) => {
       await updateMessageStatus(details);
     };
     updateStatus();
-  }, [message, recipientPhoneNumber, socket]);
+  }, [messages, recipientPhoneNumber, socket]);
 
   useEffect(() => {
     const all = [...fetchMessages, ...sendMessages, ...receivedMessages];
@@ -140,11 +200,13 @@ export const IndividualChat = ({route}: Props) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.chatHeaderContainer}>
+      <View>
         <IndividualChatHeader
           name={user.name}
           profilePicture={user.profilePicture}
           phoneNumber={user.phoneNumber}
+          isBlocked={isBlocked}
+          onBlockStatusChange={handleBlockStatusChange}
         />
       </View>
       <View style={styles.chatMainContainer}>
@@ -190,11 +252,20 @@ export const IndividualChat = ({route}: Props) => {
               </View>
             )}
           </ScrollView>
-          <View style={styles.InputContainer}>
-            <MessageInput setMessage={setMessage} />
-          </View>
+          {isBlocked ? (
+            <View style={styles.ShowErrorContainer}>
+              <Text style={styles.errorText}>
+                This user is currently blocked. Unblock them to send messages.
+              </Text>
+            </View>
+          ) : (
+            <View style={styles.InputContainer}>
+              <MessageInput setMessage={setMessage} />
+            </View>
+          )}
         </View>
       </View>
+      <CustomAlert type={alertType} title={alertTitle} message={alertMessage} />
     </View>
   );
 };

@@ -8,12 +8,16 @@ import {
 } from '@testing-library/react-native';
 
 import {getMessagesBetween} from '../../services/GetMessagesBetween';
+import {checkBlockStatus} from '../../services/CheckBlockStatus';
 import {HomeStackParamList} from '../../types/usenavigation.type';
 import {IndividualChat} from './IndividualChat';
-
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {updateMessageStatus} from '../../services/UpdateMessageStatus';
 import * as socket from '../../socket/socket';
+import {Provider} from 'react-redux';
+import {store} from '../../store/store';
+import {resetForm} from '../../store/slices/registrationSlice';
+
 type IndividualChatRouteProp = RouteProp<HomeStackParamList, 'individualChat'>;
 const mockRoute: IndividualChatRouteProp = {
   key: 'individualChat',
@@ -23,21 +27,40 @@ const mockRoute: IndividualChatRouteProp = {
       name: 'Chitty',
       profilePicture: 'mock/path/to/image.png',
       phoneNumber: '+918522041688',
+      isBlocked: false,
+      onBlockStatusChange: jest.fn(),
     },
   },
 };
+
 const mockNavigation: Partial<
   NativeStackNavigationProp<HomeStackParamList, 'individualChat'>
 > = {
   navigate: jest.fn(),
   goBack: jest.fn(),
 };
+
 jest.mock('react-native-encrypted-storage', () => ({
   setItem: jest.fn(),
   getItem: jest.fn(),
 }));
+
 jest.mock('../../services/GetMessagesBetween', () => ({
   getMessagesBetween: jest.fn(),
+}));
+
+jest.mock('../../services/checkBlockStatus', () => ({
+  checkBlockStatus: jest.fn(),
+}));
+
+jest.mock('../../services/UpdateMessageStatus', () => ({
+  updateMessageStatus: jest.fn(),
+}));
+
+jest.mock('../../socket/socket', () => ({
+  receivePrivateMessage: jest.fn(),
+  sendPrivateMessage: jest.fn(),
+  newSocket: {},
 }));
 
 const setupMocks = () => {
@@ -48,6 +71,9 @@ const setupMocks = () => {
           phoneNumber: '+919999999999',
         }),
       );
+    }
+    if (key === 'authToken') {
+      return Promise.resolve('mock-auth-token');
     }
     return Promise.resolve(null);
   });
@@ -79,6 +105,13 @@ const setupMocks = () => {
       return Promise.resolve({message: ''});
     },
   );
+
+  (checkBlockStatus as jest.Mock).mockResolvedValue({
+    status: 200,
+    data: {
+      isBlocked: false,
+    },
+  });
 };
 
 jest.mock('../../services/UpdateMessageStatus', () => ({
@@ -90,11 +123,302 @@ jest.mock('../../socket/socket', () => ({
   sendPrivateMessage: jest.fn(),
   newSocket: {},
 }));
-
 describe('IndividualChat', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     setupMocks();
+    store.dispatch(resetForm());
+  });
+  describe('Block Status useEffect', () => {
+    test('should check block status on component mount with valid user and token', async () => {
+      const mockUser = {
+        phoneNumber: '+919999999999',
+        name: 'Test User',
+      };
+      const mockAuthToken = 'valid-auth-token';
+
+      (EncryptedStorage.getItem as jest.Mock).mockImplementation(
+        (key: string) => {
+          if (key === 'user') {
+            return Promise.resolve(JSON.stringify(mockUser));
+          }
+          if (key === 'authToken') {
+            return Promise.resolve(mockAuthToken);
+          }
+          return Promise.resolve(null);
+        },
+      );
+
+      (checkBlockStatus as jest.Mock).mockResolvedValue({
+        status: 200,
+        data: {isBlocked: false},
+      });
+
+      render(
+        <NavigationContainer>
+          <Provider store={store}>
+            <IndividualChat
+              navigation={
+                mockNavigation as NativeStackNavigationProp<
+                  HomeStackParamList,
+                  'individualChat'
+                >
+              }
+              route={mockRoute}
+            />
+          </Provider>
+        </NavigationContainer>,
+      );
+
+      await waitFor(() => {
+        expect(EncryptedStorage.getItem).toHaveBeenCalledWith('user');
+        expect(EncryptedStorage.getItem).toHaveBeenCalledWith('authToken');
+        expect(checkBlockStatus).toHaveBeenCalledWith({
+          blockerPhoneNumber: '+919999999999',
+          blockedPhoneNumber: '+918522041688',
+          authToken: 'valid-auth-token',
+        });
+      });
+    });
+
+    test('should set isUserBlocked to true when user is blocked', async () => {
+      (checkBlockStatus as jest.Mock).mockResolvedValue({
+        status: 200,
+        data: {isBlocked: true},
+      });
+
+      render(
+        <NavigationContainer>
+          <Provider store={store}>
+            <IndividualChat
+              navigation={
+                mockNavigation as NativeStackNavigationProp<
+                  HomeStackParamList,
+                  'individualChat'
+                >
+              }
+              route={mockRoute}
+            />
+          </Provider>
+        </NavigationContainer>,
+      );
+
+      await waitFor(() => {
+        expect(checkBlockStatus).toHaveBeenCalled();
+      });
+    });
+
+    test('should set isUserBlocked to false when user is not blocked', async () => {
+      (checkBlockStatus as jest.Mock).mockResolvedValue({
+        status: 200,
+        data: {isBlocked: false},
+      });
+
+      render(
+        <NavigationContainer>
+          <Provider store={store}>
+            <IndividualChat
+              navigation={
+                mockNavigation as NativeStackNavigationProp<
+                  HomeStackParamList,
+                  'individualChat'
+                >
+              }
+              route={mockRoute}
+            />
+          </Provider>
+        </NavigationContainer>,
+      );
+
+      await waitFor(() => {
+        expect(checkBlockStatus).toHaveBeenCalled();
+      });
+    });
+
+    test('should not call checkBlockStatus when user data is missing', async () => {
+      (EncryptedStorage.getItem as jest.Mock).mockImplementation(
+        (key: string) => {
+          if (key === 'user') {
+            return Promise.resolve(null);
+          }
+          if (key === 'authToken') {
+            return Promise.resolve('valid-token');
+          }
+          return Promise.resolve(null);
+        },
+      );
+
+      render(
+        <NavigationContainer>
+          <Provider store={store}>
+            <IndividualChat
+              navigation={
+                mockNavigation as NativeStackNavigationProp<
+                  HomeStackParamList,
+                  'individualChat'
+                >
+              }
+              route={mockRoute}
+            />
+          </Provider>
+        </NavigationContainer>,
+      );
+
+      await waitFor(() => {
+        expect(EncryptedStorage.getItem).toHaveBeenCalledWith('user');
+        expect(checkBlockStatus).not.toHaveBeenCalled();
+      });
+    });
+
+    test('should not call checkBlockStatus when auth token is missing', async () => {
+      (EncryptedStorage.getItem as jest.Mock).mockImplementation(
+        (key: string) => {
+          if (key === 'user') {
+            return Promise.resolve(
+              JSON.stringify({phoneNumber: '+919999999999'}),
+            );
+          }
+          if (key === 'authToken') {
+            return Promise.resolve(null);
+          }
+          return Promise.resolve(null);
+        },
+      );
+
+      render(
+        <NavigationContainer>
+          <Provider store={store}>
+            <IndividualChat
+              navigation={
+                mockNavigation as NativeStackNavigationProp<
+                  HomeStackParamList,
+                  'individualChat'
+                >
+              }
+              route={mockRoute}
+            />
+          </Provider>
+        </NavigationContainer>,
+      );
+
+      await waitFor(() => {
+        expect(EncryptedStorage.getItem).toHaveBeenCalledWith('user');
+        expect(EncryptedStorage.getItem).toHaveBeenCalledWith('authToken');
+        expect(checkBlockStatus).not.toHaveBeenCalled();
+      });
+    });
+
+    test('should handle checkBlockStatus API error gracefully', async () => {
+      (checkBlockStatus as jest.Mock).mockRejectedValue(new Error('API Error'));
+      render(
+        <NavigationContainer>
+          <Provider store={store}>
+            <IndividualChat
+              navigation={
+                mockNavigation as NativeStackNavigationProp<
+                  HomeStackParamList,
+                  'individualChat'
+                >
+              }
+              route={mockRoute}
+            />
+          </Provider>
+        </NavigationContainer>,
+      );
+
+          await waitFor(() => {
+      const state = store.getState();
+      expect(state.registration.alertMessage).toBe(
+        'Unable to fetch details',
+      );
+      expect(state.registration.alertType).toBe('info');
+    });
+
+    });
+
+    test('should handle non-200 status from checkBlockStatus', async () => {
+      (checkBlockStatus as jest.Mock).mockResolvedValue({
+        status: 400,
+        data: {error: 'Bad request'},
+      });
+
+      render(
+        <NavigationContainer>
+          <Provider store={store}>
+            <IndividualChat
+              navigation={
+                mockNavigation as NativeStackNavigationProp<
+                  HomeStackParamList,
+                  'individualChat'
+                >
+              }
+              route={mockRoute}
+            />
+          </Provider>
+        </NavigationContainer>,
+      );
+
+      await waitFor(() => {
+        expect(checkBlockStatus).toHaveBeenCalled();
+      });
+    });
+
+    test('should re-check block status when user.phoneNumber changes', async () => {
+      const {rerender} = render(
+        <NavigationContainer>
+          <Provider store={store}>
+            <IndividualChat
+              navigation={
+                mockNavigation as NativeStackNavigationProp<
+                  HomeStackParamList,
+                  'individualChat'
+                >
+              }
+              route={mockRoute}
+            />
+          </Provider>
+        </NavigationContainer>,
+      );
+
+      await waitFor(() => {
+        expect(checkBlockStatus).toHaveBeenCalledTimes(1);
+      });
+
+      const newMockRoute = {
+        ...mockRoute,
+        params: {
+          user: {
+            ...mockRoute.params.user,
+            phoneNumber: '+918888888888',
+          },
+        },
+      };
+
+      rerender(
+        <NavigationContainer>
+          <Provider store={store}>
+            <IndividualChat
+              navigation={
+                mockNavigation as NativeStackNavigationProp<
+                  HomeStackParamList,
+                  'individualChat'
+                >
+              }
+              route={newMockRoute}
+            />
+          </Provider>
+        </NavigationContainer>,
+      );
+
+      await waitFor(() => {
+        expect(checkBlockStatus).toHaveBeenCalledTimes(2);
+        expect(checkBlockStatus).toHaveBeenLastCalledWith({
+          blockerPhoneNumber: '+919999999999',
+          blockedPhoneNumber: '+918888888888',
+          authToken: 'mock-auth-token',
+        });
+      });
+    });
   });
   test('Should render the header component with user details', async () => {
     (getMessagesBetween as jest.Mock).mockResolvedValueOnce({
@@ -121,9 +445,11 @@ describe('IndividualChat', () => {
         message: 'updated',
       },
     });
-    await waitFor(() => {
-      render(
-        <NavigationContainer>
+
+    render(
+      <NavigationContainer>
+        <Provider store={store}>
+
           <IndividualChat
             navigation={
               mockNavigation as NativeStackNavigationProp<
@@ -136,6 +462,10 @@ describe('IndividualChat', () => {
         </NavigationContainer>,
       );
     });
+        </Provider>
+      </NavigationContainer>,
+    );
+
     await waitFor(() => {
       const username = screen.getByA11yHint('username-text');
       expect(username).toBeTruthy();
@@ -180,15 +510,17 @@ describe('IndividualChat', () => {
     });
     render(
       <NavigationContainer>
-        <IndividualChat
-          navigation={
-            mockNavigation as NativeStackNavigationProp<
-              HomeStackParamList,
-              'individualChat'
-            >
-          }
-          route={mockRoute}
-        />
+        <Provider store={store}>
+          <IndividualChat
+            navigation={
+              mockNavigation as NativeStackNavigationProp<
+                HomeStackParamList,
+                'individualChat'
+              >
+            }
+            route={mockRoute}
+          />
+        </Provider>
       </NavigationContainer>,
     );
     const inputBox = screen.getByPlaceholderText('Type a message..');
@@ -217,15 +549,17 @@ describe('IndividualChat', () => {
 
     const {getByText} = render(
       <NavigationContainer>
-        <IndividualChat
-          navigation={
-            mockNavigation as NativeStackNavigationProp<
-              HomeStackParamList,
-              'individualChat'
-            >
-          }
-          route={mockRoute}
-        />
+        <Provider store={store}>
+          <IndividualChat
+            navigation={
+              mockNavigation as NativeStackNavigationProp<
+                HomeStackParamList,
+                'individualChat'
+              >
+            }
+            route={mockRoute}
+          />
+        </Provider>
       </NavigationContainer>,
     );
 
@@ -246,15 +580,17 @@ describe('IndividualChat', () => {
 
     const {getByPlaceholderText, getByText} = render(
       <NavigationContainer>
-        <IndividualChat
-          navigation={
-            mockNavigation as NativeStackNavigationProp<
-              HomeStackParamList,
-              'individualChat'
-            >
-          }
-          route={mockRoute}
-        />
+        <Provider store={store}>
+          <IndividualChat
+            navigation={
+              mockNavigation as NativeStackNavigationProp<
+                HomeStackParamList,
+                'individualChat'
+              >
+            }
+            route={mockRoute}
+          />
+        </Provider>
       </NavigationContainer>,
     );
 
@@ -301,15 +637,17 @@ describe('IndividualChat', () => {
     });
     const {getByText} = render(
       <NavigationContainer>
-        <IndividualChat
-          navigation={
-            mockNavigation as NativeStackNavigationProp<
-              HomeStackParamList,
-              'individualChat'
-            >
-          }
-          route={mockRoute}
-        />
+        <Provider store={store}>
+          <IndividualChat
+            navigation={
+              mockNavigation as NativeStackNavigationProp<
+                HomeStackParamList,
+                'individualChat'
+              >
+            }
+            route={mockRoute}
+          />
+        </Provider>
       </NavigationContainer>,
     );
     await waitFor(() => {
@@ -340,15 +678,17 @@ describe('IndividualChat', () => {
     });
     const {getByText} = render(
       <NavigationContainer>
-        <IndividualChat
-          navigation={
-            mockNavigation as NativeStackNavigationProp<
-              HomeStackParamList,
-              'individualChat'
-            >
-          }
-          route={mockRoute}
-        />
+        <Provider store={store}>
+          <IndividualChat
+            navigation={
+              mockNavigation as NativeStackNavigationProp<
+                HomeStackParamList,
+                'individualChat'
+              >
+            }
+            route={mockRoute}
+          />
+        </Provider>
       </NavigationContainer>,
     );
     await waitFor(() => {
@@ -383,15 +723,17 @@ describe('IndividualChat', () => {
     });
     const {queryByText} = render(
       <NavigationContainer>
-        <IndividualChat
-          navigation={
-            mockNavigation as NativeStackNavigationProp<
-              HomeStackParamList,
-              'individualChat'
-            >
-          }
-          route={mockRoute}
-        />
+        <Provider store={store}>
+          <IndividualChat
+            navigation={
+              mockNavigation as NativeStackNavigationProp<
+                HomeStackParamList,
+                'individualChat'
+              >
+            }
+            route={mockRoute}
+          />
+        </Provider>
       </NavigationContainer>,
     );
     await waitFor(() => {
@@ -422,15 +764,17 @@ describe('IndividualChat', () => {
     });
     const {queryByText, getByPlaceholderText} = render(
       <NavigationContainer>
-        <IndividualChat
-          navigation={
-            mockNavigation as NativeStackNavigationProp<
-              HomeStackParamList,
-              'individualChat'
-            >
-          }
-          route={mockRoute}
-        />
+        <Provider store={store}>
+          <IndividualChat
+            navigation={
+              mockNavigation as NativeStackNavigationProp<
+                HomeStackParamList,
+                'individualChat'
+              >
+            }
+            route={mockRoute}
+          />
+        </Provider>
       </NavigationContainer>,
     );
     await waitFor(() =>

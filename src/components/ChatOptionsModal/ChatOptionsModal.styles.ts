@@ -42,9 +42,9 @@ export const getStyles = (color: Colors) =>
       marginRight: 5,
     },
     blockImage: {
-      height: 28,
-      width: 28,
-      marginRight: 1,
+      height: 20,
+      width: 20,
+      marginRight: 5,
     },
     textContainer: {
       justifyContent: 'space-between',

@@ -1,12 +1,16 @@
 import {
+  act,
   fireEvent,
   render,
   screen,
   waitFor,
 } from '@testing-library/react-native';
 
-import { Platform } from 'react-native';
-import { IndividualChatHeader } from './IndividualChatHeader';
+import {Platform} from 'react-native';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import {Provider} from 'react-redux';
+import {store} from '../../store/store';
+import {IndividualChatHeader} from './IndividualChatHeader';
 const mockNavigate = jest.fn();
 const mockGoBack = jest.fn();
 jest.mock('@react-navigation/native', () => ({
@@ -16,14 +20,43 @@ jest.mock('@react-navigation/native', () => ({
     goBack: mockGoBack,
   }),
 }));
+jest.mock('react-native-encrypted-storage', () => ({
+  setItem: jest.fn(() => Promise.resolve()),
+  getItem: jest.fn(() => Promise.resolve(null)),
+  removeItem: jest.fn(() => Promise.resolve()),
+  clear: jest.fn(() => Promise.resolve()),
+}));
+
 describe('Test for IndividualChatHeader component', () => {
   const userDetails = {
     name: 'Chitty',
     profilePicture: '../../assets/user.png',
     phoneNumber: '',
+    isBlocked: false,
   };
   beforeEach(() => {
-    render(<IndividualChatHeader {...userDetails} />);
+    render(
+        <Provider store={store}>
+      <IndividualChatHeader onBlockStatusChange={() => {}} {...userDetails} />,
+        </Provider>
+    );
+    (EncryptedStorage.getItem as jest.Mock).mockImplementation(key => {
+      if (key === 'user') {
+        return Promise.resolve(
+          JSON.stringify({
+            firstName: 'test',
+            lastName: 'user',
+            email: 'testuser@gmail.com',
+            profilePhoto: '',
+            phoneNumber: '1234567890',
+          }),
+        );
+      }
+      if (key === 'authToken') {
+        return Promise.resolve('mock-token');
+      }
+      return Promise.resolve(null);
+    });
   });
   test('Should render the back arrow icon', () => {
     const backArrow = screen.getByA11yHint('back-arrow-icon');
@@ -67,11 +100,16 @@ describe('Platform-specific back arrow image tests', () => {
       get: () => 'ios',
     });
     render(
-      <IndividualChatHeader
-        name="Test"
-        profilePicture="someUri"
-        phoneNumber=""
-      />,
+      <Provider store={store}>
+        <IndividualChatHeader
+          name="Test"
+          profilePicture="someUri"
+          phoneNumber=""
+          isBlocked={false}
+          onBlockStatusChange={() => {}}
+        />
+        ,
+      </Provider>,
     );
     const backArrow = screen.getByA11yHint('back-arrow-icon');
     expect(backArrow.props.source).toEqual(
@@ -84,15 +122,70 @@ describe('Platform-specific back arrow image tests', () => {
       get: () => 'android',
     });
     render(
-      <IndividualChatHeader
-        name="Test"
-        profilePicture="someUri"
-        phoneNumber=""
-      />,
+      <Provider store={store}>
+        <IndividualChatHeader
+          name="Test"
+          profilePicture="someUri"
+          phoneNumber=""
+          isBlocked={false}
+          onBlockStatusChange={() => {}}
+        />
+        ,
+      </Provider>,
     );
     const backArrow = screen.getByA11yHint('back-arrow-icon');
     expect(backArrow.props.source).toEqual(
       require('../../../src/assets/AndroidBackArrowDark.png'),
     );
+  });
+
+  test('Should open modal when more options icon is pressed (modelVisible function)', async () => {
+    Object.defineProperty(Platform, 'OS', {
+      get: () => 'android',
+    });
+    const {queryByText} = render(
+      <Provider store={store}>
+        <IndividualChatHeader
+          name="Test"
+          profilePicture="someUri"
+          phoneNumber=""
+          isBlocked={false}
+          onBlockStatusChange={() => {}}
+        />
+        ,
+      </Provider>,
+    );
+    const moreOptionsIcon = screen.getByA11yHint('more-options-icon');
+    await act(async () => {
+      fireEvent.press(moreOptionsIcon);
+    });
+    await waitFor(() => {
+      expect(queryByText('Delete Chat')).toBeTruthy();
+    });
+  });
+
+  test('Should close modal when onClose function is called', async () => {
+    Object.defineProperty(Platform, 'OS', {
+      get: () => 'android',
+    });
+    const {queryByText} = render(
+      <Provider store={store}>
+        <IndividualChatHeader
+          name="Test"
+          profilePicture="someUri"
+          phoneNumber=""
+          isBlocked={false}
+          onBlockStatusChange={() => {}}
+        />
+        ,
+      </Provider>,
+    );
+    const closeButton = screen.getByA11yHint('back-arrow-icon');
+    await act(async () => {
+      fireEvent.press(closeButton);
+    });
+    await waitFor(() => {
+      expect(queryByText('Delete Chat')).toBeNull();
+    });
   });
 });
