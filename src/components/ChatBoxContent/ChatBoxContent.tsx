@@ -1,16 +1,19 @@
-import { View, Image, Text } from 'react-native';
+import { Image, Text, View } from 'react-native';
 import { DEFAULT_PROFILE_IMAGE } from '../../constants/defaultImage';
-import { getStyles } from './ChatBoxContent.styles';
 import { useThemeColors } from '../../themes/colors';
+import { MessageStatusTicks } from '../MessageStatusTicks/MessageStatusTicks';
+import { getStyles } from './ChatBoxContent.styles';
 
 export const ChatBoxContent = ({
     image,
     name,
     description,
+    status,
 }: {
-    image?: string;
+    image?: string | null;
     name: string;
     description: string;
+    status?: 'sent' | 'delivered' | 'read'
 }) => {
 
     const colors = useThemeColors();
@@ -32,7 +35,7 @@ export const ChatBoxContent = ({
                     numberOfLines={1}
                     ellipsizeMode="tail"
                 >
-                    {description}</Text>
+                   {status && <MessageStatusTicks status={status} />}{description}</Text>
             </View>
         </View>
     );
