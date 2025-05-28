@@ -2,22 +2,30 @@ import Sodium from 'react-native-libsodium';
 
 export const messageEncryption = async ({
   message,
-  secretKey,
+  myPrivateKey,
+  recipientPublicKey,
 }: {
   message: string;
-  secretKey: string;
+  myPrivateKey: string;
+  recipientPublicKey: string;
 }) => {
   try {
     const nonce = await Sodium.randombytes_buf(24);
-    const keyBytes = Sodium.from_base64(secretKey);
-    const encryptedMessage = await Sodium.crypto_secretbox_easy(
-      message,
+    const messageBytes = new TextEncoder().encode(message);
+    const myPrivateKeyBytes = await Sodium.from_base64(myPrivateKey);
+    const recipientPublicKeyBytes = await Sodium.from_base64(
+      recipientPublicKey,
+    );
+
+    const encryptedMessage = await Sodium.crypto_box_easy(
+      messageBytes,
       nonce,
-      keyBytes,
+      recipientPublicKeyBytes,
+      myPrivateKeyBytes,
     );
     return JSON.stringify({
-      nonce: Sodium.to_base64(nonce),
-      encrypted: Sodium.to_base64(encryptedMessage),
+      nonce: await Sodium.to_base64(nonce),
+      encrypted: await Sodium.to_base64(encryptedMessage),
     });
   } catch (error) {
     throw new Error(
