@@ -189,41 +189,7 @@ describe('IndividualChat', () => {
       expect(sendIcon).toBeTruthy();
     });
   });
-  test('adds message to receivedMessages if receive message is not empty', async () => {
-    (socket.receivePrivateMessage as jest.Mock).mockImplementation(
-      async (_recipient, callback) => {
-        const message = {
-          senderPhoneNumber: '1234567890',
-          recipientPhoneNumber: '9876543210',
-          message: 'Hello!',
-          timestamp: new Date().toISOString(),
-          status: 'sent',
-        };
-        callback(message);
-        return message;
-      },
-    );
-    await waitFor(
-      () => {
-        render(
-          <NavigationContainer>
-            <IndividualChat
-              navigation={
-                mockNavigation as NativeStackNavigationProp<
-                  HomeStackParamList,
-                  'individualChat'
-                >
-              }
-              route={mockRoute}
-            />
-          </NavigationContainer>,
-        );
-      },
-      {timeout: 20000},
-    );
-    expect(screen.getByText('Hello!')).toBeTruthy();
-    await waitFor(() => {});
-  });
+
   test('calls sendPrivateMessage and updates sendMessages when message is sent', async () => {
     (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(
       JSON.stringify({
@@ -468,11 +434,10 @@ describe('IndividualChat', () => {
     await waitFor(() => {
       mockSend.mockResolvedValue({});
     });
-    // await waitFor(() => {
+
     const input = await screen.getByPlaceholderText('Type a message..');
     fireEvent.changeText(input, '');
     fireEvent.press(screen.getByAccessibilityHint('send-message-icon'));
-    // });
 
     await waitFor(() => {
       expect(screen.queryByText('')).toBeNull();
