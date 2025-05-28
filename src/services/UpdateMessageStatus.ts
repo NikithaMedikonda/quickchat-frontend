@@ -3,7 +3,7 @@ import { API_URL } from '../constants/api';
 export const updateMessageStatus = async (payload: {
   senderPhoneNumber: string;
   receiverPhoneNumber: string;
-  timestamp: string;
+  timestamp: number;
   previousStatus: string;
   currentStatus: string;
 }) => {
@@ -17,7 +17,7 @@ export const updateMessageStatus = async (payload: {
     currentStatus,
   };
   const messages = await fetch(`${API_URL}/api/messages/status`, {
-    method: 'POST',
+    method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
       authorization: `Bearer ${token}`,
