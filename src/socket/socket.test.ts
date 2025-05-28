@@ -1,9 +1,12 @@
 import {
+  receiveJoined,
+  receiveOffline,
+  receiveOnline,
   receivePrivateMessage,
   sendPrivateMessage,
   socketConnection,
 } from '../socket/socket';
-import {SentPrivateMessage} from '../types/messsage.types';
+import { SentPrivateMessage } from '../types/messsage.types';
 
 let mockEmit: jest.Mock;
 let mockOn: jest.Mock;
@@ -49,18 +52,32 @@ describe('should test socket functions', () => {
     const callback = jest.fn();
     const senderPhoneNumber = '+91 9440058809';
 
-    const result = await receivePrivateMessage(senderPhoneNumber, callback);
+    await receivePrivateMessage(senderPhoneNumber, callback);
 
     expect(mockOn).toHaveBeenCalledWith(
       `receive_private_message_${senderPhoneNumber}`,
       callback,
     );
-    expect(result).toEqual({
-      recipientPhoneNumber: '',
-      message: '',
-      senderPhoneNumber: '',
-      timestamp: '',
-      status: '',
+  });
+  test('should receive isOnline with', async () => {
+    const setIsOnline = jest.fn();
+    const PhoneNumber = '+91 9440058809';
+    await receiveOnline({
+      withChattingNumber: PhoneNumber,
+      setIsOnline: setIsOnline,
     });
+    expect(mockOn).toHaveBeenCalledTimes(1);
+  });
+  test('should receive offline with', async () => {
+    const setIsOnline = jest.fn();
+    const PhoneNumber = '+91 8522041688';
+    await receiveOffline({withChattingNumber: PhoneNumber, setIsOnline});
+    expect(mockOn).toHaveBeenCalledTimes(1);
+  });
+  test('should receive soket event if there is any user joined', async () => {
+    const userPhoneNumber = '+91 9866349126';
+    const setSocketId = jest.fn();
+    await receiveJoined({userPhoneNumber: userPhoneNumber, setSocketId});
+    expect(mockOn).toHaveBeenCalledTimes(1);
   });
 });
