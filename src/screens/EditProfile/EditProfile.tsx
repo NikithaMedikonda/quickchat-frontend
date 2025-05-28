@@ -43,7 +43,7 @@ export const BackButton = () => {
       onPress={() => profileNavigation.navigate('profileScreen')}>
       <Image
         source={Platform.OS === 'android' ? androidBackArrow : iOSBackArrow}
-        accessibilityHint="back-arrow-icon"
+        accessibilityHint="back-arrow-image"
         style={styles.backArrow}
       />
     </TouchableOpacity>
@@ -269,9 +269,11 @@ export const EditProfile = () => {
         ))}
         <View style={styles.buttonRow}>
           <TouchableOpacity
+          accessibilityHint="Save-button"
+           accessibilityState={{ disabled: !isFormChanged }}
             style={[
               styles.touchableButton,
-              !isFormChanged && {opacity: 0.5},
+              !isFormChanged && styles.touchableButtonDisabled,
             ]}
             onPress={handleSave}
             disabled={!isFormChanged}>
