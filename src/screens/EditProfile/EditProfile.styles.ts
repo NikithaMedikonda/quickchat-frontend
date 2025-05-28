@@ -66,6 +66,9 @@ export const getStyles = (colors: Colors) =>
       flex: 0,
       width: '48%',
     },
+    touchableButtonDisabled: {
+      opacity: 0.5,
+    },
     buttonText: {
       color: colors.buttonText,
       fontWeight: '600',
