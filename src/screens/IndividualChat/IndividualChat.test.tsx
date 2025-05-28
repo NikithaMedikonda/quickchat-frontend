@@ -459,9 +459,6 @@ describe('IndividualChat', () => {
             }
             route={mockRoute}
           />
-        </NavigationContainer>,
-      );
-    });
         </Provider>
       </NavigationContainer>,
     );
