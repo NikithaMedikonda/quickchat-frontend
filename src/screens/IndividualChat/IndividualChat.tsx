@@ -41,8 +41,7 @@ type Props = NativeStackScreenProps<HomeStackParamList, 'individualChat'>;
 export const IndividualChat = ({route}: Props) => {
   const dispatch = useDispatch();
   const {alertType, alertTitle, alertMessage} = useSelector(
-    (state: RootState) => state.registration,
-  );
+    (state: RootState) => state.registration,);
   const [messages, setMessage] = useState('');
   const [isBlocked, setIsUserBlocked] = useState(false);
   const [receivedMessages, setReceivedMessages] = useState<
@@ -56,7 +55,6 @@ export const IndividualChat = ({route}: Props) => {
   const currentUserPhoneNumberRef = useRef<string>('');
   const [allMessages, setAllMessages] = useState<AllMessages[]>([]);
   const user = route.params.user;
-  dispatch(setReceivePhoneNumber(user.phoneNumber));
   const recipientPhoneNumber = user.phoneNumber;
   const colors = useThemeColors();
   const styles = individualChatStyles(colors);
@@ -81,6 +79,10 @@ export const IndividualChat = ({route}: Props) => {
     },
     [dispatch],
   );
+   useEffect(() => {
+    dispatch(setReceivePhoneNumber(user.phoneNumber));
+  }, [dispatch, user.phoneNumber]);
+
 
   useEffect(() => {
     const getBlockStatus = async () => {
