@@ -84,13 +84,15 @@ describe('AllChats Component', () => {
       data: {chats: []},
     });
 
-    render(
-      <Provider store={store}>
-        <NavigationContainer>
-          <AllChats />
-        </NavigationContainer>
-      </Provider>,
-    );
+    await waitFor(() => {
+      render(
+        <Provider store={store}>
+          <NavigationContainer>
+            <AllChats />
+          </NavigationContainer>
+        </Provider>,
+      );
+    });
 
     await waitFor(() => {
       expect(mockSetOptions).toHaveBeenCalledWith(
@@ -103,36 +105,40 @@ describe('AllChats Component', () => {
   });
 
   it('should logout and redirect if numberNameIndex returns null', async () => {
-  (numberNameIndex as jest.Mock).mockResolvedValue(null);
+    (numberNameIndex as jest.Mock).mockResolvedValue(null);
 
-  render(
-    <Provider store={store}>
-      <NavigationContainer>
-        <AllChats />
-      </NavigationContainer>
-    </Provider>,
-  );
+     await waitFor(() => {
+      render(
+        <Provider store={store}>
+          <NavigationContainer>
+            <AllChats />
+          </NavigationContainer>
+        </Provider>,
+      );
+    });
 
-  await waitFor(() => {
-    const state = store.getState();
-    expect(state.registration.alertType).toBe('error');
-    expect(state.registration.alertMessage).toBe('Please login again.');
-    jest.advanceTimersByTime(1000);
-    expect(mockReplace).toHaveBeenCalledWith('login');
+    await waitFor(() => {
+      const state = store.getState();
+      expect(state.registration.alertType).toBe('error');
+      expect(state.registration.alertMessage).toBe('Please login again.');
+      jest.advanceTimersByTime(1000);
+      expect(mockReplace).toHaveBeenCalledWith('login');
+    });
   });
-});
 
   it('should logout and redirect to login on 401 response', async () => {
     (numberNameIndex as jest.Mock).mockResolvedValue({});
     (getAllChats as jest.Mock).mockResolvedValue({status: 401});
 
-    render(
-      <Provider store={store}>
-        <NavigationContainer>
-          <AllChats />
-        </NavigationContainer>
-      </Provider>,
-    );
+    await waitFor(() => {
+      render(
+        <Provider store={store}>
+          <NavigationContainer>
+            <AllChats />
+          </NavigationContainer>
+        </Provider>,
+      );
+    });
 
     await waitFor(() => {
       const state = store.getState();
@@ -150,13 +156,15 @@ describe('AllChats Component', () => {
       data: {chats: emptyChats},
     });
 
-    render(
-      <Provider store={store}>
-        <NavigationContainer>
-          <AllChats />
-        </NavigationContainer>
-      </Provider>,
-    );
+     await waitFor(() => {
+      render(
+        <Provider store={store}>
+          <NavigationContainer>
+            <AllChats />
+          </NavigationContainer>
+        </Provider>,
+      );
+    });
 
     await waitFor(() => {
       expect(
@@ -174,13 +182,15 @@ describe('AllChats Component', () => {
       data: {chats: mockChats},
     });
 
-    render(
-      <Provider store={store}>
-        <NavigationContainer>
-          <AllChats />
-        </NavigationContainer>
-      </Provider>,
-    );
+     await waitFor(() => {
+      render(
+        <Provider store={store}>
+          <NavigationContainer>
+            <AllChats />
+          </NavigationContainer>
+        </Provider>,
+      );
+    });
 
     await waitFor(() => {
       const profileImage = screen.getAllByAccessibilityHint('profile-image');
@@ -203,14 +213,15 @@ describe('AllChats Component', () => {
       data: {chats: mockChats},
     });
 
-    render(
-      <Provider store={store}>
-        <NavigationContainer>
-          <AllChats />
-        </NavigationContainer>
-      </Provider>,
-    );
-
+    await waitFor(() => {
+      render(
+        <Provider store={store}>
+          <NavigationContainer>
+            <AllChats />
+          </NavigationContainer>
+        </Provider>,
+      );
+    });
     await waitFor(() => {
       expect(screen.getByText('+1234567890')).toBeTruthy();
     });
@@ -226,27 +237,30 @@ describe('AllChats Component', () => {
   });
 
   it('should render plus icon for adding new chats', async () => {
-    render(
-      <Provider store={store}>
-        <NavigationContainer>
-          <AllChats />
-        </NavigationContainer>
-      </Provider>,
-    );
-
+     await waitFor(() => {
+      render(
+        <Provider store={store}>
+          <NavigationContainer>
+            <AllChats />
+          </NavigationContainer>
+        </Provider>,
+      );
+    });
     await waitFor(() => {
       expect(screen.getByAccessibilityHint('plus-image')).toBeTruthy();
     });
   });
 
   it('should navigate to contacts when plus icon is pressed', async () => {
-    render(
-      <Provider store={store}>
-        <NavigationContainer>
-          <AllChats />
-        </NavigationContainer>
-      </Provider>,
-    );
+    await waitFor(() => {
+      render(
+        <Provider store={store}>
+          <NavigationContainer>
+            <AllChats />
+          </NavigationContainer>
+        </Provider>,
+      );
+    });
 
     await waitFor(() => {
       const plusIcon = screen.getByAccessibilityHint('plus-image');
@@ -263,13 +277,15 @@ describe('AllChats Component', () => {
       data: {chats: mockChats},
     });
 
-    render(
-      <Provider store={store}>
-        <NavigationContainer>
-          <AllChats />
-        </NavigationContainer>
-      </Provider>,
-    );
+      await waitFor(() => {
+      render(
+        <Provider store={store}>
+          <NavigationContainer>
+            <AllChats />
+          </NavigationContainer>
+        </Provider>,
+      );
+    });
 
     await waitFor(() => {
       expect(
