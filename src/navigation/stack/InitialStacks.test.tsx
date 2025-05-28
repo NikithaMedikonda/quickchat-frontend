@@ -1,16 +1,20 @@
+import { NavigationContainer } from '@react-navigation/native';
+import { render, waitFor } from '@testing-library/react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {NavigationContainer} from '@react-navigation/native';
-import {Provider} from 'react-redux';
-import {render, waitFor} from '@testing-library/react-native';
-import {InitialStacks} from './InitialStacks';
-import {store} from '../../store/store';
+import { Provider } from 'react-redux';
+import { store } from '../../store/store';
+import { InitialStacks } from './InitialStacks';
 
 global.fetch = jest.fn();
 
 const fetchMock = fetch as jest.Mock;
 
 jest.mock('react-native-encrypted-storage', () => ({
-  getItem: jest.fn(),
+  getItem: jest
+    .fn()
+    .mockResolvedValue(
+      JSON.stringify({name: 'Mamatha', phoneNumber: '+91 6303974914'}),
+    ),
   setItem: jest.fn(),
   clear: jest.fn(),
 }));
@@ -25,9 +29,17 @@ jest.mock('react-native-fs', () => ({
 }));
 jest.mock('react-native-contacts', () => ({
   getContactsByPhoneNumber: jest.fn(),
+  getAllWithoutPhotos: jest.fn().mockResolvedValue([]),
 }));
+
 jest.mock('../../permissions/ImagePermissions', () => ({
   requestPermissions: jest.fn(),
+}));
+
+jest.mock('../../helpers/nameNumberIndex', () => ({
+  numberNameIndex: jest.fn().mockResolvedValue({
+    '+916303961097': 'Test User',
+  }),
 }));
 
 jest.mock('react-native-phone-input', () => {
@@ -51,7 +63,9 @@ jest.mock('react-native-phone-input', () => {
 
 jest.mock('react-native-libsodium', () => ({
   crypto_box_keypair: jest.fn(),
-  to_base64: jest.fn((input: Uint8Array) => Buffer.from(input).toString('base64')),
+  to_base64: jest.fn((input: Uint8Array) =>
+    Buffer.from(input).toString('base64'),
+  ),
   crypto_generichash: jest.fn(() => new Uint8Array(32).fill(1)),
   crypto_secretbox_easy: jest.fn(() => new Uint8Array(64).fill(2)),
   randombytes_buf: jest.fn(() => new Uint8Array(24).fill(3)),
