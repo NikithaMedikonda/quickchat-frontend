@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, Text} from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 interface Props {
   status: 'sent' | 'delivered' | 'read' | string;
 }
@@ -18,7 +18,7 @@ export const MessageStatusTicks = ({status}: Props) => {
 const styles = StyleSheet.create({
   tick: {
     fontSize: 12,
-    color: '#FFFFFf',
+    color: '#A9A9A9',
     marginLeft: 4,
   },
   readTick: {
