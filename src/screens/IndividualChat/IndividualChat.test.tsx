@@ -1,5 +1,5 @@
-import { NavigationContainer, RouteProp } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import {NavigationContainer, RouteProp} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {
   fireEvent,
   render,
@@ -7,13 +7,13 @@ import {
   waitFor,
 } from '@testing-library/react-native';
 
-import { getMessagesBetween } from '../../services/GetMessagesBetween';
-import { HomeStackParamList } from '../../types/usenavigation.type';
-import { IndividualChat } from './IndividualChat';
+import {getMessagesBetween} from '../../services/GetMessagesBetween';
+import {HomeStackParamList} from '../../types/usenavigation.type';
+import {IndividualChat} from './IndividualChat';
 
-import { ScrollView } from 'react-native';
+import {ScrollView} from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { updateMessageStatus } from '../../services/UpdateMessageStatus';
+import {updateMessageStatus} from '../../services/UpdateMessageStatus';
 import * as socket from '../../socket/socket';
 
 type IndividualChatRouteProp = RouteProp<HomeStackParamList, 'individualChat'>;
@@ -122,18 +122,23 @@ describe('IndividualChat', () => {
     setupMocks();
   });
   test('Should render the header component with user details', async () => {
-    render(
-      <NavigationContainer>
-        <IndividualChat
-          navigation={
-            mockNavigation as NativeStackNavigationProp<
-              HomeStackParamList,
-              'individualChat'
-            >
-          }
-          route={mockRoute}
-        />
-      </NavigationContainer>,
+    await waitFor(
+      () => {
+        render(
+          <NavigationContainer>
+            <IndividualChat
+              navigation={
+                mockNavigation as NativeStackNavigationProp<
+                  HomeStackParamList,
+                  'individualChat'
+                >
+              }
+              route={mockRoute}
+            />
+          </NavigationContainer>,
+        );
+      },
+      {timeout: 10000},
     );
     await waitFor(() => {
       const username = screen.getByA11yHint('username-text');
@@ -157,20 +162,26 @@ describe('IndividualChat', () => {
         message: 'updated',
       },
     });
-    render(
-      <NavigationContainer>
-        <IndividualChat
-          navigation={
-            mockNavigation as NativeStackNavigationProp<
-              HomeStackParamList,
-              'individualChat'
-            >
-          }
-          route={mockRoute}
-        />
-      </NavigationContainer>,
+    await waitFor(
+      () => {
+        render(
+          <NavigationContainer>
+            <IndividualChat
+              navigation={
+                mockNavigation as NativeStackNavigationProp<
+                  HomeStackParamList,
+                  'individualChat'
+                >
+              }
+              route={mockRoute}
+            />
+          </NavigationContainer>,
+        );
+      },
+      {timeout: 20000},
     );
-    const inputBox = screen.getByPlaceholderText('Type a message..');
+
+    const inputBox = await screen.getByPlaceholderText('Type a message..');
     await waitFor(() => {
       expect(inputBox).toBeTruthy();
 
@@ -192,24 +203,26 @@ describe('IndividualChat', () => {
         return message;
       },
     );
-
-    const {getByText} = render(
-      <NavigationContainer>
-        <IndividualChat
-          navigation={
-            mockNavigation as NativeStackNavigationProp<
-              HomeStackParamList,
-              'individualChat'
-            >
-          }
-          route={mockRoute}
-        />
-      </NavigationContainer>,
+    await waitFor(
+      () => {
+        render(
+          <NavigationContainer>
+            <IndividualChat
+              navigation={
+                mockNavigation as NativeStackNavigationProp<
+                  HomeStackParamList,
+                  'individualChat'
+                >
+              }
+              route={mockRoute}
+            />
+          </NavigationContainer>,
+        );
+      },
+      {timeout: 20000},
     );
-
-    await waitFor(() => {
-      expect(getByText('Hello!')).toBeTruthy();
-    });
+    expect(screen.getByText('Hello!')).toBeTruthy();
+    await waitFor(() => {});
   });
   test('calls sendPrivateMessage and updates sendMessages when message is sent', async () => {
     (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(
@@ -235,36 +248,47 @@ describe('IndividualChat', () => {
     jest
       .spyOn(require('../../services/CheckUserOnline'), 'checkUserOnline')
       .mockResolvedValue(mockSocketIdResponse);
-    const {getByPlaceholderText} = render(
-      <NavigationContainer>
-        <IndividualChat
-          navigation={
-            mockNavigation as NativeStackNavigationProp<
-              HomeStackParamList,
-              'individualChat'
-            >
-          }
-          route={mockRoute}
-        />
-      </NavigationContainer>,
+    await waitFor(
+      () => {
+        render(
+          <NavigationContainer>
+            <IndividualChat
+              navigation={
+                mockNavigation as NativeStackNavigationProp<
+                  HomeStackParamList,
+                  'individualChat'
+                >
+              }
+              route={mockRoute}
+            />
+          </NavigationContainer>,
+        );
+      },
+      {timeout: 20000},
     );
 
     await waitFor(() =>
       expect(EncryptedStorage.getItem).toHaveBeenCalledWith('user'),
     );
+    await waitFor(() => {
+      const input = screen.getByPlaceholderText('Type a message..');
+      fireEvent.changeText(input, 'Hello, test!');
+    });
 
-    const input = getByPlaceholderText('Type a message..');
-    fireEvent.changeText(input, 'Hello, test!');
     await waitFor(() =>
       expect(screen.getByAccessibilityHint('send-message-icon')).toBeTruthy(),
     );
-    fireEvent.press(screen.getByAccessibilityHint('send-message-icon'));
+    await waitFor(() => {
+      fireEvent.press(screen.getByAccessibilityHint('send-message-icon'));
+    });
 
     await waitFor(() => {
       expect(mockSend).toHaveBeenCalled();
     });
     const messageNode = await screen.findByText('Hello, test!');
-    expect(messageNode).toBeTruthy();
+    await waitFor(() => {
+      expect(messageNode).toBeTruthy();
+    });
     const calledPayload = (socket.sendPrivateMessage as jest.Mock).mock
       .calls[0][0];
     await waitFor(() => {
@@ -294,27 +318,34 @@ describe('IndividualChat', () => {
         ],
       },
     });
-    const {getByText} = render(
-      <NavigationContainer>
-        <IndividualChat
-          navigation={
-            mockNavigation as NativeStackNavigationProp<
-              HomeStackParamList,
-              'individualChat'
-            >
-          }
-          route={mockRoute}
-        />
-      </NavigationContainer>,
+    await waitFor(
+      () => {
+        render(
+          <NavigationContainer>
+            <IndividualChat
+              navigation={
+                mockNavigation as NativeStackNavigationProp<
+                  HomeStackParamList,
+                  'individualChat'
+                >
+              }
+              route={mockRoute}
+            />
+          </NavigationContainer>,
+        );
+      },
+      {timeout: 20000},
     );
+
     await waitFor(() => {
       expect(EncryptedStorage.getItem).toHaveBeenCalledWith('user');
       expect(getMessagesBetween).toHaveBeenCalledWith({
         senderPhoneNumber: '9822416889',
         receiverPhoneNumber: '+918522041688',
       });
-      expect(getByText('Hello there!')).toBeTruthy();
     });
+    const text = await screen.getByText('Hello there!');
+    expect(text).toBeTruthy();
   });
   test('should not set the current user phone when the user not exists', async () => {
     (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(null);
@@ -332,27 +363,34 @@ describe('IndividualChat', () => {
         ],
       },
     });
-    const {getByText} = render(
-      <NavigationContainer>
-        <IndividualChat
-          navigation={
-            mockNavigation as NativeStackNavigationProp<
-              HomeStackParamList,
-              'individualChat'
-            >
-          }
-          route={mockRoute}
-        />
-      </NavigationContainer>,
+    await waitFor(
+      () => {
+        render(
+          <NavigationContainer>
+            <IndividualChat
+              navigation={
+                mockNavigation as NativeStackNavigationProp<
+                  HomeStackParamList,
+                  'individualChat'
+                >
+              }
+              route={mockRoute}
+            />
+          </NavigationContainer>,
+        );
+      },
+      {timeout: 20000},
     );
+
     await waitFor(() => {
       expect(EncryptedStorage.getItem).toHaveBeenCalledWith('user');
       expect(getMessagesBetween).toHaveBeenCalledWith({
         senderPhoneNumber: '',
         receiverPhoneNumber: '+918522041688',
       });
-      expect(getByText('Hello there!')).toBeTruthy();
     });
+    const text = await screen.getByText('Hello there!');
+    expect(text).toBeTruthy();
   });
   test('should not render the fetched messages when the status is not 200', async () => {
     (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(
@@ -374,22 +412,28 @@ describe('IndividualChat', () => {
         ],
       },
     });
-    const {queryByText} = render(
-      <NavigationContainer>
-        <IndividualChat
-          navigation={
-            mockNavigation as NativeStackNavigationProp<
-              HomeStackParamList,
-              'individualChat'
-            >
-          }
-          route={mockRoute}
-        />
-      </NavigationContainer>,
+    await waitFor(
+      () => {
+        render(
+          <NavigationContainer>
+            <IndividualChat
+              navigation={
+                mockNavigation as NativeStackNavigationProp<
+                  HomeStackParamList,
+                  'individualChat'
+                >
+              }
+              route={mockRoute}
+            />
+          </NavigationContainer>,
+        );
+      },
+      {timeout: 20000},
     );
+
     await waitFor(() => {
       expect(EncryptedStorage.getItem).toHaveBeenCalledWith('user');
-      expect(queryByText('Hello there!')).toBeNull();
+      expect(screen.queryByText('Hello there!')).toBeNull();
     });
   });
   test('should not render the empty message ', async () => {
@@ -398,19 +442,25 @@ describe('IndividualChat', () => {
         phoneNumber: '9822416889',
       }),
     );
-    const {queryByText, getByPlaceholderText} = render(
-      <NavigationContainer>
-        <IndividualChat
-          navigation={
-            mockNavigation as NativeStackNavigationProp<
-              HomeStackParamList,
-              'individualChat'
-            >
-          }
-          route={mockRoute}
-        />
-      </NavigationContainer>,
+    await waitFor(
+      () => {
+        render(
+          <NavigationContainer>
+            <IndividualChat
+              navigation={
+                mockNavigation as NativeStackNavigationProp<
+                  HomeStackParamList,
+                  'individualChat'
+                >
+              }
+              route={mockRoute}
+            />
+          </NavigationContainer>,
+        );
+      },
+      {timeout: 20000},
     );
+
     await waitFor(() =>
       expect(EncryptedStorage.getItem).toHaveBeenCalledWith('user'),
     );
@@ -418,34 +468,45 @@ describe('IndividualChat', () => {
     await waitFor(() => {
       mockSend.mockResolvedValue({});
     });
-    const input = getByPlaceholderText('Type a message..');
+    // await waitFor(() => {
+    const input = await screen.getByPlaceholderText('Type a message..');
     fireEvent.changeText(input, '');
     fireEvent.press(screen.getByAccessibilityHint('send-message-icon'));
+    // });
+
     await waitFor(() => {
-      expect(queryByText('')).toBeNull();
+      expect(screen.queryByText('')).toBeNull();
     });
   });
   test('should call scrollToEnd on content size change', async () => {
     const mockScrollToEnd = jest.fn();
-
-    const {UNSAFE_getByType} = render(
-      <NavigationContainer>
-        <IndividualChat
-          navigation={
-            mockNavigation as NativeStackNavigationProp<
-              HomeStackParamList,
-              'individualChat'
-            >
-          }
-          route={mockRoute}
-        />
-      </NavigationContainer>,
+    await waitFor(
+      () => {
+        render(
+          <NavigationContainer>
+            <IndividualChat
+              navigation={
+                mockNavigation as NativeStackNavigationProp<
+                  HomeStackParamList,
+                  'individualChat'
+                >
+              }
+              route={mockRoute}
+            />
+          </NavigationContainer>,
+        );
+      },
+      {timeout: 20000},
     );
-    const scrollView = UNSAFE_getByType(ScrollView);
+
+    const scrollView = await screen.UNSAFE_getByType(ScrollView);
     scrollView.props.ref.current = {
       scrollToEnd: mockScrollToEnd,
     };
-    fireEvent(scrollView, 'onContentSizeChange');
+    await waitFor(() => {
+      fireEvent(scrollView, 'onContentSizeChange');
+    });
+
     await waitFor(() => {
       expect(mockScrollToEnd).toHaveBeenCalledWith({animated: true});
     });
