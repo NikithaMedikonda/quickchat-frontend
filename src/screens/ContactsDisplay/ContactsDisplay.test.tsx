@@ -1,4 +1,5 @@
-import {useNavigation} from '@react-navigation/native';
+import Contacts from 'react-native-contacts';
+
 import {
   cleanup,
   fireEvent,
@@ -6,13 +7,17 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react-native';
-import Contacts from 'react-native-contacts';
+import {useNavigation} from '@react-navigation/native';
 import {Provider} from 'react-redux';
 import {getContacts} from '../../services/GetContacts';
 import {resetForm} from '../../store/slices/registrationSlice';
 import {store} from '../../store/store';
-import {useThemeColors} from '../../themes/colors';
 import {ContactsDisplay} from './ContactsDisplay';
+import {nameNumberIndex} from '../../helpers/nameNumberIndex';
+import {useThemeColors} from '../../themes/colors';
+import {useImagesColors} from '../../themes/images';
+import {Platform} from 'react-native';
+jest.setTimeout(10000);
 
 jest.mock('@react-navigation/native', () => ({
   useNavigation: jest.fn(),
@@ -23,8 +28,30 @@ jest.mock('react-native-contacts', () => ({
   getContactsByPhoneNumber: jest.fn(),
 }));
 
+jest.mock('react-native-encrypted-storage', () => ({
+  getItem: jest.fn(),
+  setItem: jest.fn(),
+  removeItem: jest.fn(),
+}));
+
 jest.mock('../../services/GetContacts', () => ({
   getContacts: jest.fn(),
+}));
+
+jest.mock('react-native-encrypted-storage', () => ({
+  getItem: jest.fn(),
+  setItem: jest.fn(),
+  removeItem: jest.fn(),
+}));
+
+jest.mock('../../helpers/nameNumberIndex', () => ({
+  nameNumberIndex: jest.fn(),
+}));
+
+jest.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (str: string) => str,
+  }),
 }));
 
 jest.mock('react-native-alert-notification', () => ({
@@ -37,139 +64,135 @@ jest.mock('react-native-alert-notification', () => ({
   AlertNotificationRoot: ({children}: {children: React.ReactNode}) => children,
 }));
 
-describe('ContactsDisplay Component', () => {
+describe('Tests for ContactsDisplay Component', () => {
+  let mockNavigation: any;
+  const {androidBackArrow, iOSBackArrow} = useImagesColors();
+
   const renderComponent = () => {
     render(
       <Provider store={store}>
-          <ContactsDisplay />
+        <ContactsDisplay />
       </Provider>,
     );
   };
-
-  let mockNavigation: any;
-  beforeEach(() => {
-    mockNavigation = {setOptions: jest.fn(), navigate: jest.fn()};
+  beforeEach(async () => {
+    jest.clearAllMocks();
+    mockNavigation = {
+      setOptions: jest.fn(),
+      navigate: jest.fn(),
+      goBack: jest.fn(),
+    };
     (useNavigation as jest.Mock).mockReturnValue(mockNavigation);
     store.dispatch(resetForm());
+    store.dispatch({type: 'RESET_STORE'});
+
+    (getContacts as jest.Mock).mockReset();
+    (nameNumberIndex as jest.Mock).mockReset();
+    (Contacts.getContactsByPhoneNumber as jest.Mock).mockReset();
   });
 
   afterEach(() => {
     cleanup();
+    jest.clearAllMocks();
   });
-
-  it('should render loading state initially', async () => {
-    (getContacts as jest.Mock).mockResolvedValue({
-      data: {
-        registeredUsers: [],
-        unRegisteredUsers: [],
-      },
-    });
-    renderComponent();
-    await waitFor(() => {
-      expect(screen.getByText('Loading Contacts...')).toBeTruthy();
-    });
-  });
-
-  it('should display contacts when data is fetched', async () => {
-    const mockAppContacts = [
-      {
-        name: 'Usha',
-        phoneNumber: '12345',
-        profilePicture: '',
-        toBeInvited: false,
-      },
-    ];
-
-    const mockPhoneContacts = [
-      {
-        name: 'Usha1',
-        phoneNumber: '67890',
-        profilePicture: '',
-        toBeInvited: true,
-      },
-    ];
-    await waitFor(() => {
-      renderComponent();
-    });
-
-    (getContacts as jest.Mock).mockResolvedValue({
-      data: {
-        registeredUsers: mockAppContacts,
-        unRegisteredUsers: [mockPhoneContacts[0].phoneNumber],
-      },
-    });
-
-    (Contacts.getContactsByPhoneNumber as jest.Mock).mockResolvedValue([
-      {givenName: 'Usha', displayName: 'Usha'},
-    ]);
-
-    await waitFor(() => {
-      expect(screen.getByText('Contacts on Quick Chat')).toBeTruthy();
-      expect(screen.getByText('Invite to Quick Chat')).toBeTruthy();
-    });
-  });
-
-  it('should show no contacts message when no app contacts are available', async () => {
-    (getContacts as jest.Mock).mockResolvedValue({
-      data: {
-        registeredUsers: [],
-        unRegisteredUsers: [],
-      },
-    });
-    await waitFor(() => {
-      renderComponent();
-    });
-    await waitFor(() => {
-      expect(
-        screen.getByText(
-          `It's so sad that, we have no one on Quick Chat. Share about Quick Chat`,
-        ),
-      ).toBeTruthy();
-    });
-  });
-
   it('should show no phone contacts message when no phone contacts are available', async () => {
     (getContacts as jest.Mock).mockResolvedValue({
-      data: {
-        registeredUsers: [],
-        unRegisteredUsers: [],
+      registeredUsers: [],
+      unRegisteredUsers: [],
+    });
+    renderComponent();
+    await waitFor(
+      () => {
+        expect(screen.queryByTestId('loader')).toBeNull();
       },
-    });
-    await waitFor(() => {
-      renderComponent();
-    });
+      {timeout: 5000},
+    );
     await waitFor(() => {
       expect(
         screen.getByText(
-          "It's good to see that, all of your contact are onuick Chat.",
+          "It's good to see that, all of your contact are onquick Chat.",
+        ),
+      ).toBeTruthy();
+      expect(
+        screen.getByText(
+          "It's so sad that, we have no one on Quick Chat. Share about Quick Chat",
         ),
       ).toBeTruthy();
     });
   });
 
-  it('should use "unknown" as name if givenName is missing', async () => {
-    (getContacts as jest.Mock).mockResolvedValue({
-      data: {
-        registeredUsers: [],
-        unRegisteredUsers: ['67890'],
-      },
+  it('should render contacts screen after successful fetch', async () => {
+    const mockContacts = {
+      registeredUsers: [
+        {phoneNumber: '+916303961097', profilePicture: '', name: 'Usha'},
+      ],
+      unRegisteredUsers: ['+916303974914'],
+    };
+
+    (getContacts as jest.Mock).mockResolvedValue(mockContacts);
+    (nameNumberIndex as jest.Mock).mockResolvedValue({
+      '+916303961097': 'Usha',
+      '+916303974914': 'unknown',
     });
+    renderComponent();
 
     await waitFor(() => {
-      renderComponent();
+      expect(screen.queryByTestId('loader')).toBeNull();
     });
-    (Contacts.getContactsByPhoneNumber as jest.Mock).mockResolvedValue([
-      {displayName: ''},
-    ]);
+    const title = await screen.getByText('Contacts on Quick Chat');
+    const inviteText = await screen.getByText('Invite to Quick Chat');
+    const registeredUser = await screen.getByText('Usha');
+
+    const unRegisteredUser = await screen.getByText('unknown');
+
     await waitFor(() => {
-      expect(screen.getByText('unknown')).toBeTruthy();
+      expect(title).toBeTruthy();
+      expect(inviteText).toBeTruthy();
+      expect(registeredUser).toBeTruthy();
+      expect(unRegisteredUser).toBeTruthy();
+    });
+  });
+
+  it('should handle pull to refresh functionality', async () => {
+    const mockContacts = {
+      registeredUsers: [
+        {phoneNumber: '+916303961097', profilePicture: '', name: 'Usha'},
+      ],
+      unRegisteredUsers: ['+916303974914'],
+    };
+
+    (getContacts as jest.Mock).mockResolvedValue(mockContacts);
+    (nameNumberIndex as jest.Mock).mockResolvedValue({
+      '+916303961097': 'Usha',
+      '+916303974914': 'unknown',
+    });
+
+    renderComponent();
+
+    await waitFor(
+      () => {
+        expect(screen.queryByTestId('loader')).toBeNull();
+      },
+      {timeout: 5000},
+    );
+    await waitFor(() => {
+      const scrollView = screen.getByA11yHint('refresh-option');
+      const refreshControl = scrollView.props.refreshControl;
+      fireEvent(scrollView, 'refresh', {
+        nativeEvent: {
+          contentOffset: {y: -100},
+        },
+      });
+      refreshControl.props.onRefresh();
+      expect(getContacts as jest.Mock).toHaveBeenCalledWith(true);
     });
   });
 
   it('should set the header options correctly', async () => {
-    (getContacts as jest.Mock).mockImplementation(() =>
-      Promise.resolve({data: {registeredUsers: [], unRegisteredUsers: []}}),
-    );
+    (getContacts as jest.Mock).mockResolvedValue({
+      registeredUsers: [],
+      unRegisteredUsers: ['+916303961098'],
+    });
 
     await waitFor(() => {
       renderComponent();
@@ -185,59 +208,29 @@ describe('ContactsDisplay Component', () => {
         }),
       );
     });
+
     const HeaderLeftComponent =
       mockNavigation.setOptions.mock.calls[0][0].headerLeft();
-    const {getByText} = render(<>{HeaderLeftComponent}</>);
-
+    render(<>{HeaderLeftComponent}</>);
+    const image = screen.getByA11yHint('back-arrow-image');
     await waitFor(() => {
-      expect(getByText('く')).toBeTruthy();
+      if (Platform.OS === 'android') {
+        expect(image.props.source).toBe(androidBackArrow);
+      } else {
+        expect(image.props.source).toBe(iOSBackArrow);
+      }
     });
   });
 
-  it('should show alert when getContacts throws error', async () => {
-    (getContacts as jest.Mock).mockRejectedValue(new Error('Failed to fetch'));
-    render(
-      <Provider store={store}>
-          <ContactsDisplay />
-      </Provider>,
-    );
+  it('should goback when tapped on goback arrow', async () => {
+    renderComponent();
     await waitFor(() => {
-      const state = store.getState();
-      expect(state.registration.alertMessage).toBe('Network error');
-      expect(state.registration.alertType).toBe('info');
-  });
-});
-
-  it('should navigate to individual chat screen when it is clicked on contact', async () => {
-    (getContacts as jest.Mock).mockResolvedValue({
-      data: {
-        registeredUsers: [
-          {
-            name: 'Mamatha',
-            profilePicture: 'https://mamatha.profile.come',
-            phoneNumber: '+916303974914',
-          },
-        ],
-        unRegisteredUsers: [],
-      },
-    });
-    await waitFor(() => {
-      renderComponent();
-    });
-    await waitFor(() => {
-      expect(screen.getByText('Mamatha')).toBeTruthy();
-    });
-
-    fireEvent.press(screen.getByAccessibilityHint('contact-label'));
-
-    await waitFor(() => {
-      expect(mockNavigation.navigate).toHaveBeenCalledWith('individualChat', {
-        user: {
-          name: 'Mamatha',
-          profilePicture: 'https://mamatha.profile.come',
-          phoneNumber: '+916303974914',
-        },
-      });
+      const HeaderLeftComponent =
+        mockNavigation.setOptions.mock.calls[0][0].headerLeft();
+      render(<>{HeaderLeftComponent}</>);
+      const image = screen.getByA11yHint('back-arrow-image');
+      fireEvent.press(image);
+      expect(mockNavigation.goBack).toHaveBeenCalled();
     });
   });
 });

@@ -1,36 +1,50 @@
-import Contacts from 'react-native-contacts';
-import {API_URL} from '../constants/api';
-import EncryptedStorage from 'react-native-encrypted-storage';
 import {PermissionsAndroid, Platform} from 'react-native';
+import Contacts, {Contact} from 'react-native-contacts';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import {API_URL} from '../constants/api';
+import {ONE_DAY_MS} from '../constants/constants';
+import {normalise} from '../helpers/normalisePhoneNumber';
 
-
-export const getContacts = async () => {
+export const getContacts = async (hardRefresh: boolean) => {
+  const cachedNumbers = await EncryptedStorage.getItem('contact-numbers');
+  if (cachedNumbers && !hardRefresh) {
+    const {ts, data} = JSON.parse(cachedNumbers);
+    if (Date.now() - ts < ONE_DAY_MS) {
+      return data;
+    }
+  }
   try {
     if (Platform.OS === 'android') {
-      const granted = await PermissionsAndroid.request(
+      const hasPermission = await PermissionsAndroid.check(
         PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
-        {
-          title: 'Contacts Permission',
-          message: 'This app needs access to your contacts',
-          buttonPositive: 'OK',
-        },
       );
 
-      if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
-        throw new Error('Contacts permission denied');
+      if (!hasPermission) {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
+          {
+            title: 'Contacts Permission',
+            message: 'This app needs access to your contacts',
+            buttonPositive: 'OK',
+          },
+        );
+
+        if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+          throw new Error('Contacts permission denied');
+        }
       }
     }
-    const phoneContacts = await Contacts.getAll();
-    let allContacts: string[] = [];
-    phoneContacts.forEach(contact => {
-      contact.phoneNumbers.forEach(phone => {
-        const phoneNumber = phone.number.replace(/[\s()-]/g, '');
-        allContacts.push(phoneNumber);
-      });
-    });
+
+    const devicePhoneBook: Contact[] = await Contacts.getAllWithoutPhotos();
+    const numbers = new Set<string>();
+    devicePhoneBook.forEach((contact: Contact) =>
+      contact.phoneNumbers.forEach(phoneNumberDetails =>
+        numbers.add(normalise(phoneNumberDetails.number)),
+      ),
+    );
     const authToken = await EncryptedStorage.getItem('authToken');
     if (!authToken) {
-      throw new Error('Authorization failed');
+      throw new Error('Missing AUthentication key. Authorization failed');
     }
     const response = await fetch(`${API_URL}/api/users/contacts`, {
       method: 'POST',
@@ -38,14 +52,23 @@ export const getContacts = async () => {
         'Content-Type': 'application/json',
         authorization: `Bearer ${authToken}`,
       },
-      body: JSON.stringify(allContacts),
+      body: JSON.stringify([...numbers]),
     });
-    const data = await response.json();
-    return {
-      status: response.status,
-      data: data.data,
-    };
+    console.log('resposse', response);
+    if (!response.ok) {
+      throw new Error(
+        `Server responded ${response.status}. Please try again later.`,
+      );
+    }
+    const {data} = await response.json();
+    await EncryptedStorage.setItem(
+      'contact-numbers',
+      JSON.stringify({ts: Date.now(), data: data}),
+    );
+    return data;
   } catch (error) {
-    throw new Error(`${error}`);
+    throw new Error(
+      `Error while fetching Contacts : ${(error as Error).message}`,
+    );
   }
 };

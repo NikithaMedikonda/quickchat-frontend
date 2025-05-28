@@ -1,70 +1,62 @@
-import {useCallback, useEffect, useLayoutEffect, useState} from 'react';
-import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
+import {useCallback, useEffect, useLayoutEffect, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {
-  setAlertTitle,
-  setAlertType,
-  setAlertMessage,
-  setAlertVisible,
-} from '../../store/slices/registrationSlice';
-import Contacts from 'react-native-contacts';
-import {useDispatch, useSelector} from 'react-redux';
+  ActivityIndicator,
+  Alert,
+  Image,
+  Platform,
+  RefreshControl,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {Contact} from '../../components/Contact/Contact';
 import {DEFAULT_PROFILE_IMAGE} from '../../constants/defaultImage';
+import {normalise} from '../../helpers/normalisePhoneNumber';
+import {sortByName} from '../../helpers/sortByName';
 import {getContacts} from '../../services/GetContacts';
 import {useThemeColors} from '../../themes/colors';
 import {ContactDetails} from '../../types/contact.types';
 import {HomeStackProps, HomeTabsProps} from '../../types/usenavigation.type';
 import {getStyles} from './ContactsDisplay.styles';
-import {hide} from '../../store/slices/loadingSlice';
-import {RootState} from '../../store/store';
-import {CustomAlert} from '../../components/CustomAlert/CustomAlert';
+import {nameNumberIndex} from '../../helpers/nameNumberIndex';
+import {useImagesColors} from '../../themes/images';
 
-const LeftHeader = ({onPress}: {onPress: () => void}) => {
+
+export const BackButton = () => {
   const colors = useThemeColors();
+  const {androidBackArrow, iOSBackArrow} = useImagesColors();
+  const profileNavigation = useNavigation<HomeTabsProps>();
   const styles = getStyles(colors);
 
   return (
-    <View>
-      <TouchableOpacity onPress={onPress}>
-        <Text style={styles.loadingContactsText}>く</Text>
-      </TouchableOpacity>
-    </View>
+    <TouchableOpacity
+      onPress={() => profileNavigation.replace('hometabs')}>
+      <Image
+        source={Platform.OS === 'android' ? androidBackArrow : iOSBackArrow}
+        accessibilityHint="back-arrow-image"
+        style={styles.backArrow}
+      />
+    </TouchableOpacity>
   );
 };
 
 export const ContactsDisplay = () => {
   const [appContacts, setAppContacts] = useState<ContactDetails[] | []>([]);
   const [phoneContacts, setPhoneContacts] = useState<ContactDetails[] | []>([]);
-  const [loading, setLoading] = useState<Boolean>(true);
-  const dispatch = useDispatch();
-  const colors = useThemeColors();
-  const styles = getStyles(colors);
-  const navigation = useNavigation<HomeTabsProps>();
-  const {t} = useTranslation('contact');
-  const {alertType, alertTitle, alertMessage} = useSelector(
-    (state: RootState) => state.registration,
-  );
+  const [loading, setLoading] = useState<boolean>(true);
+  const [refreshing, setRefreshing] = useState<boolean>(false);
   const homeStackNavigation = useNavigation<HomeStackProps>();
 
-  const showAlert = useCallback((type: string, title: string, message: string) => {
-    dispatch(setAlertType(type));
-    dispatch(setAlertTitle(title));
-    dispatch(setAlertMessage(message));
-    dispatch(setAlertVisible(true));
-  },
-  [dispatch],
-);
+  const colors = useThemeColors();
+  const styles = getStyles(colors);
+ const renderHeaderLeft = useCallback(() => <BackButton />, []);
 
-  const handleGoBack = useCallback(() => {
-    navigation.goBack();
-  }, [navigation]);
+  const navigation = useNavigation<HomeTabsProps>();
 
-  const renderHeaderLeft = useCallback(() => {
-    return <LeftHeader onPress={handleGoBack} />;
-  }, [handleGoBack]);
-
+  const {t} = useTranslation('contact');
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: t('Contacts'),
@@ -79,42 +71,69 @@ export const ContactsDisplay = () => {
     });
   }, [navigation, colors.background, colors.text, t, renderHeaderLeft]);
 
-  useEffect(() => {
-    const fetchContacts = async () => {
-      try {
-        const allContacts = await getContacts();
-        setAppContacts(allContacts.data.registeredUsers);
-        const unRegisteredContacts = allContacts.data.unRegisteredUsers;
-        const unRegunRegisteredContactDetails: ContactDetails[] = [];
-        for (let phoneNumber of unRegisteredContacts) {
-          const contactsByPhoneNumber: Contacts.Contact[] =
-            await Contacts.getContactsByPhoneNumber(phoneNumber);
-          for (let contactByPhoneNumber of contactsByPhoneNumber) {
-            unRegunRegisteredContactDetails.push({
-              phoneNumber: phoneNumber,
-              name: contactByPhoneNumber.givenName || 'unknown',
-              profilePicture: DEFAULT_PROFILE_IMAGE,
-              toBeInvited: true,
-            });
-          }
-        }
-        setPhoneContacts(unRegunRegisteredContactDetails);
-      } catch (error: any) {
-        dispatch(hide());
-        showAlert('info', 'Unable fetch contacts', 'Network error');
-      } finally {
-        setLoading(false);
+
+  const fetchContacts = useCallback(
+    async (hardRefresh: boolean) => {
+      if (hardRefresh) {
+        setRefreshing(true);
+      } else {
+        setLoading(true);
       }
-    };
-    fetchContacts();
-  }, [dispatch, showAlert, t]);
+      try {
+        const result = await getContacts(hardRefresh);
+        const index = await nameNumberIndex();
+        const registeredUsersDetails: ContactDetails[] =
+          result.registeredUsers.map((userDetails: ContactDetails) => ({
+            ...userDetails,
+            name:
+              index[normalise(userDetails.phoneNumber)] ??
+              userDetails.phoneNumber,
+          }));
+        setAppContacts(sortByName(registeredUsersDetails));
+        const unRegisteredUserDetails: ContactDetails[] =
+          result.unRegisteredUsers.map((phoneNumber: string) => ({
+            phoneNumber: phoneNumber,
+            name: index[normalise(phoneNumber)] ?? 'unknown',
+            profilePicture: DEFAULT_PROFILE_IMAGE,
+            toBeInvited: true,
+          }));
+        setPhoneContacts(sortByName(unRegisteredUserDetails));
+      } catch (error) {
+        Alert.alert(
+          t(`Error while fetching the contacts: ${(error as Error).message}`),
+        );
+      } finally {
+        if (hardRefresh) {
+          setRefreshing(false);
+        } else {
+          setLoading(false);
+        }
+      }
+    },
+    [t],
+  );
+  useEffect(() => {
+    fetchContacts(false);
+  }, [fetchContacts]);
 
   return (
     <View style={styles.contactsContainer}>
-      <ScrollView contentContainerStyle={styles.scroll}>
+      <ScrollView
+        accessibilityHint="refresh-option"
+        contentContainerStyle={styles.scroll}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={() => fetchContacts(true)}
+          />
+        }>
         {loading ? (
-          <View style={styles.loadingContactsDisplay}>
-            <Text style={styles.loadingContactsText}>Loading Contacts...</Text>
+          <View style={styles.activityContainer}>
+            <ActivityIndicator
+              accessibilityHint="loader"
+              size="large"
+              color="white"
+            />
           </View>
         ) : (
           <View>
@@ -123,9 +142,10 @@ export const ContactsDisplay = () => {
               <View style={styles.contactDetailsContainer}>
                 {appContacts.map((contact: ContactDetails, index: number) => (
                   <TouchableOpacity
-                  accessibilityHint="contact-label"
+                    accessibilityHint="contact-label"
                     key={`${contact.name}-${index}`}
                     onPress={() => {
+                       console.log('Navigating to individualChat with', contact);
                       homeStackNavigation.navigate('individualChat', {
                         user: {
                           name: contact.name,
@@ -134,7 +154,7 @@ export const ContactsDisplay = () => {
                         },
                       });
                     }}>
-                    <Contact contactDetails={contact} />
+                    <Contact key={index} contactDetails={contact} />
                   </TouchableOpacity>
                 ))}
               </View>
@@ -152,24 +172,20 @@ export const ContactsDisplay = () => {
               <View style={styles.loadingContactsDisplay}>
                 <Text style={styles.loadingContactsText}>
                   {t(
-                    "It's good to see that, all of your contact are onuick Chat.",
+                    "It's good to see that, all of your contact are onquick Chat.",
                   )}
                 </Text>
               </View>
             ) : (
               <View style={styles.contactDetailsContainer}>
                 {phoneContacts.map((contact: ContactDetails, index: number) => (
-                  <Contact
-                    key={`${index}-${contact}`}
-                    contactDetails={contact}
-                  />
+                  <Contact key={index} contactDetails={contact} />
                 ))}
               </View>
             )}
           </View>
         )}
       </ScrollView>
-      <CustomAlert type={alertType} title={alertTitle} message={alertMessage} />
     </View>
   );
 };

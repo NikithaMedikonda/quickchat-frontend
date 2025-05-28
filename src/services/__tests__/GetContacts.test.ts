@@ -1,165 +1,211 @@
-import {PermissionsAndroid, Platform} from 'react-native';
-import Contacts from 'react-native-contacts';
+import {getContacts} from '../getContacts';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {API_URL} from '../../constants/api';
-import {getContacts} from '../GetContacts';
+import {PermissionsAndroid} from 'react-native';
+import Contacts from 'react-native-contacts';
+import {ONE_DAY_MS} from '../../constants/constants';
 
 jest.mock('react-native-contacts', () => ({
-  getAll: jest.fn(),
+  getAllWithoutPhotos: jest.fn(),
 }));
 
 jest.mock('react-native-encrypted-storage', () => ({
   getItem: jest.fn(),
+  setItem: jest.fn(),
+  removeItem: jest.fn(),
 }));
 
 jest.mock('react-native', () => ({
-  Platform: {OS: 'android'},
   PermissionsAndroid: {
+    check: jest.fn(),
     request: jest.fn(),
-    PERMISSIONS: {
-      READ_CONTACTS: 'android.permission.READ_CONTACTS',
-    },
-    RESULTS: {
-      GRANTED: 'granted',
-      DENIED: 'denied',
-    },
+    PERMISSIONS: {READ_CONTACTS: 'READ_CONTACTS'},
+    RESULTS: {GRANTED: 'granted'},
   },
+  Platform: {OS: 'android'},
 }));
 
 global.fetch = jest.fn();
+global.Date.now = jest.fn();
 
 describe('Tests for getContacts function', () => {
-  const mockContacts = [
+  const mockContactList = [
     {
-      phoneNumbers: [{number: '(555) 123-4567'}, {number: '123-456-7890'}],
+      displayName: 'Anoosha Sanugulaaa',
+      phoneNumbers: [{number: '9440058809'}],
     },
     {
-      phoneNumbers: [{number: '+1 (800)555-1212'}],
+      displayName: 'USHA SRI',
+      phoneNumbers: [{number: '6303961097'}],
+    },
+    {
+      displayName: 'User A',
+      phoneNumbers: [{number: '6303552765'}],
+    },
+    {
+      displayName: 'User B',
+      phoneNumbers: [{number: '6303974914'}],
+    },
+    {
+      displayName: 'User C',
+      phoneNumbers: [{number: '8523997413'}],
+    },
+    {
+      displayName: 'User D',
+      phoneNumbers: [{number: '8074537732'}],
+    },
+    {
+      displayName: 'User E',
+      phoneNumbers: [{number: '8074537731'}],
+    },
+    {
+      displayName: 'User F',
+      phoneNumbers: [{number: '8074537732'}],
     },
   ];
 
-  const formattedNumbers = ['5551234567', '1234567890', '+18005551212'];
+  const mockApiResponse = {
+    registeredUsers: [
+      {
+        name: 'Anoosha Sanugulaaa',
+        phoneNumber: '+919440058809',
+        profilePicture: 'https://profile.com/anoosha',
+      },
+      {
+        name: 'USHA SRI',
+        phoneNumber: '+916303961097',
+        profilePicture: 'https://profile.com/ushasi',
+      },
+    ],
+    unRegisteredUsers: [
+      '+916303552765',
+      '+916303974914',
+      '8523997413',
+      '8074537732',
+      '+918074537732',
+    ],
+  };
 
-  beforeAll(() => {
-    (Contacts.getAll as jest.Mock).mockResolvedValue([
-      {
-        phoneNumbers: [{number: '123-456-7890'}, {number: '(098) 765-4321'}],
-      },
-      {
-        phoneNumbers: [{number: '111 222 3333'}],
-      },
-    ]);
-  });
-  afterEach(() => {
+  beforeEach(() => {
     jest.clearAllMocks();
+    (Date.now as jest.Mock).mockReturnValue(1000000);
   });
-  it('should fetch contacts and send to server when permission is granted and token exists', async () => {
-    (PermissionsAndroid.request as jest.Mock).mockResolvedValue('granted');
-    (Contacts.getAll as jest.Mock).mockResolvedValue([
-      {phoneNumbers: [{number: '(123) 456-7890'}]},
-      {phoneNumbers: [{number: '987-654-3210'}]},
-    ]);
-    (EncryptedStorage.getItem as jest.Mock).mockResolvedValue('dummy-token');
 
-    (fetch as jest.Mock).mockResolvedValue({
-      status: 200,
-      json: async () => ({
-        data: ['user1', 'user2'],
-      }),
-    });
-
-    const result = await getContacts();
-
-    expect(PermissionsAndroid.request).toHaveBeenCalled();
-    expect(Contacts.getAll).toHaveBeenCalled();
-    expect(EncryptedStorage.getItem).toHaveBeenCalledWith('authToken');
-    expect(fetch).toHaveBeenCalledWith(
-      expect.stringContaining('/api/users/contacts'),
-      expect.objectContaining({
-        method: 'POST',
-        headers: expect.objectContaining({
-          authorization: 'Bearer dummy-token',
-        }),
+  it('returns cached contacts if hardRefresh is false and cache is fresh', async () => {
+    (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(
+      JSON.stringify({
+        ts: 1000000 - ONE_DAY_MS + 1000,
+        data: mockApiResponse,
       }),
     );
-    expect(result).toEqual({
-      status: 200,
-      data: ['user1', 'user2'],
-    });
+    (global.fetch as jest.Mock) = jest.fn();
+
+    const result = await getContacts(false);
+    expect(result).toEqual(mockApiResponse);
+    expect(fetch).not.toHaveBeenCalled();
   });
 
-  it('should fetch contacts and send cleaned phone numbers to the API', async () => {
-    (Contacts.getAll as jest.Mock).mockResolvedValue(mockContacts);
-    (EncryptedStorage.getItem as jest.Mock).mockResolvedValue('token');
+  it('should do api call if hardRefresh is true and cache is still fresh', async () => {
+    (EncryptedStorage.getItem as jest.Mock)
+      .mockResolvedValueOnce(JSON.stringify({ts: 1000000 - ONE_DAY_MS + 1000}))
+      .mockResolvedValueOnce('dummyToken');
+
+    (PermissionsAndroid.check as jest.Mock).mockResolvedValue(true);
+    (Contacts.getAllWithoutPhotos as jest.Mock).mockResolvedValue(
+      mockContactList,
+    );
+
     (fetch as jest.Mock).mockResolvedValue({
+      ok: true,
       status: 200,
-      json: async () => ({
-        data: {
-          registeredUsers: ['5551234567', '1234567890'],
-          unRegisteredusers: ['+18005551212'],
-        },
-      }),
-    });
-    const result = await getContacts();
-
-    expect(Contacts.getAll).toHaveBeenCalled();
-    expect(fetch).toHaveBeenCalledWith(`${API_URL}/api/users/contacts`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        authorization: 'Bearer token',
-      },
-      body: JSON.stringify(formattedNumbers),
+      json: async () => ({data: mockApiResponse}),
     });
 
-    expect(result).toEqual({
+    const result = await getContacts(true);
+    expect(result).toEqual(mockApiResponse);
+    expect(fetch).toHaveBeenCalled();
+  });
+
+   it('should do api call if hardRefresh is true also no cache', async () => {
+    (EncryptedStorage.getItem as jest.Mock)
+      .mockResolvedValueOnce(JSON.stringify({ts: 1000000 - ONE_DAY_MS - 1000}))
+      .mockResolvedValueOnce('dummyToken');
+
+    (PermissionsAndroid.check as jest.Mock).mockResolvedValue(true);
+    (Contacts.getAllWithoutPhotos as jest.Mock).mockResolvedValue(
+      mockContactList,
+    );
+
+    (fetch as jest.Mock).mockResolvedValue({
+      ok: true,
       status: 200,
-      data: {
-        registeredUsers: ['5551234567', '1234567890'],
-        unRegisteredusers: ['+18005551212'],
-      },
+      json: async () => ({data: mockApiResponse}),
     });
+
+    const result = await getContacts(true);
+    expect(result).toEqual(mockApiResponse);
+    expect(fetch).toHaveBeenCalled();
   });
 
-  it('should throw an error if authToken is not found', async () => {
-    (Contacts.getAll as jest.Mock).mockResolvedValue(mockContacts);
-    (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(null);
-    await expect(getContacts()).rejects.toThrow('Authorization failed');
+
+  it('should requests permission if not granted', async () => {
+    (EncryptedStorage.getItem as jest.Mock)
+      .mockResolvedValueOnce(JSON.stringify({ts: 1000000 - ONE_DAY_MS - 1000}))
+      .mockResolvedValueOnce('dummyToken');
+
+    (PermissionsAndroid.check as jest.Mock).mockResolvedValue(false);
+    (PermissionsAndroid.request as jest.Mock).mockResolvedValue('granted');
+
+    (Contacts.getAllWithoutPhotos as jest.Mock).mockResolvedValue(
+      mockContactList,
+    );
+
+    (fetch as jest.Mock).mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({data: mockApiResponse}),
+    });
+
+    const result = await getContacts(true);
+    expect(result).toEqual(mockApiResponse);
   });
 
-  it('should throw error if fetch fails', async () => {
-    (Contacts.getAll as jest.Mock).mockResolvedValue(mockContacts);
-    (EncryptedStorage.getItem as jest.Mock).mockResolvedValue('token');
-    (fetch as jest.Mock).mockRejectedValueOnce('Network failed');
-    await expect(getContacts()).rejects.toThrow('Network failed');
-  });
-
-  it('should throw error when permission is denied', async () => {
+  it('should throw error if permission is denied', async () => {
+    (PermissionsAndroid.check as jest.Mock).mockResolvedValue(false);
     (PermissionsAndroid.request as jest.Mock).mockResolvedValue('denied');
-    await expect(getContacts()).rejects.toThrow('Contacts permission denied');
+    await expect(getContacts(true)).rejects.toThrow(
+      'Contacts permission denied',
+    );
   });
 
-  it('should skip permission check on iOS', async () => {
-    Platform.OS = 'ios';
-    (Contacts.getAll as jest.Mock).mockResolvedValue(mockContacts);
-    (EncryptedStorage.getItem as jest.Mock).mockResolvedValue('token');
+  it('should throw error if auth token is missing', async () => {
+    (EncryptedStorage.getItem as jest.Mock).mockResolvedValueOnce(null);
+    (PermissionsAndroid.check as jest.Mock).mockResolvedValue(true);
+    (Contacts.getAllWithoutPhotos as jest.Mock).mockResolvedValue(
+      mockContactList,
+    );
+    (EncryptedStorage.getItem as jest.Mock).mockResolvedValueOnce(null);
+    await expect(getContacts(true)).rejects.toThrow(
+      'Missing AUthentication key. Authorization failed',
+    );
+  });
+
+  it('throws error if API returns non-ok response', async () => {
+    (EncryptedStorage.getItem as jest.Mock)
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce('dummyToken');
+
+    (PermissionsAndroid.check as jest.Mock).mockResolvedValue(true);
+    (Contacts.getAllWithoutPhotos as jest.Mock).mockResolvedValue(
+      mockContactList,
+    );
+
     (fetch as jest.Mock).mockResolvedValue({
-      status: 200,
-      json: async () => ({
-        data: {
-          registeredUsers: ['5551234567', '1234567890'],
-          unRegisteredusers: ['+18005551212'],
-        },
-      }),
+      ok: false,
+      status: 500,
     });
-    const result = await getContacts();
-    expect(PermissionsAndroid.request).not.toHaveBeenCalled();
-    expect(result).toEqual({
-      status: 200,
-      data: {
-        registeredUsers: ['5551234567', '1234567890'],
-        unRegisteredusers: ['+18005551212'],
-      },
-    });
+
+    await expect(getContacts(true)).rejects.toThrow(
+      'Server responded 500. Please try again later',
+    );
   });
 });
