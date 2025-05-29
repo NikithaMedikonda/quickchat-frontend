@@ -10,13 +10,15 @@ export const individualChatStyles = (colors: Colors) => {
     },
     InputContainer: {
       justifyContent: 'flex-end',
-      marginBottom: 17,
+      paddingBottom: 0.025 * width,
     },
     safeareaView: {
       flex: 1,
     },
     chatContainer: {
-      paddingVertical: 10,
+      paddingVertical: 18,
+      paddingLeft: 0.028 * width,
+      paddingRight: 0.028 * width,
     },
     messageBlock: {
       padding: 10,
@@ -58,7 +60,7 @@ export const individualChatStyles = (colors: Colors) => {
     timestamp: {
       fontSize: 12,
       color: 'gray',
-      marginTop: 5,
+      paddingTop: 5,
       textAlign: 'right',
     },
     infoMessage: {
@@ -88,7 +90,11 @@ export const individualChatStyles = (colors: Colors) => {
     },
     chatMainContainer: {
       flex: 1,
+      gap: 10,
       borderColor: colors.receiveMessage,
+      backgroundColor: colors.chatBackground,
+      width: width * 1.00,
+      borderRadius: width * 0.075,
     },
     chatInnerContainer: {
       width: width,
@@ -98,8 +104,8 @@ export const individualChatStyles = (colors: Colors) => {
       backgroundColor: '#FFFBEB',
       borderWidth: 1,
       borderRadius: 12,
-      marginHorizontal: 16,
-      marginVertical: 8,
+      paddingHorizontal: 16,
+      paddingVertical: 8,
       padding: 20,
       alignItems: 'center',
       shadowColor: '#000',
@@ -111,7 +117,6 @@ export const individualChatStyles = (colors: Colors) => {
       shadowRadius: 2,
       elevation: 2,
     },
-
     errorText: {
       color: '#2D3748',
       fontSize: 16,
