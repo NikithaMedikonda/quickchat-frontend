@@ -8,6 +8,7 @@ describe('ChatBox Component', () => {
     description: 'Hello everyone!',
     timestamp: '2025-05-21T12:00:00',
     unreadCount: 3,
+    status: 'sent' as 'sent' | 'delivered' | 'read',
   };
   beforeAll(() => {
     jest.useFakeTimers();
@@ -22,12 +23,12 @@ describe('ChatBox Component', () => {
     const {getByText} = render(<ChatBox {...mockProps} />);
 
     expect(getByText('Nagulu')).toBeTruthy();
-    expect(getByText('Hello everyone!')).toBeTruthy();
+    expect(getByText('✓Hello everyone!')).toBeTruthy();
   });
 
   it('displays the timestamp', () => {
     const {getByText} = render(<ChatBox {...mockProps} />);
-    expect(getByText('12:00 pm')).toBeTruthy();
+    expect(getByText('12:00 PM')).toBeTruthy();
     jest.useRealTimers();
   });
 

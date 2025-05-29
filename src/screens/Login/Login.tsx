@@ -37,6 +37,7 @@ import {
 import {CustomAlert} from '../../components/CustomAlert/CustomAlert';
 
 import {loginStyles} from './Login.styles';
+import {getDeviceId} from '../../services/GenerateDeviceId';
 
 export function Login() {
   const homeNavigation = useNavigation<HomeTabsProps>();
@@ -89,7 +90,8 @@ export function Login() {
     }
 
     try {
-      const result = await loginUser({...form});
+      const deviceId = await getDeviceId();
+      const result = await loginUser(form, deviceId);
 
       if (result.status === 200) {
         const user = result?.data?.user;
@@ -123,7 +125,6 @@ export function Login() {
         await EncryptedStorage.setItem('user', JSON.stringify(user));
         await EncryptedStorage.setItem('privateKey', privateKey);
 
-
         dispatch(resetLoginForm());
       } else if (result.status === 404) {
         dispatch(hide());
@@ -138,6 +139,13 @@ export function Login() {
           'warning',
           'Login failed',
           'Incorrect phone number or password. Please try again.',
+        );
+      } else if (result.status === 409) {
+        dispatch(hide());
+        showAlert(
+          'warning',
+          'Login failed',
+          'Logged in from a new device using your number. Please check your account.',
         );
       } else {
         dispatch(hide());
@@ -208,6 +216,5 @@ export function Login() {
       </ScrollView>
       <CustomAlert type={alertType} title={alertTitle} message={alertMessage} />
     </KeyboardAvoidingView>
-
   );
 }

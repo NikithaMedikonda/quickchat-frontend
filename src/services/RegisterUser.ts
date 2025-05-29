@@ -11,7 +11,8 @@ export const registerUser = async (payload: {
 }, keys: {
   publicKey: string;
   privateKey : string;
-}) => {
+},
+deviceId:{deviceId:string;}) => {
   const encryptedPrivateKey = await keyEncryption({
     privateKey: keys.privateKey,
     password: payload.password,
@@ -26,6 +27,7 @@ export const registerUser = async (payload: {
     password: payload.password,
     publicKey: keys.publicKey,
     privateKey: encryptedPrivateKey,
+    deviceId:deviceId.deviceId,
   };
 
   try {

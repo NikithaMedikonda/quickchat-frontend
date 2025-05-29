@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useLayoutEffect, useRef, useState} from 'react';
+import {useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState} from 'react';
 import {
   Image,
   KeyboardAvoidingView,
@@ -43,7 +43,7 @@ export const BackButton = () => {
       onPress={() => profileNavigation.navigate('profileScreen')}>
       <Image
         source={Platform.OS === 'android' ? androidBackArrow : iOSBackArrow}
-        accessibilityHint="back-arrow-icon"
+        accessibilityHint="back-arrow-image"
         style={styles.backArrow}
       />
     </TouchableOpacity>
@@ -59,6 +59,10 @@ export const EditProfile = () => {
   const imageUri = useSelector(
     (state: RootState) => state.registration.imageUri,
   );
+
+  const [initialValues, setInitialValues] = useState<
+    typeof editProfileForm | null
+  >(null);
 
   const {alertType, alertTitle, alertMessage, errors, editProfileForm} =
     useSelector((state: RootState) => state.registration);
@@ -109,6 +113,15 @@ export const EditProfile = () => {
       );
       dispatch(setEditProfileForm({key: 'token', value: AccessToken}));
       dispatch(setEditProfileForm({key: 'image', value: editedImage}));
+
+      setInitialValues({
+        firstName: userData.firstName || '',
+        lastName: userData.lastName || '',
+        email: userData.email || '',
+        phoneNumber: userData.phoneNumber || '',
+        token: AccessToken,
+        image: editedImage,
+      });
     } catch (error) {
       dispatch(setAlertVisible(true));
       showAlert('error', 'Error', 'Something went wrong');
@@ -205,6 +218,20 @@ export const EditProfile = () => {
       title: 'Email',
     },
   ] as const;
+  const renderedImage = imageUri || user?.profilePicture || DEFAULT_PROFILE_IMAGE;
+
+  const isFormChanged = useMemo(() => {
+  if (!initialValues){
+    return false;
+  }
+  return (
+    initialValues.firstName !== editProfileForm.firstName ||
+    initialValues.lastName !== editProfileForm.lastName ||
+    initialValues.email !== editProfileForm.email ||
+    initialValues.phoneNumber !== editProfileForm.phoneNumber ||
+    initialValues.image !== imageUri
+  );
+}, [initialValues, editProfileForm,imageUri]);
 
   return (
     <KeyboardAvoidingView
@@ -217,7 +244,7 @@ export const EditProfile = () => {
           accessibilityHint="edit-profile-button">
           <Image
             source={{
-              uri: imageUri || user?.profilePicture || DEFAULT_PROFILE_IMAGE,
+              uri: renderedImage,
             }}
             accessibilityHint="Profile-Picture"
             style={styles.profileImage}
@@ -242,7 +269,15 @@ export const EditProfile = () => {
           </View>
         ))}
         <View style={styles.buttonRow}>
-          <TouchableOpacity style={styles.touchableButton} onPress={handleSave}>
+          <TouchableOpacity
+          accessibilityHint="Save-button"
+           accessibilityState={{ disabled:!isFormChanged }}
+            style={[
+              styles.touchableButton,
+              !isFormChanged && styles.touchableButtonDisabled,
+            ]}
+            onPress={handleSave}
+            disabled={!isFormChanged}>
             <Text style={styles.buttonText}>{t('Save')}</Text>
           </TouchableOpacity>
         </View>

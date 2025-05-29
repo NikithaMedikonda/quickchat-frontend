@@ -1,7 +1,7 @@
-import {Text, View} from 'react-native';
 import moment from 'moment';
-import {Timestampstyle} from './TimeStamp.styles';
-import {useThemeColors} from '../../themes/colors';
+import { Text, View } from 'react-native';
+import { useThemeColors } from '../../themes/colors';
+import { Timestampstyle } from './TimeStamp.styles';
 
 export const TimeStamp = ({
   messageTime,
@@ -16,18 +16,18 @@ export const TimeStamp = ({
   const currentTime = moment();
   const messageReceivedTime = moment(messageTime);
   if (messageReceivedTime.isSame(currentTime, 'day')) {
-    displayTime = messageReceivedTime.format('h:mm a');
+    displayTime = messageReceivedTime.format('h:mm A');
   } else if (
     messageReceivedTime.isSame(
       moment().startOf('day').subtract(1, 'days'),
       'day',
     )
   ) {
-    displayTime = `Yesterday, ${messageReceivedTime.format('h:mm a')}`;
+    displayTime = 'Yesterday';
   } else if (messageReceivedTime.isAfter(moment().subtract(7, 'days'))) {
-    displayTime = messageReceivedTime.format('dddd, h:mm a');
+    displayTime = messageReceivedTime.format('dddd');
   } else {
-    displayTime = messageReceivedTime.format('MMM D, YYYY, h:mm a');
+    displayTime = messageReceivedTime.format('MMM D, YYYY');
   }
   return (
     <View>

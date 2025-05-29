@@ -33,14 +33,14 @@ export const getStyles = (colors: Colors) =>
       marginTop: height * 0.02,
     },
     errorText: {
-      color: 'FFA2A2',
+      color: '#FF0000',
       fontSize: 15,
       alignSelf: 'flex-start',
       width: width * 0.75,
       marginLeft: width * 0.027,
     },
     phoneErrorText: {
-      color: 'red',
+      color: '#FF0000',
       fontSize: 15,
       marginTop: 4,
       marginLeft: width * 0.027,
