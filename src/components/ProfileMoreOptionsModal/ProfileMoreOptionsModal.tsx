@@ -34,6 +34,7 @@ import {useImagesColors} from '../../themes/images';
 import {getStyles} from './ProfileMoreOptionsModal.styles';
 import {CustomAlert} from '../CustomAlert/CustomAlert';
 import {RootState} from '../../store/store';
+import {logoutUser} from '../../services/LogoutUser';
 
 export const ProfileMoreOptionsModal = ({
   visible,
@@ -102,15 +103,27 @@ export const ProfileMoreOptionsModal = ({
   };
 
   const onConfirmLogout = async () => {
-    handleModalClose();
-    dispatch(logout());
-    dispatch(setAlertVisible(true));
-    showAlert('success', 'Login out', 'Successfully logout');
-    await EncryptedStorage.clear();
-    setTimeout(() => {
-      dispatch(setAlertVisible(false));
-      navigation.replace('login');
-    }, 1000);
+    try {
+      handleModalClose();
+      dispatch(logout());
+      dispatch(setAlertVisible(true));
+      const payload = {
+        phoneNumber,
+        authToken,
+      };
+      const result = await logoutUser(payload);
+      if (result.status === 200) {
+        showAlert('success', 'Login out', 'Successfully logout');
+        await EncryptedStorage.clear();
+        setTimeout(() => {
+          dispatch(setAlertVisible(false));
+          navigation.replace('login');
+        }, 1000);
+      }
+    } catch (error) {
+      console.log(error);
+      showAlert('info', 'Logout failed', 'Something went wrong while logout');
+    }
   };
 
   const onConfirmDelete = async () => {
