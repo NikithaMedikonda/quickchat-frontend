@@ -75,11 +75,12 @@ export const HomeTabs = () => {
           justifyContent: 'center',
           alignItems: 'center',
           flex: 1,
+         paddingBlock: 10,
         },
         tabBarLabelStyle: {
           fontSize: 12,
           fontWeight: '700',
-          marginTop: 20,
+          paddingTop: 20,
           textAlign: 'center',
         },
       }}>
