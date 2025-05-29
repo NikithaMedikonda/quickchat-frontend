@@ -1,17 +1,14 @@
-import { useNavigation } from '@react-navigation/native';
-import { useEffect, useLayoutEffect, useState } from 'react';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useCallback, useLayoutEffect, useState } from 'react';
 import { ScrollView, TouchableOpacity, View } from 'react-native';
-import { useDispatch } from 'react-redux';
-import { useThemeColors } from '../../themes/colors';
-import { HomeStackProps, NavigationProps } from '../../types/usenavigation.type';
-
 import EncryptedStorage from 'react-native-encrypted-storage';
+import { useDispatch } from 'react-redux';
+
 import { ChatBox } from '../../components/ChatBox/ChatBox';
 import { PlusIcon } from '../../components/PlusIcon/PlusIcon';
 import { numberNameIndex } from '../../helpers/nameNumberIndex';
 import { normalise } from '../../helpers/normalisePhoneNumber';
 import { getAllChats } from '../../services/GetAllChats';
-import { hide, show } from '../../store/slices/loadingSlice';
 import { logout } from '../../store/slices/loginSlice';
 import {
   setAlertMessage,
@@ -19,6 +16,8 @@ import {
   setAlertType,
   setAlertVisible,
 } from '../../store/slices/registrationSlice';
+import { useThemeColors } from '../../themes/colors';
+import { HomeStackProps, NavigationProps } from '../../types/usenavigation.type';
 import { Home } from '../Home/Home';
 import { getStyles } from './AllChats.styles';
 
@@ -60,53 +59,53 @@ export const AllChats = () => {
     });
   });
 
-  useEffect(() => {
-    const showAlert = (type: string, title: string, message: string) => {
+  const showAlert = useCallback(
+    (type: string, title: string, message: string) => {
       dispatch(setAlertType(type));
       dispatch(setAlertTitle(title));
       dispatch(setAlertMessage(message));
       dispatch(setAlertVisible(true));
-    };
+    },
+    [dispatch],
+  );
 
-    const fetchChats = async () => {
-      dispatch(show());
+  useFocusEffect(
+    useCallback(() => {
+      const fetchChats = async () => {
+        const phoneNameMap = await numberNameIndex();
+        if (phoneNameMap === null) {
+          dispatch(logout());
+          showAlert('error', 'Session Expired', 'Please login again.');
+          await EncryptedStorage.clear();
+          setTimeout(() => {
+            dispatch(setAlertVisible(false));
+            navigation.replace('login');
+          }, 1000);
+          return;
+        }
 
-      const phoneNameMap = await numberNameIndex();
-      if (phoneNameMap === null) {
-        dispatch(hide());
-        dispatch(logout());
-        showAlert('error', 'Session Expired', 'Please login again.');
-        await EncryptedStorage.clear();
-        setTimeout(() => {
-          dispatch(setAlertVisible(false));
-          navigation.replace('login');
-        }, 1000);
-        return;
-      }
+        setContactNameMap(phoneNameMap as ContactNameMap);
 
-      setContactNameMap(phoneNameMap as ContactNameMap);
+        const response = await getAllChats();
 
-      const response = await getAllChats();
+        if (response.status === 401 || response.data === null) {
+          dispatch(logout());
+          showAlert('error', 'Session Expired', 'Please login again.');
+          await EncryptedStorage.clear();
+          setTimeout(() => {
+            dispatch(setAlertVisible(false));
+            navigation.replace('login');
+          }, 1000);
+        } else if (response.status === 200 && response.data) {
+          setChats(response.data.chats);
+        } else {
+          showAlert('info', 'Unable to Fetch Chats', 'Please try again later.');
+        }
+      };
 
-      if (response.status === 401 || response.data === null) {
-        dispatch(hide());
-        dispatch(logout());
-        showAlert('error', 'Session Expired', 'Please login again.');
-        await EncryptedStorage.clear();
-        setTimeout(() => {
-          dispatch(setAlertVisible(false));
-          navigation.replace('login');
-        }, 1000);
-      } else if (response.status === 200 && response.data) {
-        setChats(response.data.chats);
-      } else {
-        showAlert('info', 'Unable to Fetch Chats', 'Please try again later.');
-      }
-      dispatch(hide());
-    };
-
-    fetchChats();
-  }, [dispatch, navigation]);
+      fetchChats();
+    }, [dispatch, navigation, showAlert]),
+  );
 
   if (chats.length === 0) {
     return <Home />;
@@ -126,6 +125,8 @@ export const AllChats = () => {
                     chat.phoneNumber,
                   profilePicture: chat.contactProfilePic,
                   phoneNumber: chat.phoneNumber,
+                  isBlocked: false,
+                  onBlockStatusChange: () => {},
                 },
               })
             }>
