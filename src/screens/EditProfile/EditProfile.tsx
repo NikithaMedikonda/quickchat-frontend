@@ -218,6 +218,7 @@ export const EditProfile = () => {
       title: 'Email',
     },
   ] as const;
+  const renderedImage = imageUri || user?.profilePicture || DEFAULT_PROFILE_IMAGE;
 
   const isFormChanged = useMemo(() => {
   if (!initialValues){
@@ -228,9 +229,9 @@ export const EditProfile = () => {
     initialValues.lastName !== editProfileForm.lastName ||
     initialValues.email !== editProfileForm.email ||
     initialValues.phoneNumber !== editProfileForm.phoneNumber ||
-    initialValues.image !== editedImage
+    initialValues.image !== imageUri
   );
-}, [initialValues, editProfileForm, editedImage]);
+}, [initialValues, editProfileForm,imageUri]);
 
   return (
     <KeyboardAvoidingView
@@ -243,7 +244,7 @@ export const EditProfile = () => {
           accessibilityHint="edit-profile-button">
           <Image
             source={{
-              uri: imageUri || user?.profilePicture || DEFAULT_PROFILE_IMAGE,
+              uri: renderedImage,
             }}
             accessibilityHint="Profile-Picture"
             style={styles.profileImage}
@@ -270,7 +271,7 @@ export const EditProfile = () => {
         <View style={styles.buttonRow}>
           <TouchableOpacity
           accessibilityHint="Save-button"
-           accessibilityState={{ disabled: !isFormChanged }}
+           accessibilityState={{ disabled:!isFormChanged }}
             style={[
               styles.touchableButton,
               !isFormChanged && styles.touchableButtonDisabled,
