@@ -236,8 +236,10 @@ describe('ContactsDisplay Component', () => {
           name: 'Mamatha',
           profilePicture: 'https://mamatha.profile.come',
           phoneNumber: '+916303974914',
+          isBlocked: false,
+          onBlockStatusChange: expect.any(Function),
         },
       });
-    });
   });
+})
 });
