@@ -48,14 +48,15 @@ export const ContactsDisplay = () => {
   );
   const homeStackNavigation = useNavigation<HomeStackProps>();
 
-  const showAlert = useCallback((type: string, title: string, message: string) => {
-    dispatch(setAlertType(type));
-    dispatch(setAlertTitle(title));
-    dispatch(setAlertMessage(message));
-    dispatch(setAlertVisible(true));
-  },
-  [dispatch],
-);
+  const showAlert = useCallback(
+    (type: string, title: string, message: string) => {
+      dispatch(setAlertType(type));
+      dispatch(setAlertTitle(title));
+      dispatch(setAlertMessage(message));
+      dispatch(setAlertVisible(true));
+    },
+    [dispatch],
+  );
 
   const handleGoBack = useCallback(() => {
     navigation.goBack();
@@ -123,7 +124,7 @@ export const ContactsDisplay = () => {
               <View style={styles.contactDetailsContainer}>
                 {appContacts.map((contact: ContactDetails, index: number) => (
                   <TouchableOpacity
-                  accessibilityHint="contact-label"
+                    accessibilityHint="contact-label"
                     key={`${contact.name}-${index}`}
                     onPress={() => {
                       homeStackNavigation.navigate('individualChat', {
@@ -131,6 +132,8 @@ export const ContactsDisplay = () => {
                           name: contact.name,
                           profilePicture: contact.profilePicture,
                           phoneNumber: contact.phoneNumber,
+                          isBlocked: false,
+                          onBlockStatusChange: () => {},
                         },
                       });
                     }}>
