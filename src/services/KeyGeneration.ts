@@ -8,8 +8,8 @@ export const keyGeneration = async () => {
 
     return {publicKey, privateKey};
   } catch (error) {
-   throw new Error(
+    throw new Error(
       `Error while generating the keys ${(error as Error).message}`,
-    ); 
+    );
   }
 };
