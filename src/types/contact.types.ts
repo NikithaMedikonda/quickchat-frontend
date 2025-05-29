@@ -3,4 +3,5 @@ export type ContactDetails = {
   name: string;
   profilePicture: string;
   toBeInvited: boolean;
+  publicKey: string;
 };
