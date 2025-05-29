@@ -14,11 +14,10 @@ export const loginStyles = (colors: Colors) =>
     },
     image: {
       width: width * 0.5,
-      height: height * 0.3,
+      height: height * 0.33,
     },
     imageContainer: {
-      height: height * 0.6,
-      width: width * 0.9,
+      height: height * 0.37,
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
