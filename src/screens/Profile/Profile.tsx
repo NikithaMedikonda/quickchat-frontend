@@ -5,7 +5,7 @@ import {
   useMemo,
   useCallback,
 } from 'react';
-import {View, Image, Text, TouchableOpacity} from 'react-native';
+import {View, Image, Text, TouchableOpacity, ScrollView} from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {useTranslation} from 'react-i18next';
 import {useNavigation} from '@react-navigation/native';
@@ -80,6 +80,7 @@ export const Profile = () => {
   }, []);
 
   return (
+    <ScrollView>
     <View style={styles.container}>
       <View style={styles.innerContainer}>
         <View style={styles.profileImageContainer}>
@@ -153,5 +154,6 @@ export const Profile = () => {
       </View>
       <ProfileMoreOptionsModal visible={modalVisible} onClose={onClose} />
     </View>
+    </ScrollView>
   );
 };

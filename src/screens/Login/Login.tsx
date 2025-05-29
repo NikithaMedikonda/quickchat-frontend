@@ -161,11 +161,13 @@ export function Login() {
       <ScrollView
         contentContainerStyle={styles.loginMainContainer}
         keyboardShouldPersistTaps="handled">
+        <View style={styles.imageContainer}>
         <Image
           style={styles.image}
           source={logo}
           accessibilityHint="logo-image"
         />
+        </View>
         <PhoneInput
           style={styles.phoneNumber}
           initialCountry={'in'}
