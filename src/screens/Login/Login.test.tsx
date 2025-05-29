@@ -35,6 +35,10 @@ jest.mock('react-native-phone-input', () => {
   return MockPhoneInput;
 });
 
+jest.mock('react-native-device-info', () => ({
+  getUniqueId: jest.fn(),
+}));
+
 jest.mock('@react-navigation/native', () => {
   const actualNav = jest.requireActual('@react-navigation/native');
   return {
@@ -56,6 +60,10 @@ jest.mock('../../services/LoginUser', () => ({
   loginUser: jest.fn(),
 }));
 
+jest.mock('../../services/GenerateDeviceId', () => ({
+  getDeviceId: jest.fn(),
+}));
+
 jest.mock('../../services/KeyDecryption', () => ({
   keyDecryption: () => ({
     decryptedPrivateKey: 'decryptedPrivateKey',
@@ -63,6 +71,10 @@ jest.mock('../../services/KeyDecryption', () => ({
 }));
 
 jest.mock('phone');
+
+jest.mock('react-native-device-info', () => ({
+  getUniqueId: jest.fn(),
+}));
 
 jest.mock('react-native-libsodium', () => ({
   to_base64: jest.fn((input: Uint8Array) =>
@@ -183,6 +195,32 @@ describe('Login Screen', () => {
         'No account exists with this phone number',
       );
       expect(state.registration.alertType).toBe('error');
+    });
+  });
+
+    test('should show alert if user is already login with this phone number', async () => {
+    (phone as jest.Mock).mockReturnValue({
+      isValid: true,
+      phoneNumber: '+918522041688',
+    });
+    (loginUser as jest.Mock).mockResolvedValue({
+      status: 409,
+      data: {
+        message: 'User is already logged in',
+      },
+    });
+
+    const phoneNumber = screen.getByPlaceholderText('Phone number');
+    fireEvent.changeText(phoneNumber, '8522041688');
+    fireEvent.changeText(screen.getByPlaceholderText('Password'), 'Anu@1234');
+    fireEvent.press(screen.getByText('Login'));
+
+    await waitFor(() => {
+      const state = store.getState();
+      expect(state.registration.alertMessage).toBe(
+        'Logged in from a new device using your number. Please check your account.',
+      );
+      expect(state.registration.alertType).toBe('warning');
     });
   });
 
