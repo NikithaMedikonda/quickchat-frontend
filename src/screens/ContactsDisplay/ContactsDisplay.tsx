@@ -152,6 +152,7 @@ export const ContactsDisplay = () => {
                           profilePicture: contact.profilePicture,
                           phoneNumber: contact.phoneNumber,
                           isBlocked: false,
+                          publicKey:contact.publicKey,
                           onBlockStatusChange: () => {},
                         },
                       });
@@ -174,7 +175,7 @@ export const ContactsDisplay = () => {
               <View style={styles.loadingContactsDisplay}>
                 <Text style={styles.loadingContactsText}>
                   {t(
-                    "It's good to see that, all of your contact are onquick Chat.",
+                    "It's good to see that, all of your contacts are on Quick Chat.",
                   )}
                 </Text>
               </View>
