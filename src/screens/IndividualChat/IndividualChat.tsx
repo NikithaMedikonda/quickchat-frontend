@@ -47,7 +47,8 @@ export const IndividualChat = ({route}: Props) => {
   const [isOnlineWith, setIsOnlineWith] = useState<boolean>(false);
   const dispatch = useDispatch();
   const {alertType, alertTitle, alertMessage} = useSelector(
-    (state: RootState) => state.registration,);
+    (state: RootState) => state.registration,
+  );
   const [isBlocked, setIsUserBlocked] = useState(false);
   const [receivedMessages, setReceivedMessages] = useState<
     ReceivePrivateMessage[]
@@ -76,18 +77,17 @@ export const IndividualChat = ({route}: Props) => {
   };
 
   const showAlert = useCallback(
-    (type: string, title: string, message: string) => {
+    (type: string, title: string, messages: string) => {
       dispatch(setAlertType(type));
       dispatch(setAlertTitle(title));
-      dispatch(setAlertMessage(message));
+      dispatch(setAlertMessage(messages));
       dispatch(setAlertVisible(true));
     },
     [dispatch],
   );
-   useEffect(() => {
+  useEffect(() => {
     dispatch(setReceivePhoneNumber(user.phoneNumber));
   }, [dispatch, user.phoneNumber]);
-
 
   useEffect(() => {
     const getBlockStatus = async () => {
@@ -300,7 +300,6 @@ export const IndividualChat = ({route}: Props) => {
   ]);
 
   useEffect(() => {
-    // console.log('UseEffect to sort the all');
     const all = [...fetchMessages, ...sendMessages, ...receivedMessages];
     const Messages = all.sort(
       (a, b) =>
@@ -311,7 +310,7 @@ export const IndividualChat = ({route}: Props) => {
 
   return (
     <View style={styles.container}>
-      <View>
+      <View style={styles.chatHeaderContainer}>
         <IndividualChatHeader
           name={user.name}
           profilePicture={user.profilePicture}
