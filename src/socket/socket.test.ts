@@ -74,7 +74,7 @@ describe('should test socket functions', () => {
     await receiveOffline({withChattingNumber: PhoneNumber, setIsOnline});
     expect(mockOn).toHaveBeenCalledTimes(1);
   });
-  test('should receive soket event if there is any user joined', async () => {
+  test('should receive socket event if there is any user joined', async () => {
     const userPhoneNumber = '+91 9866349126';
     const setSocketId = jest.fn();
     await receiveJoined({userPhoneNumber: userPhoneNumber, setSocketId});

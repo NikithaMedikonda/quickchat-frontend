@@ -1,6 +1,6 @@
 import io from 'socket.io-client';
-import { API_URL } from '../constants/api';
-import { SentPrivateMessage } from '../types/messsage.types';
+import {API_URL} from '../constants/api';
+import {SentPrivateMessage} from '../types/messsage.types';
 export const newSocket = io(`${API_URL}`);
 export async function socketConnection(userPhoneNumber: string) {
   newSocket.emit('join', userPhoneNumber);
@@ -49,7 +49,6 @@ export async function receiveJoined({
   setSocketId: (si: string) => void;
 }) {
   await newSocket.on('I-joined', (data: any) => {
-    console.log('In I joined', data.phoneNumber);
     if (data.phoneNumber === userPhoneNumber) {
       setSocketId(data.socketId);
     }
