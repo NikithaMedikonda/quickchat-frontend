@@ -10,16 +10,6 @@ import { HomeStackParamList } from '../../types/usenavigation.type';
 
 const Stack = createNativeStackNavigator<HomeStackParamList>();
 export const HomeStacks = () => {
-  useEffect(() => {
-    async function connect() {
-      const user = await EncryptedStorage.getItem('user');
-      if (user) {
-        const parsedUser: User = JSON.parse(user);
-        await socketConnection(parsedUser.phoneNumber);
-      }
-    }
-    connect();
-  }, []);
   return (
     <Stack.Navigator initialRouteName={'home'}>
       <Stack.Screen
