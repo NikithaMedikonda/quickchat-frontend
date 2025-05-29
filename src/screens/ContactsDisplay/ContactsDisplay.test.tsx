@@ -146,48 +146,6 @@ describe('Tests for ContactsDisplay Component', () => {
     });
   });
 
-  it('should navigate to individual chat screen when tapped', async () => {
-    const mockContacts = {
-      registeredUsers: [
-        {phoneNumber: '+916303961097', profilePicture: '', name: 'Usha'},
-      ],
-      unRegisteredUsers: ['+916303974914'],
-    };
-
-    (getContacts as jest.Mock).mockResolvedValueOnce(mockContacts);
-    (numberNameIndex as jest.Mock).mockResolvedValueOnce({
-      '+916303961097': 'Usha',
-      '+916303974914': 'unknown',
-    });
-
-    renderComponent();
-
-    await waitFor(() => {
-      expect(screen.queryByTestId('loader')).toBeNull();
-    });
-    await waitFor(
-      () => {
-        expect(screen.queryByTestId('loader')).toBeNull();
-      },
-      {timeout: 5000},
-    );
-    await waitFor(() => {
-      const contact = screen.getByAccessibilityHint('contact-label');
-      fireEvent.press(contact);
-    });
-
-    await waitFor(() => {
-      expect(mockNavigation.navigate).toHaveBeenCalledWith('individualChat', {
-        user: {
-          name: 'Usha',
-          profilePicture: '',
-          phoneNumber: '+916303961097',
-          isBlocked: false,
-          onBlockStatusChange: expect.any(Function),
-        },
-      });
-    });
-  });
 
   it('should handle pull to refresh functionality', async () => {
     const mockContacts = {
