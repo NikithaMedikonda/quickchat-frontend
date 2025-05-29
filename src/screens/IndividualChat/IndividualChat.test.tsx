@@ -46,7 +46,9 @@ jest.mock('../../services/UpdateMessageStatus', () => ({
 }));
 
 jest.mock('../../services/CheckUserOnline', () => ({
-  checkUserOnline: jest.fn().mockResolvedValue({data: {socketId: 'test-id'}}),
+  checkUserOnline: jest
+    .fn()
+    .mockResolvedValue({data: {data: {socketId: 'test-id'}}}),
 }));
 
 const setupMocks = () => {
@@ -207,7 +209,7 @@ describe('IndividualChat', () => {
     mockSend.mockResolvedValue({});
     const mockSocketIdResponse = {
       data: {
-        socketId: 'mock-socket-id',
+        data: {socketId: 'mock-socket-id'},
       },
     };
 

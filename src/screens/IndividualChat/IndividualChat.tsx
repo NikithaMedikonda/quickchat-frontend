@@ -1,15 +1,15 @@
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { useEffect, useRef, useState } from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {useEffect, useRef, useState} from 'react';
+import {ScrollView, Text, View} from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { Socket } from 'socket.io-client';
-import { IndividualChatHeader } from '../../components/IndividualChatHeader/IndividualChatHeader';
-import { MessageInput } from '../../components/MessageInput/MessageInput';
-import { MessageStatusTicks } from '../../components/MessageStatusTicks/MessageStatusTicks';
-import { TimeStamp } from '../../components/TimeStamp/TimeStamp';
-import { checkUserOnline } from '../../services/CheckUserOnline';
-import { getMessagesBetween } from '../../services/GetMessagesBetween';
-import { updateMessageStatus } from '../../services/UpdateMessageStatus';
+import {Socket} from 'socket.io-client';
+import {IndividualChatHeader} from '../../components/IndividualChatHeader/IndividualChatHeader';
+import {MessageInput} from '../../components/MessageInput/MessageInput';
+import {MessageStatusTicks} from '../../components/MessageStatusTicks/MessageStatusTicks';
+import {TimeStamp} from '../../components/TimeStamp/TimeStamp';
+import {checkUserOnline} from '../../services/CheckUserOnline';
+import {getMessagesBetween} from '../../services/GetMessagesBetween';
+import {updateMessageStatus} from '../../services/UpdateMessageStatus';
 import {
   newSocket,
   receiveJoined,
@@ -18,16 +18,16 @@ import {
   receivePrivateMessage,
   sendPrivateMessage,
 } from '../../socket/socket';
-import { useThemeColors } from '../../themes/colors';
+import {useThemeColors} from '../../themes/colors';
 import {
   AllMessages,
   Chats,
   ReceivePrivateMessage,
   SentPrivateMessage,
 } from '../../types/messsage.types';
-import { HomeStackParamList } from '../../types/usenavigation.type';
-import { User } from '../Profile/Profile';
-import { individualChatStyles } from './IndividualChat.styles';
+import {HomeStackParamList} from '../../types/usenavigation.type';
+import {User} from '../Profile/Profile';
+import {individualChatStyles} from './IndividualChat.styles';
 
 type Props = NativeStackScreenProps<HomeStackParamList, 'individualChat'>;
 
@@ -56,6 +56,8 @@ export const IndividualChat = ({route}: Props) => {
     }
   };
   useEffect(() => {
+    const withChattingPhoneNumber = user.phoneNumber;
+    newSocket.emit('online_with', withChattingPhoneNumber);
     setSocket(newSocket);
     async function checkJoined() {
       receiveJoined({
@@ -98,7 +100,7 @@ export const IndividualChat = ({route}: Props) => {
           phoneNumber: user.phoneNumber,
           authToken: authToken,
         });
-        setSocketId(userStatus.data.socketId);
+        setSocketId(userStatus.data.data.socketId);
       }
       const currentUser = await EncryptedStorage.getItem('user');
 
@@ -135,16 +137,12 @@ export const IndividualChat = ({route}: Props) => {
       const handleNewMessage = (data: SentPrivateMessage) => {
         setReceivedMessages(prev => [...prev, data]);
       };
-      await receivePrivateMessage(
-        recipientPhoneNumber,
-        handleNewMessage,
-      );
+      await receivePrivateMessage(recipientPhoneNumber, handleNewMessage);
     }
     receiveMessage();
   }, [recipientPhoneNumber, currentUserPhoneNumberRef, user.phoneNumber]);
 
   useEffect(() => {
-    const withChattingPhoneNumber = user.phoneNumber;
     const updateStatus = async () => {
       const currentUser = await EncryptedStorage.getItem('user');
 
@@ -162,7 +160,7 @@ export const IndividualChat = ({route}: Props) => {
       await updateMessageStatus(details);
     };
     updateStatus();
-    newSocket.emit('online_with', withChattingPhoneNumber);
+
     async function checkOffline() {
       const currentUser = await EncryptedStorage.getItem('user');
 
@@ -189,7 +187,8 @@ export const IndividualChat = ({route}: Props) => {
       }
     }
     checkOnline();
-
+    const withChattingPhoneNumber = user.phoneNumber;
+    newSocket.emit('online_with', withChattingPhoneNumber);
     const sendMessage = async () => {
       if (socket && message.trim() !== '') {
         const timestamp = new Date().toISOString();
@@ -200,8 +199,10 @@ export const IndividualChat = ({route}: Props) => {
             phoneNumber: user.phoneNumber,
             authToken: authToken,
           });
-          setSocketId(userStatus.data.socketId);
+
+          setSocketId(userStatus.data.data.socketId);
         }
+
         if (socketId && !isOnlineWith) {
           status = 'delivered';
         } else if (socketId && isOnlineWith) {
@@ -235,6 +236,7 @@ export const IndividualChat = ({route}: Props) => {
   ]);
 
   useEffect(() => {
+    // console.log('UseEffect to sort the all');
     const all = [...fetchMessages, ...sendMessages, ...receivedMessages];
     const Messages = all.sort(
       (a, b) =>
