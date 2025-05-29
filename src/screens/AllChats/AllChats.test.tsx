@@ -232,6 +232,8 @@ describe('AllChats Component', () => {
         name: '+1234567890',
         profilePicture: null,
         phoneNumber: '+1234567890',
+        isBlocked: false,
+        onBlockStatusChange: expect.any(Function),
       },
     });
   });
