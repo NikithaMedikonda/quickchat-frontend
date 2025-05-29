@@ -102,7 +102,7 @@ export function Login() {
 
         dispatch(hide());
         dispatch(setAlertVisible(true));
-        showAlert('success', 'Login', 'Successfully login');
+        showAlert('success', 'Login', 'Successfully Logged in');
 
         dispatch(
           setLoginSuccess({
