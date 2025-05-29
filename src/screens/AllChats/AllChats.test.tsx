@@ -107,7 +107,7 @@ describe('AllChats Component', () => {
   it('should logout and redirect if numberNameIndex returns null', async () => {
     (numberNameIndex as jest.Mock).mockResolvedValue(null);
 
-     await waitFor(() => {
+    await waitFor(() => {
       render(
         <Provider store={store}>
           <NavigationContainer>
@@ -156,7 +156,7 @@ describe('AllChats Component', () => {
       data: {chats: emptyChats},
     });
 
-     await waitFor(() => {
+    await waitFor(() => {
       render(
         <Provider store={store}>
           <NavigationContainer>
@@ -182,7 +182,7 @@ describe('AllChats Component', () => {
       data: {chats: mockChats},
     });
 
-     await waitFor(() => {
+    await waitFor(() => {
       render(
         <Provider store={store}>
           <NavigationContainer>
@@ -232,12 +232,15 @@ describe('AllChats Component', () => {
         name: '+1234567890',
         profilePicture: null,
         phoneNumber: '+1234567890',
+        isBlocked: false,
+        publicKey: '',
+        onBlockStatusChange: expect.any(Function),
       },
     });
   });
 
   it('should render plus icon for adding new chats', async () => {
-     await waitFor(() => {
+    await waitFor(() => {
       render(
         <Provider store={store}>
           <NavigationContainer>
@@ -277,7 +280,7 @@ describe('AllChats Component', () => {
       data: {chats: mockChats},
     });
 
-      await waitFor(() => {
+    await waitFor(() => {
       render(
         <Provider store={store}>
           <NavigationContainer>
