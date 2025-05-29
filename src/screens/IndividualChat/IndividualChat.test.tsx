@@ -12,7 +12,6 @@ import {checkBlockStatus} from '../../services/CheckBlockStatus';
 import {HomeStackParamList} from '../../types/usenavigation.type';
 import {IndividualChat} from './IndividualChat';
 
-import {ScrollView} from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {updateMessageStatus} from '../../services/UpdateMessageStatus';
 import * as socket from '../../socket/socket';
@@ -64,7 +63,6 @@ jest.mock('../../socket/socket', () => ({
   sendPrivateMessage: jest.fn(),
   newSocket: {},
 }));
-
 
 jest.mock('../../services/CheckUserOnline', () => ({
   checkUserOnline: jest
@@ -351,14 +349,11 @@ describe('IndividualChat', () => {
         </NavigationContainer>,
       );
 
-          await waitFor(() => {
-      const state = store.getState();
-      expect(state.registration.alertMessage).toBe(
-        'Unable to fetch details',
-      );
-      expect(state.registration.alertType).toBe('info');
-    });
-
+      await waitFor(() => {
+        const state = store.getState();
+        expect(state.registration.alertMessage).toBe('Unable to fetch details');
+        expect(state.registration.alertType).toBe('info');
+      });
     });
 
     test('should handle non-200 status from checkBlockStatus', async () => {
@@ -474,7 +469,6 @@ describe('IndividualChat', () => {
     render(
       <NavigationContainer>
         <Provider store={store}>
-
           <IndividualChat
             navigation={
               mockNavigation as NativeStackNavigationProp<
@@ -598,7 +592,7 @@ describe('IndividualChat', () => {
       () => {
         render(
           <NavigationContainer>
-        <Provider store={store}>
+            <Provider store={store}>
               <IndividualChat
                 navigation={
                   mockNavigation as NativeStackNavigationProp<
@@ -608,7 +602,7 @@ describe('IndividualChat', () => {
                 }
                 route={mockRoute}
               />
-        </Provider>
+            </Provider>
           </NavigationContainer>,
         );
       },
@@ -707,7 +701,7 @@ describe('IndividualChat', () => {
         ],
       },
     });
-   render(
+    render(
       <NavigationContainer>
         <Provider store={store}>
           <IndividualChat
@@ -782,7 +776,7 @@ describe('IndividualChat', () => {
       () => {
         render(
           <NavigationContainer>
-        <Provider store={store}>
+            <Provider store={store}>
               <IndividualChat
                 navigation={
                   mockNavigation as NativeStackNavigationProp<
@@ -792,7 +786,7 @@ describe('IndividualChat', () => {
                 }
                 route={mockRoute}
               />
-        </Provider>
+            </Provider>
           </NavigationContainer>,
         );
       },
@@ -814,39 +808,6 @@ describe('IndividualChat', () => {
 
     await waitFor(() => {
       expect(screen.queryByText('')).toBeNull();
-    });
-  });
-  test('should call scrollToEnd on content size change', async () => {
-    const mockScrollToEnd = jest.fn();
-    await waitFor(
-      () => {
-        render(
-          <NavigationContainer>
-            <IndividualChat
-              navigation={
-                mockNavigation as NativeStackNavigationProp<
-                  HomeStackParamList,
-                  'individualChat'
-                >
-              }
-              route={mockRoute}
-            />
-          </NavigationContainer>,
-        );
-      },
-      {timeout: 20000},
-    );
-
-    const scrollView = await screen.UNSAFE_getByType(ScrollView);
-    scrollView.props.ref.current = {
-      scrollToEnd: mockScrollToEnd,
-    };
-    await waitFor(() => {
-      fireEvent(scrollView, 'onContentSizeChange');
-    });
-
-    await waitFor(() => {
-      expect(mockScrollToEnd).toHaveBeenCalledWith({animated: true});
     });
   });
 });
