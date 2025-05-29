@@ -10,6 +10,7 @@ import {Provider} from 'react-redux';
 import {deleteUser} from '../../services/DeleteUser';
 import {store} from '../../store/store';
 import {ProfileMoreOptionsModal} from './ProfileMoreOptionsModal';
+import {logoutUser} from '../../services/LogoutUser';
 
 const mockReplace = jest.fn();
 jest.mock('@react-navigation/native', () => ({
@@ -17,6 +18,10 @@ jest.mock('@react-navigation/native', () => ({
     navigate: jest.fn(),
     replace: mockReplace,
   }),
+}));
+
+jest.mock('../../services/LogoutUser', () => ({
+  logoutUser: jest.fn(),
 }));
 
 jest.mock('react-native-encrypted-storage', () => ({
@@ -114,8 +119,8 @@ describe('Profile More Options Modal', () => {
       expect(mockOnClose).toHaveBeenCalledTimes(1);
     });
   });
-
   it('opens and confirms logout modal', async () => {
+    (logoutUser as jest.Mock).mockResolvedValue({status: 200});
     await waitFor(() => {
       renderComponent();
     });
