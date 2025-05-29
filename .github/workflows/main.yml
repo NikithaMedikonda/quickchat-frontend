@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - fix/edit-profile
+      - update-login-status
 
 jobs:
   lint-and-test:

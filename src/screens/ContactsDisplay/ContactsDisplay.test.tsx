@@ -258,6 +258,52 @@ describe('Tests for ContactsDisplay Component', () => {
     });
   });
 
+  it('should show alert when getContacts throws error', async () => {
+    (getContacts as jest.Mock).mockRejectedValue(new Error('Failed to fetch'));
+    render(
+      <Provider store={store}>
+        <ContactsDisplay />
+      </Provider>,
+    );
+    await waitFor(() => {
+      const state = store.getState();
+      expect(state.registration.alertMessage).toBe('Network error');
+      expect(state.registration.alertType).toBe('info');
+    });
+  });
+
+  it('should navigate to individual chat screen when it is clicked on contact', async () => {
+    (getContacts as jest.Mock).mockResolvedValue({
+      data: {
+        registeredUsers: [
+          {
+            name: 'Mamatha',
+            profilePicture: 'https://mamatha.profile.come',
+            phoneNumber: '+916303974914',
+          },
+        ],
+        unRegisteredUsers: [],
+      },
+    });
+    await waitFor(() => {
+      renderComponent();
+    });
+    await waitFor(() => {
+      expect(screen.getByText('Mamatha')).toBeTruthy();
+    });
+
+    fireEvent.press(screen.getByAccessibilityHint('contact-label'));
+
+    await waitFor(() => {
+      expect(mockNavigation.navigate).toHaveBeenCalledWith('individualChat', {
+        user: {
+          name: 'Mamatha',
+          profilePicture: 'https://mamatha.profile.come',
+          phoneNumber: '+916303974914',
+          isBlocked: false,
+          onBlockStatusChange: expect.any(Function),
+        },
+      });
   it('should goback when tapped on goback arrow', async () => {
     renderComponent();
     await waitFor(() => {

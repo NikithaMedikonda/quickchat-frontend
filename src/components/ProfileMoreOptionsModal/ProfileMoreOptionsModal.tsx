@@ -12,7 +12,6 @@ import {
 } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { useDispatch, useSelector } from 'react-redux';
-import { User } from '../../screens/Profile/Profile';
 import { deleteUser } from '../../services/DeleteUser';
 import { hide, show } from '../../store/slices/loadingSlice';
 import { logout } from '../../store/slices/loginSlice';
@@ -24,16 +23,19 @@ import {
   setAlertVisible,
 } from '../../store/slices/registrationSlice';
 import { RootState } from '../../store/store';
-import { useThemeColors } from '../../themes/colors';
 import { useImagesColors } from '../../themes/images';
 import {
   InitialStackProps,
   NavigationProps,
   ProfileScreenNavigationProp,
 } from '../../types/usenavigation.type';
-import { CustomAlert } from '../CustomAlert/CustomAlert';
+import {User} from '../../screens/Profile/Profile';
+import {useThemeColors} from '../../themes/colors';
+import {getStyles} from './ProfileMoreOptionsModal.styles';
+import {CustomAlert} from '../CustomAlert/CustomAlert';
+import {logoutUser} from '../../services/LogoutUser';
 import { ConfirmModal } from '../GenericConfirmModal/ConfirmModal';
-import { getStyles } from './ProfileMoreOptionsModal.styles';
+
 
 export const ProfileMoreOptionsModal = ({
   visible,
@@ -102,15 +104,28 @@ export const ProfileMoreOptionsModal = ({
   };
 
   const onConfirmLogout = async () => {
-    handleModalClose();
-    dispatch(logout());
-    dispatch(setAlertVisible(true));
-    showAlert('success', 'Logged out', 'Successfully logout');
-    await EncryptedStorage.clear();
-    setTimeout(() => {
-      dispatch(setAlertVisible(false));
-      navigation.replace('login');
-    }, 1000);
+    try {
+      handleModalClose();
+      dispatch(logout());
+      dispatch(setAlertVisible(true));
+      const payload = {
+        phoneNumber,
+        authToken,
+      };
+      const result = await logoutUser(payload);
+      if (result.status === 200) {
+        showAlert('success', 'Login out', 'Successfully logout');
+        await EncryptedStorage.clear();
+        setTimeout(() => {
+          dispatch(setAlertVisible(false));
+          navigation.replace('login');
+        }, 1000);
+      }
+    } catch (error) {
+      console.log(error);
+      showAlert('info', 'Logout failed', 'Something went wrong while logout');
+    }
+
   };
 
   const onConfirmDelete = async () => {

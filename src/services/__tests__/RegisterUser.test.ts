@@ -19,6 +19,10 @@ jest.mock('react-native-libsodium', () => ({
   randombytes_buf: jest.fn(() => new Uint8Array(24).fill(3)),
 }));
 
+jest.mock('react-native-device-info', () => ({
+  getUniqueId: jest.fn(),
+}));
+
 describe('registerUser', () => {
   const payload = {
     image: 'image.jpg',
@@ -33,7 +37,9 @@ describe('registerUser', () => {
     publicKey: 'mock-publicKey',
     privateKey: 'mock-privateKey',
   };
-
+  const deviceId = {
+    deviceId: 'gfjdaskjhskqdhgfcdsvjbk',
+  };
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -53,6 +59,7 @@ describe('registerUser', () => {
       password: 'Test@1234',
       publicKey: keys.publicKey,
       privateKey: encryptedPrivateKey,
+      deviceId: deviceId.deviceId,
     };
 
     const mockResponse = {
@@ -68,6 +75,7 @@ describe('registerUser', () => {
         isDeleted: false,
         publicKey: keys.publicKey,
         privateKey: encryptedPrivateKey,
+        deviceId: deviceId.deviceId,
       },
     };
 
@@ -76,7 +84,7 @@ describe('registerUser', () => {
       json: jest.fn().mockResolvedValue(mockResponse),
     });
 
-    const result = await registerUser(payload, keys);
+    const result = await registerUser(payload, keys, deviceId);
 
     expect(mockedFetch).toHaveBeenCalledTimes(1);
     expect(mockedFetch).toHaveBeenCalledWith(`${API_URL}/api/users`, {
@@ -97,7 +105,7 @@ describe('registerUser', () => {
       json: jest.fn().mockResolvedValue(mockErrorResponse),
     });
 
-    const result = await registerUser(payload, keys);
+    const result = await registerUser(payload, keys, deviceId);
 
     expect(result.status).toBe(409);
     expect(result.data).toEqual(mockErrorResponse);
@@ -109,7 +117,7 @@ describe('registerUser', () => {
       json: jest.fn().mockRejectedValue(new Error('Invalid JSON')),
     });
 
-    const result = await registerUser(payload, keys);
+    const result = await registerUser(payload, keys, deviceId);
 
     expect(result.status).toBe(200);
     expect(result.data).toEqual({});
@@ -118,6 +126,8 @@ describe('registerUser', () => {
   it('should throw if fetch fails', async () => {
     mockedFetch.mockRejectedValueOnce(new Error('Network Error'));
 
-    await expect(registerUser(payload, keys)).rejects.toThrow('Network Error');
+    await expect(registerUser(payload, keys, deviceId)).rejects.toThrow(
+      'Network Error',
+    );
   });
 });

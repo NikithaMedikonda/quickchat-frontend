@@ -47,7 +47,19 @@ export const ContactsDisplay = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const homeStackNavigation = useNavigation<HomeStackProps>();
+  const showAlert = useCallback(
+    (type: string, title: string, message: string) => {
+      dispatch(setAlertType(type));
+      dispatch(setAlertTitle(title));
+      dispatch(setAlertMessage(message));
+      dispatch(setAlertVisible(true));
+    },
+    [dispatch],
+  );
 
+  const handleGoBack = useCallback(() => {
+    navigation.goBack();
+  }, [navigation]);
   const colors = useThemeColors();
   const styles = getStyles(colors);
   const renderHeaderLeft = useCallback(() => <BackButton />, []);

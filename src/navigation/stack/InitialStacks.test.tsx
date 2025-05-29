@@ -18,7 +18,9 @@ jest.mock('react-native-encrypted-storage', () => ({
   setItem: jest.fn(),
   clear: jest.fn(),
 }));
-
+jest.mock('react-native-device-info', () => ({
+  getUniqueId: jest.fn(),
+}));
 jest.mock('react-native-image-crop-picker', () => ({
   openPicker: jest.fn(),
   openCamera: jest.fn(),

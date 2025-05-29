@@ -8,6 +8,10 @@ jest.mock('react-native-encrypted-storage', () => ({
   clear: jest.fn(),
 }));
 
+jest.mock('react-native-device-info', () => ({
+  getUniqueId: jest.fn(),
+}));
+
 jest.mock('react-native-image-crop-picker', () => ({
   openCamera: jest.fn().mockResolvedValue({path: 'mocked/path.jpg'}),
   openPicker: jest.fn().mockResolvedValue({path: 'mocked/path.jpg'}),
