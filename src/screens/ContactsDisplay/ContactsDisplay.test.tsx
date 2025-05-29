@@ -41,7 +41,7 @@ describe('ContactsDisplay Component', () => {
   const renderComponent = () => {
     render(
       <Provider store={store}>
-          <ContactsDisplay />
+        <ContactsDisplay />
       </Provider>,
     );
   };
@@ -198,15 +198,15 @@ describe('ContactsDisplay Component', () => {
     (getContacts as jest.Mock).mockRejectedValue(new Error('Failed to fetch'));
     render(
       <Provider store={store}>
-          <ContactsDisplay />
+        <ContactsDisplay />
       </Provider>,
     );
     await waitFor(() => {
       const state = store.getState();
       expect(state.registration.alertMessage).toBe('Network error');
       expect(state.registration.alertType).toBe('info');
+    });
   });
-});
 
   it('should navigate to individual chat screen when it is clicked on contact', async () => {
     (getContacts as jest.Mock).mockResolvedValue({
@@ -240,6 +240,6 @@ describe('ContactsDisplay Component', () => {
           onBlockStatusChange: expect.any(Function),
         },
       });
+    });
   });
-})
 });
