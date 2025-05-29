@@ -18,10 +18,6 @@ jest.mock('react-native-device-info', () => ({
   getUniqueId: jest.fn(),
 }));
 
-jest.mock('react-native-device-info', () => ({
-  getUniqueId: jest.fn(),
-}));
-
 jest.mock('../../services/GenerateDeviceId', () => ({
   getDeviceId: jest.fn(),
 }));
