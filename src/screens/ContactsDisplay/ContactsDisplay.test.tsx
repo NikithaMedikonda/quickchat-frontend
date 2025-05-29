@@ -103,7 +103,7 @@ describe('Tests for ContactsDisplay Component', () => {
     await waitFor(() => {
       expect(
         screen.getByText(
-          "It's good to see that, all of your contact are onquick Chat.",
+          "It's good to see that, all of your contact are on Quick Chat.",
         ),
       ).toBeTruthy();
       expect(
