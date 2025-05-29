@@ -35,6 +35,7 @@ import {useThemeColors} from '../../themes/colors';
 import {HomeTabsProps, NavigationProps} from '../../types/usenavigation.type';
 import {CustomAlert} from '../../components/CustomAlert/CustomAlert';
 import {getStyles} from './Registration.styles';
+import { getDeviceId } from '../../services/GenerateDeviceId';
 
 export const Registration = () => {
   const {alertType, alertTitle, alertMessage} = useSelector(
@@ -116,6 +117,7 @@ export const Registration = () => {
     }
 
     try {
+      const deviceId = await getDeviceId();
       const keys = await keyGeneration();
       const result = await registerUser(
         {...form, image},
@@ -123,6 +125,7 @@ export const Registration = () => {
           publicKey: keys.publicKey,
           privateKey: keys.privateKey,
         },
+        {deviceId:deviceId},
       );
       if (result.status === 409) {
         dispatch(hide());
