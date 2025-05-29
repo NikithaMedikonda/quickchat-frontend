@@ -5,8 +5,7 @@ import {updateProfile} from '../../services/UpdateProfile';
 import {store} from '../../store/store';
 import {resetForm} from '../../store/slices/registrationSlice';
 import {EditProfile} from './EditProfile';
-import {BackButton} from './EditProfile';
-import { useImagesColors } from '../../themes/images';
+
 
 jest.mock('react-native-encrypted-storage', () => ({
   setItem: jest.fn(),
@@ -41,7 +40,6 @@ jest.mock('@react-navigation/native', () => {
 });
 
 describe('EditProfile Component', () => {
-  const {androidBackArrow, iOSBackArrow} = useImagesColors();
   beforeEach(() => {
     jest.clearAllMocks();
     store.dispatch(resetForm());
