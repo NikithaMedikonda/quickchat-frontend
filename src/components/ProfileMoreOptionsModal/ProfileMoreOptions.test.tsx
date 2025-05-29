@@ -137,7 +137,7 @@ describe('Profile More Options Modal', () => {
     await waitFor(() => {
       const state = store.getState();
       expect(state.registration.alertType).toBe('success');
-      expect(state.registration.alertMessage).toBe('Successfully logout');
+      expect(state.registration.alertMessage).toBe('Successfully logged out');
     });
 
     await waitFor(() => {
