@@ -37,6 +37,7 @@ import {
 import {CustomAlert} from '../../components/CustomAlert/CustomAlert';
 
 import {loginStyles} from './Login.styles';
+import { getDeviceId } from '../../services/GenerateDeviceId';
 
 export function Login() {
   const homeNavigation = useNavigation<HomeTabsProps>();
@@ -89,7 +90,8 @@ export function Login() {
     }
 
     try {
-      const result = await loginUser({...form});
+      const deviceId = await getDeviceId();
+       const result = await loginUser(form,deviceId);
 
       if (result.status === 200) {
         const user = result?.data?.user;
@@ -139,7 +141,15 @@ export function Login() {
           'Login failed',
           'Incorrect phone number or password. Please try again.',
         );
-      } else {
+      } 
+      else if (result.status === 409) {
+        dispatch(hide());
+        showAlert(
+          'warning',
+          'Login failed',
+          'Logged in from a new device using your number. Please check your account.',
+        );
+      }else {
         dispatch(hide());
         showAlert('error', 'Login failed', 'Something went wrong while login');
       }
