@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - update-login-status
 
 jobs:
   lint-and-test:
