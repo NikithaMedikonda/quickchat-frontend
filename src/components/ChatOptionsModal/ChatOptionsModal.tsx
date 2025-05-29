@@ -33,6 +33,7 @@ type Props = {
   onClose: () => void;
   isUserBlocked: boolean;
   onBlockStatusChange?: (isBlocked: boolean) => void;
+  setIsCleared: (isCleared: boolean) => void;
 };
 
 export const ChatOptionsModal = ({
@@ -40,6 +41,7 @@ export const ChatOptionsModal = ({
   onClose,
   isUserBlocked,
   onBlockStatusChange,
+  setIsCleared,
 }: Props) => {
   const receiverPhoneNumber = useSelector(
     (state: RootState) => state.registration.receivePhoneNumber,
@@ -145,8 +147,8 @@ export const ChatOptionsModal = ({
         });
 
         if (result && (result.status === 200 || result.status === 204)) {
+          setIsCleared(true);
           showAlert('success', 'Deleted', 'Chat deleted successfully.');
-
           setTimeout(() => {
             dispatch(setAlertVisible(false));
             homeNavigation.replace('hometabs');
