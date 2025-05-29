@@ -65,6 +65,8 @@ export const IndividualChat = ({route}: Props) => {
   const colors = useThemeColors();
   const styles = individualChatStyles(colors);
   const scrollViewRef = useRef<ScrollView>(null);
+  const [isCleared, setIsCleared] = useState(false);
+
   const [socketId, setSocketId] = useState<string | null>(null);
   const scrollToBottom = async () => {
     if (scrollViewRef.current) {
@@ -159,6 +161,10 @@ export const IndividualChat = ({route}: Props) => {
   }, [user.phoneNumber]);
   useEffect(() => {
     async function getMessages() {
+      if (isCleared) {
+        setAllMessages([]);
+        return;
+      }
       const authToken = await EncryptedStorage.getItem('authToken');
       if (authToken) {
         const userStatus = await checkUserOnline({
@@ -193,7 +199,7 @@ export const IndividualChat = ({route}: Props) => {
     }
 
     getMessages();
-  }, [isOnlineWith, recipientPhoneNumber, socketId, user.phoneNumber]);
+  }, [isOnlineWith, recipientPhoneNumber, socketId, user.phoneNumber, isCleared]);
   useEffect(() => {
     setSocket(newSocket);
 
@@ -204,7 +210,7 @@ export const IndividualChat = ({route}: Props) => {
       await receivePrivateMessage(recipientPhoneNumber, handleNewMessage);
     }
     receiveMessage();
-  }, [recipientPhoneNumber, currentUserPhoneNumberRef, user.phoneNumber]);
+  }, [recipientPhoneNumber, currentUserPhoneNumberRef,isCleared, user.phoneNumber]);
 
   useEffect(() => {
     const updateStatus = async () => {
@@ -317,6 +323,7 @@ export const IndividualChat = ({route}: Props) => {
           phoneNumber={user.phoneNumber}
           isBlocked={isBlocked}
           onBlockStatusChange={handleBlockStatusChange}
+          setIsCleared={setIsCleared}
         />
       </View>
       <View style={styles.chatMainContainer}>

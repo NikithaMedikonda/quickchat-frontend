@@ -1,15 +1,18 @@
+import {NavigationContainer} from '@react-navigation/native';
 import {
+  act,
   fireEvent,
   render,
   screen,
   waitFor,
 } from '@testing-library/react-native';
-import {Provider} from 'react-redux';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {store} from '../../store/store';
-import {ChatOptionsModal} from './ChatOptionsModal';
+import {Provider} from 'react-redux';
+import {deleteChat} from '../../services/DeleteChat';
 import {blockUser} from '../../services/UserBlock';
 import {unblockUser} from '../../services/UserUnblock';
+import {store} from '../../store/store';
+import {ChatOptionsModal} from './ChatOptionsModal';
 
 jest.mock('../../themes/colors', () => ({
   useThemeColors: () => ({
@@ -37,6 +40,20 @@ jest.mock('../../services/UserBlock', () => ({
 jest.mock('../../services/UserUnblock', () => ({
   unblockUser: jest.fn(() => Promise.resolve({status: 200})),
 }));
+jest.mock('../../services/DeleteChat', () => ({
+  deleteChat: jest.fn(() => Promise.resolve({status: 200})),
+}));
+
+const mockReplace = jest.fn();
+jest.mock('@react-navigation/native', () => {
+  const actualNavigationModule = jest.requireActual('@react-navigation/native');
+  return {
+    ...actualNavigationModule,
+    useNavigation: () => ({
+      replace: mockReplace,
+    }),
+  };
+});
 
 (EncryptedStorage.getItem as jest.Mock).mockImplementation(key => {
   if (key === 'user') {
@@ -54,15 +71,21 @@ describe('ChatOptionsModal', () => {
   const renderComponent = (visible = true) =>
     render(
       <Provider store={store}>
-        <ChatOptionsModal
-          visible={visible}
-          onClose={mockOnClose}
-          isUserBlocked={false}
-        />
+        <NavigationContainer>
+          <ChatOptionsModal
+            visible={visible}
+            onClose={mockOnClose}
+            isUserBlocked={false}
+            setIsCleared={jest.fn()}
+          />
+        </NavigationContainer>
       </Provider>,
     );
 
   beforeEach(() => {
+    jest.clearAllMocks();
+  });
+  afterAll(() => {
     jest.clearAllMocks();
   });
 
@@ -83,12 +106,15 @@ describe('ChatOptionsModal', () => {
 
     render(
       <Provider store={store}>
-        <ChatOptionsModal
-          visible={true}
-          onClose={mockOnClose}
-          isUserBlocked={false}
-          onBlockStatusChange={mockOnBlockStatusChange}
-        />
+        <NavigationContainer>
+          <ChatOptionsModal
+            visible={true}
+            onClose={mockOnClose}
+            isUserBlocked={false}
+            onBlockStatusChange={mockOnBlockStatusChange}
+            setIsCleared={jest.fn()}
+          />
+        </NavigationContainer>
       </Provider>,
     );
 
@@ -111,12 +137,15 @@ describe('ChatOptionsModal', () => {
 
     render(
       <Provider store={store}>
-        <ChatOptionsModal
-          visible={true}
-          onClose={mockOnClose}
-          isUserBlocked={true}
-          onBlockStatusChange={mockOnBlockStatusChange}
-        />
+        <NavigationContainer>
+          <ChatOptionsModal
+            visible={true}
+            onClose={mockOnClose}
+            isUserBlocked={true}
+            onBlockStatusChange={mockOnBlockStatusChange}
+            setIsCleared={jest.fn()}
+          />
+        </NavigationContainer>
       </Provider>,
     );
 
@@ -140,12 +169,15 @@ describe('ChatOptionsModal', () => {
 
     render(
       <Provider store={store}>
-        <ChatOptionsModal
-          visible={true}
-          onClose={mockOnClose}
-          isUserBlocked={true}
-          onBlockStatusChange={mockOnBlockStatusChange}
-        />
+        <NavigationContainer>
+          <ChatOptionsModal
+            visible={true}
+            onClose={mockOnClose}
+            isUserBlocked={true}
+            onBlockStatusChange={mockOnBlockStatusChange}
+            setIsCleared={jest.fn()}
+          />
+        </NavigationContainer>
       </Provider>,
     );
 
@@ -231,6 +263,109 @@ describe('ChatOptionsModal', () => {
       expect(
         screen.queryByText('Are you sure you want to block this user?'),
       ).toBeNull();
+    });
+  });
+
+  it('opens delete confirmation modal when "Delete Chat" is pressed', async () => {
+    renderComponent();
+    fireEvent.press(screen.getByText('Delete Chat'));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Are you sure you want to delete this chat?'),
+      ).toBeTruthy();
+      expect(screen.getByText('Delete')).toBeTruthy();
+    });
+  });
+
+  it('calls deleteChat and shows success alert on confirm delete', async () => {
+    renderComponent();
+    fireEvent.press(screen.getByText('Delete Chat'));
+    const confirmButton = await screen.findByText('Delete');
+    fireEvent.press(confirmButton);
+
+    await waitFor(() => {
+      expect(deleteChat).toHaveBeenCalled();
+    });
+
+    act(() => {
+      jest.advanceTimersByTime(1000);
+    });
+
+    await waitFor(() => {
+      const state = store.getState();
+      expect(state.registration.alertMessage).toBe(
+        'Chat deleted successfully.',
+      );
+      expect(state.registration.alertType).toBe('success');
+      expect(mockReplace).toHaveBeenCalledWith('hometabs');
+    });
+  });
+
+  it('shows alert on error during delete chat', async () => {
+    (deleteChat as jest.Mock).mockRejectedValueOnce(new Error('API Error'));
+
+    renderComponent();
+    fireEvent.press(screen.getByText('Delete Chat'));
+    const confirmButton = await screen.findByText('Delete');
+    fireEvent.press(confirmButton);
+
+    await waitFor(() => {
+      const state = store.getState();
+      expect(state.registration.alertMessage).toBe('Unable to delete the chat');
+      expect(state.registration.alertType).toBe('info');
+    });
+  });
+
+  it('shows warning alert if deleteChat response status is not 200', async () => {
+    (deleteChat as jest.Mock).mockResolvedValueOnce({status: 500});
+
+    renderComponent();
+    fireEvent.press(screen.getByText('Delete Chat'));
+    const confirmButton = await screen.findByText('Delete');
+    fireEvent.press(confirmButton);
+
+    await waitFor(() => {
+      const state = store.getState();
+      expect(state.registration.alertTitle).toBe('Failed');
+      expect(state.registration.alertMessage).toBe(
+        'Failed to delete the chat.',
+      );
+      expect(state.registration.alertType).toBe('warning');
+    });
+  });
+
+  it('shows alert on network error during block/unblock', async () => {
+    const mockOnBlockStatusChange = jest.fn();
+
+    (blockUser as jest.Mock).mockRejectedValueOnce(
+      new TypeError('Network request failed'),
+    );
+
+    render(
+      <Provider store={store}>
+        <NavigationContainer>
+          <ChatOptionsModal
+            visible={true}
+            onClose={mockOnClose}
+            isUserBlocked={false}
+            onBlockStatusChange={mockOnBlockStatusChange}
+            setIsCleared={jest.fn()}
+          />
+        </NavigationContainer>
+      </Provider>,
+    );
+
+    fireEvent.press(screen.getByText('Block User'));
+    const confirmButton = await screen.findByText('Block');
+    fireEvent.press(confirmButton);
+
+    await waitFor(() => {
+      const state = store.getState();
+      expect(state.registration.alertMessage).toBe(
+        'Unable to block or unblock the user',
+      );
+      expect(state.registration.alertType).toBe('info');
     });
   });
 });
