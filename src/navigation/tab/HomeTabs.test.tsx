@@ -64,5 +64,21 @@ describe('Welcome Screen', () => {
       fireEvent.press(profileTab);
     });
   });
+   it('navigates to profile screen when profile tab is pressed', async () => {
+    const {findByText, queryByText} = render(
+      <Provider store={store}>
+        <NavigationContainer>
+          <HomeTabs />
+        </NavigationContainer>
+      </Provider>,
+    );
 
+    const profileTab = await findByText('Profile');
+
+    fireEvent.press(profileTab);
+
+    await waitFor(() => {
+      expect(queryByText('First Name')).toBeTruthy();
+    });
+  });
 });
