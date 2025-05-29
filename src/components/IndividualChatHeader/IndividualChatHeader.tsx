@@ -7,6 +7,7 @@ import {HomeStackProps} from '../../types/usenavigation.type';
 import {UserDetails} from '../../types/user.types';
 import {ChatOptionsModal} from '../ChatOptionsModal/ChatOptionsModal';
 import {individualChatHeaderStyles} from './IndividualChatHeader.styles';
+import { DEFAULT_PROFILE_IMAGE } from '../../constants/defaultImage';
 
 interface IndividualChatHeaderProps extends UserDetails {
   isBlocked: boolean;
@@ -48,7 +49,7 @@ export const IndividualChatHeader = ({
           />
         </TouchableOpacity>
         <Image
-          source={{uri: profilePicture}}
+          source={{uri: profilePicture || DEFAULT_PROFILE_IMAGE}}
           style={styles.profilePicture}
           accessibilityHint="profile-picture"
         />
