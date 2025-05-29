@@ -1,4 +1,4 @@
-import {Dimensions, StyleSheet} from 'react-native';
+import {Dimensions, StyleSheet,} from 'react-native';
 import {Colors} from '../../themes/colors';
 
 const {width, height} = Dimensions.get('window');
@@ -24,15 +24,19 @@ export const getStyles = (colors: Colors) =>
       color: colors.text,
       left: 0.05 * width,
       fontWeight: 'bold',
-      paddingTop: 0.03 * height,
-      paddingBottom: 0.03 * height,
+      paddingTop: 0.02 * height,
+      paddingBottom: 0.02 * height,
       fontSize: 18,
+      paddingLeft: 0.02 * width,
+      paddingRight: 0.02 * width,
     },
     contactDetailsContainer: {
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'flex-start',
-      gap: 0.03 * height,
+      paddingLeft: 0.04 * width,
+      paddingRight: 0.04 * width,
+      gap: 0.02 * height,
     },
     scroll: {
       flexGrow: 1,
