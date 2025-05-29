@@ -8,6 +8,7 @@ import {InitialStacks} from './src/navigation/stack/InitialStacks';
 import {LoadingComponent} from './src/components/Loading/Loading';
 import {Provider} from 'react-redux';
 import {store} from './src/store/store';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 export const App = () => {
   useEffect(() => {
@@ -17,11 +18,13 @@ export const App = () => {
   }, []);
 
   return (
+    <SafeAreaProvider>
     <Provider store={store}>
       <NavigationContainer>
         <LoadingComponent />
         <InitialStacks />
       </NavigationContainer>
     </Provider>
+    </SafeAreaProvider>
   );
 };
