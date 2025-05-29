@@ -46,7 +46,7 @@ jest.mock('../../services/DeleteChat', () => ({
 
 const mockReplace = jest.fn();
 jest.mock('@react-navigation/native', () => {
-  const actualNavigationModule= jest.requireActual('@react-navigation/native');
+  const actualNavigationModule = jest.requireActual('@react-navigation/native');
   return {
     ...actualNavigationModule,
     useNavigation: () => ({
@@ -76,12 +76,16 @@ describe('ChatOptionsModal', () => {
             visible={visible}
             onClose={mockOnClose}
             isUserBlocked={false}
+            setIsCleared={jest.fn()}
           />
         </NavigationContainer>
       </Provider>,
     );
 
   beforeEach(() => {
+    jest.clearAllMocks();
+  });
+  afterAll(() => {
     jest.clearAllMocks();
   });
 
@@ -108,6 +112,7 @@ describe('ChatOptionsModal', () => {
             onClose={mockOnClose}
             isUserBlocked={false}
             onBlockStatusChange={mockOnBlockStatusChange}
+            setIsCleared={jest.fn()}
           />
         </NavigationContainer>
       </Provider>,
@@ -138,6 +143,7 @@ describe('ChatOptionsModal', () => {
             onClose={mockOnClose}
             isUserBlocked={true}
             onBlockStatusChange={mockOnBlockStatusChange}
+            setIsCleared={jest.fn()}
           />
         </NavigationContainer>
       </Provider>,
@@ -169,6 +175,7 @@ describe('ChatOptionsModal', () => {
             onClose={mockOnClose}
             isUserBlocked={true}
             onBlockStatusChange={mockOnBlockStatusChange}
+            setIsCleared={jest.fn()}
           />
         </NavigationContainer>
       </Provider>,
@@ -325,6 +332,40 @@ describe('ChatOptionsModal', () => {
         'Failed to delete the chat.',
       );
       expect(state.registration.alertType).toBe('warning');
+    });
+  });
+
+  it('shows alert on network error during block/unblock', async () => {
+    const mockOnBlockStatusChange = jest.fn();
+
+    (blockUser as jest.Mock).mockRejectedValueOnce(
+      new TypeError('Network request failed'),
+    );
+
+    render(
+      <Provider store={store}>
+        <NavigationContainer>
+          <ChatOptionsModal
+            visible={true}
+            onClose={mockOnClose}
+            isUserBlocked={false}
+            onBlockStatusChange={mockOnBlockStatusChange}
+            setIsCleared={jest.fn()}
+          />
+        </NavigationContainer>
+      </Provider>,
+    );
+
+    fireEvent.press(screen.getByText('Block User'));
+    const confirmButton = await screen.findByText('Block');
+    fireEvent.press(confirmButton);
+
+    await waitFor(() => {
+      const state = store.getState();
+      expect(state.registration.alertMessage).toBe(
+        'Unable to block or unblock the user',
+      );
+      expect(state.registration.alertType).toBe('info');
     });
   });
 });
