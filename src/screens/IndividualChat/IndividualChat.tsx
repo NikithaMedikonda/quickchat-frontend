@@ -199,7 +199,7 @@ export const IndividualChat = ({route}: Props) => {
     }
 
     getMessages();
-  }, [isOnlineWith, recipientPhoneNumber, socketId, user.phoneNumber]);
+  }, [isOnlineWith, recipientPhoneNumber, socketId, user.phoneNumber, isCleared]);
   useEffect(() => {
     setSocket(newSocket);
 
