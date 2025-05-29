@@ -11,6 +11,7 @@ import {individualChatHeaderStyles} from './IndividualChatHeader.styles';
 interface IndividualChatHeaderProps extends UserDetails {
   isBlocked: boolean;
   onBlockStatusChange: (isBlocked: boolean) => void;
+  setIsCleared: (isCleared: boolean) => void;
 }
 
 export const IndividualChatHeader = ({
@@ -18,6 +19,7 @@ export const IndividualChatHeader = ({
   profilePicture,
   isBlocked,
   onBlockStatusChange,
+  setIsCleared,
 }: IndividualChatHeaderProps) => {
   const [modalVisible, setModalVisible] = useState(false);
   const colors = useThemeColors();
@@ -68,6 +70,7 @@ export const IndividualChatHeader = ({
         onClose={onClose}
         isUserBlocked={isBlocked}
         onBlockStatusChange={onBlockStatusChange}
+        setIsCleared={setIsCleared}
       />
     </View>
   );
