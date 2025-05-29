@@ -1,28 +1,29 @@
-import {useEffect, useState} from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
-  View,
-  Text,
-  Modal,
-  TouchableOpacity,
   Image,
-  TouchableWithoutFeedback,
+  Modal,
   Platform,
+  Text,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
 } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {useNavigation} from '@react-navigation/native';
-import {useTranslation} from 'react-i18next';
-import {useDispatch, useSelector} from 'react-redux';
-import {ConfirmModal} from '../GenericConfirmModal/ConfirmModal';
-import {hide, show} from '../../store/slices/loadingSlice';
-import {logout} from '../../store/slices/loginSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { deleteUser } from '../../services/DeleteUser';
+import { hide, show } from '../../store/slices/loadingSlice';
+import { logout } from '../../store/slices/loginSlice';
 import {
   resetForm,
+  setAlertMessage,
   setAlertTitle,
   setAlertType,
-  setAlertMessage,
   setAlertVisible,
 } from '../../store/slices/registrationSlice';
-import {deleteUser} from '../../services/DeleteUser';
+import { RootState } from '../../store/store';
+import { useImagesColors } from '../../themes/images';
 import {
   InitialStackProps,
   NavigationProps,
@@ -30,10 +31,11 @@ import {
 } from '../../types/usenavigation.type';
 import {User} from '../../screens/Profile/Profile';
 import {useThemeColors} from '../../themes/colors';
-import {useImagesColors} from '../../themes/images';
 import {getStyles} from './ProfileMoreOptionsModal.styles';
 import {CustomAlert} from '../CustomAlert/CustomAlert';
-import {RootState} from '../../store/store';
+import {logoutUser} from '../../services/LogoutUser';
+import { ConfirmModal } from '../GenericConfirmModal/ConfirmModal';
+
 
 export const ProfileMoreOptionsModal = ({
   visible,
@@ -76,7 +78,7 @@ export const ProfileMoreOptionsModal = ({
     getUserPhoneNumber();
   }, [phoneNumber]);
 
-  const showAlert = (type: string, title: string,msg: string) => {
+  const showAlert = (type: string, title: string, msg: string) => {
     dispatch(setAlertType(type));
     dispatch(setAlertTitle(title));
     dispatch(setAlertMessage(msg));
@@ -102,15 +104,28 @@ export const ProfileMoreOptionsModal = ({
   };
 
   const onConfirmLogout = async () => {
-    handleModalClose();
-    dispatch(logout());
-    dispatch(setAlertVisible(true));
-    showAlert('success', 'Login out', 'Successfully logout');
-    await EncryptedStorage.clear();
-    setTimeout(() => {
-      dispatch(setAlertVisible(false));
-      navigation.replace('login');
-    }, 1000);
+    try {
+      handleModalClose();
+      dispatch(logout());
+      dispatch(setAlertVisible(true));
+      const payload = {
+        phoneNumber,
+        authToken,
+      };
+      const result = await logoutUser(payload);
+      if (result.status === 200) {
+        showAlert('success', 'Login out', 'Successfully logout');
+        await EncryptedStorage.clear();
+        setTimeout(() => {
+          dispatch(setAlertVisible(false));
+          navigation.replace('login');
+        }, 1000);
+      }
+    } catch (error) {
+      console.log(error);
+      showAlert('info', 'Logout failed', 'Something went wrong while logout');
+    }
+
   };
 
   const onConfirmDelete = async () => {

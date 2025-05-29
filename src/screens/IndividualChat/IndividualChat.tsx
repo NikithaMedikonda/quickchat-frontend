@@ -1,12 +1,15 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {useEffect, useRef, useState} from 'react';
+import {useCallback, useEffect, useRef, useState} from 'react';
 import {ScrollView, Text, View} from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
+import {useDispatch, useSelector} from 'react-redux';
 import {Socket} from 'socket.io-client';
 import {IndividualChatHeader} from '../../components/IndividualChatHeader/IndividualChatHeader';
 import {MessageInput} from '../../components/MessageInput/MessageInput';
 import {MessageStatusTicks} from '../../components/MessageStatusTicks/MessageStatusTicks';
 import {TimeStamp} from '../../components/TimeStamp/TimeStamp';
+import {CustomAlert} from '../../components/CustomAlert/CustomAlert';
+import {checkBlockStatus} from '../../services/CheckBlockStatus';
 import {checkUserOnline} from '../../services/CheckUserOnline';
 import {getMessagesBetween} from '../../services/GetMessagesBetween';
 import {updateMessageStatus} from '../../services/UpdateMessageStatus';
@@ -18,6 +21,14 @@ import {
   receivePrivateMessage,
   sendPrivateMessage,
 } from '../../socket/socket';
+import {
+  setAlertMessage,
+  setAlertTitle,
+  setAlertType,
+  setAlertVisible,
+  setReceivePhoneNumber,
+} from '../../store/slices/registrationSlice';
+import {RootState} from '../../store/store';
 import {useThemeColors} from '../../themes/colors';
 import {
   AllMessages,
@@ -34,6 +45,10 @@ type Props = NativeStackScreenProps<HomeStackParamList, 'individualChat'>;
 export const IndividualChat = ({route}: Props) => {
   const [message, setMessage] = useState('');
   const [isOnlineWith, setIsOnlineWith] = useState<boolean>(false);
+  const dispatch = useDispatch();
+  const {alertType, alertTitle, alertMessage} = useSelector(
+    (state: RootState) => state.registration,);
+  const [isBlocked, setIsUserBlocked] = useState(false);
   const [receivedMessages, setReceivedMessages] = useState<
     ReceivePrivateMessage[]
   >([]);
@@ -55,6 +70,56 @@ export const IndividualChat = ({route}: Props) => {
       scrollViewRef.current.scrollToEnd({animated: true});
     }
   };
+
+  const handleBlockStatusChange = (newBlockStatus: boolean) => {
+    setIsUserBlocked(newBlockStatus);
+  };
+
+  const showAlert = useCallback(
+    (type: string, title: string, message: string) => {
+      dispatch(setAlertType(type));
+      dispatch(setAlertTitle(title));
+      dispatch(setAlertMessage(message));
+      dispatch(setAlertVisible(true));
+    },
+    [dispatch],
+  );
+   useEffect(() => {
+    dispatch(setReceivePhoneNumber(user.phoneNumber));
+  }, [dispatch, user.phoneNumber]);
+
+
+  useEffect(() => {
+    const getBlockStatus = async () => {
+      try {
+        const currentUser = await EncryptedStorage.getItem('user');
+        const token = await EncryptedStorage.getItem('authToken');
+        if (!currentUser || !token) {
+          showAlert(
+            'info',
+            'Network Error',
+            'Unable to block or unblock the user',
+          );
+        }
+        if (currentUser && token) {
+          const userData = JSON.parse(currentUser);
+          const result = await checkBlockStatus({
+            blockerPhoneNumber: userData.phoneNumber,
+            blockedPhoneNumber: user.phoneNumber,
+            authToken: token,
+          });
+          if (result.status === 200) {
+            setIsUserBlocked(result.data.isBlocked);
+          }
+        }
+      } catch (error) {
+        showAlert('info', 'Network Error', 'Unable to fetch details');
+      }
+    };
+
+    getBlockStatus();
+  }, [showAlert, user.phoneNumber]);
+
   useEffect(() => {
     const withChattingPhoneNumber = user.phoneNumber;
     newSocket.emit('online_with', withChattingPhoneNumber);
@@ -103,7 +168,6 @@ export const IndividualChat = ({route}: Props) => {
         setSocketId(userStatus.data.data.socketId);
       }
       const currentUser = await EncryptedStorage.getItem('user');
-
       if (currentUser) {
         const parsedUser: User = JSON.parse(currentUser);
         currentUserPhoneNumberRef.current = parsedUser.phoneNumber;
@@ -112,9 +176,9 @@ export const IndividualChat = ({route}: Props) => {
         senderPhoneNumber: currentUserPhoneNumberRef.current,
         receiverPhoneNumber: recipientPhoneNumber,
       };
-      const messages = await getMessagesBetween(userData);
-      if (messages.status === 200) {
-        const data = messages.data;
+      const Messages = await getMessagesBetween(userData);
+      if (Messages.status === 200) {
+        const data = Messages.data;
         const formattedMessages = data.chats.map((msg: Chats) => ({
           senderPhoneNumber: msg.sender.phoneNumber,
           recipientPhoneNumber: msg.receiver.phoneNumber,
@@ -247,11 +311,13 @@ export const IndividualChat = ({route}: Props) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.chatHeaderContainer}>
+      <View>
         <IndividualChatHeader
           name={user.name}
           profilePicture={user.profilePicture}
           phoneNumber={user.phoneNumber}
+          isBlocked={isBlocked}
+          onBlockStatusChange={handleBlockStatusChange}
         />
       </View>
       <View style={styles.chatMainContainer}>
@@ -297,11 +363,20 @@ export const IndividualChat = ({route}: Props) => {
               </View>
             )}
           </ScrollView>
-          <View style={styles.InputContainer}>
-            <MessageInput setMessage={setMessage} />
-          </View>
+          {isBlocked ? (
+            <View style={styles.ShowErrorContainer}>
+              <Text style={styles.errorText}>
+                This user is currently blocked. Unblock them to send messages.
+              </Text>
+            </View>
+          ) : (
+            <View style={styles.InputContainer}>
+              <MessageInput setMessage={setMessage} />
+            </View>
+          )}
         </View>
       </View>
+      <CustomAlert type={alertType} title={alertTitle} message={alertMessage} />
     </View>
   );
 };

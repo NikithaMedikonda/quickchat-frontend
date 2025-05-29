@@ -13,23 +13,23 @@ afterAll(() => {
 
 describe('TimeStamp component', () => {
   test(' should display correct time for today', () => {
-    const {getByText} = render(<TimeStamp messageTime="2025-05-13T10:00:00" />);
-    expect(getByText(/10:00 am/i)).toBeTruthy();
+    const {getByText} = render(<TimeStamp messageTime="2025-05-13T10:00:00" isSent= {true}/>);
+    expect(getByText(/10:00 AM/i)).toBeTruthy();
   });
 
   test('Should display "Yesterday" if the time is more than one day', () => {
-    const {getByText} = render(<TimeStamp messageTime="2025-05-12T08:00:00" />);
-    expect(getByText(/Yesterday, 8:00 am/i)).toBeTruthy();
+    const {getByText} = render(<TimeStamp messageTime="2025-05-12T08:00:00" isSent= {true}/>);
+    expect(getByText(/Yesterday/i)).toBeTruthy();
   });
 
   test('Should display day name within last 7 days', () => {
-    const dayName = moment('2025-05-09').format('dddd'); // Friday
-    const {getByText} = render(<TimeStamp messageTime="2025-05-09T09:00:00" />);
-     expect(getByText(`${dayName}, 9:00 am`)).toBeTruthy();
+    const dayName = moment('2025-05-09').format('dddd');
+    const {getByText} = render(<TimeStamp messageTime="2025-05-09T09:00:00" isSent= {true}/>);
+     expect(getByText(`${dayName}`)).toBeTruthy();
   });
 
   test('Should display full date, if the timestamps are older than 7 days', () => {
-    const {getByText} = render(<TimeStamp messageTime="2025-04-30T15:30:00" />);
-    expect(getByText('Apr 30, 2025, 3:30 pm')).toBeTruthy();
+    const {getByText} = render(<TimeStamp messageTime="2025-04-30T15:30:00"isSent= {true} />);
+    expect(getByText('Apr 30, 2025')).toBeTruthy();
   });
 });

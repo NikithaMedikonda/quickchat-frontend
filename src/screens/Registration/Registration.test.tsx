@@ -14,6 +14,14 @@ jest.mock('react-native-encrypted-storage', () => ({
   setItem: jest.fn(),
 }));
 
+jest.mock('react-native-device-info', () => ({
+  getUniqueId: jest.fn(),
+}));
+
+jest.mock('../../services/GenerateDeviceId', () => ({
+  getDeviceId: jest.fn(),
+}));
+
 jest.mock('react-native-phone-input', () => {
   const React = require('react');
   const {TextInput} = require('react-native');
@@ -206,6 +214,7 @@ it('should activate image picker modal', async () => {
         accessToken: 'mockedToken',
         refreshToken: 'refreshToken',
         user: {},
+        deviceId:'qdshjgdjfwgrwfhk',
       },
     });
 

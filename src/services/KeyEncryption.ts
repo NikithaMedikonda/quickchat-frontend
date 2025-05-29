@@ -9,9 +9,10 @@ export const keyEncryption = async ({
   try {
     const nonce = await Sodium.randombytes_buf(24);
     const passwordBytes = new TextEncoder().encode(password);
+    const privateKeyBytes = await Sodium.from_base64(privateKey);
     const passwordBuffer = await Sodium.crypto_generichash(32, passwordBytes);
     const encryptedPrivateKey = await Sodium.crypto_secretbox_easy(
-      privateKey,
+      privateKeyBytes,
       nonce,
       passwordBuffer,
     );
