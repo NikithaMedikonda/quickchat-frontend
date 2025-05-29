@@ -1,5 +1,5 @@
 import {NavigationContainer} from '@react-navigation/native';
-import {render, waitFor} from '@testing-library/react-native';
+import {fireEvent, render, waitFor} from '@testing-library/react-native';
 import {Provider} from 'react-redux';
 import {store} from '../../store/store';
 import {HomeTabs} from './HomeTabs';
@@ -50,4 +50,19 @@ describe('Welcome Screen', () => {
       );
     });
   });
+  it('navigates to profileScreen when profile tab is pressed', async () => {
+    const {getByText} = render(
+      <Provider store={store}>
+        <NavigationContainer>
+          <HomeTabs />
+        </NavigationContainer>
+      </Provider>,
+    );
+
+    await waitFor(() => {
+      const profileTab = getByText('Profile');
+      fireEvent.press(profileTab);
+    });
+  });
+
 });
