@@ -14,6 +14,7 @@ module.exports = {
   coveragePathIgnorePatterns: [
     '<rootDir>/src/assets/',
     '<rootDir>/src/constants/',
+    '\\.styles\\.ts$',
   ],
   collectCoverage: true,
   coverageThreshold: {

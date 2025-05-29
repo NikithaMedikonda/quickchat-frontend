@@ -1,11 +1,11 @@
-import {fireEvent, render, waitFor} from '@testing-library/react-native';
+import {fireEvent, render, screen, waitFor} from '@testing-library/react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {Provider} from 'react-redux';
 import {updateProfile} from '../../services/UpdateProfile';
 import {store} from '../../store/store';
 import {resetForm} from '../../store/slices/registrationSlice';
 import {EditProfile} from './EditProfile';
-import {BackButton} from './EditProfile';
+
 
 jest.mock('react-native-encrypted-storage', () => ({
   setItem: jest.fn(),
@@ -89,15 +89,22 @@ describe('EditProfile Component', () => {
   });
 
   test('shows error when trying to save with empty inputs', async () => {
-    const {getByText} = render(
+    const {getByText, getByDisplayValue} = render(
       <Provider store={store}>
         <EditProfile />
       </Provider>,
     );
 
-    await waitFor(() => {
-      fireEvent.press(getByText('Save'));
-    });
+    await waitFor(() => getByText('Save'));
+
+    fireEvent.changeText(getByDisplayValue('test'), '');
+    fireEvent.changeText(getByDisplayValue('user'), '');
+    fireEvent.changeText(
+      getByDisplayValue('testuser@gmail.com'),
+      'testuser@gmail.com',
+    );
+
+    fireEvent.press(getByText('Save'));
 
     await waitFor(() => {
       expect(getByText('First name required!')).toBeTruthy();
@@ -106,58 +113,44 @@ describe('EditProfile Component', () => {
   });
 
   test('shows alert for invalid email format', async () => {
-    (updateProfile as jest.Mock).mockResolvedValue({
-      data: {
-        user: {
-          firstName: 'test',
-          lastName: 'user',
-          email: 'testuser@gmail.com',
-          phoneNumber: '1234567890',
-        },
-      },
-    });
     const {getByText, getByDisplayValue} = render(
       <Provider store={store}>
         <EditProfile />
       </Provider>,
     );
     await waitFor(() => getByText('Save'));
-    fireEvent.changeText(getByDisplayValue('test'), 'test');
-    fireEvent.changeText(getByDisplayValue('user'), 'user');
+
+    fireEvent.changeText(getByDisplayValue('test'), 'test1');
+    fireEvent.changeText(getByDisplayValue('user'), 'user1');
     fireEvent.changeText(
       getByDisplayValue('testuser@gmail.com'),
-      'testuser@gmail.',
+      'invalid@email.',
     );
+
     fireEvent.press(getByText('Save'));
+
     await waitFor(() => {
       expect(getByText('Invalid email format!')).toBeTruthy();
     });
   });
 
   test('shows alert for invalid last name', async () => {
-    (updateProfile as jest.Mock).mockResolvedValue({
-      data: {
-        user: {
-          firstName: 'test',
-          lastName: '',
-          email: 'testuser@gmail.com',
-          phoneNumber: '1234567890',
-        },
-      },
-    });
     const {getByText, getByDisplayValue} = render(
       <Provider store={store}>
         <EditProfile />
       </Provider>,
     );
     await waitFor(() => getByText('Save'));
-    fireEvent.changeText(getByDisplayValue('test'), 'test');
+
+    fireEvent.changeText(getByDisplayValue('test'), 'test1');
     fireEvent.changeText(getByDisplayValue('user'), '');
     fireEvent.changeText(
       getByDisplayValue('testuser@gmail.com'),
       'testuser@gmail.com',
     );
+
     fireEvent.press(getByText('Save'));
+
     await waitFor(() => {
       expect(getByText('Last name required!')).toBeTruthy();
     });
@@ -194,12 +187,14 @@ describe('EditProfile Component', () => {
     );
 
     await waitFor(() => getByText('Save'));
-    fireEvent.changeText(getByDisplayValue('test'), 'test');
-    fireEvent.changeText(getByDisplayValue('user'), 'user');
+
+    fireEvent.changeText(getByDisplayValue('test'), 'test1');
+    fireEvent.changeText(getByDisplayValue('user'), 'user1');
     fireEvent.changeText(
       getByDisplayValue('testuser@gmail.com'),
       'testuser@gmail.com',
     );
+
     fireEvent.press(getByText('Save'));
 
     await waitFor(() => {
@@ -230,38 +225,35 @@ describe('EditProfile Component', () => {
         <EditProfile />
       </Provider>,
     );
-    await waitFor(() => {
-      fireEvent.changeText(getByDisplayValue('test'), 'test');
-      fireEvent.changeText(getByDisplayValue('user'), 'user');
-      fireEvent.changeText(
-        getByDisplayValue('testuser@gmail.com'),
-        'testuser@gmail.com',
-      );
-    });
-    await waitFor(() => {
-      fireEvent.press(getByText('Save'));
-    });
+    await waitFor(() => getByText('Save'));
+
+    fireEvent.changeText(getByDisplayValue('test'), 'test1');
+    fireEvent.changeText(getByDisplayValue('user'), 'user1');
+    fireEvent.changeText(
+      getByDisplayValue('testuser@gmail.com'),
+      'testuser1@gmail.com',
+    );
+
+    fireEvent.press(getByText('Save'));
 
     await waitFor(() => {
       expect(updateProfile).toHaveBeenCalledWith(
         {
           phoneNumber: '1234567890',
           image: '',
-          firstName: 'test',
-          lastName: 'user',
-          email: 'testuser@gmail.com',
+          firstName: 'test1',
+          lastName: 'user1',
+          email: 'testuser1@gmail.com',
           token: 'mock-token',
         },
         expect.any(Object),
       );
       expect(EncryptedStorage.setItem).toHaveBeenCalled();
     });
-    await waitFor(
-      () => {
-        expect(mockNavigation.replace).toHaveBeenCalledWith('profileScreen');
-      },
-      {timeout: 5000},
-    );
+
+    await waitFor(() => {
+      expect(mockNavigation.replace).toHaveBeenCalledWith('profileScreen');
+    });
   });
 
   test('shows error alert on editProfile failure', async () => {
@@ -272,14 +264,22 @@ describe('EditProfile Component', () => {
         <EditProfile />
       </Provider>,
     );
+
     await waitFor(() => getByText('Save'));
-    fireEvent.changeText(getByDisplayValue('test'), 'test');
-    fireEvent.changeText(getByDisplayValue('user'), 'user');
+
+    fireEvent.changeText(getByDisplayValue('test'), 'test1');
+    fireEvent.changeText(getByDisplayValue('user'), 'user1');
     fireEvent.changeText(
       getByDisplayValue('testuser@gmail.com'),
-      'testuser@gmail.com',
+      'test1@example.com',
     );
+
     fireEvent.press(getByText('Save'));
+
+    await waitFor(() => {
+      const state = store.getState();
+      expect(state.registration.alertType).toBe('error');
+    });
   });
 
   test('shows specific error for status 404 (user not found)', async () => {
@@ -296,11 +296,11 @@ describe('EditProfile Component', () => {
 
     await waitFor(() => getByText('Save'));
 
-    fireEvent.changeText(getByDisplayValue('test'), 'test');
-    fireEvent.changeText(getByDisplayValue('user'), 'user');
+    fireEvent.changeText(getByDisplayValue('test'), 'test1');
+    fireEvent.changeText(getByDisplayValue('user'), 'user1');
     fireEvent.changeText(
       getByDisplayValue('testuser@gmail.com'),
-      'testuser@gmail.com',
+      'test1@example.com',
     );
 
     fireEvent.press(getByText('Save'));
@@ -324,14 +324,13 @@ describe('EditProfile Component', () => {
     await waitFor(() => getByText('Save'));
 
     fireEvent.changeText(getByDisplayValue('test'), '');
-    fireEvent.changeText(getByDisplayValue('user'), 'user');
+    fireEvent.changeText(getByDisplayValue('user'), 'user1');
     fireEvent.changeText(
       getByDisplayValue('testuser@gmail.com'),
-      'testuser@gmail.com',
+      'testuser1@gmail.com',
     );
 
     fireEvent.press(getByText('Save'));
-
     await waitFor(() => {
       expect(getByText('First name required!')).toBeTruthy();
     });
@@ -581,11 +580,11 @@ describe('EditProfile Component', () => {
 
     await waitFor(() => getByText('Save'));
 
-    fireEvent.changeText(getByDisplayValue('test'), 'test');
-    fireEvent.changeText(getByDisplayValue('user'), 'user');
+    fireEvent.changeText(getByDisplayValue('test'), 'test1');
+    fireEvent.changeText(getByDisplayValue('user'), 'user1');
     fireEvent.changeText(
       getByDisplayValue('testuser@gmail.com'),
-      'testuser@gmail.com',
+      'testuser1@gmail.com',
     );
 
     fireEvent.press(getByText('Save'));
@@ -648,17 +647,28 @@ describe('EditProfile Component', () => {
     });
   });
 
-  test('should navigate to profileScreen when back button is pressed', async () => {
-    const {getByA11yHint} = render(
-      <Provider store={store}>
-        <BackButton />
-      </Provider>,
-    );
-    const backArrowButton = getByA11yHint('back-arrow-icon');
+ test('Save button is disabled when no form changes are made', async () => {
+  const {getByA11yHint} = render(
+    <Provider store={store}>
+      <EditProfile />
+    </Provider>,
+  );
+ const saveButton = await waitFor(() => getByA11yHint('Save-button'));
+expect(saveButton.props.accessibilityState.disabled).toBe(true);
 
-    fireEvent.press(backArrowButton);
-    await waitFor(() => {
-      expect(mockNavigation.navigate).toHaveBeenCalledWith('profileScreen');
+});
+test('should goback when tapped on goback arrow', async () => {
+  render(
+    <Provider store={store}>
+      <EditProfile />
+    </Provider>,
+  );
+      const HeaderLeftComponent =
+        mockNavigation.setOptions.mock.calls[0][0].headerLeft();
+      render(<>{HeaderLeftComponent}</>);
+      const image = screen.getByA11yHint('back-arrow-image');
+      fireEvent.press(image);
+      expect(mockNavigation.navigate).toHaveBeenCalled();
     });
   });
-});
+

@@ -1,28 +1,29 @@
-import {useEffect, useState} from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
-  View,
-  Text,
-  Modal,
-  TouchableOpacity,
   Image,
-  TouchableWithoutFeedback,
+  Modal,
   Platform,
+  Text,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
 } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {useNavigation} from '@react-navigation/native';
-import {useTranslation} from 'react-i18next';
-import {useDispatch, useSelector} from 'react-redux';
-import {ConfirmModal} from '../GenericConfirmModal/ConfirmModal';
-import {hide, show} from '../../store/slices/loadingSlice';
-import {logout} from '../../store/slices/loginSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { deleteUser } from '../../services/DeleteUser';
+import { hide, show } from '../../store/slices/loadingSlice';
+import { logout } from '../../store/slices/loginSlice';
 import {
   resetForm,
+  setAlertMessage,
   setAlertTitle,
   setAlertType,
-  setAlertMessage,
   setAlertVisible,
 } from '../../store/slices/registrationSlice';
-import {deleteUser} from '../../services/DeleteUser';
+import { RootState } from '../../store/store';
+import { useImagesColors } from '../../themes/images';
 import {
   InitialStackProps,
   NavigationProps,
@@ -30,11 +31,11 @@ import {
 } from '../../types/usenavigation.type';
 import {User} from '../../screens/Profile/Profile';
 import {useThemeColors} from '../../themes/colors';
-import {useImagesColors} from '../../themes/images';
 import {getStyles} from './ProfileMoreOptionsModal.styles';
 import {CustomAlert} from '../CustomAlert/CustomAlert';
-import {RootState} from '../../store/store';
 import {logoutUser} from '../../services/LogoutUser';
+import { ConfirmModal } from '../GenericConfirmModal/ConfirmModal';
+
 
 export const ProfileMoreOptionsModal = ({
   visible,
@@ -124,6 +125,7 @@ export const ProfileMoreOptionsModal = ({
       console.log(error);
       showAlert('info', 'Logout failed', 'Something went wrong while logout');
     }
+
   };
 
   const onConfirmDelete = async () => {

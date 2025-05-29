@@ -445,9 +445,11 @@ describe('IndividualChat', () => {
         message: 'updated',
       },
     });
+
     render(
       <NavigationContainer>
         <Provider store={store}>
+
           <IndividualChat
             navigation={
               mockNavigation as NativeStackNavigationProp<
@@ -460,6 +462,7 @@ describe('IndividualChat', () => {
         </Provider>
       </NavigationContainer>,
     );
+
     await waitFor(() => {
       const username = screen.getByA11yHint('username-text');
       expect(username).toBeTruthy();

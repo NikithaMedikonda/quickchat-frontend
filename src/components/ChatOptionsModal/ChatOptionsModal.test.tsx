@@ -106,8 +106,6 @@ describe('ChatOptionsModal', () => {
     });
   });
 
-  
-
   it('calls unblockUser and onBlockStatusChange(true) when confirming unblock', async () => {
     const mockOnBlockStatusChange = jest.fn();
 

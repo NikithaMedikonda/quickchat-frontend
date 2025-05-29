@@ -11,6 +11,9 @@ jest.mock('react-native-libsodium', () => ({
   to_base64: jest.fn((input: Uint8Array) =>
     Buffer.from(input).toString('base64'),
   ),
+  from_base64: jest.fn((input: string) =>
+    Uint8Array.from(Buffer.from(input, 'base64')),
+  ),
   crypto_generichash: jest.fn(() => new Uint8Array(32).fill(1)),
   crypto_secretbox_easy: jest.fn(() => new Uint8Array(64).fill(2)),
   randombytes_buf: jest.fn(() => new Uint8Array(24).fill(3)),

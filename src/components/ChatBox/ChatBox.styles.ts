@@ -1,7 +1,7 @@
-import { StyleSheet, Dimensions } from 'react-native';
+import { Dimensions, StyleSheet } from 'react-native';
 import { Colors } from '../../themes/colors.ts';
 
-const { width, height } = Dimensions.get('window');
+const {width, height} = Dimensions.get('window');
 
 export const getStyles = (colors: Colors) =>
   StyleSheet.create({
@@ -10,9 +10,10 @@ export const getStyles = (colors: Colors) =>
       alignItems: 'center',
       backgroundColor: colors.background,
       height: height * 0.08,
-      width: width,
-      paddingHorizontal: width * 0.025,
-      gap: width * 0.1,
+      width: width * 0.9,
+      paddingLeft: width * 0.05,
+      paddingRight: width * 0.05,
+      gap: width * 0.03,
     },
     userDetailsContainer: {
       flexDirection: 'row',
