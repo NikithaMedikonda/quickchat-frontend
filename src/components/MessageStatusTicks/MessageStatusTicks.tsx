@@ -1,27 +1,42 @@
 import React from 'react';
-import {StyleSheet, Text} from 'react-native';
+import { StyleSheet, Image, View } from 'react-native';
+import sentImage from '../../assets/sent.png';
+import deliveredImage from '../../assets/delivered.png';
+import readImage from '../../assets/readTick.png';
+
 interface Props {
   status: 'sent' | 'delivered' | 'read' | string;
 }
-export const MessageStatusTicks = ({status}: Props) => {
+
+export const MessageStatusTicks = ({ status }: Props) => {
+  let source;
+
   switch (status) {
     case 'sent':
-      return <Text style={styles.tick}>✓</Text>;
+      source = sentImage;
+      break;
     case 'delivered':
-      return <Text style={styles.tick}>✓✓</Text>;
+      source = deliveredImage;
+      break;
     case 'read':
-      return <Text style={[styles.tick, styles.readTick]}>✓✓</Text>;
+      source = readImage;
+      break;
     default:
       return null;
   }
+  return (
+    <View style={styles.container}>
+      <Image accessibilityHint={`Message status is ${status}`} source={source} style={styles.tickImage} resizeMode="contain" />
+    </View>
+  );
 };
+
 const styles = StyleSheet.create({
-  tick: {
-    fontSize: 12,
-    color: '#FFFFFf',
-    marginLeft: 4,
+  container: {
+    paddingLeft: 4,
   },
-  readTick: {
-    color: '#FFFFFF',
+  tickImage: {
+    width: 18,
+    height: 18,
   },
 });
