@@ -1,6 +1,6 @@
-import { useNavigation } from '@react-navigation/native';
-import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import {useNavigation} from '@react-navigation/native';
+import {useCallback, useEffect, useLayoutEffect, useState} from 'react';
+import {useTranslation} from 'react-i18next';
 import {
   ActivityIndicator,
   Alert,
@@ -12,17 +12,17 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Contact } from '../../components/Contact/Contact';
-import { DEFAULT_PROFILE_IMAGE } from '../../constants/defaultImage';
-import { numberNameIndex } from '../../helpers/nameNumberIndex';
-import { normalise } from '../../helpers/normalisePhoneNumber';
-import { sortByName } from '../../helpers/sortByName';
-import { getContacts } from '../../services/GetContacts';
-import { useThemeColors } from '../../themes/colors';
-import { useImagesColors } from '../../themes/images';
-import { ContactDetails } from '../../types/contact.types';
-import { HomeStackProps, HomeTabsProps } from '../../types/usenavigation.type';
-import { getStyles } from './ContactsDisplay.styles';
+import {Contact} from '../../components/Contact/Contact';
+import {DEFAULT_PROFILE_IMAGE} from '../../constants/defaultImage';
+import {numberNameIndex} from '../../helpers/nameNumberIndex';
+import {normalise} from '../../helpers/normalisePhoneNumber';
+import {sortByName} from '../../helpers/sortByName';
+import {getContacts} from '../../services/GetContacts';
+import {useThemeColors} from '../../themes/colors';
+import {useImagesColors} from '../../themes/images';
+import {ContactDetails} from '../../types/contact.types';
+import {HomeStackProps, HomeTabsProps} from '../../types/usenavigation.type';
+import {getStyles} from './ContactsDisplay.styles';
 
 export const BackButton = () => {
   const colors = useThemeColors();
