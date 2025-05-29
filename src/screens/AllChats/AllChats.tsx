@@ -1,26 +1,26 @@
-import { useNavigation } from '@react-navigation/native';
-import { useEffect, useLayoutEffect, useState } from 'react';
-import { ScrollView, TouchableOpacity, View } from 'react-native';
-import { useDispatch } from 'react-redux';
-import { useThemeColors } from '../../themes/colors';
-import { HomeStackProps, NavigationProps } from '../../types/usenavigation.type';
+import {useNavigation} from '@react-navigation/native';
+import {useEffect, useLayoutEffect, useState} from 'react';
+import {ScrollView, TouchableOpacity, View} from 'react-native';
+import {useDispatch} from 'react-redux';
+import {useThemeColors} from '../../themes/colors';
+import {HomeStackProps, NavigationProps} from '../../types/usenavigation.type';
 
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { ChatBox } from '../../components/ChatBox/ChatBox';
-import { PlusIcon } from '../../components/PlusIcon/PlusIcon';
-import { numberNameIndex } from '../../helpers/nameNumberIndex';
-import { normalise } from '../../helpers/normalisePhoneNumber';
-import { getAllChats } from '../../services/GetAllChats';
-import { hide, show } from '../../store/slices/loadingSlice';
-import { logout } from '../../store/slices/loginSlice';
+import {ChatBox} from '../../components/ChatBox/ChatBox';
+import {PlusIcon} from '../../components/PlusIcon/PlusIcon';
+import {numberNameIndex} from '../../helpers/nameNumberIndex';
+import {normalise} from '../../helpers/normalisePhoneNumber';
+import {getAllChats} from '../../services/GetAllChats';
+import {hide, show} from '../../store/slices/loadingSlice';
+import {logout} from '../../store/slices/loginSlice';
 import {
   setAlertMessage,
   setAlertTitle,
   setAlertType,
   setAlertVisible,
 } from '../../store/slices/registrationSlice';
-import { Home } from '../Home/Home';
-import { getStyles } from './AllChats.styles';
+import {Home} from '../Home/Home';
+import {getStyles} from './AllChats.styles';
 
 export interface Chat {
   chatId: string;
@@ -126,6 +126,9 @@ export const AllChats = () => {
                     chat.phoneNumber,
                   profilePicture: chat.contactProfilePic,
                   phoneNumber: chat.phoneNumber,
+                  isBlocked: false,
+                  publicKey: '',
+                  onBlockStatusChange: () => {},
                 },
               })
             }>
