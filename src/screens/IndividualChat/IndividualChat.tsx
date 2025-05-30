@@ -10,7 +10,7 @@ import { MessageInput } from '../../components/MessageInput/MessageInput';
 import { MessageStatusTicks } from '../../components/MessageStatusTicks/MessageStatusTicks';
 import { TimeStamp } from '../../components/TimeStamp/TimeStamp';
 import { checkBlockStatus } from '../../services/CheckBlockStatus';
-import {checkUserOnline} from '../../services/CheckUserOnline';
+import { checkUserOnline } from '../../services/CheckUserOnline';
 import { getMessagesBetween } from '../../services/GetMessagesBetween';
 import { messageDecryption } from '../../services/MessageDecryption';
 import { messageEncryption } from '../../services/MessageEncryption';
@@ -51,8 +51,7 @@ export const IndividualChat = ({route}: Props) => {
   const {alertType, alertTitle, alertMessage} = useSelector(
     (state: RootState) => state.registration,
   );
-   
-  const [messages, setMessage] = useState('');
+
   const [isBlocked, setIsUserBlocked] = useState(false);
   const [receivedMessages, setReceivedMessages] = useState<
     ReceivePrivateMessage[]
@@ -209,8 +208,6 @@ export const IndividualChat = ({route}: Props) => {
               });
             } catch (error) {
               dispatch(hide());
-            } finally {
-              dispatch(hide());
             }
           }
           setFetchMessages(formattedMessages);
@@ -219,7 +216,15 @@ export const IndividualChat = ({route}: Props) => {
     }
 
     getMessages();
-  }, [isOnlineWith, recipientPhoneNumber, socketId, user.phoneNumber, isCleared]);
+  }, [
+    isOnlineWith,
+    recipientPhoneNumber,
+    socketId,
+    user.phoneNumber,
+    isCleared,
+    dispatch,
+    user.publicKey,
+  ]);
   useEffect(() => {
     setSocket(newSocket);
 
@@ -240,13 +245,7 @@ export const IndividualChat = ({route}: Props) => {
           {...data, message: decryptedMessage},
         ]);
       };
-      const data = await receivePrivateMessage(
-        recipientPhoneNumber,
-        handleNewMessage,
-      );
-      if (data.message !== '') {
-        setReceivedMessages(prev => [...prev, data]);
-      }
+      await receivePrivateMessage(recipientPhoneNumber, handleNewMessage);
     }
     receiveMessage();
   }, [
@@ -254,8 +253,10 @@ export const IndividualChat = ({route}: Props) => {
     currentUserPhoneNumberRef,
     user.publicKey,
     dispatch,
-    showAlert
-  ,isCleared, user.phoneNumber]);
+    showAlert,
+    isCleared,
+    user.phoneNumber,
+  ]);
 
   useEffect(() => {
     const updateStatus = async () => {
@@ -305,12 +306,12 @@ export const IndividualChat = ({route}: Props) => {
     const withChattingPhoneNumber = user.phoneNumber;
     newSocket.emit('online_with', withChattingPhoneNumber);
     const sendMessage = async () => {
-      if (socket && messages.trim() !== '') {
+      if (socket && message.trim() !== '') {
         const privateKey = await EncryptedStorage.getItem('privateKey');
-        let encryptedMessage = messages.trim();
+        let encryptedMessage = message.trim();
         if (privateKey) {
           encryptedMessage = await messageEncryption({
-            message: messages.trim(),
+            message: message.trim(),
             myPrivateKey: privateKey,
             recipientPublicKey: user.publicKey,
           });
@@ -345,7 +346,7 @@ export const IndividualChat = ({route}: Props) => {
 
         setSendMessages(prev => [
           ...prev,
-          {...payload, message: messages.trim()},
+          {...payload, message: message.trim()},
         ]);
         setMessage('');
       }
@@ -354,18 +355,15 @@ export const IndividualChat = ({route}: Props) => {
     if (message) {
       sendMessage();
     }
-    const updateStatus = async () => {
-      const details = {
-        senderPhoneNumber: currentUserPhoneNumberRef.current,
-        receiverPhoneNumber: recipientPhoneNumber,
-        timestamp: Date.now().toLocaleString(),
-        previousStatus: 'delivered',
-        currentStatus: 'read',
-      };
-      await updateMessageStatus(details);
-    };
-    updateStatus();
-  }, [messages, recipientPhoneNumber, socket, user.publicKey]);
+  }, [
+    isOnlineWith,
+    message,
+    recipientPhoneNumber,
+    socket,
+    socketId,
+    user.phoneNumber,
+    user.publicKey,
+  ]);
 
   useEffect(() => {
     const all = [...fetchMessages, ...sendMessages, ...receivedMessages];
