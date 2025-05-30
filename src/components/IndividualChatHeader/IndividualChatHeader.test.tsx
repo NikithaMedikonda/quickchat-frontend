@@ -6,11 +6,13 @@ import {
   waitFor,
 } from '@testing-library/react-native';
 
-import {Platform} from 'react-native';
+import { Platform } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {Provider} from 'react-redux';
-import {store} from '../../store/store';
-import {IndividualChatHeader} from './IndividualChatHeader';
+import { Provider } from 'react-redux';
+import { DEFAULT_PROFILE_IMAGE } from '../../constants/defaultImage';
+import { store } from '../../store/store';
+import { IndividualChatHeader } from './IndividualChatHeader';
+
 const mockNavigate = jest.fn();
 const mockGoBack = jest.fn();
 jest.mock('@react-navigation/native', () => ({
@@ -28,7 +30,7 @@ jest.mock('react-native-encrypted-storage', () => ({
 }));
 
 describe('Test for IndividualChatHeader component', () => {
-  const userDetails = {
+  let userDetails = {
     name: 'Chitty',
     profilePicture: '../../assets/user.png',
     phoneNumber: '',
@@ -36,9 +38,15 @@ describe('Test for IndividualChatHeader component', () => {
   };
   beforeEach(() => {
     render(
-        <Provider store={store}>
-      <IndividualChatHeader onBlockStatusChange={() => {}} {...userDetails} />,
-        </Provider>
+      <Provider store={store}>
+        <IndividualChatHeader
+          onBlockStatusChange={() => {}}
+          setIsCleared={() => {}}
+          publicKey={''}
+          {...userDetails}
+        />
+        ,
+      </Provider>,
     );
     (EncryptedStorage.getItem as jest.Mock).mockImplementation(key => {
       if (key === 'user') {
@@ -66,6 +74,27 @@ describe('Test for IndividualChatHeader component', () => {
   test('Should render the profile picture', () => {
     const profilePicture = screen.getByA11yHint('profile-picture');
     expect(profilePicture).toBeTruthy();
+  });
+
+  test('Should render the default profile picture', () => {
+    userDetails = {
+      ...userDetails,
+
+      profilePicture: '',
+    };
+    render(
+      <Provider store={store}>
+        <IndividualChatHeader
+          onBlockStatusChange={() => {}}
+          setIsCleared={() => {}}
+          publicKey={''}
+          {...userDetails}
+        />
+        ,
+      </Provider>,
+    );
+    const profilePicture = screen.getByA11yHint('profile-picture');
+    expect(profilePicture.props.source).toEqual({uri: DEFAULT_PROFILE_IMAGE});
   });
 
   test('Should render the username', () => {
@@ -107,6 +136,8 @@ describe('Platform-specific back arrow image tests', () => {
           phoneNumber=""
           isBlocked={false}
           onBlockStatusChange={() => {}}
+          setIsCleared={() => {}}
+          publicKey={''}
         />
         ,
       </Provider>,
@@ -129,6 +160,8 @@ describe('Platform-specific back arrow image tests', () => {
           phoneNumber=""
           isBlocked={false}
           onBlockStatusChange={() => {}}
+          setIsCleared={() => {}}
+          publicKey={''}
         />
         ,
       </Provider>,
@@ -151,6 +184,8 @@ describe('Platform-specific back arrow image tests', () => {
           phoneNumber=""
           isBlocked={false}
           onBlockStatusChange={() => {}}
+          setIsCleared={() => {}}
+          publicKey={''}
         />
         ,
       </Provider>,
@@ -176,6 +211,8 @@ describe('Platform-specific back arrow image tests', () => {
           phoneNumber=""
           isBlocked={false}
           onBlockStatusChange={() => {}}
+          setIsCleared={() => {}}
+          publicKey={''}
         />
         ,
       </Provider>,
@@ -188,4 +225,5 @@ describe('Platform-specific back arrow image tests', () => {
       expect(queryByText('Delete Chat')).toBeNull();
     });
   });
+
 });

@@ -1,5 +1,5 @@
-import {useNavigation} from '@react-navigation/native';
-import {useCallback, useState} from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { useCallback, useState } from 'react';
 import {
   Image,
   Modal,
@@ -10,23 +10,23 @@ import {
   View,
 } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {useDispatch, useSelector} from 'react-redux';
-import {deleteChat} from '../../services/DeleteChat';
-import {blockUser} from '../../services/UserBlock';
-import {unblockUser} from '../../services/UserUnblock';
+import { useDispatch, useSelector } from 'react-redux';
+import { deleteChat } from '../../services/DeleteChat';
+import { blockUser } from '../../services/UserBlock';
+import { unblockUser } from '../../services/UserUnblock';
 import {
   setAlertMessage,
   setAlertTitle,
   setAlertType,
   setAlertVisible,
 } from '../../store/slices/registrationSlice';
-import {RootState} from '../../store/store';
-import {useThemeColors} from '../../themes/colors';
-import {useImagesColors} from '../../themes/images';
-import {HomeTabsProps} from '../../types/usenavigation.type';
-import {CustomAlert} from '../CustomAlert/CustomAlert';
-import {ConfirmModal} from '../GenericConfirmModal/ConfirmModal';
-import {getStyles} from './ChatOptionsModal.styles';
+import { RootState } from '../../store/store';
+import { useThemeColors } from '../../themes/colors';
+import { useImagesColors } from '../../themes/images';
+import { HomeTabsProps } from '../../types/usenavigation.type';
+import { CustomAlert } from '../CustomAlert/CustomAlert';
+import { ConfirmModal } from '../GenericConfirmModal/ConfirmModal';
+import { getStyles } from './ChatOptionsModal.styles';
 
 type Props = {
   visible: boolean;
@@ -180,6 +180,7 @@ export const ChatOptionsModal = ({
     <View>
       <Modal transparent={true} visible={visible}>
         <TouchableWithoutFeedback
+          accessibilityHint="modal-closme-button"
           onPress={onClose}
           accessibilityLabel="modal-background">
           <View style={[styles.centeredView, modalStyle]}>

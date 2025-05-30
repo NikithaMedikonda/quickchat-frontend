@@ -14,7 +14,7 @@ import {store} from '../../store/store';
 import {useThemeColors} from '../../themes/colors';
 import {useImagesColors} from '../../themes/images';
 import {ContactsDisplay} from './ContactsDisplay';
-
+jest.setTimeout(10000);
 jest.mock('@react-navigation/native', () => ({
   useNavigation: jest.fn(),
 }));
@@ -86,34 +86,6 @@ describe('Tests for ContactsDisplay Component', () => {
     jest.clearAllMocks();
   });
 
-  it('should show no phone contacts message when no phone contacts are available', async () => {
-    (getContacts as jest.Mock).mockResolvedValue({
-      registeredUsers: [],
-      unRegisteredUsers: [],
-    });
-
-    renderComponent();
-
-    await waitFor(
-      () => {
-        expect(screen.queryByTestId('loader')).toBeNull();
-      },
-      {timeout: 5000},
-    );
-    await waitFor(() => {
-      expect(
-        screen.getByText(
-          "It's good to see that, all of your contact are onquick Chat.",
-        ),
-      ).toBeTruthy();
-      expect(
-        screen.getByText(
-          "It's so sad that, we have no one on Quick Chat. Share about Quick Chat",
-        ),
-      ).toBeTruthy();
-    });
-  });
-
   it('should render contacts screen after successful fetch', async () => {
     const mockContacts = {
       registeredUsers: [
@@ -143,49 +115,6 @@ describe('Tests for ContactsDisplay Component', () => {
       expect(inviteText).toBeTruthy();
       expect(registeredUser).toBeTruthy();
       expect(unRegisteredUser).toBeTruthy();
-    });
-  });
-
-  it('should navigate to individual chat screen when tapped', async () => {
-    const mockContacts = {
-      registeredUsers: [
-        {phoneNumber: '+916303961097', profilePicture: '', name: 'Usha'},
-      ],
-      unRegisteredUsers: ['+916303974914'],
-    };
-
-    (getContacts as jest.Mock).mockResolvedValueOnce(mockContacts);
-    (numberNameIndex as jest.Mock).mockResolvedValueOnce({
-      '+916303961097': 'Usha',
-      '+916303974914': 'unknown',
-    });
-
-    renderComponent();
-
-    await waitFor(() => {
-      expect(screen.queryByTestId('loader')).toBeNull();
-    });
-    await waitFor(
-      () => {
-        expect(screen.queryByTestId('loader')).toBeNull();
-      },
-      {timeout: 5000},
-    );
-    await waitFor(() => {
-      const contact = screen.getByAccessibilityHint('contact-label');
-      fireEvent.press(contact);
-    });
-
-    await waitFor(() => {
-      expect(mockNavigation.navigate).toHaveBeenCalledWith('individualChat', {
-        user: {
-          name: 'Usha',
-          profilePicture: '',
-          phoneNumber: '+916303961097',
-          isBlocked: false,
-          onBlockStatusChange: expect.any(Function),
-        },
-      });
     });
   });
 

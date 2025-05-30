@@ -1,27 +1,27 @@
-import {Alert, Platform} from 'react-native';
 import {
   fireEvent,
   render,
   screen,
   waitFor,
 } from '@testing-library/react-native';
-import ImageCropPicker from 'react-native-image-crop-picker';
+import { Alert, Platform } from 'react-native';
 import RNFS from 'react-native-fs';
-import {useDispatch, useSelector} from 'react-redux';
-import {store} from '../../store/store';
+import ImageCropPicker from 'react-native-image-crop-picker';
+import { useDispatch, useSelector } from 'react-redux';
+import { DEFAULT_PROFILE_IMAGE } from '../../constants/defaultImage';
 import {
+  resetForm,
+  setAlertMessage,
+  setAlertTitle,
+  setAlertType,
+  setAlertVisible,
   setImage,
+  setImageDeleted,
   setImageUri,
   setIsVisible,
-  setImageDeleted,
-  resetForm,
-  setAlertTitle,
-  setAlertMessage,
-  setAlertVisible,
-  setAlertType,
 } from '../../store/slices/registrationSlice';
-import {ImagePickerModal} from './ImagePickerModal';
-import {DEFAULT_PROFILE_IMAGE} from '../../constants/defaultImage';
+import { store } from '../../store/store';
+import { ImagePickerModal } from './ImagePickerModal';
 
 jest.mock('react-native-fs', () => ({
   readFile: jest.fn().mockResolvedValue('mocked-base64-string'),
