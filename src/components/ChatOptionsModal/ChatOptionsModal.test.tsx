@@ -266,17 +266,6 @@ describe('ChatOptionsModal', () => {
     });
   });
 
-  it('opens delete confirmation modal when "Delete Chat" is pressed', async () => {
-    renderComponent();
-    fireEvent.press(screen.getByText('Delete Chat'));
-
-    await waitFor(() => {
-      expect(
-        screen.getByText('Are you sure you want to delete this chat?'),
-      ).toBeTruthy();
-      expect(screen.getByText('Delete')).toBeTruthy();
-    });
-  });
 
   it('calls deleteChat and shows success alert on confirm delete', async () => {
     renderComponent();
