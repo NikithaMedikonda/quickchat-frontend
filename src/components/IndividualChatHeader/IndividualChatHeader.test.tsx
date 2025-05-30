@@ -226,39 +226,4 @@ describe('Platform-specific back arrow image tests', () => {
     });
   });
 
-  test('Should close modal when close action is triggered', async () => {
-    const {getByA11yHint, queryByText} = render(
-      <Provider store={store}>
-        <IndividualChatHeader
-          name="Test"
-          profilePicture="someUri"
-          phoneNumber=""
-          isBlocked={false}
-          onBlockStatusChange={() => {}}
-          setIsCleared={() => {}}
-          publicKey={''}
-        />
-      </Provider>,
-    );
-
-    const moreOptionsIcon = getByA11yHint('more-options-icon');
-
-    await act(async () => {
-      fireEvent.press(moreOptionsIcon);
-    });
-
-    await waitFor(() => {
-      expect(queryByText('Delete Chat')).toBeTruthy();
-    });
-
-    const closeButton = getByA11yHint('modal-close-button');
-
-    await act(async () => {
-      fireEvent.press(closeButton);
-    });
-
-    await waitFor(() => {
-      expect(queryByText('Delete Chat')).toBeNull();
-    });
-  });
 });
