@@ -1,7 +1,7 @@
-import {StyleSheet, Dimensions} from 'react-native';
-import {Colors} from '../../themes/colors.ts';
+import { StyleSheet, Dimensions } from 'react-native';
+import { Colors } from '../../themes/colors.ts';
 
-const {width, height} = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 export const getStyles = (colors: Colors) =>
   StyleSheet.create({

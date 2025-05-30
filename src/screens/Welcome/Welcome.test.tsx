@@ -4,7 +4,7 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react-native';
-import {Welcome} from './Welcome';
+import { Welcome } from './Welcome';
 
 const mockNavigate = jest.fn();
 jest.mock('@react-navigation/native', () => ({
@@ -23,12 +23,12 @@ describe('Welcome Screen', () => {
   });
 
   it('renders the Get Started button', () => {
-    const {getByText} = render(<Welcome />);
+    const { getByText } = render(<Welcome />);
     expect(getByText('Get Started')).toBeTruthy();
   });
 
   it('navigates to register screen on button press', async () => {
-    const {getByText} = render(<Welcome />);
+    const { getByText } = render(<Welcome />);
     const button = getByText('Get Started');
     await waitFor(() => {
       fireEvent.press(button);
