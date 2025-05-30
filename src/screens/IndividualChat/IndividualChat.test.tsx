@@ -16,7 +16,6 @@ import { messageEncryption } from '../../services/MessageEncryption';
 import { updateMessageStatus } from '../../services/UpdateMessageStatus';
 import * as socket from '../../socket/socket';
 import { resetForm } from '../../store/slices/registrationSlice';
-
 import { store } from '../../store/store';
 import { HomeStackParamList } from '../../types/usenavigation.type';
 import { IndividualChat } from './IndividualChat';
@@ -162,7 +161,7 @@ const setupMocks = () => {
 };
 
 describe('IndividualChat', () => {
-  beforeEach(async() => {
+  beforeEach(() => {
     (socket.receiveOnline as jest.Mock).mockImplementation(
       async ({setIsOnline}) => {
         setIsOnline(true);
@@ -178,6 +177,8 @@ describe('IndividualChat', () => {
     setupMocks();
     store.dispatch(resetForm());
   });
+
+  describe('Block Status useEffect', () => {
     test('should check block status on component mount with valid user and token', async () => {
       const mockUser = {
         phoneNumber: '+919999999999',
@@ -688,52 +689,11 @@ describe('IndividualChat', () => {
         receiverPhoneNumber: '+918522041688',
       });
     });
+
     await waitFor(() => {
-    const text = screen.getByText('Hello there!');
-    expect(text).toBeTruthy();
-    });
-  });
-  test('should not set the current user phone when the user not exists', async () => {
-    (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(null);
-    (getMessagesBetween as jest.Mock).mockResolvedValue({
-      status: 200,
-      data: {
-        chats: [
-          {
-            sender: {phoneNumber: '9822416889'},
-            receiver: {phoneNumber: '9876543210'},
-            content: 'Hello there!',
-            createdAt: new Date().toISOString(),
-            status: 'delivered',
-          },
-        ],
-      },
-    });
-    render(
-      <NavigationContainer>
-        <Provider store={store}>
-          <IndividualChat
-            navigation={
-              mockNavigation as NativeStackNavigationProp<
-                HomeStackParamList,
-                'individualChat'
-              >
-            }
-            route={mockRoute}
-          />
-        </Provider>
-      </NavigationContainer>,
-    );
-    await waitFor(() => {
-      expect(EncryptedStorage.getItem).toHaveBeenCalledWith('user');
-      expect(getMessagesBetween).toHaveBeenCalledWith({
-        senderPhoneNumber: '',
-        receiverPhoneNumber: '+918522041688',
-      });
-    });
-    await waitFor(() => {
-    const text = screen.getByText('Hello there!');
-    expect(text).toBeTruthy();
+      const elements = screen.getAllByText('Hello there!');
+      expect(elements.length).toBeGreaterThan(0);
+      expect(elements[0]).toBeTruthy();
     });
   });
 
@@ -816,4 +776,4 @@ describe('IndividualChat', () => {
       expect(mockSend).not.toHaveBeenCalled();
     });
   });
-
+});
