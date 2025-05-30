@@ -213,6 +213,7 @@ export const IndividualChat = ({route}: Props) => {
           setFetchMessages(formattedMessages);
         }
       }
+      dispatch(hide());
     }
 
     getMessages();
