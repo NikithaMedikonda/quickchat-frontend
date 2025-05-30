@@ -1,5 +1,5 @@
 import { API_URL } from '../../constants/api';
-import { deleteChat } from '../DeleteChat'; 
+import { deleteChat } from '../DeleteChat';
 
 global.fetch = jest.fn();
 const mockedFetch = fetch as jest.Mock;
