@@ -180,7 +180,7 @@ export const ChatOptionsModal = ({
     <View>
       <Modal transparent={true} visible={visible}>
         <TouchableWithoutFeedback
-          accessibilityHint="modal-close-button"
+          accessibilityHint="modal-closme-button"
           onPress={onClose}
           accessibilityLabel="modal-background">
           <View style={[styles.centeredView, modalStyle]}>
