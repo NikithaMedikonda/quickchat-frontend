@@ -38,6 +38,21 @@ jest.mock('../../helpers/nameNumberIndex', () => ({
   }),
 }));
 
+jest.mock('react-native-libsodium', () => ({
+  from_base64: jest.fn((input: string) =>
+    Uint8Array.from(Buffer.from(input, 'base64')),
+  ),
+  to_base64: jest.fn((input: Uint8Array) =>
+    Buffer.from(input).toString('base64'),
+  ),
+  crypto_box_open_easy: jest.fn(() =>
+    Uint8Array.from(Buffer.from('my-private-key')),
+  ),
+  to_string: jest.fn((input: Uint8Array) =>
+    Buffer.from(input).toString('utf-8'),
+  ),
+}));
+
 describe('Welcome Screen', () => {
   it('renders the Tabs', async () => {
     await waitFor(() => {
