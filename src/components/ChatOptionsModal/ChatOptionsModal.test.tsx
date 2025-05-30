@@ -269,6 +269,7 @@ describe('ChatOptionsModal', () => {
 
   it('calls deleteChat and shows success alert on confirm delete', async () => {
     renderComponent();
+    jest.useFakeTimers();
     fireEvent.press(screen.getByText('Delete Chat'));
     const confirmButton = await screen.findByText('Delete');
     fireEvent.press(confirmButton);
