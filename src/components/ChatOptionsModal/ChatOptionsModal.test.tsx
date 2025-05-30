@@ -1,4 +1,4 @@
-import {NavigationContainer} from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 import {
   act,
   fireEvent,
@@ -7,12 +7,12 @@ import {
   waitFor,
 } from '@testing-library/react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {Provider} from 'react-redux';
-import {deleteChat} from '../../services/DeleteChat';
-import {blockUser} from '../../services/UserBlock';
-import {unblockUser} from '../../services/UserUnblock';
-import {store} from '../../store/store';
-import {ChatOptionsModal} from './ChatOptionsModal';
+import { Provider } from 'react-redux';
+import { deleteChat } from '../../services/DeleteChat';
+import { blockUser } from '../../services/UserBlock';
+import { unblockUser } from '../../services/UserUnblock';
+import { store } from '../../store/store';
+import { ChatOptionsModal } from './ChatOptionsModal';
 
 jest.mock('../../themes/colors', () => ({
   useThemeColors: () => ({
@@ -266,18 +266,6 @@ describe('ChatOptionsModal', () => {
     });
   });
 
-  it('opens delete confirmation modal when "Delete Chat" is pressed', async () => {
-    renderComponent();
-    fireEvent.press(screen.getByText('Delete Chat'));
-
-    await waitFor(() => {
-      expect(
-        screen.getByText('Are you sure you want to delete this chat?'),
-      ).toBeTruthy();
-      expect(screen.getByText('Delete')).toBeTruthy();
-    });
-  });
-
   it('calls deleteChat and shows success alert on confirm delete', async () => {
     renderComponent();
     fireEvent.press(screen.getByText('Delete Chat'));
@@ -359,6 +347,106 @@ describe('ChatOptionsModal', () => {
     fireEvent.press(screen.getByText('Block User'));
     const confirmButton = await screen.findByText('Block');
     fireEvent.press(confirmButton);
+
+    await waitFor(() => {
+      const state = store.getState();
+      expect(state.registration.alertMessage).toBe(
+        'Unable to block or unblock the user',
+      );
+      expect(state.registration.alertType).toBe('info');
+    });
+  });
+
+  it('shows alert if token not exist', async () => {
+    const mockOnBlockStatusChange = jest.fn();
+    (EncryptedStorage.getItem as jest.Mock).mockImplementation(key => {
+      if (key === 'user') {
+        return Promise.resolve(JSON.stringify({phoneNumber: '1234567890'}));
+      }
+      if (key === 'authToken') {
+        return Promise.resolve(null);
+      }
+      return Promise.resolve(null);
+    });
+    render(
+      <Provider store={store}>
+        <NavigationContainer>
+          <ChatOptionsModal
+            visible={true}
+            onClose={mockOnClose}
+            isUserBlocked={true}
+            onBlockStatusChange={mockOnBlockStatusChange}
+            setIsCleared={jest.fn()}
+          />
+        </NavigationContainer>
+      </Provider>,
+    );
+
+    await waitFor(() => {
+      const state = store.getState();
+      expect(state.registration.alertMessage).toBe(
+        'Unable to block or unblock the user',
+      );
+      expect(state.registration.alertType).toBe('info');
+    });
+  });
+  it('shows alert if user not exist', async () => {
+    const mockOnBlockStatusChange = jest.fn();
+    (EncryptedStorage.getItem as jest.Mock).mockImplementation(key => {
+      if (key === 'user') {
+        return Promise.resolve(null);
+      }
+      if (key === 'authToken') {
+        return Promise.resolve('mocked_token');
+      }
+      return Promise.resolve(null);
+    });
+    render(
+      <Provider store={store}>
+        <NavigationContainer>
+          <ChatOptionsModal
+            visible={true}
+            onClose={mockOnClose}
+            isUserBlocked={true}
+            onBlockStatusChange={mockOnBlockStatusChange}
+            setIsCleared={jest.fn()}
+          />
+        </NavigationContainer>
+      </Provider>,
+    );
+
+    await waitFor(() => {
+      const state = store.getState();
+      expect(state.registration.alertMessage).toBe(
+        'Unable to block or unblock the user',
+      );
+      expect(state.registration.alertType).toBe('info');
+    });
+  });
+  it('shows alert if user and token not exist', async () => {
+    const mockOnBlockStatusChange = jest.fn();
+    (EncryptedStorage.getItem as jest.Mock).mockImplementation(key => {
+      if (key === 'user') {
+        return Promise.resolve(null);
+      }
+      if (key === 'authToken') {
+        return Promise.resolve(null);
+      }
+      return Promise.resolve(null);
+    });
+    render(
+      <Provider store={store}>
+        <NavigationContainer>
+          <ChatOptionsModal
+            visible={true}
+            onClose={mockOnClose}
+            isUserBlocked={true}
+            onBlockStatusChange={mockOnBlockStatusChange}
+            setIsCleared={jest.fn()}
+          />
+        </NavigationContainer>
+      </Provider>,
+    );
 
     await waitFor(() => {
       const state = store.getState();

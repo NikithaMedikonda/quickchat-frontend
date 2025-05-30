@@ -137,6 +137,11 @@ export const Registration = () => {
         );
       } else if (result.status === 200) {
         dispatch(hide());
+         showAlert(
+          'success',
+          'Success',
+          'Successfully registered',
+        );
         dispatch(setAlertVisible(true));
         dispatch(
           setLoginSuccess({

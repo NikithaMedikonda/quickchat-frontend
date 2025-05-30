@@ -1,13 +1,13 @@
-import {useState} from 'react';
-import {useNavigation} from '@react-navigation/native';
-import {Image, Platform, Text, TouchableOpacity, View} from 'react-native';
-import {useThemeColors} from '../../themes/colors';
-import {useImagesColors} from '../../themes/images';
-import {HomeStackProps} from '../../types/usenavigation.type';
-import {UserDetails} from '../../types/user.types';
-import {ChatOptionsModal} from '../ChatOptionsModal/ChatOptionsModal';
-import {individualChatHeaderStyles} from './IndividualChatHeader.styles';
+import { useNavigation } from '@react-navigation/native';
+import { useState } from 'react';
+import { Image, Platform, Text, TouchableOpacity, View } from 'react-native';
 import { DEFAULT_PROFILE_IMAGE } from '../../constants/defaultImage';
+import { useThemeColors } from '../../themes/colors';
+import { useImagesColors } from '../../themes/images';
+import { HomeStackProps } from '../../types/usenavigation.type';
+import { UserDetails } from '../../types/user.types';
+import { ChatOptionsModal } from '../ChatOptionsModal/ChatOptionsModal';
+import { individualChatHeaderStyles } from './IndividualChatHeader.styles';
 
 interface IndividualChatHeaderProps extends UserDetails {
   isBlocked: boolean;

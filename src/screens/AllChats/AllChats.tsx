@@ -9,6 +9,8 @@ import { PlusIcon } from '../../components/PlusIcon/PlusIcon';
 import { numberNameIndex } from '../../helpers/nameNumberIndex';
 import { normalise } from '../../helpers/normalisePhoneNumber';
 import { getAllChats } from '../../services/GetAllChats';
+import { messageDecryption } from '../../services/MessageDecryption';
+import { hide } from '../../store/slices/loadingSlice';
 import { logout } from '../../store/slices/loginSlice';
 import {
   setAlertMessage,
@@ -31,6 +33,7 @@ export interface Chat {
   lastMessageType: 'sentMessage' | 'receivedMessage';
   phoneNumber: string;
   unreadCount: number;
+  publicKey: string;
 }
 
 type ContactNameMap = Record<string, string>;
@@ -97,7 +100,22 @@ export const AllChats = () => {
             navigation.replace('login');
           }, 1000);
         } else if (response.status === 200 && response.data) {
-          setChats(response.data.chats);
+          const privateKey = await EncryptedStorage.getItem('privateKey');
+          if (privateKey) {
+            for (const chat of response.data.chats) {
+              try {
+                const decryptedMessage = await messageDecryption({
+                  encryptedMessage: chat.lastMessageText,
+                  myPrivateKey: privateKey,
+                  senderPublicKey: chat.publicKey,
+                });
+                chat.lastMessageText = decryptedMessage;
+              } catch (error) {
+                dispatch(hide());
+              }
+            }
+            setChats(response.data.chats);
+          }
         } else {
           showAlert('info', 'Unable to Fetch Chats', 'Please try again later.');
         }
@@ -126,6 +144,7 @@ export const AllChats = () => {
                   profilePicture: chat.contactProfilePic,
                   phoneNumber: chat.phoneNumber,
                   isBlocked: false,
+                  publicKey: chat.publicKey,
                   onBlockStatusChange: () => {},
                 },
               })

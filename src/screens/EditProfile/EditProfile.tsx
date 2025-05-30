@@ -1,4 +1,6 @@
-import {useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState} from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Image,
   KeyboardAvoidingView,
@@ -8,29 +10,27 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {useDispatch, useSelector} from 'react-redux';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {useNavigation} from '@react-navigation/native';
-import {useTranslation} from 'react-i18next';
-import {RootState} from '../../store/store';
-import {useThemeColors} from '../../themes/colors';
-import {Placeholder} from '../../components/InputField/InputField';
-import {ImagePickerModal} from '../../components/ImagePickerModal/ImagePickerModal';
-import {getStyles} from './EditProfile.styles';
+import { useDispatch, useSelector } from 'react-redux';
+import { CustomAlert } from '../../components/CustomAlert/CustomAlert';
+import { ImagePickerModal } from '../../components/ImagePickerModal/ImagePickerModal';
+import { Placeholder } from '../../components/InputField/InputField';
+import { DEFAULT_PROFILE_IMAGE } from '../../constants/defaultImage';
+import { updateProfile } from '../../services/UpdateProfile';
 import {
-  setIsVisible,
-  setAlertVisible,
-  setAlertType,
-  setAlertTitle,
   setAlertMessage,
-  setErrors,
+  setAlertTitle,
+  setAlertType,
+  setAlertVisible,
   setEditProfileForm,
+  setErrors,
+  setIsVisible,
 } from '../../store/slices/registrationSlice';
-import {updateProfile} from '../../services/UpdateProfile';
-import {ProfileScreenNavigationProp} from '../../types/usenavigation.type';
-import {DEFAULT_PROFILE_IMAGE} from '../../constants/defaultImage';
-import {CustomAlert} from '../../components/CustomAlert/CustomAlert';
-import {useImagesColors} from '../../themes/images';
+import { RootState } from '../../store/store';
+import { useThemeColors } from '../../themes/colors';
+import { useImagesColors } from '../../themes/images';
+import { ProfileScreenNavigationProp } from '../../types/usenavigation.type';
+import { getStyles } from './EditProfile.styles';
 
 export const BackButton = () => {
   const colors = useThemeColors();
