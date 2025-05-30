@@ -19,6 +19,7 @@ import {Provider} from 'react-redux';
 import {store} from '../../store/store';
 import {resetForm} from '../../store/slices/registrationSlice';
 
+
 type IndividualChatRouteProp = RouteProp<HomeStackParamList, 'individualChat'>;
 const mockRoute: IndividualChatRouteProp = {
   key: 'individualChat',
@@ -136,7 +137,7 @@ jest.mock('../../socket/socket', () => ({
   },
 }));
 describe('IndividualChat', () => {
-  beforeEach(() => {
+  beforeEach(async() => {
     (socket.receiveOnline as jest.Mock).mockImplementation(
       async ({setIsOnline}) => {
         setIsOnline(true);
@@ -152,7 +153,6 @@ describe('IndividualChat', () => {
     setupMocks();
     store.dispatch(resetForm());
   });
-  describe('Block Status useEffect', () => {
     test('should check block status on component mount with valid user and token', async () => {
       const mockUser = {
         phoneNumber: '+919999999999',
@@ -682,8 +682,10 @@ describe('IndividualChat', () => {
         receiverPhoneNumber: '+918522041688',
       });
     });
-    const text = await screen.getByText('Hello there!');
+    await waitFor(() => {
+    const text = screen.getByText('Hello there!');
     expect(text).toBeTruthy();
+    });
   });
   test('should not set the current user phone when the user not exists', async () => {
     (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(null);
@@ -723,8 +725,10 @@ describe('IndividualChat', () => {
         receiverPhoneNumber: '+918522041688',
       });
     });
-    const text = await screen.getByText('Hello there!');
+    await waitFor(() => {
+    const text = screen.getByText('Hello there!');
     expect(text).toBeTruthy();
+    });
   });
   test('should not render the fetched messages when the status is not 200', async () => {
     (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(
@@ -810,4 +814,4 @@ describe('IndividualChat', () => {
       expect(screen.queryByText('')).toBeNull();
     });
   });
-});
+
