@@ -24,6 +24,7 @@ describe('loginUser', () => {
         phoneNumber: '9876543210',
         email: 'test@example.com',
         profilePicture: 'image.jpg',
+
         isDeleted: false,
       },
     };
@@ -32,12 +33,12 @@ describe('loginUser', () => {
       status: 200,
       json: jest.fn().mockResolvedValue(mockResponse),
     });
-    const result = await loginUser(payload);
+    const result = await loginUser(payload, '29u38');
     expect(mockedFetch).toHaveBeenCalledTimes(1);
     expect(mockedFetch).toHaveBeenCalledWith(`${API_URL}/api/user`, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(payload),
+      body: JSON.stringify({...payload, deviceId: '29u38'}),
     });
 
     expect(result.status).toBe(200);
@@ -54,7 +55,7 @@ describe('loginUser', () => {
       json: jest.fn().mockResolvedValue(mockErrorResponse),
     });
 
-    const result = await loginUser(payload);
+    const result = await loginUser(payload,'34324');
 
     expect(result.status).toBe(404);
     expect(result.data).toEqual(mockErrorResponse);
@@ -63,6 +64,6 @@ describe('loginUser', () => {
   it('should throw if fetch fails', async () => {
     mockedFetch.mockRejectedValueOnce(new Error('Network Error'));
 
-    await expect(loginUser(payload)).rejects.toThrow('Network Error');
+    await expect(loginUser(payload,'1234')).rejects.toThrow('Network Error');
   });
 });

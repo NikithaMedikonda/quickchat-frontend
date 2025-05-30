@@ -79,6 +79,12 @@ jest.mock('../../socket/socket', () => ({
   sendPrivateMessage: jest.fn(),
   newSocket: {},
 }));
+
+jest.mock('../../services/CheckUserOnline', () => ({
+  checkUserOnline: jest
+    .fn()
+    .mockResolvedValue({data: {data: {socketId: 'test-id'}}}),
+}));
 jest.mock('../../services/MessageEncryption', () => ({
   messageEncryption: jest.fn(),
 }));
@@ -141,14 +147,30 @@ const setupMocks = () => {
 jest.mock('../../services/UpdateMessageStatus', () => ({
   updateMessageStatus: jest.fn(),
 }));
-
 jest.mock('../../socket/socket', () => ({
   receivePrivateMessage: jest.fn(),
   sendPrivateMessage: jest.fn(),
-  newSocket: {},
+  receiveOnline: jest.fn(),
+  receiveOffline: jest.fn(),
+  receiveJoined: jest.fn(),
+  newSocket: {
+    emit: jest.fn(),
+    on: jest.fn(),
+  },
 }));
 describe('IndividualChat', () => {
   beforeEach(() => {
+    (socket.receiveOnline as jest.Mock).mockImplementation(
+      async ({setIsOnline}) => {
+        setIsOnline(true);
+      },
+    );
+
+    (socket.receiveOffline as jest.Mock).mockImplementation(
+      async ({setIsOnline}) => {
+        setIsOnline(false);
+      },
+    );
     jest.clearAllMocks();
     setupMocks();
     store.dispatch(resetForm());
@@ -355,6 +377,11 @@ describe('IndividualChat', () => {
         expect(state.registration.alertMessage).toBe('Unable to fetch details');
         expect(state.registration.alertType).toBe('info');
       });
+      await waitFor(() => {
+        const state = store.getState();
+        expect(state.registration.alertMessage).toBe('Unable to fetch details');
+        expect(state.registration.alertType).toBe('info');
+      });
     });
 
     test('should handle non-200 status from checkBlockStatus', async () => {
@@ -466,25 +493,7 @@ describe('IndividualChat', () => {
       expect(screen.getByA11yHint('more-options-icon')).toBeTruthy();
     });
   });
-
   test('Should render the message input component', async () => {
-    (getMessagesBetween as jest.Mock).mockResolvedValueOnce({
-      status: 200,
-      data: {
-        chats: [
-          {
-            sender: {
-              phoneNumber: '+919440058809',
-            },
-            receiver: {
-              phoneNumber: '+918522041688',
-            },
-            status: 'delivered',
-            content: 'Hii',
-          },
-        ],
-      },
-    });
     (updateMessageStatus as jest.Mock).mockResolvedValueOnce({
       status: 200,
       data: {
@@ -553,6 +562,48 @@ describe('IndividualChat', () => {
   });
 
   test('calls sendPrivateMessage and updates sendMessages when message is sent', async () => {
+    (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(
+      JSON.stringify({
+        phoneNumber: '1234567890',
+      }),
+    );
+    (socket.receiveOnline as jest.Mock).mockImplementation(
+      async ({setIsOnline}) => setIsOnline(true),
+    );
+
+    (socket.receiveOffline as jest.Mock).mockImplementation(
+      async ({setIsOnline}) => setIsOnline(false),
+    );
+    const mockSend = socket.sendPrivateMessage as jest.Mock;
+    mockSend.mockResolvedValue({});
+    const mockSocketIdResponse = {
+      data: {
+        data: {socketId: 'mock-socket-id'},
+      },
+    };
+
+    jest
+      .spyOn(require('../../services/CheckUserOnline'), 'checkUserOnline')
+      .mockResolvedValue(mockSocketIdResponse);
+    await waitFor(
+      () => {
+        render(
+          <NavigationContainer>
+            <Provider store={store}>
+              <IndividualChat
+                navigation={
+                  mockNavigation as NativeStackNavigationProp<
+                    HomeStackParamList,
+                    'individualChat'
+                  >
+                }
+                route={mockRoute}
+              />
+            </Provider>
+          </NavigationContainer>,
+        );
+      },
+      {timeout: 20000},
     (EncryptedStorage.getItem as jest.Mock).mockImplementation(key => {
       if (key === 'user') {
         return Promise.resolve(JSON.stringify({phoneNumber: '1234567890'}));
@@ -582,18 +633,37 @@ describe('IndividualChat', () => {
       </NavigationContainer>,
     );
 
-    const input = getByPlaceholderText('Type a message..');
-    fireEvent.changeText(input, 'Test message');
+    await waitFor(() =>
+      expect(EncryptedStorage.getItem).toHaveBeenCalledWith('user'),
+    );
+    await waitFor(() => {
+      const input = screen.getByPlaceholderText('Type a message..');
+      fireEvent.changeText(input, 'Hello, test!');
+    });
 
-    const sendButton = getByA11yHint('send-message-icon');
-    fireEvent.press(sendButton);
+    await waitFor(() =>
+      expect(screen.getByAccessibilityHint('send-message-icon')).toBeTruthy(),
+    );
+    await waitFor(() => {
+      fireEvent.press(screen.getByAccessibilityHint('send-message-icon'));
+    });
 
     await waitFor(() => {
-      expect(socket.sendPrivateMessage).toHaveBeenCalled();
-      expect(screen.getByText('Test message')).toBeTruthy();
+      expect(mockSend).toHaveBeenCalled();
+    });
+    const messageNode = await screen.findByText('Hello, test!');
+    await waitFor(() => {
+      expect(messageNode).toBeTruthy();
+    });
+    const calledPayload = (socket.sendPrivateMessage as jest.Mock).mock
+      .calls[0][0];
+    await waitFor(() => {
+      expect(calledPayload.message).toBe('Hello, test!');
+      expect(calledPayload.senderPhoneNumber).toBe('1234567890');
+      expect(calledPayload.recipientPhoneNumber).toBe('+918522041688');
+      expect(calledPayload.status).toBe('read');
     });
   });
-
   test('should set the current user phone when the user exists', async () => {
     (EncryptedStorage.getItem as jest.Mock).mockImplementation(key => {
       if (key === 'user') {
@@ -646,12 +716,59 @@ describe('IndividualChat', () => {
       });
       expect(getAllByText('Hello there!').length).toBeGreaterThan(0);
     });
+    const text = await screen.getByText('Hello there!');
+    expect(text).toBeTruthy();
   });
-
   test('should not set the current user phone when the user not exists', async () => {
     (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(null);
     (getMessagesBetween as jest.Mock).mockResolvedValue({
       status: 200,
+      data: {
+        chats: [
+          {
+            sender: {phoneNumber: '9822416889'},
+            receiver: {phoneNumber: '9876543210'},
+            content: 'Hello there!',
+            createdAt: new Date().toISOString(),
+            status: 'delivered',
+          },
+        ],
+      },
+    });
+
+    render(
+      <NavigationContainer>
+        <Provider store={store}>
+          <IndividualChat
+            navigation={
+              mockNavigation as NativeStackNavigationProp<
+                HomeStackParamList,
+                'individualChat'
+              >
+            }
+            route={mockRoute}
+          />
+        </Provider>
+      </NavigationContainer>,
+    );
+    await waitFor(() => {
+      expect(EncryptedStorage.getItem).toHaveBeenCalledWith('user');
+      expect(getMessagesBetween).toHaveBeenCalledWith({
+        senderPhoneNumber: '',
+        receiverPhoneNumber: '+918522041688',
+      });
+    });
+    const text = await screen.getByText('Hello there!');
+    expect(text).toBeTruthy();
+  });
+  test('should not render the fetched messages when the status is not 200', async () => {
+    (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(
+      JSON.stringify({
+        phoneNumber: '9822416889',
+      }),
+    );
+    (getMessagesBetween as jest.Mock).mockResolvedValue({
+      status: 500,
       data: {
         chats: [
           {
@@ -681,101 +798,51 @@ describe('IndividualChat', () => {
     );
     await waitFor(() => {
       expect(EncryptedStorage.getItem).toHaveBeenCalledWith('user');
-      expect(getMessagesBetween).toHaveBeenCalledWith({
-        senderPhoneNumber: '',
-        receiverPhoneNumber: '+918522041688',
-      });
+      expect(screen.queryByText('Hello there!')).toBeNull();
     });
   });
-
-  test('should not render the fetched messages when the status is not 200', async () => {
-    (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(
-      JSON.stringify({
-        phoneNumber: '9822416889',
-      }),
-    );
-    (getMessagesBetween as jest.Mock).mockResolvedValue({
-      status: 500,
-      data: {
-        chats: [
-          {
-            sender: {phoneNumber: '9822416889'},
-            receiver: {phoneNumber: '9876543210'},
-            content: 'Hello there!',
-            createdAt: new Date().toISOString(),
-            status: 'delivered',
-          },
-        ],
-      },
-    });
-    const {queryByText} = render(
-      <NavigationContainer>
-        <Provider store={store}>
-          <IndividualChat
-            navigation={
-              mockNavigation as NativeStackNavigationProp<
-                HomeStackParamList,
-                'individualChat'
-              >
-            }
-            route={mockRoute}
-          />
-        </Provider>
-      </NavigationContainer>,
-    );
-    await waitFor(() => {
-      expect(EncryptedStorage.getItem).toHaveBeenCalledWith('user');
-      expect(queryByText('Hello there!')).toBeNull();
-    });
-  });
-
   test('should not render the empty message ', async () => {
     (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(
       JSON.stringify({
         phoneNumber: '9822416889',
       }),
     );
-    (getMessagesBetween as jest.Mock).mockResolvedValue({
-      status: 200,
-      data: {
-        chats: [
-          {
-            sender: {phoneNumber: '9822416889'},
-            receiver: {phoneNumber: '9876543210'},
-            content: 'Hello there!',
-            createdAt: new Date().toISOString(),
-            status: 'delivered',
-          },
-        ],
+    await waitFor(
+      () => {
+        render(
+          <NavigationContainer>
+            <Provider store={store}>
+              <IndividualChat
+                navigation={
+                  mockNavigation as NativeStackNavigationProp<
+                    HomeStackParamList,
+                    'individualChat'
+                  >
+                }
+                route={mockRoute}
+              />
+            </Provider>
+          </NavigationContainer>,
+        );
       },
-    });
-    const {queryByText, getByPlaceholderText} = render(
-      <NavigationContainer>
-        <Provider store={store}>
-          <IndividualChat
-            navigation={
-              mockNavigation as NativeStackNavigationProp<
-                HomeStackParamList,
-                'individualChat'
-              >
-            }
-            route={mockRoute}
-          />
-        </Provider>
-      </NavigationContainer>,
+      {timeout: 20000},
     );
+
     await waitFor(() =>
       expect(EncryptedStorage.getItem).toHaveBeenCalledWith('user'),
     );
     const mockSend = socket.sendPrivateMessage as jest.Mock;
     await waitFor(() => {
       mockSend.mockResolvedValue({});
+      mockSend.mockResolvedValue({});
     });
-    const input = getByPlaceholderText('Type a message..');
+
+    const input = await screen.getByPlaceholderText('Type a message..');
     fireEvent.changeText(input, '');
     fireEvent.press(screen.getByAccessibilityHint('send-message-icon'));
+
     await waitFor(() => {
-      expect(queryByText('')).toBeNull();
+      expect(screen.queryByText('')).toBeNull();
     });
   });
 });

@@ -1,5 +1,5 @@
 import {NavigationContainer} from '@react-navigation/native';
-import {render, waitFor} from '@testing-library/react-native';
+import {fireEvent, render, waitFor} from '@testing-library/react-native';
 import {Provider} from 'react-redux';
 import {store} from '../../store/store';
 import {HomeTabs} from './HomeTabs';
@@ -48,6 +48,37 @@ describe('Welcome Screen', () => {
           </NavigationContainer>
         </Provider>,
       );
+    });
+  });
+  it('navigates to profileScreen when profile tab is pressed', async () => {
+    const {getByText} = render(
+      <Provider store={store}>
+        <NavigationContainer>
+          <HomeTabs />
+        </NavigationContainer>
+      </Provider>,
+    );
+
+    await waitFor(() => {
+      const profileTab = getByText('Profile');
+      fireEvent.press(profileTab);
+    });
+  });
+   it('navigates to profile screen when profile tab is pressed', async () => {
+    const {findByText, queryByText} = render(
+      <Provider store={store}>
+        <NavigationContainer>
+          <HomeTabs />
+        </NavigationContainer>
+      </Provider>,
+    );
+
+    const profileTab = await findByText('Profile');
+
+    fireEvent.press(profileTab);
+
+    await waitFor(() => {
+      expect(queryByText('First Name')).toBeTruthy();
     });
   });
 });

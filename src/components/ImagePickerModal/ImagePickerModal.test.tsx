@@ -120,15 +120,19 @@ describe('ImagePickerModal', () => {
 
     await waitFor(() => {
       expect(mockDispatch).toHaveBeenCalledWith(setAlertType('warning'));
-      expect(mockDispatch).toHaveBeenCalledWith(setAlertTitle('Permission denied'));
       expect(mockDispatch).toHaveBeenCalledWith(
-        setAlertMessage('Permission Denied, We need access to your photos to continue.')
+        setAlertTitle('Permission denied'),
+      );
+      expect(mockDispatch).toHaveBeenCalledWith(
+        setAlertMessage(
+          'Permission Denied, We need access to your photos to continue.',
+        ),
       );
       expect(mockDispatch).toHaveBeenCalledWith(setAlertVisible(true));
     });
   });
 
-   it('shows alert when permission denied on Android', async () => {
+  it('shows alert when permission denied on Android', async () => {
     Object.defineProperty(Platform, 'OS', {
       get: jest.fn(() => 'android'),
       configurable: true,
@@ -141,9 +145,13 @@ describe('ImagePickerModal', () => {
     fireEvent.press(galleryButton);
     await waitFor(() => {
       expect(mockDispatch).toHaveBeenCalledWith(setAlertType('warning'));
-      expect(mockDispatch).toHaveBeenCalledWith(setAlertTitle('Permission denied'));
       expect(mockDispatch).toHaveBeenCalledWith(
-        setAlertMessage('Permission Denied, We need access to your photos to continue.')
+        setAlertTitle('Permission denied'),
+      );
+      expect(mockDispatch).toHaveBeenCalledWith(
+        setAlertMessage(
+          'Permission Denied, We need access to your photos to continue.',
+        ),
       );
       expect(mockDispatch).toHaveBeenCalledWith(setAlertVisible(true));
     });
@@ -212,6 +220,94 @@ describe('ImagePickerModal', () => {
       );
       expect(mockDispatch).toHaveBeenCalledWith(setImageDeleted(false));
       expect(mockDispatch).toHaveBeenCalledWith(setIsVisible(false));
+    });
+  });
+  it('handles error when camera image picking fails', async () => {
+    Object.defineProperty(Platform, 'OS', {
+      get: jest.fn(() => 'ios'),
+      configurable: true,
+    });
+    const {requestPermissions} = require('../../permissions/ImagePermissions');
+    requestPermissions.mockResolvedValue(true);
+    (ImageCropPicker.openCamera as jest.Mock).mockRejectedValueOnce(
+      new Error('Camera access failed'),
+    );
+
+    render(<ImagePickerModal />);
+    const cameraButton = screen.getByA11yHint('camera-image');
+    fireEvent.press(cameraButton);
+
+    await waitFor(() => {
+      expect(mockDispatch).toHaveBeenCalledWith(setIsVisible(false));
+      expect(mockDispatch).toHaveBeenCalledWith(setAlertType('info'));
+      expect(mockDispatch).toHaveBeenCalledWith(
+        setAlertTitle('Image selection failed'),
+      );
+      expect(mockDispatch).toHaveBeenCalledWith(
+        setAlertMessage('You have not selected photo'),
+      );
+      expect(mockDispatch).toHaveBeenCalledWith(setAlertVisible(true));
+    });
+  });
+
+  it('handles error when gallery image picking fails', async () => {
+    Object.defineProperty(Platform, 'OS', {
+      get: jest.fn(() => 'ios'),
+      configurable: true,
+    });
+    const {requestPermissions} = require('../../permissions/ImagePermissions');
+    requestPermissions.mockResolvedValue(true);
+
+    (ImageCropPicker.openPicker as jest.Mock).mockRejectedValueOnce(
+      new Error('Gallery access failed'),
+    );
+
+    render(<ImagePickerModal />);
+    const galleryButton = screen.getByA11yHint('gallery-image');
+    fireEvent.press(galleryButton);
+
+    await waitFor(() => {
+      expect(mockDispatch).toHaveBeenCalledWith(setIsVisible(false));
+      expect(mockDispatch).toHaveBeenCalledWith(setAlertType('info'));
+      expect(mockDispatch).toHaveBeenCalledWith(
+        setAlertTitle('Image selection failed'),
+      );
+      expect(mockDispatch).toHaveBeenCalledWith(
+        setAlertMessage('You have not selected photo'),
+      );
+      expect(mockDispatch).toHaveBeenCalledWith(setAlertVisible(true));
+    });
+  });
+
+  it('handles error when RNFS.readFile fails after successful image picking', async () => {
+    Object.defineProperty(Platform, 'OS', {
+      get: jest.fn(() => 'ios'),
+      configurable: true,
+    });
+    const {requestPermissions} = require('../../permissions/ImagePermissions');
+    requestPermissions.mockResolvedValue(true);
+
+    (ImageCropPicker.openPicker as jest.Mock).mockResolvedValueOnce({
+      path: 'mocked/image/path.jpg',
+    });
+    (RNFS.readFile as jest.Mock).mockRejectedValueOnce(
+      new Error('File read failed'),
+    );
+
+    render(<ImagePickerModal />);
+    const galleryButton = screen.getByA11yHint('gallery-image');
+    fireEvent.press(galleryButton);
+
+    await waitFor(() => {
+      expect(mockDispatch).toHaveBeenCalledWith(setIsVisible(false));
+      expect(mockDispatch).toHaveBeenCalledWith(setAlertType('info'));
+      expect(mockDispatch).toHaveBeenCalledWith(
+        setAlertTitle('Image selection failed'),
+      );
+      expect(mockDispatch).toHaveBeenCalledWith(
+        setAlertMessage('You have not selected photo'),
+      );
+      expect(mockDispatch).toHaveBeenCalledWith(setAlertVisible(true));
     });
   });
 });
