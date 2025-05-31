@@ -16,9 +16,9 @@ export const getStyles = (colors: Colors) =>
             height: width * 0.01,
         },
         profileImage: {
-            width: width * 0.12,
-            height: height * 0.06,
-            borderRadius: width * 0.9,
+            width: 60,
+            height: 60,
+            borderRadius: 25.5,
         },
         details: {
             paddingLeft: width * 0.16,
