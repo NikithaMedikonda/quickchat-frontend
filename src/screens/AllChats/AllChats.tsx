@@ -145,7 +145,7 @@ export const AllChats = () => {
                   phoneNumber: chat.phoneNumber,
                   isBlocked: false,
                   publicKey: chat.publicKey,
-                  onBlockStatusChange: () => {},
+                  onBlockStatusChange: () => { },
                 },
               })
             }>
