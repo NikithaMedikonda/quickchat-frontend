@@ -21,7 +21,6 @@ describe('ChatBox Component', () => {
 
   it('renders correctly with all props', () => {
     const { getByText } = render(<ChatBox {...mockProps} />);
-
     expect(getByText('Nagulu')).toBeTruthy();
     expect(getByText('Hello everyone!')).toBeTruthy();
   });
