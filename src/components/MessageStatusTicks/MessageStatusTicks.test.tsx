@@ -1,26 +1,29 @@
-import {render, screen} from '@testing-library/react-native';
-import {MessageStatusTicks} from './MessageStatusTicks';
+import { render } from '@testing-library/react-native';
+import { MessageStatusTicks } from './MessageStatusTicks';
+
+jest.mock('../../assets/sent.png', () => 'sentImageMock');
+jest.mock('../../assets/delivered.png', () => 'deliveredImageMock');
+jest.mock('../../assets/readTick.png', () => 'readImageMock');
 
 describe('MessageStatusTicks Test Suit', () => {
   test('should render the single tick', () => {
-    render(<MessageStatusTicks status="sent" />);
-    expect(screen.getByText('✓')).toBeOnTheScreen();
+    const { getByA11yHint } = render(<MessageStatusTicks status="sent" />);
+    const image = getByA11yHint('Message status is sent');
+    expect(image.props.source).toBe('sentImageMock');
   });
   test('should render the double tick', () => {
-    render(<MessageStatusTicks status="delivered" />);
-    expect(screen.getByText('✓✓')).toBeOnTheScreen();
+    const { getByA11yHint } = render(<MessageStatusTicks status="delivered" />);
+    const image = getByA11yHint('Message status is delivered');
+    expect(image.props.source).toBe('deliveredImageMock');
+
   });
   test('should render the blue tick', () => {
-    render(<MessageStatusTicks status="read" />);
-    const tickElement = screen.getByText('✓✓');
-    expect(tickElement).toBeOnTheScreen();
-    expect(tickElement.props.style).toEqual(
-      expect.arrayContaining([expect.objectContaining({color: '#FFFFFF'})]),
-    );
+    const { getByA11yHint } = render(<MessageStatusTicks status="read" />);
+    const image = getByA11yHint('Message status is read');
+    expect(image.props.source).toBe('readImageMock');
   });
   test('should not render anything upon invalid status', () => {
-    render(<MessageStatusTicks status="invalid" />);
-    expect(screen.queryByText('✓')).toBeNull();
-    expect(screen.queryByText('✓✓')).toBeNull();
+    const { toJSON } = render(<MessageStatusTicks status="invalid" />);
+    expect(toJSON()).toBeNull();
   });
 });

@@ -1,7 +1,7 @@
-import {StyleSheet, Dimensions} from 'react-native';
-import {Colors} from '../../themes/colors.ts';
+import { StyleSheet, Dimensions } from 'react-native';
+import { Colors } from '../../themes/colors.ts';
 
-const {width, height} = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 export const getStyles = (colors: Colors) =>
   StyleSheet.create({
@@ -14,13 +14,13 @@ export const getStyles = (colors: Colors) =>
       width: width,
     },
     image: {
-      width: width * 0.5,
-      height: height * 0.3,
+      width: width * 0.504,
+      height: height * 0.33,
     },
 
     imageContainer: {
-      height: height * 0.6,
-      width: width * 0.9,
+      height: height * 0.55,
+      width: width * 0.7,
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
