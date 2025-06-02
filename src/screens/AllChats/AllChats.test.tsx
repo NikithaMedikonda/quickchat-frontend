@@ -215,12 +215,12 @@ describe('AllChats Component', () => {
       const profileImage = screen.getAllByAccessibilityHint('profile-image');
       expect(profileImage.length).toBe(2);
       expect(screen.getByText('+1234567890')).toBeTruthy();
-      expect(screen.getByText('Sunday')).toBeTruthy();
+      expect(screen.getByText('May 25, 2025')).toBeTruthy();
       expect(screen.getByText('3')).toBeTruthy();
       expect(screen.getByText('+1234567999')).toBeTruthy();
       expect(screen.getByText(/How are you doing\?/)).toBeTruthy();
 
-      expect(screen.getByText('Saturday')).toBeTruthy();
+      expect(screen.getByText('May 25, 2025')).toBeTruthy();
     });
   });
 
