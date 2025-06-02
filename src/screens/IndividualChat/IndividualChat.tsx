@@ -10,6 +10,7 @@ import { MessageInput } from '../../components/MessageInput/MessageInput';
 import { MessageStatusTicks } from '../../components/MessageStatusTicks/MessageStatusTicks';
 import { TimeStamp } from '../../components/TimeStamp/TimeStamp';
 import { checkBlockStatus } from '../../services/CheckBlockStatus';
+import { CheckUserDeleteStatus } from '../../services/CheckUserDeleteStatus';
 import { checkUserOnline } from '../../services/CheckUserOnline';
 import { getMessagesBetween } from '../../services/GetMessagesBetween';
 import { messageDecryption } from '../../services/MessageDecryption';
@@ -53,6 +54,7 @@ export const IndividualChat = ({route}: Props) => {
   );
 
   const [isBlocked, setIsUserBlocked] = useState(false);
+  const [isDeleted, setIsDeleted] = useState(false);
   const [receivedMessages, setReceivedMessages] = useState<
     ReceivePrivateMessage[]
   >([]);
@@ -123,6 +125,29 @@ export const IndividualChat = ({route}: Props) => {
     };
 
     getBlockStatus();
+  }, [showAlert, user.phoneNumber]);
+
+  useEffect(() => {
+    const getUserDeleteStatus = async () => {
+      try {
+        const token = await EncryptedStorage.getItem('authToken');
+        if (!token) {
+          showAlert('info', 'Network Error', 'Unable to get user details');
+          return;
+        }
+        const result = await CheckUserDeleteStatus({
+          phoneNumber: user.phoneNumber,
+          authToken: token,
+        });
+        if (result.status === 200) {
+          setIsDeleted(result.data.isDeleted);
+        }
+      } catch (error) {
+        showAlert('info', 'Network Error', 'Unable to fetch details');
+      }
+    };
+
+    getUserDeleteStatus();
   }, [showAlert, user.phoneNumber]);
 
   useEffect(() => {
@@ -431,7 +456,13 @@ export const IndividualChat = ({route}: Props) => {
               </View>
             )}
           </ScrollView>
-          {isBlocked ? (
+          {isDeleted ? (
+            <View style={styles.ShowErrorContainer}>
+              <Text style={styles.errorText}>
+                This user doesn't exist on QuickChat anymore 🙃
+              </Text>
+            </View>
+          ) : isBlocked ? (
             <View style={styles.ShowErrorContainer}>
               <Text style={styles.errorText}>
                 This user is currently blocked. Unblock them to send messages.
