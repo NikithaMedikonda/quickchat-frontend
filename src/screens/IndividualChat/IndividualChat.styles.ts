@@ -85,12 +85,13 @@ export const individualChatStyles = (colors: Colors) => {
       alignItems: 'center',
     },
     chatHeaderContainer: {
-      flex: 0.01,
+      flex: 0,
     },
     chatMainContainer: {
       flex: 1.00,
       paddingBottom: 40,
       paddingHorizontal: 20,
+      marginTop: 10,
       borderColor: colors.receiveMessage,
     },
     chatInnerContainer: {
