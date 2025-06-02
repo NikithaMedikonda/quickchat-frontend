@@ -85,7 +85,7 @@ export const individualChatStyles = (colors: Colors) => {
       alignItems: 'center',
     },
     chatHeaderContainer: {
-      flex: 0,
+      flex: 0.01,
     },
     chatMainContainer: {
       flex: 1.00,
