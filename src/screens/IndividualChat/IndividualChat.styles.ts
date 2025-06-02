@@ -104,8 +104,8 @@ export const individualChatStyles = (colors: Colors) => {
       borderWidth: 1,
       borderRadius: 12,
       marginHorizontal: 16,
-      marginVertical: 8,
-      padding: 20,
+      marginVertical: 5,
+      padding: 10,
       alignItems: 'center',
       shadowColor: '#000',
       shadowOffset: {
