@@ -10,7 +10,6 @@ import {Login} from '../../screens/Login/Login';
 import {Registration} from '../../screens/Registration/Registration';
 import {setLoginSuccess} from '../../store/slices/loginSlice';
 import {Welcome} from '../../screens/Welcome/Welcome';
-import {getDeviceId} from '../../services/GenerateDeviceId';
 
 const Stack = createNativeStackNavigator();
 
@@ -34,14 +33,12 @@ export const InitialStacks = () => {
       }
 
       try {
-        const deviceId = await getDeviceId();
         const response = await fetch(`${API_URL}/api/auth/validate`, {
           method: 'POST',
           headers: {
             authorization: `Bearer ${accessToken}`,
             'x-refresh-token': refreshToken,
           },
-          body: JSON.stringify({deviceId: deviceId}),
         });
 
         const result = await response.json();
