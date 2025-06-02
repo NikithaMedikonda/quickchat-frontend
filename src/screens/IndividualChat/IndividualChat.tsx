@@ -35,10 +35,12 @@ import {
 import {HomeStackParamList} from '../../types/usenavigation.type';
 import {User} from '../Profile/Profile';
 import {individualChatStyles} from './IndividualChat.styles';
+import { useDeviceCheck } from '../../services/useDeviceCheck';
 
 type Props = NativeStackScreenProps<HomeStackParamList, 'individualChat'>;
 
 export const IndividualChat = ({route}: Props) => {
+   useDeviceCheck();
   const dispatch = useDispatch();
   const {alertType, alertTitle, alertMessage} = useSelector(
     (state: RootState) => state.registration,);
