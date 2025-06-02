@@ -1,4 +1,4 @@
-import { StyleSheet, Image, View, Dimensions } from 'react-native';
+import { StyleSheet, Image, View } from 'react-native';
 import sentImage from '../../assets/sent.png';
 import deliveredImage from '../../assets/delivered.png';
 import readImage from '../../assets/readTick.png';
@@ -29,14 +29,12 @@ export const MessageStatusTicks = ({ status }: Props) => {
   );
 };
 
-const { width, height } = Dimensions.get('window');
-
 const styles = StyleSheet.create({
   container: {
     paddingLeft: 4,
   },
   tickImage: {
-    width: width * 0.05,
-    height: height * 0.05,
+    width: 18,
+    height: 18,
   },
 });
