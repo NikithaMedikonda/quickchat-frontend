@@ -30,7 +30,7 @@ export const ChatBoxContent = ({
       <View style={styles.details}>
         <Text style={styles.name}>{name}</Text>
         <View style={styles.descriptionWrapper}>
-          {status && <><MessageStatusTicks status={status}/> <Text> </Text></>}
+          {status && <MessageStatusTicks status={status}/>}
           <Text
             style={styles.description}
             numberOfLines={1}
