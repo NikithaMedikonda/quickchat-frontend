@@ -14,6 +14,7 @@ import {ProfileMoreOptionsModal} from '../../components/ProfileMoreOptionsModal/
 import {useThemeColors} from '../../themes/colors';
 import {useImagesColors} from '../../themes/images';
 import {DEFAULT_PROFILE_IMAGE} from '../../constants/defaultImage';
+import {useDeviceCheck} from '../../services/useDeviceCheck';
 
 export interface User {
   firstName: string;
@@ -42,6 +43,7 @@ const ProfileHeaderRight = ({onPress}: {onPress: () => void}) => {
 };
 
 export const Profile = () => {
+  useDeviceCheck();
   const colors = useThemeColors();
   const styles = getStyles(colors);
   const {t} = useTranslation('auth');
