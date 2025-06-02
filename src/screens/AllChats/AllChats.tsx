@@ -1,26 +1,26 @@
-import { useNavigation } from '@react-navigation/native';
-import { useEffect, useLayoutEffect, useState } from 'react';
-import { ScrollView, TouchableOpacity, View } from 'react-native';
-import { useDispatch } from 'react-redux';
-import { useThemeColors } from '../../themes/colors';
-import { HomeStackProps, NavigationProps } from '../../types/usenavigation.type';
-
+import { useNavigation} from '@react-navigation/native';
+import { useEffect, useLayoutEffect, useState} from 'react';
+import {ScrollView, TouchableOpacity, View} from 'react-native';
+import {useDispatch} from 'react-redux';
+import {useThemeColors} from '../../themes/colors';
+import {HomeStackProps, NavigationProps} from '../../types/usenavigation.type';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { ChatBox } from '../../components/ChatBox/ChatBox';
-import { PlusIcon } from '../../components/PlusIcon/PlusIcon';
-import { numberNameIndex } from '../../helpers/nameNumberIndex';
-import { normalise } from '../../helpers/normalisePhoneNumber';
-import { getAllChats } from '../../services/GetAllChats';
-import { hide, show } from '../../store/slices/loadingSlice';
-import { logout } from '../../store/slices/loginSlice';
+import {ChatBox} from '../../components/ChatBox/ChatBox';
+import {PlusIcon} from '../../components/PlusIcon/PlusIcon';
+import {numberNameIndex} from '../../helpers/nameNumberIndex';
+import {normalise} from '../../helpers/normalisePhoneNumber';
+import {getAllChats} from '../../services/GetAllChats';
+import {hide, show} from '../../store/slices/loadingSlice';
+import {logout} from '../../store/slices/loginSlice';
 import {
   setAlertMessage,
   setAlertTitle,
   setAlertType,
   setAlertVisible,
 } from '../../store/slices/registrationSlice';
-import { Home } from '../Home/Home';
-import { getStyles } from './AllChats.styles';
+import {Home} from '../Home/Home';
+import {getStyles} from './AllChats.styles';
+import { useDeviceCheck } from '../../services/useDeviceCheck';
 
 export interface Chat {
   chatId: string;
@@ -38,7 +38,6 @@ type ContactNameMap = Record<string, string>;
 
 export const AllChats = () => {
   const navigation = useNavigation<NavigationProps>();
-
   const homeStackNavigation = useNavigation<HomeStackProps>();
   const dispatch = useDispatch();
   const colors = useThemeColors();
@@ -46,6 +45,7 @@ export const AllChats = () => {
 
   const [chats, setChats] = useState<Chat[]>([]);
   const [contactNameMap, setContactNameMap] = useState<ContactNameMap>({});
+  useDeviceCheck();
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -59,6 +59,7 @@ export const AllChats = () => {
       },
     });
   });
+
 
   useEffect(() => {
     const showAlert = (type: string, title: string, message: string) => {
@@ -126,6 +127,8 @@ export const AllChats = () => {
                     chat.phoneNumber,
                   profilePicture: chat.contactProfilePic,
                   phoneNumber: chat.phoneNumber,
+                  isBlocked: false,
+                  onBlockStatusChange: () => {},
                 },
               })
             }>
