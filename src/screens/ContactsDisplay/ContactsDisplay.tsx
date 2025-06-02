@@ -23,9 +23,11 @@ import {useImagesColors} from '../../themes/images';
 import {ContactDetails} from '../../types/contact.types';
 import {HomeStackProps, HomeTabsProps} from '../../types/usenavigation.type';
 import {getStyles} from './ContactsDisplay.styles';
+import { useDeviceCheck } from '../../services/useDeviceCheck';
 
 export const BackButton = () => {
   const colors = useThemeColors();
+  useDeviceCheck();
   const {androidBackArrow, iOSBackArrow} = useImagesColors();
   const navigation = useNavigation<HomeTabsProps>();
   const styles = getStyles(colors);
