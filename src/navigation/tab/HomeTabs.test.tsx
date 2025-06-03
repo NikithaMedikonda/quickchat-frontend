@@ -71,7 +71,7 @@ describe('Welcome Screen', () => {
     });
   });
     it('navigates to profileScreen when Profile tab is pressed', async () => {
-    const { getAllByText} = render(
+    const { getByText} = render(
       <Provider store={store}>
         <NavigationContainer>
           <HomeTabs />
