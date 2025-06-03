@@ -36,6 +36,9 @@ const mockRoute: IndividualChatRouteProp = {
     },
   },
 };
+jest.mock('../../services/useDeviceCheck', () => ({
+  useDeviceCheck: jest.fn(),
+}));
 
 jest.mock('react-native-libsodium', () => ({
   from_base64: jest.fn((input: string) =>

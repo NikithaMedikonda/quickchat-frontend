@@ -22,6 +22,8 @@ const mockChats = [
     lastMessageType: 'sentMessage',
     phoneNumber: '+1234567890',
     unreadCount: 3,
+    isBlocked: false,
+    onBlockStatusChange: jest.fn(),
     publicKey: '',
   },
   {
@@ -34,6 +36,8 @@ const mockChats = [
     lastMessageType: 'sentMessage',
     phoneNumber: '+1234567999',
     unreadCount: 0,
+    isBlocked: false,
+    onBlockStatusChange: jest.fn(),
     publicKey: '',
   },
 ];
@@ -83,6 +87,9 @@ jest.mock('../../helpers/nameNumberIndex', () => ({
   numberNameIndex: jest.fn(),
 }));
 
+jest.mock('../../services/useDeviceCheck', () => ({
+  useDeviceCheck: jest.fn(),
+}));
 jest.mock('../../services/GetAllChats', () => ({
   getAllChats: jest.fn(),
 }));
@@ -226,22 +233,27 @@ describe('AllChats Component', () => {
 
   it('should navigate to individual chat when chatbox is pressed', async () => {
     (numberNameIndex as jest.Mock).mockResolvedValue({});
-
     (getAllChats as jest.Mock).mockResolvedValue({
       status: 200,
       data: {chats: mockChats},
     });
 
+    const { getByText } = render(
+      <Provider store={store}>
+        <NavigationContainer>
+          <AllChats />
+        </NavigationContainer>
+      </Provider>
+    );
+
     await waitFor(() => {
-      render(
-        <Provider store={store}>
-          <NavigationContainer>
-            <AllChats />
-          </NavigationContainer>
-        </Provider>,
-      );
+      expect(getByText('+1234567890')).toBeTruthy();
     });
+
+    fireEvent.press(getByText('+1234567890'));
+
     await waitFor(() => {
+
       expect(screen.getByText('+1234567890')).toBeTruthy();
     });
     fireEvent.press(screen.getByText('+1234567890'));
@@ -257,6 +269,7 @@ describe('AllChats Component', () => {
       },
     });
   });
+
 
   it('should render plus icon for adding new chats', async () => {
     await waitFor(() => {

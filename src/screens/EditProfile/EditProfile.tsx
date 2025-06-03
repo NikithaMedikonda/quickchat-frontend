@@ -26,14 +26,19 @@ import {
   setErrors,
   setIsVisible,
 } from '../../store/slices/registrationSlice';
+import {updateProfile} from '../../services/UpdateProfile';
+import {ProfileScreenNavigationProp} from '../../types/usenavigation.type';
+import {DEFAULT_PROFILE_IMAGE} from '../../constants/defaultImage';
+import {CustomAlert} from '../../components/CustomAlert/CustomAlert';
+import {useImagesColors} from '../../themes/images';
+import { useDeviceCheck } from '../../services/useDeviceCheck';
 import { RootState } from '../../store/store';
 import { useThemeColors } from '../../themes/colors';
-import { useImagesColors } from '../../themes/images';
-import { ProfileScreenNavigationProp } from '../../types/usenavigation.type';
 import { getStyles } from './EditProfile.styles';
 
 export const BackButton = () => {
   const colors = useThemeColors();
+   useDeviceCheck();
   const {androidBackArrow, iOSBackArrow} = useImagesColors();
   const profileNavigation = useNavigation<ProfileScreenNavigationProp>();
   const styles = getStyles(colors);
