@@ -35,6 +35,10 @@ jest.mock('react-native-phone-input', () => {
   return MockPhoneInput;
 });
 
+jest.mock('../../services/useDeviceCheck', () => ({
+  useDeviceCheck: jest.fn(),
+}));
+
 jest.mock('react-native-device-info', () => ({
   getUniqueId: jest.fn(),
 }));
