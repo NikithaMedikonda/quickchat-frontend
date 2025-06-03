@@ -800,9 +800,6 @@ describe('IndividualChat', () => {
     (socket.receiveOnline as jest.Mock).mockImplementation(
       async ({setIsOnline}) => setIsOnline(true),
     );
-    // (socket.receiveOffline as jest.Mock).mockImplementation(
-    //   async ({setIsOnline}) => setIsOnline(false),
-    // );
     (checkUserOnline as jest.Mock).mockResolvedValue({
       status: 200,
       data: {data: {socketId: '12332431'}},
