@@ -39,7 +39,7 @@ i18next.use(initReactI18next).init({
   debug: true,
   fallbackLng: 'en',
   resources: resources,
-  ns: ['start', 'auth', 'home', 'contact'],
+  ns: ['start', 'auth', 'home', 'contact','individualChat'],
   lng: languageCode,
 });
 
