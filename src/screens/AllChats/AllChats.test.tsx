@@ -22,6 +22,8 @@ const mockChats = [
     lastMessageType: 'sentMessage',
     phoneNumber: '+1234567890',
     unreadCount: 3,
+    isBlocked: false,
+    onBlockStatusChange: jest.fn(),
   },
   {
     chatId: '2',
@@ -33,6 +35,8 @@ const mockChats = [
     lastMessageType: 'sentMessage',
     phoneNumber: '+1234567999',
     unreadCount: 0,
+    isBlocked: false,
+    onBlockStatusChange: jest.fn(),
   },
 ];
 
@@ -64,6 +68,9 @@ jest.mock('../../helpers/nameNumberIndex', () => ({
   numberNameIndex: jest.fn(),
 }));
 
+jest.mock('../../services/useDeviceCheck', () => ({
+  useDeviceCheck: jest.fn(),
+}));
 jest.mock('../../services/GetAllChats', () => ({
   getAllChats: jest.fn(),
 }));
@@ -197,44 +204,48 @@ describe('AllChats Component', () => {
       expect(profileImage.length).toBe(2);
       expect(screen.getByText('+1234567890')).toBeTruthy();
       expect(screen.getByText('✓Hello there!')).toBeTruthy();
-      expect(screen.getByText('Sunday')).toBeTruthy();
+      expect(screen.getByText('May 25, 2025')).toBeTruthy();
       expect(screen.getByText('3')).toBeTruthy();
       expect(screen.getByText('+1234567999')).toBeTruthy();
       expect(screen.getByText('✓✓How are you doing?')).toBeTruthy();
-      expect(screen.getByText('Saturday')).toBeTruthy();
+      expect(screen.getByText('May 24, 2025')).toBeTruthy();
     });
   });
 
   it('should navigate to individual chat when chatbox is pressed', async () => {
     (numberNameIndex as jest.Mock).mockResolvedValue({});
-
     (getAllChats as jest.Mock).mockResolvedValue({
       status: 200,
       data: {chats: mockChats},
     });
 
-    await waitFor(() => {
-      render(
-        <Provider store={store}>
-          <NavigationContainer>
-            <AllChats />
-          </NavigationContainer>
-        </Provider>,
-      );
-    });
-    await waitFor(() => {
-      expect(screen.getByText('+1234567890')).toBeTruthy();
-    });
-    fireEvent.press(screen.getByText('+1234567890'));
+    const { getByText } = render(
+      <Provider store={store}>
+        <NavigationContainer>
+          <AllChats />
+        </NavigationContainer>
+      </Provider>
+    );
 
-    expect(mockNavigate).toHaveBeenCalledWith('individualChat', {
-      user: {
-        name: '+1234567890',
-        profilePicture: null,
-        phoneNumber: '+1234567890',
-      },
+    await waitFor(() => {
+      expect(getByText('+1234567890')).toBeTruthy();
+    });
+
+    fireEvent.press(getByText('+1234567890'));
+
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith('individualChat', {
+        user: {
+          name: '+1234567890',
+          profilePicture: null,
+          phoneNumber: '+1234567890',
+          isBlocked: false,
+          onBlockStatusChange: expect.any(Function),
+        },
+      });
     });
   });
+
 
   it('should render plus icon for adding new chats', async () => {
      await waitFor(() => {
