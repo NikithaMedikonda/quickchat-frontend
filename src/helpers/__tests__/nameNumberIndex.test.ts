@@ -1,9 +1,20 @@
+import { PermissionsAndroid } from 'react-native';
 import Contacts from 'react-native-contacts';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { numberNameIndex } from '../nameNumberIndex';
 
 jest.mock('react-native-contacts', () => ({
   getAllWithoutPhotos: jest.fn(),
+}));
+
+jest.mock('react-native', () => ({
+  PermissionsAndroid: {
+    check: jest.fn(() => Promise.resolve(true)),
+    request: jest.fn(),
+    PERMISSIONS: {READ_CONTACTS: 'READ_CONTACTS'},
+    RESULTS: {GRANTED: 'granted'},
+  },
+  Platform: {OS: 'android'},
 }));
 
 jest.mock('react-native-encrypted-storage', () => ({
@@ -126,5 +137,62 @@ describe('Testing nameNumberIndex function', () => {
     expect(result).toEqual({
       '+916303974914': 'unknown',
     });
+  });
+    // it('should throw error if permission is denied', async () => {
+    //   (PermissionsAndroid.check as jest.Mock).mockResolvedValue(false);
+    //   (PermissionsAndroid.request as jest.Mock).mockResolvedValue('denied');
+    //   // await expect(getContacts(true)).rejects.toThrow(
+    //   //   'Contacts permission denied',
+    //   // );
+    // });
+});
+
+describe('Android Permissions', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should skip requesting permission if already granted', async () => {
+    (PermissionsAndroid.check as jest.Mock).mockResolvedValue(true);
+    (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(
+      JSON.stringify({ name: 'Mamatha', phoneNumber: '+91 6303974914' }),
+    );
+    (Contacts.getAllWithoutPhotos as jest.Mock).mockResolvedValue([
+      {
+        givenName: 'Usha',
+        phoneNumbers: [{ number: '+91 6303961097' }],
+      },
+    ]);
+
+    const result = await numberNameIndex();
+    expect(result).toEqual({
+      '+916303961097': 'Usha',
+    });
+  });
+
+  it('should request permission if not already granted and proceed if granted', async () => {
+    (PermissionsAndroid.check as jest.Mock).mockResolvedValue(false);
+    (PermissionsAndroid.request as jest.Mock).mockResolvedValue('granted');
+    (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(
+      JSON.stringify({ name: 'Mamatha', phoneNumber: '+91 6303974914' }),
+    );
+    (Contacts.getAllWithoutPhotos as jest.Mock).mockResolvedValue([
+      {
+        givenName: 'Usha',
+        phoneNumbers: [{ number: '+91 6303961097' }],
+      },
+    ]);
+
+    const result = await numberNameIndex();
+    expect(result).toEqual({
+      '+916303961097': 'Usha',
+    });
+  });
+
+  it('should throw an error if permission is denied', async () => {
+    (PermissionsAndroid.check as jest.Mock).mockResolvedValue(false);
+    (PermissionsAndroid.request as jest.Mock).mockResolvedValue('denied');
+
+    await expect(numberNameIndex()).rejects.toThrow('Contacts permission denied');
   });
 });
