@@ -19,6 +19,10 @@ jest.mock('@react-navigation/native', () => ({
   useNavigation: jest.fn(),
 }));
 
+jest.mock('../../services/useDeviceCheck', () => ({
+  useDeviceCheck: jest.fn(),
+}));
+
 jest.mock('react-native-contacts', () => ({
   getAll: jest.fn(),
   getContactsByPhoneNumber: jest.fn(),
