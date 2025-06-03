@@ -1,6 +1,6 @@
 
-import { useNavigation} from '@react-navigation/native';
-import { useEffect, useLayoutEffect, useState} from 'react';
+import { useFocusEffect, useNavigation} from '@react-navigation/native';
+import { useCallback, useLayoutEffect, useState} from 'react';
 import {ScrollView, TouchableOpacity, View} from 'react-native';
 import {useDispatch} from 'react-redux';
 import {useThemeColors} from '../../themes/colors';
@@ -11,7 +11,7 @@ import {PlusIcon} from '../../components/PlusIcon/PlusIcon';
 import {numberNameIndex} from '../../helpers/nameNumberIndex';
 import {normalise} from '../../helpers/normalisePhoneNumber';
 import {getAllChats} from '../../services/GetAllChats';
-import {hide, show} from '../../store/slices/loadingSlice';
+import {hide} from '../../store/slices/loadingSlice';
 import {logout} from '../../store/slices/loginSlice';
 
 import {
@@ -22,9 +22,8 @@ import {
 } from '../../store/slices/registrationSlice';
 import {Home} from '../Home/Home';
 import { useDeviceCheck } from '../../services/useDeviceCheck';
-import { useThemeColors } from '../../themes/colors';
-import { HomeStackProps, NavigationProps } from '../../types/usenavigation.type';
 import { getStyles } from './AllChats.styles';
+import { messageDecryption } from '../../services/MessageDecryption';
 
 export interface Chat {
   chatId: string;
@@ -66,15 +65,16 @@ export const AllChats = () => {
   });
 
 
-  useEffect(() => {
-    const showAlert = (type: string, title: string, message: string) => {
-      dispatch(setAlertType(type));
-      dispatch(setAlertTitle(title));
-      dispatch(setAlertMessage(message));
-      dispatch(setAlertVisible(true));
-    },
-    [dispatch],
-  );
+const showAlert = useCallback(
+  (type: string, title: string, message: string) => {
+    dispatch(setAlertType(type));
+    dispatch(setAlertTitle(title));
+    dispatch(setAlertMessage(message));
+    dispatch(setAlertVisible(true));
+  },
+  [dispatch]
+);
+
 
   useFocusEffect(
     useCallback(() => {
