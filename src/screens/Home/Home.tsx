@@ -6,9 +6,11 @@ import {HomeTabsProps} from '../../types/usenavigation.type';
 import {useThemeColors} from '../../themes/colors';
 import {getStyles} from './Home.styles';
 import {PlusIcon} from '../../components/PlusIcon/PlusIcon';
+import { useDeviceCheck } from '../../services/useDeviceCheck';
 
 export const Home = () => {
   const navigation = useNavigation<HomeTabsProps>();
+   useDeviceCheck();
   const colors = useThemeColors();
   const {t} = useTranslation('auth');
   const styles = getStyles(colors);

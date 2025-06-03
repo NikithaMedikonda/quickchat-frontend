@@ -12,6 +12,12 @@ jest.mock('@react-navigation/native', () => ({
     navigate: mockNavigate,
   }),
 }));
+jest.mock('react-native-encrypted-storage', () => ({
+  setItem: jest.fn(),
+}));
+jest.mock('../../services/useDeviceCheck', () => ({
+  useDeviceCheck: jest.fn(),
+}));
 
 describe('Home Screen Tests', () => {
   beforeEach(() => {

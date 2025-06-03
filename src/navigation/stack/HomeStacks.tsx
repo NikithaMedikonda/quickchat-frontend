@@ -1,8 +1,9 @@
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { AllChats } from '../../screens/AllChats/AllChats';
-import { ContactsDisplay } from '../../screens/ContactsDisplay/ContactsDisplay';
-import { IndividualChat } from '../../screens/IndividualChat/IndividualChat';
-import { HomeStackParamList } from '../../types/usenavigation.type';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {AllChats} from '../../screens/AllChats/AllChats';
+import {ContactsDisplay} from '../../screens/ContactsDisplay/ContactsDisplay';
+import {IndividualChat} from '../../screens/IndividualChat/IndividualChat';
+import {HomeStackParamList} from '../../types/usenavigation.type';
+
 
 const Stack = createNativeStackNavigator<HomeStackParamList>();
 export const HomeStacks = () => {

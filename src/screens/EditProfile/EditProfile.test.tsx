@@ -31,6 +31,9 @@ const mockNavigation = {
   replace: jest.fn(),
   navigate: jest.fn(),
 };
+jest.mock('../../services/useDeviceCheck', () => ({
+  useDeviceCheck: jest.fn(),
+}));
 jest.mock('@react-navigation/native', () => {
   const actualNav = jest.requireActual('@react-navigation/native');
   return {

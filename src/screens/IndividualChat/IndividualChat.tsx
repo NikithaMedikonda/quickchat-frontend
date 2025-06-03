@@ -40,13 +40,16 @@ import {
   ReceivePrivateMessage,
   SentPrivateMessage,
 } from '../../types/messsage.types';
-import { HomeStackParamList } from '../../types/usenavigation.type';
-import { User } from '../Profile/Profile';
-import { individualChatStyles } from './IndividualChat.styles';
+import {HomeStackParamList} from '../../types/usenavigation.type';
+import {User} from '../Profile/Profile';
+import {individualChatStyles} from './IndividualChat.styles';
+import { useDeviceCheck } from '../../services/useDeviceCheck';
+
 
 type Props = NativeStackScreenProps<HomeStackParamList, 'individualChat'>;
 
 export const IndividualChat = ({route}: Props) => {
+   useDeviceCheck();
   const {t} = useTranslation('individualChat');
   const [message, setMessage] = useState('');
   const [isOnlineWith, setIsOnlineWith] = useState<boolean>(false);

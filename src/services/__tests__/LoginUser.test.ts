@@ -8,7 +8,6 @@ describe('loginUser', () => {
     phoneNumber: '9876543210',
     password: 'Test@1234',
   };
-
   afterEach(() => {
     jest.clearAllMocks();
   });
