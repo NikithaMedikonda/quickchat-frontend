@@ -18,7 +18,6 @@ import {
   setAlertType,
   setAlertVisible,
 } from '../../store/slices/registrationSlice';
-import { setUnreadCount } from '../../store/slices/unreadChatSlice';
 import { useThemeColors } from '../../themes/colors';
 import { NavigationProps, UnreadStacKProps } from '../../types/usenavigation.type';
 import { getStyles } from '../AllChats/AllChats.styles';
@@ -105,12 +104,6 @@ export const UnreadChats = () => {
             const unreadChats = allChats.filter((chat: { unreadCount: number; }) => chat.unreadCount > 0);
 
             setChats(unreadChats);
-
-            const totalUnread = unreadChats.reduce(
-              (sum: number, chat: { unreadCount: number; }) => sum + (chat.unreadCount || 0),
-              0,
-            );
-            dispatch(setUnreadCount(totalUnread));
           }
         } else {
           showAlert('info', 'Unable to Fetch Chats', 'Please try again later.');
