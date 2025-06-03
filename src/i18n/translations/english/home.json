@@ -3,5 +3,6 @@
     "Profile":"Profile",
     "Unread Chats":"Unread Chats",
     "Edit Profile":"Edit Profile",
-    "No messages yet? That just means the best one is about to be sent—by you!":"No messages yet? That just means the best one is about to be sent—by you!"
+    "No messages yet? That just means the best one is about to be sent—by you!":"No messages yet? That just means the best one is about to be sent—by you!",
+    "EmptyUnreadMessage":"You are all caught up!\nNo unread messages."
 }

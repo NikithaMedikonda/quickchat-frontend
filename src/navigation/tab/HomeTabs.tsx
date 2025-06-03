@@ -2,7 +2,6 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import { Image, View } from 'react-native';
 
-import { Unread } from '../../screens/Unread/Unread';
 import { HomeStacks } from '../stack/HomeStacks';
 import { ProfileStack } from '../stack/ProfileStacks';
 
@@ -13,10 +12,11 @@ import { User } from '../../screens/Profile/Profile';
 import { newSocket, socketConnection } from '../../socket/socket';
 import { useThemeColors } from '../../themes/colors';
 import { useImagesColors } from '../../themes/images';
+import { UnreadStacks } from '../stack/UnreadStacks.tsx';
 import { styles } from './HomeTabs.styles';
 
-const HomeTabIcon = ({focused}: {focused: boolean}) => {
-  const {tabHome} = useImagesColors();
+const HomeTabIcon = ({ focused }: { focused: boolean }) => {
+  const { tabHome } = useImagesColors();
   return (
     <View style={styles.iconContainer}>
       {!focused ? (
@@ -31,8 +31,8 @@ const HomeTabIcon = ({focused}: {focused: boolean}) => {
   );
 };
 
-const UnreadTabIcon = ({focused}: {focused: boolean}) => {
-  const {tabUnread} = useImagesColors();
+const UnreadTabIcon = ({ focused }: { focused: boolean }) => {
+  const { tabUnread } = useImagesColors();
   return (
     <View style={styles.iconContainer}>
       {!focused ? (
@@ -47,8 +47,8 @@ const UnreadTabIcon = ({focused}: {focused: boolean}) => {
   );
 };
 
-const ProfileTabIcon = ({focused}: {focused: boolean}) => {
-  const {tabProfile} = useImagesColors();
+const ProfileTabIcon = ({ focused }: { focused: boolean }) => {
+  const { tabProfile } = useImagesColors();
   return (
     <View style={styles.iconContainer}>
       {!focused ? (
@@ -79,7 +79,7 @@ export const HomeTabs = () => {
   }, []);
   const Tab = createBottomTabNavigator();
   const colors = useThemeColors();
-  const {t} = useTranslation('home');
+  const { t } = useTranslation('home');
   return (
     <Tab.Navigator
       screenOptions={{
@@ -103,7 +103,7 @@ export const HomeTabs = () => {
       <Tab.Screen
         name="homeStacks"
         component={HomeStacks}
-        options={({route}) => {
+        options={({ route }) => {
           const routeName = getFocusedRouteNameFromRoute(route) ?? 'home';
           const hideTabBar = routeName === 'individualChat';
           return {
@@ -121,14 +121,14 @@ export const HomeTabs = () => {
       />
       <Tab.Screen
         name="unread"
-        component={Unread}
+        component={UnreadStacks}
         options={{
           tabBarIcon: UnreadTabIcon,
           tabBarLabel: t('Unread Chats'),
-          headerStyle: {backgroundColor: colors.background},
+          headerStyle: { backgroundColor: colors.background },
           headerTitleAlign: 'center',
           headerTitle: t('Quick Chat'),
-          headerTitleStyle: {color: colors.text},
+          headerTitleStyle: { color: colors.text },
         }}
       />
       <Tab.Screen
@@ -139,7 +139,7 @@ export const HomeTabs = () => {
           tabBarIcon: ProfileTabIcon,
           tabBarLabel: t('Profile'),
         }}
-        listeners={({navigation}) => ({
+        listeners={({ navigation }) => ({
           tabPress: event => {
             event.preventDefault();
             navigation.navigate('profileStack', {

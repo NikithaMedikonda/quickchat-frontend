@@ -1,4 +1,4 @@
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { UserDetails } from './user.types';
 
 type RootStackParamList = {
@@ -41,11 +41,21 @@ export type InitialStackProps = NativeStackNavigationProp<
 >;
 export type HomeStackParamList = {
   home: undefined;
-  individualChat: {user: UserDetails};
+  individualChat: { user: UserDetails };
   contacts: undefined;
 };
 export type HomeStackProps = NativeStackNavigationProp<
   HomeStackParamList,
   'home',
+  'individualChat'
+>;
+
+export type UnreadStackParamList = {
+  unread: undefined,
+  individualChat: { user: UserDetails };
+}
+export type UnreadStacKProps = NativeStackNavigationProp<
+  UnreadStackParamList,
+  'unread',
   'individualChat'
 >;

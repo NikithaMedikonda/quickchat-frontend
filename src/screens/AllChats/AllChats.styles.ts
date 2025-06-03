@@ -1,6 +1,7 @@
-import { StyleSheet } from 'react-native';
+import { Dimensions, StyleSheet } from 'react-native';
 import { Colors } from '../../themes/colors';
 
+const { height } = Dimensions.get('window');
 export const getStyles = (colors: Colors) =>
   StyleSheet.create({
     container: {
@@ -17,5 +18,14 @@ export const getStyles = (colors: Colors) =>
       bottom: 20,
       right: 20,
       zIndex: 10,
+    },
+    unreadtext: {
+      color: colors.gray,
+      fontSize: 18,
+      fontWeight: 'bold',
+    },
+    noMessagesContainer: {
+      alignSelf: 'center',
+      marginTop: height * 0.39,
     },
   });
