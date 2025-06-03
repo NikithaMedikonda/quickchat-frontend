@@ -1,11 +1,7 @@
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {useEffect} from 'react';
-import EncryptedStorage from 'react-native-encrypted-storage';
 import {AllChats} from '../../screens/AllChats/AllChats';
 import {ContactsDisplay} from '../../screens/ContactsDisplay/ContactsDisplay';
 import {IndividualChat} from '../../screens/IndividualChat/IndividualChat';
-import {User} from '../../screens/Profile/Profile';
-import {socketConnection} from '../../socket/socket';
 import {HomeStackParamList} from '../../types/usenavigation.type';
 
 
