@@ -1,5 +1,4 @@
 import io from 'socket.io-client';
-import {API_URL} from '../constants/api';
 import {SentPrivateMessage} from '../types/messsage.types';
 import {API_URL} from '../constants/api';
 export const newSocket = io(`${API_URL}`);
