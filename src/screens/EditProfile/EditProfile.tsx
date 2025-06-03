@@ -12,11 +12,8 @@ import {
 } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { useDispatch, useSelector } from 'react-redux';
-import { CustomAlert } from '../../components/CustomAlert/CustomAlert';
 import { ImagePickerModal } from '../../components/ImagePickerModal/ImagePickerModal';
 import { Placeholder } from '../../components/InputField/InputField';
-import { DEFAULT_PROFILE_IMAGE } from '../../constants/defaultImage';
-import { updateProfile } from '../../services/UpdateProfile';
 import {
   setAlertMessage,
   setAlertTitle,
