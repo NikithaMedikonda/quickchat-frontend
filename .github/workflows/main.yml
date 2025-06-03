@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - deleted-user-message-restriction
 
 jobs:
   lint-and-test:
