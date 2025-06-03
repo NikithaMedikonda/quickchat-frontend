@@ -32,6 +32,9 @@ const mockRoute: IndividualChatRouteProp = {
     },
   },
 };
+jest.mock('../../services/useDeviceCheck', () => ({
+  useDeviceCheck: jest.fn(),
+}));
 
 const mockNavigation: Partial<
   NativeStackNavigationProp<HomeStackParamList, 'individualChat'>
