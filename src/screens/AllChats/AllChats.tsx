@@ -1,3 +1,4 @@
+
 import { useNavigation} from '@react-navigation/native';
 import { useEffect, useLayoutEffect, useState} from 'react';
 import {ScrollView, TouchableOpacity, View} from 'react-native';
@@ -12,6 +13,7 @@ import {normalise} from '../../helpers/normalisePhoneNumber';
 import {getAllChats} from '../../services/GetAllChats';
 import {hide, show} from '../../store/slices/loadingSlice';
 import {logout} from '../../store/slices/loginSlice';
+
 import {
   setAlertMessage,
   setAlertTitle,
@@ -19,8 +21,10 @@ import {
   setAlertVisible,
 } from '../../store/slices/registrationSlice';
 import {Home} from '../Home/Home';
-import {getStyles} from './AllChats.styles';
 import { useDeviceCheck } from '../../services/useDeviceCheck';
+import { useThemeColors } from '../../themes/colors';
+import { HomeStackProps, NavigationProps } from '../../types/usenavigation.type';
+import { getStyles } from './AllChats.styles';
 
 export interface Chat {
   chatId: string;
@@ -32,6 +36,7 @@ export interface Chat {
   lastMessageType: 'sentMessage' | 'receivedMessage';
   phoneNumber: string;
   unreadCount: number;
+  publicKey: string;
 }
 
 type ContactNameMap = Record<string, string>;
@@ -67,47 +72,62 @@ export const AllChats = () => {
       dispatch(setAlertTitle(title));
       dispatch(setAlertMessage(message));
       dispatch(setAlertVisible(true));
-    };
+    },
+    [dispatch],
+  );
 
-    const fetchChats = async () => {
-      dispatch(show());
+  useFocusEffect(
+    useCallback(() => {
+      const fetchChats = async () => {
+        const phoneNameMap = await numberNameIndex();
+        if (phoneNameMap === null) {
+          dispatch(logout());
+          showAlert('error', 'Session Expired', 'Please login again.');
+          await EncryptedStorage.clear();
+          setTimeout(() => {
+            dispatch(setAlertVisible(false));
+            navigation.replace('login');
+          }, 1000);
+          return;
+        }
 
-      const phoneNameMap = await numberNameIndex();
-      if (phoneNameMap === null) {
-        dispatch(hide());
-        dispatch(logout());
-        showAlert('error', 'Session Expired', 'Please login again.');
-        await EncryptedStorage.clear();
-        setTimeout(() => {
-          dispatch(setAlertVisible(false));
-          navigation.replace('login');
-        }, 1000);
-        return;
-      }
+        setContactNameMap(phoneNameMap as ContactNameMap);
 
-      setContactNameMap(phoneNameMap as ContactNameMap);
+        const response = await getAllChats();
 
-      const response = await getAllChats();
+        if (response.status === 401 || response.data === null) {
+          dispatch(logout());
+          showAlert('error', 'Session Expired', 'Please login again.');
+          await EncryptedStorage.clear();
+          setTimeout(() => {
+            dispatch(setAlertVisible(false));
+            navigation.replace('login');
+          }, 1000);
+        } else if (response.status === 200 && response.data) {
+          const privateKey = await EncryptedStorage.getItem('privateKey');
+          if (privateKey) {
+            for (const chat of response.data.chats) {
+              try {
+                const decryptedMessage = await messageDecryption({
+                  encryptedMessage: chat.lastMessageText,
+                  myPrivateKey: privateKey,
+                  senderPublicKey: chat.publicKey,
+                });
+                chat.lastMessageText = decryptedMessage;
+              } catch (error) {
+                dispatch(hide());
+              }
+            }
+            setChats(response.data.chats);
+          }
+        } else {
+          showAlert('info', 'Unable to Fetch Chats', 'Please try again later.');
+        }
+      };
 
-      if (response.status === 401 || response.data === null) {
-        dispatch(hide());
-        dispatch(logout());
-        showAlert('error', 'Session Expired', 'Please login again.');
-        await EncryptedStorage.clear();
-        setTimeout(() => {
-          dispatch(setAlertVisible(false));
-          navigation.replace('login');
-        }, 1000);
-      } else if (response.status === 200 && response.data) {
-        setChats(response.data.chats);
-      } else {
-        showAlert('info', 'Unable to Fetch Chats', 'Please try again later.');
-      }
-      dispatch(hide());
-    };
-
-    fetchChats();
-  }, [dispatch, navigation]);
+      fetchChats();
+    }, [dispatch, navigation, showAlert]),
+  );
 
   if (chats.length === 0) {
     return <Home />;
@@ -128,7 +148,8 @@ export const AllChats = () => {
                   profilePicture: chat.contactProfilePic,
                   phoneNumber: chat.phoneNumber,
                   isBlocked: false,
-                  onBlockStatusChange: () => {},
+                  publicKey: chat.publicKey,
+                  onBlockStatusChange: () => { },
                 },
               })
             }>

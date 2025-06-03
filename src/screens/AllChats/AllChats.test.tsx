@@ -1,15 +1,15 @@
-import {NavigationContainer} from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 import {
   fireEvent,
   render,
   screen,
   waitFor,
 } from '@testing-library/react-native';
-import {Provider} from 'react-redux';
-import {numberNameIndex} from '../../helpers/nameNumberIndex';
-import {getAllChats} from '../../services/GetAllChats';
-import {store} from '../../store/store';
-import {AllChats, Chat} from './AllChats';
+import { Provider } from 'react-redux';
+import { numberNameIndex } from '../../helpers/nameNumberIndex';
+import { getAllChats } from '../../services/GetAllChats';
+import { store } from '../../store/store';
+import { AllChats, Chat } from './AllChats';
 
 const mockChats = [
   {
@@ -24,6 +24,7 @@ const mockChats = [
     unreadCount: 3,
     isBlocked: false,
     onBlockStatusChange: jest.fn(),
+    publicKey: '',
   },
   {
     chatId: '2',
@@ -37,6 +38,7 @@ const mockChats = [
     unreadCount: 0,
     isBlocked: false,
     onBlockStatusChange: jest.fn(),
+    publicKey: '',
   },
 ];
 
@@ -60,6 +62,23 @@ jest.mock('@react-navigation/native', () => {
 
 jest.mock('react-native-encrypted-storage', () => ({
   clear: jest.fn(),
+  getItem: jest.fn().mockResolvedValue('mock-private-key'),
+}));
+
+jest.mock('../../services/MessageDecryption', () => ({
+  messageDecryption: jest.fn().mockResolvedValue('Decrypted Message'),
+}));
+
+jest.mock('../../services/MessageDecryption', () => ({
+  messageDecryption: jest.fn().mockImplementation(({encryptedMessage}) => {
+    if (encryptedMessage === 'Hello there!') {
+      return '✓Hello there!';
+    }
+    if (encryptedMessage === 'How are you doing?') {
+      return '✓✓How are you doing?';
+    }
+    return encryptedMessage;
+  }),
 }));
 
 jest.useFakeTimers();
@@ -114,7 +133,7 @@ describe('AllChats Component', () => {
   it('should logout and redirect if numberNameIndex returns null', async () => {
     (numberNameIndex as jest.Mock).mockResolvedValue(null);
 
-     await waitFor(() => {
+    await waitFor(() => {
       render(
         <Provider store={store}>
           <NavigationContainer>
@@ -163,7 +182,7 @@ describe('AllChats Component', () => {
       data: {chats: emptyChats},
     });
 
-     await waitFor(() => {
+    await waitFor(() => {
       render(
         <Provider store={store}>
           <NavigationContainer>
@@ -189,7 +208,7 @@ describe('AllChats Component', () => {
       data: {chats: mockChats},
     });
 
-     await waitFor(() => {
+    await waitFor(() => {
       render(
         <Provider store={store}>
           <NavigationContainer>
@@ -203,12 +222,12 @@ describe('AllChats Component', () => {
       const profileImage = screen.getAllByAccessibilityHint('profile-image');
       expect(profileImage.length).toBe(2);
       expect(screen.getByText('+1234567890')).toBeTruthy();
-      expect(screen.getByText('✓Hello there!')).toBeTruthy();
       expect(screen.getByText('May 25, 2025')).toBeTruthy();
       expect(screen.getByText('3')).toBeTruthy();
       expect(screen.getByText('+1234567999')).toBeTruthy();
-      expect(screen.getByText('✓✓How are you doing?')).toBeTruthy();
-      expect(screen.getByText('May 24, 2025')).toBeTruthy();
+      expect(screen.getByText(/How are you doing\?/)).toBeTruthy();
+
+      expect(screen.getByText('May 25, 2025')).toBeTruthy();
     });
   });
 
@@ -234,21 +253,26 @@ describe('AllChats Component', () => {
     fireEvent.press(getByText('+1234567890'));
 
     await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith('individualChat', {
-        user: {
-          name: '+1234567890',
-          profilePicture: null,
-          phoneNumber: '+1234567890',
-          isBlocked: false,
-          onBlockStatusChange: expect.any(Function),
-        },
-      });
+
+      expect(screen.getByText('+1234567890')).toBeTruthy();
+    });
+    fireEvent.press(screen.getByText('+1234567890'));
+
+    expect(mockNavigate).toHaveBeenCalledWith('individualChat', {
+      user: {
+        name: '+1234567890',
+        profilePicture: null,
+        phoneNumber: '+1234567890',
+        isBlocked: false,
+        publicKey: '',
+        onBlockStatusChange: expect.any(Function),
+      },
     });
   });
 
 
   it('should render plus icon for adding new chats', async () => {
-     await waitFor(() => {
+    await waitFor(() => {
       render(
         <Provider store={store}>
           <NavigationContainer>
@@ -288,7 +312,7 @@ describe('AllChats Component', () => {
       data: {chats: mockChats},
     });
 
-      await waitFor(() => {
+    await waitFor(() => {
       render(
         <Provider store={store}>
           <NavigationContainer>

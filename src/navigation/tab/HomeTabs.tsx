@@ -1,15 +1,19 @@
-import {Image, View} from 'react-native';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
+import { Image, View } from 'react-native';
 
-import {HomeStacks} from '../stack/HomeStacks';
-import {ProfileStack} from '../stack/ProfileStacks';
-import {Unread} from '../../screens/Unread/Unread';
+import { Unread } from '../../screens/Unread/Unread';
+import { HomeStacks } from '../stack/HomeStacks';
+import { ProfileStack } from '../stack/ProfileStacks';
 
-import {styles} from './HomeTabs.styles';
-import {useThemeColors} from '../../themes/colors';
-import {useImagesColors} from '../../themes/images';
-import {useTranslation} from 'react-i18next';
+import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import { User } from '../../screens/Profile/Profile';
+import { newSocket, socketConnection } from '../../socket/socket';
+import { useThemeColors } from '../../themes/colors';
+import { useImagesColors } from '../../themes/images';
+import { styles } from './HomeTabs.styles';
 
 const HomeTabIcon = ({focused}: {focused: boolean}) => {
   const {tabHome} = useImagesColors();
@@ -60,6 +64,19 @@ const ProfileTabIcon = ({focused}: {focused: boolean}) => {
 };
 
 export const HomeTabs = () => {
+  useEffect(() => {
+    async function connect() {
+      const user = await EncryptedStorage.getItem('user');
+      if (user) {
+        const parsedUser: User = JSON.parse(user);
+        await socketConnection(parsedUser.phoneNumber);
+      }
+    }
+    connect();
+    return () => {
+      newSocket.disconnect();
+    };
+  }, []);
   const Tab = createBottomTabNavigator();
   const colors = useThemeColors();
   const {t} = useTranslation('home');

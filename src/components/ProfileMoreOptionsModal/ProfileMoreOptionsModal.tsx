@@ -114,7 +114,7 @@ export const ProfileMoreOptionsModal = ({
       };
       const result = await logoutUser(payload);
       if (result.status === 200) {
-        showAlert('success', 'Login out', 'Successfully logout');
+        showAlert('success', 'Logged out', 'Successfully logged out');
         await EncryptedStorage.clear();
         setTimeout(() => {
           dispatch(setAlertVisible(false));
@@ -230,6 +230,7 @@ export const ProfileMoreOptionsModal = ({
           confirmText={buttonTypes}
           onClose={handleModalClose}
           onConfirm={onConfirmDelete}
+          isWarning={true}
         />
       )}
       <CustomAlert type={alertType} title={alertTitle} message={alertMessage} />

@@ -30,7 +30,7 @@ export type ReceivePrivateMessage = {
   timestamp: string;
 };
 export type Chats = {
-  content: string;
+  content: {nonce:string,encrypted:string};
   createdAt: string;
   status: string;
   sender: {

@@ -8,10 +8,11 @@ jest.mock('react-native-encrypted-storage', () => ({
   getItem: jest.fn(),
 }));
 describe('update message status', () => {
+  const time = Date.now();
   const payload = {
     senderPhoneNumber: '+918522041688',
     receiverPhoneNumber: '+919866349126',
-    timestamp: '2025-05-13T12:00:00',
+    timestamp:time,
     previousStatus: 'delivered',
     currentStatus: 'read',
   };
@@ -31,7 +32,7 @@ describe('update message status', () => {
     const result = await updateMessageStatus(payload);
     expect(mockedFetch).toHaveBeenCalledTimes(1);
     expect(mockedFetch).toHaveBeenCalledWith(`${API_URL}/api/messages/status`, {
-      method: 'POST',
+      method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
         authorization: `Bearer token`,

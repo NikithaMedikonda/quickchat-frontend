@@ -1,4 +1,6 @@
-import {useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState} from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Image,
   KeyboardAvoidingView,
@@ -8,23 +10,21 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {useDispatch, useSelector} from 'react-redux';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {useNavigation} from '@react-navigation/native';
-import {useTranslation} from 'react-i18next';
-import {RootState} from '../../store/store';
-import {useThemeColors} from '../../themes/colors';
-import {Placeholder} from '../../components/InputField/InputField';
-import {ImagePickerModal} from '../../components/ImagePickerModal/ImagePickerModal';
-import {getStyles} from './EditProfile.styles';
+import { useDispatch, useSelector } from 'react-redux';
+import { CustomAlert } from '../../components/CustomAlert/CustomAlert';
+import { ImagePickerModal } from '../../components/ImagePickerModal/ImagePickerModal';
+import { Placeholder } from '../../components/InputField/InputField';
+import { DEFAULT_PROFILE_IMAGE } from '../../constants/defaultImage';
+import { updateProfile } from '../../services/UpdateProfile';
 import {
-  setIsVisible,
-  setAlertVisible,
-  setAlertType,
-  setAlertTitle,
   setAlertMessage,
-  setErrors,
+  setAlertTitle,
+  setAlertType,
+  setAlertVisible,
   setEditProfileForm,
+  setErrors,
+  setIsVisible,
 } from '../../store/slices/registrationSlice';
 import {updateProfile} from '../../services/UpdateProfile';
 import {ProfileScreenNavigationProp} from '../../types/usenavigation.type';
@@ -32,6 +32,9 @@ import {DEFAULT_PROFILE_IMAGE} from '../../constants/defaultImage';
 import {CustomAlert} from '../../components/CustomAlert/CustomAlert';
 import {useImagesColors} from '../../themes/images';
 import { useDeviceCheck } from '../../services/useDeviceCheck';
+import { RootState } from '../../store/store';
+import { useThemeColors } from '../../themes/colors';
+import { getStyles } from './EditProfile.styles';
 
 export const BackButton = () => {
   const colors = useThemeColors();
@@ -220,6 +223,7 @@ export const EditProfile = () => {
       title: 'Email',
     },
   ] as const;
+  const renderedImage = imageUri || user?.profilePicture || DEFAULT_PROFILE_IMAGE;
 
   const isFormChanged = useMemo(() => {
   if (!initialValues){
@@ -230,9 +234,9 @@ export const EditProfile = () => {
     initialValues.lastName !== editProfileForm.lastName ||
     initialValues.email !== editProfileForm.email ||
     initialValues.phoneNumber !== editProfileForm.phoneNumber ||
-    initialValues.image !== editedImage
+    initialValues.image !== imageUri
   );
-}, [initialValues, editProfileForm, editedImage]);
+}, [initialValues, editProfileForm,imageUri]);
 
   return (
     <KeyboardAvoidingView
@@ -245,7 +249,7 @@ export const EditProfile = () => {
           accessibilityHint="edit-profile-button">
           <Image
             source={{
-              uri: imageUri || user?.profilePicture || DEFAULT_PROFILE_IMAGE,
+              uri: renderedImage,
             }}
             accessibilityHint="Profile-Picture"
             style={styles.profileImage}
@@ -272,7 +276,7 @@ export const EditProfile = () => {
         <View style={styles.buttonRow}>
           <TouchableOpacity
           accessibilityHint="Save-button"
-           accessibilityState={{ disabled: !isFormChanged }}
+           accessibilityState={{ disabled:!isFormChanged }}
             style={[
               styles.touchableButton,
               !isFormChanged && styles.touchableButtonDisabled,

@@ -286,7 +286,7 @@ describe('Login Screen', () => {
     await waitFor(() => {
       const state = store.getState();
       expect(state.registration.alertType).toBe('success');
-      expect(state.registration.alertMessage).toBe('Successfully login');
+      expect(state.registration.alertMessage).toBe('Successfully Logged in');
     });
 
     await waitFor(() => {

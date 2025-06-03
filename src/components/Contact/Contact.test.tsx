@@ -1,21 +1,19 @@
-import {Alert, Linking, Platform} from 'react-native';
 import {
   fireEvent,
   render,
   screen,
   waitFor,
 } from '@testing-library/react-native';
-import {Provider} from 'react-redux';
-import {ContactDetails} from '../../types/contact.types';
-import {DEFAULT_PROFILE_IMAGE} from '../../constants/defaultImage';
-import {resetForm} from '../../store/slices/registrationSlice';
-import {store} from '../../store/store';
-import {Contact} from './Contact';
-
+import { Alert, Linking, Platform } from 'react-native';
+import { Provider } from 'react-redux';
+import { DEFAULT_PROFILE_IMAGE } from '../../constants/defaultImage';
+import { resetForm } from '../../store/slices/registrationSlice';
+import { store } from '../../store/store';
+import { ContactDetails } from '../../types/contact.types';
+import { Contact } from './Contact';
 
 Linking.openURL = jest.fn();
 Alert.alert = jest.fn();
-
 
 describe('Contact Component', () => {
   beforeEach(() => {
@@ -27,6 +25,7 @@ describe('Contact Component', () => {
     phoneNumber: '+91123456789',
     profilePicture: DEFAULT_PROFILE_IMAGE,
     toBeInvited: true,
+    publicKey: 'publicKey',
   };
 
   const registeredContact: ContactDetails = {
@@ -34,12 +33,13 @@ describe('Contact Component', () => {
     phoneNumber: '+91987654321',
     profilePicture: 'profilePic',
     toBeInvited: false,
+    publicKey: 'publicKey',
   };
 
   it('renders name, phone number, profile image of registered candidate', () => {
     const {getByText} = render(
       <Provider store={store}>
-          <Contact contactDetails={registeredContact} />
+        <Contact contactDetails={registeredContact} />
       </Provider>,
     );
     expect(getByText('registeredUser')).toBeTruthy();
@@ -51,7 +51,7 @@ describe('Contact Component', () => {
   it('renders default profile image for invited contact', () => {
     const {getByText} = render(
       <Provider store={store}>
-          <Contact contactDetails={invitedContact} />
+        <Contact contactDetails={invitedContact} />
       </Provider>,
     );
     expect(getByText('TestUser')).toBeTruthy();
@@ -66,6 +66,7 @@ describe('Contact Component', () => {
       phoneNumber: '+911112223334',
       profilePicture: '',
       toBeInvited: true,
+      publicKey: 'publicKey',
     };
 
     const url = `sms:+911112223334${
@@ -82,7 +83,7 @@ describe('Contact Component', () => {
     }
     const {getByText} = render(
       <Provider store={store}>
-          <Contact contactDetails={contact} />
+        <Contact contactDetails={contact} />
       </Provider>,
     );
     fireEvent.press(getByText('Invite'));
@@ -91,27 +92,30 @@ describe('Contact Component', () => {
     });
   });
 
-it('should show alert if SMS open fails', async () => {
-  const contact = {
-    name: 'David',
-    phoneNumber: '+919999999999',
-    profilePicture: '',
-    toBeInvited: true,
-  };
-  (Linking.openURL as jest.Mock).mockRejectedValueOnce(new Error('Fail'));
+  it('should show alert if SMS open fails', async () => {
+    const contact = {
+      name: 'David',
+      phoneNumber: '+919999999999',
+      profilePicture: '',
+      toBeInvited: true,
+      publicKey: 'publicKey',
+    };
+    (Linking.openURL as jest.Mock).mockRejectedValueOnce(new Error('Fail'));
 
-  const {getByText} = render(
-    <Provider store={store}>
+    const {getByText} = render(
+      <Provider store={store}>
         <Contact contactDetails={contact} />
-    </Provider>,
-  );
+      </Provider>,
+    );
 
-  fireEvent.press(getByText('Invite'));
+    fireEvent.press(getByText('Invite'));
 
-   await waitFor(() => {
+    await waitFor(() => {
       const state = store.getState();
-      expect(state.registration.alertMessage).toBe('Unable to process your request.');
+      expect(state.registration.alertMessage).toBe(
+        'Unable to process your request.',
+      );
       expect(state.registration.alertType).toBe('info');
     });
-});
+  });
 });

@@ -19,7 +19,7 @@ export const SentMessage = ({ sentMessages }: SentMessageProps) => {
       {sentMessages.map((message, index) => (
         <View key={index} style={styles.sentMessageContainer}>
           <Text style={styles.sentMessageText}>{message.text}</Text>
-          <TimeStamp messageTime={message.timestamp} />
+          <TimeStamp messageTime={message.timestamp} isSent={true} showFullTime = {true} />
           <Image
             source={MessageStatus[message.status]}
             style={styles.tickIcon}

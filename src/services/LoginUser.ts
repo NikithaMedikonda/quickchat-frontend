@@ -1,8 +1,8 @@
 import {API_URL} from '../constants/api';
 
 export const loginUser = async (
-  form: { phoneNumber: string; password: string },
-  deviceId: string
+  form: {phoneNumber: string; password: string},
+  deviceId: string,
 ) => {
   const userData = {
     ...form,
@@ -18,14 +18,11 @@ export const loginUser = async (
   });
 
   let data;
-  try {
-    data = await response.json();
-  } catch {
-    data = {};
-  }
+
+  data = await response.json();
+
   return {
     status: response.status,
     data,
   };
 };
-

@@ -1,36 +1,40 @@
-import { StyleSheet, Text } from 'react-native';
-import { useThemeColors } from '../../themes/colors';
+import { StyleSheet, Image, View } from 'react-native';
+import sentImage from '../../assets/sent.png';
+import deliveredImage from '../../assets/delivered.png';
+import readImage from '../../assets/readTick.png';
 interface Props {
   status: 'sent' | 'delivered' | 'read' | string;
 }
 
-export const MessageStatusTicks = ({status}: Props) => {
-  const colors = useThemeColors();
-  const styles = getStyles(colors);
+export const MessageStatusTicks = ({ status }: Props) => {
+  let source;
 
   switch (status) {
     case 'sent':
-      return <Text style={styles.tick}>✓</Text>;
+      source = sentImage;
+      break;
     case 'delivered':
-      return <Text style={styles.tick}>✓✓</Text>;
+      source = deliveredImage;
+      break;
     case 'read':
-      return <Text style={[styles.tick, styles.readTick]}>✓✓</Text>;
+      source = readImage;
+      break;
     default:
       return null;
   }
+  return (
+    <View style={styles.container}>
+      <Image accessibilityHint={`Message status is ${status}`} source={source} style={styles.tickImage} resizeMode="contain" />
+    </View>
+  );
 };
 
-const getStyles = (colors: ReturnType<typeof useThemeColors>) =>
-  StyleSheet.create({
-    tick: {
-      fontSize: 12,
-      color: '#A9A9A9',
-      marginLeft: 4,
-    },
-    readTick: {
-      color: '#FFFFFF',
-    },
-    header:{
-      color: colors.background,
-    },
-  });
+const styles = StyleSheet.create({
+  container: {
+    paddingRight: 5,
+  },
+  tickImage: {
+    width: 18,
+    height: 18,
+  },
+});

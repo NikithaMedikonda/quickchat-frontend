@@ -1,6 +1,6 @@
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import phone from 'phone';
-import {useTranslation} from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import {
   Image,
   KeyboardAvoidingView,
@@ -12,43 +12,43 @@ import {
 } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import PhoneInput from 'react-native-phone-input';
-import {useDispatch, useSelector} from 'react-redux';
-import {Button} from '../../components/Button/Button';
-import {Placeholder} from '../../components/InputField/InputField';
-import {keyDecryption} from '../../services/KeyDecryption';
-import {loginUser} from '../../services/LoginUser';
-import {hide, show} from '../../store/slices/loadingSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { Button } from '../../components/Button/Button';
+import { Placeholder } from '../../components/InputField/InputField';
+import { keyDecryption } from '../../services/KeyDecryption';
+import { loginUser } from '../../services/LoginUser';
+import { hide, show } from '../../store/slices/loadingSlice';
 import {
   resetLoginForm,
   setLoginErrors,
   setLoginField,
   setLoginSuccess,
 } from '../../store/slices/loginSlice';
-import {RootState} from '../../store/store';
-import {useThemeColors} from '../../themes/colors';
-import {useImagesColors} from '../../themes/images';
-import {HomeTabsProps, NavigationProps} from '../../types/usenavigation.type';
+import { RootState } from '../../store/store';
+import { useThemeColors } from '../../themes/colors';
+import { useImagesColors } from '../../themes/images';
+import { HomeTabsProps, NavigationProps } from '../../types/usenavigation.type';
 import {
   setAlertTitle,
   setAlertType,
   setAlertVisible,
   setAlertMessage,
 } from '../../store/slices/registrationSlice';
-import {CustomAlert} from '../../components/CustomAlert/CustomAlert';
+import { CustomAlert } from '../../components/CustomAlert/CustomAlert';
 
-import {loginStyles} from './Login.styles';
-import {getDeviceId} from '../../services/GenerateDeviceId';
+import { loginStyles } from './Login.styles';
+import { getDeviceId } from '../../services/GenerateDeviceId';
 
 export function Login() {
   const homeNavigation = useNavigation<HomeTabsProps>();
   const navigate = useNavigation<NavigationProps>();
   const dispatch = useDispatch();
   const colors = useThemeColors();
-  const {logo} = useImagesColors();
+  const { logo } = useImagesColors();
   const styles = loginStyles(colors);
-  const {t} = useTranslation('auth');
-  const {form, errors} = useSelector((state: RootState) => state.login);
-  const {alertType, alertTitle, alertMessage} = useSelector(
+  const { t } = useTranslation('auth');
+  const { form, errors } = useSelector((state: RootState) => state.login);
+  const { alertType, alertTitle, alertMessage } = useSelector(
     (state: RootState) => state.registration,
   );
   const showAlert = (type: string, title: string, message: string) => {
@@ -59,7 +59,7 @@ export function Login() {
   };
 
   const handleInputChange = (key: keyof typeof form, value: string) => {
-    dispatch(setLoginField({key, value}));
+    dispatch(setLoginField({ key, value }));
   };
 
   const validateForm = () => {
@@ -102,7 +102,7 @@ export function Login() {
 
         dispatch(hide());
         dispatch(setAlertVisible(true));
-        showAlert('success', 'Login', 'Successfully login');
+        showAlert('success', 'Login', 'Successfully Logged in');
 
         dispatch(
           setLoginSuccess({
@@ -169,11 +169,13 @@ export function Login() {
       <ScrollView
         contentContainerStyle={styles.loginMainContainer}
         keyboardShouldPersistTaps="handled">
-        <Image
-          style={styles.image}
-          source={logo}
-          accessibilityHint="logo-image"
-        />
+        <View style={styles.imageContainer}>
+          <Image
+            style={styles.image}
+            source={logo}
+            accessibilityHint="logo-image"
+          />
+        </View>
         <PhoneInput
           style={styles.phoneNumber}
           initialCountry={'in'}
@@ -184,7 +186,7 @@ export function Login() {
           onChangePhoneNumber={(text: string) => {
             handleInputChange('phoneNumber', text);
           }}
-          onPressFlag={() => {}}
+          onPressFlag={() => { }}
         />
         {errors.phoneNumber && (
           <Text style={styles.error}>{t(`${errors.phoneNumber}`)}</Text>
