@@ -1,4 +1,5 @@
 import {
+  checkDeviceStatus,
   receivePrivateMessage,
   sendPrivateMessage,
   socketConnection,
@@ -7,13 +8,16 @@ import {SentPrivateMessage} from '../types/messsage.types';
 
 let mockEmit: jest.Mock;
 let mockOn: jest.Mock;
+let mockOff: jest.Mock;
 
 jest.mock('socket.io-client', () => {
   mockEmit = jest.fn();
   mockOn = jest.fn();
+  mockOff = jest.fn();
   return jest.fn(() => ({
     emit: mockEmit,
     on: mockOn,
+    off: mockOff,
   }));
 });
 
@@ -43,6 +47,34 @@ describe('should test socket functions', () => {
       senderPhoneNumber: payload.senderPhoneNumber,
       timestamp: payload.timestamp,
     });
+  });
+
+  test('should test check device status', async () => {
+    const userPhoneNumber = '+91 9440058809';
+    const deviceId = 'device123';
+
+    const responseData = {
+      success: true,
+      action: 'login',
+      message: 'Device verified',
+      registeredDeviceId: deviceId,
+    };
+
+    const handlers: Record<string, Function> = {};
+
+    mockOn.mockImplementation((event, callback) => {
+      handlers[event] = callback;
+    });
+    const promise = checkDeviceStatus(userPhoneNumber, deviceId);
+    handlers.user_device_verified(responseData);
+    const result = await promise;
+
+    expect(mockEmit).toHaveBeenCalledWith(
+      'check_user_device',
+      userPhoneNumber,
+      deviceId,
+    );
+    expect(result).toEqual(responseData);
   });
 
   test('should register listener on receivePrivateMessage', async () => {
