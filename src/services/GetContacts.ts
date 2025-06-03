@@ -1,9 +1,8 @@
-import { PermissionsAndroid, Platform } from 'react-native';
-import Contacts, { Contact } from 'react-native-contacts';
+import Contacts, {Contact} from 'react-native-contacts';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { API_URL } from '../constants/api';
-import { ONE_DAY_MS } from '../constants/constants';
-import { normalise } from '../helpers/normalisePhoneNumber';
+import {API_URL} from '../constants/api';
+import {ONE_DAY_MS} from '../constants/constants';
+import {normalise} from '../helpers/normalisePhoneNumber';
 
 export const getContacts = async (hardRefresh: boolean) => {
   const cachedNumbers = await EncryptedStorage.getItem('contact-numbers');
@@ -14,27 +13,6 @@ export const getContacts = async (hardRefresh: boolean) => {
     }
   }
   try {
-    if (Platform.OS === 'android') {
-      const hasPermission = await PermissionsAndroid.check(
-        PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
-      );
-
-      if (!hasPermission) {
-        const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
-          {
-            title: 'Contacts Permission',
-            message: 'This app needs access to your contacts',
-            buttonPositive: 'OK',
-          },
-        );
-
-        if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
-          throw new Error('Contacts permission denied');
-        }
-      }
-    }
-
     const devicePhoneBook: Contact[] = await Contacts.getAllWithoutPhotos();
     const numbers = new Set<string>();
     devicePhoneBook.forEach((contact: Contact) =>
