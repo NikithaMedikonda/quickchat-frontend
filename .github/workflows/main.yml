@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - fix/ui-styling-multiple-devices
+      - feature/unread-chats
 
 jobs:
   lint-and-test:
