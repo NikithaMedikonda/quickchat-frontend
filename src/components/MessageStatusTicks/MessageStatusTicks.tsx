@@ -31,7 +31,7 @@ export const MessageStatusTicks = ({ status }: Props) => {
 
 const styles = StyleSheet.create({
   container: {
-    paddingLeft: 4,
+    paddingRight: 5,
   },
   tickImage: {
     width: 18,

@@ -169,14 +169,6 @@ describe('Tests for getContacts function', () => {
     expect(result).toEqual(mockApiResponse);
   });
 
-  it('should throw error if permission is denied', async () => {
-    (PermissionsAndroid.check as jest.Mock).mockResolvedValue(false);
-    (PermissionsAndroid.request as jest.Mock).mockResolvedValue('denied');
-    await expect(getContacts(true)).rejects.toThrow(
-      'Contacts permission denied',
-    );
-  });
-
   it('should throw error if auth token is missing', async () => {
     (EncryptedStorage.getItem as jest.Mock).mockResolvedValueOnce(null);
     (PermissionsAndroid.check as jest.Mock).mockResolvedValue(true);

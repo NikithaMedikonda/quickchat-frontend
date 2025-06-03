@@ -35,7 +35,7 @@ export const ChatBoxContent = ({
             style={styles.description}
             numberOfLines={1}
             ellipsizeMode="tail">
-            {' '}{description}
+            {description}
           </Text>
         </View>
       </View>
