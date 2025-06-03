@@ -9,5 +9,6 @@
   "Invalid token": "Invalid token",
   "Authentication failed": "Authentication failed",
   "Something went wrong while deleting": "Something went wrong while deleting",
-  "Something went wrong": "Something went wrong"
+  "Something went wrong": "Something went wrong",
+  "chatHistoryVisibilityWarning": "Deleting account is permanent. Your past chats may still be visible to others you’ve messaged."
 }
