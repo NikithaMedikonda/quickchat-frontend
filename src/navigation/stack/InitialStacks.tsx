@@ -42,12 +42,6 @@ export const InitialStacks = () => {
         });
 
         const result = await response.json();
-        if (result.message === 'Already logged in another device') {
-          await EncryptedStorage.clear();
-          setInitialRoute('welcome');
-          dispatch(hide());
-          return;
-        }
         if (
           result.message === 'Invalid access token' ||
           result.message === 'Invalid refresh token'
