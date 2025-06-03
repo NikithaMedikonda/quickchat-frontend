@@ -8,12 +8,20 @@ import {InitialStacks} from './src/navigation/stack/InitialStacks';
 import {LoadingComponent} from './src/components/Loading/Loading';
 import {Provider} from 'react-redux';
 import {store} from './src/store/store';
+import {getDBInstance} from './src/database/connection/connection';
+import {createTables} from './src/database/models/schema';
 
 export const App = () => {
   useEffect(() => {
     SplashScreen.hide();
     const languageCode = RNLocalize.getLocales()[0].languageCode;
     i18next.changeLanguage(languageCode);
+
+    const initialiseDB = async () => {
+      const databaseInstance = await getDBInstance();
+      await createTables(databaseInstance);
+    };
+    initialiseDB();
   }, []);
 
   return (
