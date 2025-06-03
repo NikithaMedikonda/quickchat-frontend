@@ -1,8 +1,30 @@
+import { PermissionsAndroid, Platform } from 'react-native';
 import Contacts from 'react-native-contacts';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { normalise } from './normalisePhoneNumber';
 
 export const numberNameIndex = async () => {
+   if (Platform.OS === 'android') {
+      const hasPermission = await PermissionsAndroid.check(
+        PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
+      );
+
+      if (!hasPermission) {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
+          {
+            title: 'Contacts Permission',
+            message: 'This app needs access to your contacts',
+            buttonPositive: 'OK',
+          },
+        );
+
+        if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+          throw new Error('Contacts permission denied');
+        }
+      }
+    }
+
   try {
     const user = await EncryptedStorage.getItem('user');
     if (!user) {
