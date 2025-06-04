@@ -1,11 +1,15 @@
-import {fireEvent, render, screen, waitFor} from '@testing-library/react-native';
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {Provider} from 'react-redux';
-import {updateProfile} from '../../services/UpdateProfile';
-import {store} from '../../store/store';
-import {resetForm} from '../../store/slices/registrationSlice';
-import {EditProfile} from './EditProfile';
-
+import { Provider } from 'react-redux';
+import { updateProfile } from '../../services/UpdateProfile';
+import { resetForm } from '../../store/slices/registrationSlice';
+import { store } from '../../store/store';
+import { EditProfile } from './EditProfile';
 
 jest.mock('react-native-encrypted-storage', () => ({
   setItem: jest.fn(),
@@ -31,9 +35,11 @@ const mockNavigation = {
   replace: jest.fn(),
   navigate: jest.fn(),
 };
+
 jest.mock('../../services/useDeviceCheck', () => ({
   useDeviceCheck: jest.fn(),
 }));
+
 jest.mock('@react-navigation/native', () => {
   const actualNav = jest.requireActual('@react-navigation/native');
   return {
@@ -650,28 +656,28 @@ describe('EditProfile Component', () => {
     });
   });
 
- test('Save button is disabled when no form changes are made', async () => {
-  const {getByA11yHint} = render(
-    <Provider store={store}>
-      <EditProfile />
-    </Provider>,
-  );
- const saveButton = await waitFor(() => getByA11yHint('Save-button'));
-expect(saveButton.props.accessibilityState.disabled).toBe(true);
-
-});
-test('should goback when tapped on goback arrow', async () => {
-  render(
-    <Provider store={store}>
-      <EditProfile />
-    </Provider>,
-  );
-      const HeaderLeftComponent =
-        mockNavigation.setOptions.mock.calls[0][0].headerLeft();
-      render(<>{HeaderLeftComponent}</>);
-      const image = screen.getByA11yHint('back-arrow-image');
-      fireEvent.press(image);
-      expect(mockNavigation.navigate).toHaveBeenCalled();
-    });
+  test('Save button is disabled when no form changes are made', async () => {
+    const {getByA11yHint} = render(
+      <Provider store={store}>
+        <EditProfile />
+      </Provider>,
+    );
+    const saveButton = await waitFor(() => getByA11yHint('Save-button'));
+    expect(saveButton.props.accessibilityState.disabled).toBe(true);
   });
 
+  test('should goback when tapped on goback arrow', async () => {
+    render(
+      <Provider store={store}>
+        <EditProfile />
+      </Provider>,
+    );
+    const HeaderLeftComponent =
+      mockNavigation.setOptions.mock.calls[0][0].headerLeft();
+    render(<>{HeaderLeftComponent}</>);
+    const image = screen.getByA11yHint('back-arrow-image');
+    fireEvent.press(image);
+    expect(mockNavigation.navigate).toHaveBeenCalled();
+  });
+
+});
