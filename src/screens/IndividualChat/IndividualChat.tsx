@@ -179,7 +179,7 @@ export const IndividualChat = ({route}: Props) => {
   }, [showAlert, user.phoneNumber]);
 
   useEffect(() => {
-    // setSocket(newSocket);
+    setSocket(newSocket);
     const withChattingPhoneNumber = user.phoneNumber;
     if (!isBlocked) {
       newSocket.emit('online_with', withChattingPhoneNumber);

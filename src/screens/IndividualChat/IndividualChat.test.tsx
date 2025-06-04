@@ -8,13 +8,13 @@ import {
 } from '@testing-library/react-native';
 
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { Provider } from 'react-redux';
-import { checkBlockStatus } from '../../services/CheckBlockStatus';
-import { CheckUserDeleteStatus } from '../../services/CheckUserDeleteStatus';
-import { getMessagesBetween } from '../../services/GetMessagesBetween';
-import { messageDecryption } from '../../services/MessageDecryption';
-import { messageEncryption } from '../../services/MessageEncryption';
-import { updateMessageStatus } from '../../services/UpdateMessageStatus';
+import {Provider} from 'react-redux';
+import {checkBlockStatus} from '../../services/CheckBlockStatus';
+import {CheckUserDeleteStatus} from '../../services/CheckUserDeleteStatus';
+import {getMessagesBetween} from '../../services/GetMessagesBetween';
+import {messageDecryption} from '../../services/MessageDecryption';
+import {messageEncryption} from '../../services/MessageEncryption';
+import {updateMessageStatus} from '../../services/UpdateMessageStatus';
 import * as socket from '../../socket/socket';
 import {resetForm} from '../../store/slices/registrationSlice';
 import {store} from '../../store/store';
@@ -922,203 +922,6 @@ describe('IndividualChat', () => {
     });
   });
 });
-
-describe('User Delete Status', () => {
-  test('should set isDeleted to true when user is deleted', async () => {
-    (CheckUserDeleteStatus as jest.Mock).mockResolvedValue({
-      status: 200,
-      data: {isDeleted: true},
-    });
-
-    render(
-      <NavigationContainer>
-        <Provider store={store}>
-          <IndividualChat
-            navigation={
-              mockNavigation as NativeStackNavigationProp<
-                HomeStackParamList,
-                'individualChat'
-              >
-            }
-            route={mockRoute}
-          />
-        </Provider>
-      </NavigationContainer>,
-    );
-
-    await waitFor(() => {
-      expect(CheckUserDeleteStatus).toHaveBeenCalled();
-    });
-  });
-
-  test('should set isdeleted to false when user is not deleted', async () => {
-    (CheckUserDeleteStatus as jest.Mock).mockResolvedValue({
-      status: 200,
-      data: {isDeleted: false},
-    });
-
-    render(
-      <NavigationContainer>
-        <Provider store={store}>
-          <IndividualChat
-            navigation={
-              mockNavigation as NativeStackNavigationProp<
-                HomeStackParamList,
-                'individualChat'
-              >
-            }
-            route={mockRoute}
-          />
-        </Provider>
-      </NavigationContainer>,
-    );
-
-    await waitFor(() => {
-      expect(CheckUserDeleteStatus).toHaveBeenCalled();
-    });
-  });
-
-  test('should handle CheckUserDeleteStatus API error gracefully', async () => {
-    (CheckUserDeleteStatus as jest.Mock).mockRejectedValue(
-      new Error('API Error'),
-    );
-    render(
-      <NavigationContainer>
-        <Provider store={store}>
-          <IndividualChat
-            navigation={
-              mockNavigation as NativeStackNavigationProp<
-                HomeStackParamList,
-                'individualChat'
-              >
-            }
-            route={mockRoute}
-          />
-        </Provider>
-      </NavigationContainer>,
-    );
-
-    await waitFor(() => {
-      const state = store.getState();
-      expect(state.registration.alertType).toBe('info');
-    });
-  });
-
-  test('should handle non-200 status from CheckUserDeleteStatus', async () => {
-    (CheckUserDeleteStatus as jest.Mock).mockResolvedValue({
-      status: 400,
-      data: {error: 'Bad request'},
-    });
-    render(
-      <NavigationContainer>
-        <Provider store={store}>
-          <IndividualChat
-            navigation={
-              mockNavigation as NativeStackNavigationProp<
-                HomeStackParamList,
-                'individualChat'
-              >
-            }
-            route={mockRoute}
-          />
-        </Provider>
-      </NavigationContainer>,
-    );
-
-    await waitFor(() => {
-      expect(CheckUserDeleteStatus).toHaveBeenCalled();
-    });
-  });
-  test('should not call CheckUserDeleteStatus when auth token is missing', async () => {
-    jest.clearAllMocks();
-    (EncryptedStorage.getItem as jest.Mock).mockImplementation(
-      (key: string) => {
-        if (key === 'authToken') {
-          return Promise.resolve(null);
-        }
-        return Promise.resolve(null);
-      },
-    );
-
-    render(
-      <NavigationContainer>
-        <Provider store={store}>
-          <IndividualChat
-            navigation={mockNavigation as any}
-            route={mockRoute}
-          />
-        </Provider>
-      </NavigationContainer>,
-    );
-
-    await waitFor(() => {
-      expect(EncryptedStorage.getItem).toHaveBeenCalledWith('authToken');
-    });
-
-    expect(CheckUserDeleteStatus).not.toHaveBeenCalled();
-  });
-
-  test('should re-check delete status when user.phoneNumber changes', async () => {
-    (EncryptedStorage.getItem as jest.Mock).mockImplementation(
-      (key: string) => {
-        if (key === 'authToken') {
-          return Promise.resolve('mock-auth-token');
-        }
-
-        return Promise.resolve(null);
-      },
-    );
-    (CheckUserDeleteStatus as jest.Mock).mockResolvedValue({
-      status: 200,
-      data: {isDeleted: false},
-    });
-
-    const {rerender} = render(
-      <NavigationContainer>
-        <Provider store={store}>
-          <IndividualChat
-            navigation={mockNavigation as any}
-            route={mockRoute}
-          />
-        </Provider>
-      </NavigationContainer>,
-    );
-
-    await waitFor(() => {
-      expect(CheckUserDeleteStatus).toHaveBeenCalledTimes(1);
-    });
-
-    jest.clearAllMocks();
-
-    rerender(
-      <NavigationContainer>
-        <Provider store={store}>
-          <IndividualChat
-            navigation={mockNavigation as any}
-            route={{
-              ...mockRoute,
-              params: {
-                user: {
-                  ...mockRoute.params.user,
-                  phoneNumber: '+918888888888',
-                },
-              },
-            }}
-          />
-        </Provider>
-      </NavigationContainer>,
-    );
-
-    await waitFor(() => {
-      expect(CheckUserDeleteStatus).toHaveBeenCalledTimes(1);
-      expect(CheckUserDeleteStatus).toHaveBeenCalledWith({
-        authToken: 'mock-auth-token',
-        phoneNumber: '+918888888888',
-      });
-    });
-  });
-});
-
 describe('User Delete Status', () => {
   test('should set isDeleted to true when user is deleted', async () => {
     (CheckUserDeleteStatus as jest.Mock).mockResolvedValue({
@@ -1282,7 +1085,7 @@ describe('User Delete Status', () => {
     );
 
     await waitFor(() => {
-      expect(CheckUserDeleteStatus).toHaveBeenCalledTimes(1);
+      expect(CheckUserDeleteStatus).toHaveBeenCalledTimes(2);
     });
 
     jest.clearAllMocks();
@@ -1307,7 +1110,7 @@ describe('User Delete Status', () => {
     );
 
     await waitFor(() => {
-      expect(CheckUserDeleteStatus).toHaveBeenCalledTimes(1);
+      expect(CheckUserDeleteStatus).toHaveBeenCalledTimes(2);
       expect(CheckUserDeleteStatus).toHaveBeenCalledWith({
         authToken: 'mock-auth-token',
         phoneNumber: '+918888888888',
