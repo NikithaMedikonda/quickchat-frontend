@@ -38,7 +38,6 @@ describe('UnreadStacks Navigation', () => {
 
     it('renders the UnreadChats screen initially', async () => {
         const { getByText } = renderWithProviders();
-
         await waitFor(() => {
             expect(getByText('Unread Chats Screen')).toBeTruthy();
         });
@@ -46,9 +45,7 @@ describe('UnreadStacks Navigation', () => {
 
     it('navigates to IndividualChat screen on button press', async () => {
         const { getByText } = renderWithProviders();
-
         fireEvent.press(getByText('Go to Individual Chat'));
-
         await waitFor(() => {
             expect(getByText('Individual Chat Screen')).toBeTruthy();
         });
