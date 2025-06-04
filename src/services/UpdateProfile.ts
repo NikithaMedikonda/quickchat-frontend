@@ -3,10 +3,10 @@ import {API_URL} from '../constants/api';
 export const updateProfile = async (
   editProfileForm: {
     phoneNumber: string;
-    image: string;
+    image?: string;
     firstName: string;
     lastName: string;
-    email: string;
+    email?: string;
     token: string;
   },
   user: {
@@ -14,7 +14,7 @@ export const updateProfile = async (
     image?: string;
     firstName: string;
     lastName: string;
-    email: string;
+    email?: string;
   },
 ) => {
   const userData: any = {};
@@ -29,11 +29,11 @@ export const updateProfile = async (
     userData.lastName = editProfileForm.lastName;
   }
 
-  if (user.email !== editProfileForm.email) {
+  if (editProfileForm.email && user.email !== editProfileForm.email) {
     userData.email = editProfileForm.email;
   }
 
-  if (user.image !== editProfileForm.image) {
+  if (editProfileForm.image && user.image !== editProfileForm.image) {
     userData.profilePicture = editProfileForm.image;
   }
   const response = await fetch(`${API_URL}/api/user`, {
