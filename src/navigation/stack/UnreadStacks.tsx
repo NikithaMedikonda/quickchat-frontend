@@ -11,7 +11,7 @@ const Stack = createNativeStackNavigator<UnreadStackParamList>();
             <Stack.Screen
                 name="unread"
                 component={UnreadChats}
-                options={{ headerShown: false }}
+                options={{ headerShown: true }}
             />
             <Stack.Screen
                 name="individualChat"
