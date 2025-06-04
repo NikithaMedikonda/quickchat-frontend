@@ -1,22 +1,22 @@
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { ScrollView, Text, View } from 'react-native';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {useCallback, useEffect, useRef, useState} from 'react';
+import {useTranslation} from 'react-i18next';
+import {ScrollView, Text, View} from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { useDispatch, useSelector } from 'react-redux';
-import { Socket } from 'socket.io-client';
-import { CustomAlert } from '../../components/CustomAlert/CustomAlert';
-import { IndividualChatHeader } from '../../components/IndividualChatHeader/IndividualChatHeader';
-import { MessageInput } from '../../components/MessageInput/MessageInput';
-import { MessageStatusTicks } from '../../components/MessageStatusTicks/MessageStatusTicks';
-import { TimeStamp } from '../../components/TimeStamp/TimeStamp';
-import { checkBlockStatus } from '../../services/CheckBlockStatus';
-import { CheckUserDeleteStatus } from '../../services/CheckUserDeleteStatus';
-import { checkUserOnline } from '../../services/CheckUserOnline';
-import { getMessagesBetween } from '../../services/GetMessagesBetween';
-import { messageDecryption } from '../../services/MessageDecryption';
-import { messageEncryption } from '../../services/MessageEncryption';
-import { updateMessageStatus } from '../../services/UpdateMessageStatus';
+import {useDispatch, useSelector} from 'react-redux';
+import {Socket} from 'socket.io-client';
+import {CustomAlert} from '../../components/CustomAlert/CustomAlert';
+import {IndividualChatHeader} from '../../components/IndividualChatHeader/IndividualChatHeader';
+import {MessageInput} from '../../components/MessageInput/MessageInput';
+import {MessageStatusTicks} from '../../components/MessageStatusTicks/MessageStatusTicks';
+import {TimeStamp} from '../../components/TimeStamp/TimeStamp';
+import {checkBlockStatus} from '../../services/CheckBlockStatus';
+import {CheckUserDeleteStatus} from '../../services/CheckUserDeleteStatus';
+import {checkUserOnline} from '../../services/CheckUserOnline';
+import {getMessagesBetween} from '../../services/GetMessagesBetween';
+import {messageDecryption} from '../../services/MessageDecryption';
+import {messageEncryption} from '../../services/MessageEncryption';
+import {updateMessageStatus} from '../../services/UpdateMessageStatus';
 import {
   newSocket,
   receiveJoined,
@@ -43,8 +43,10 @@ import {
 import {HomeStackParamList} from '../../types/usenavigation.type';
 import {User} from '../Profile/Profile';
 import {individualChatStyles} from './IndividualChat.styles';
-import { useDeviceCheck } from '../../services/useDeviceCheck';
-
+import {useDeviceCheck} from '../../services/useDeviceCheck';
+// import {insertToMessages} from '../../database/services/messageOperations';
+// import {generateMessageId} from '../../utils/messageId';
+// import {MessageType} from '../../database/types/message';
 
 type Props = NativeStackScreenProps<HomeStackParamList, 'individualChat'>;
 
@@ -379,7 +381,7 @@ export const IndividualChat = ({route}: Props) => {
       newSocket.emit('online_with', withChattingPhoneNumber);
     }
     const sendMessage = async () => {
-      if (socket && message.trim() !== '') {
+      if (socket) {
         const privateKey = await EncryptedStorage.getItem('privateKey');
         let encryptedMessage = message.trim();
         if (privateKey) {
