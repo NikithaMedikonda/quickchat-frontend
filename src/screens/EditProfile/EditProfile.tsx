@@ -1,4 +1,4 @@
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import {
   useCallback,
   useEffect,
@@ -7,7 +7,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { useTranslation } from 'react-i18next';
+import {useTranslation} from 'react-i18next';
 import {
   Image,
   KeyboardAvoidingView,
@@ -18,13 +18,13 @@ import {
   View,
 } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { useDispatch, useSelector } from 'react-redux';
-import { CustomAlert } from '../../components/CustomAlert/CustomAlert';
-import { ImagePickerModal } from '../../components/ImagePickerModal/ImagePickerModal';
-import { Placeholder } from '../../components/InputField/InputField';
-import { DEFAULT_PROFILE_IMAGE } from '../../constants/defaultImage';
-import { updateProfile } from '../../services/UpdateProfile';
-import { useDeviceCheck } from '../../services/useDeviceCheck';
+import {useDispatch, useSelector} from 'react-redux';
+import {CustomAlert} from '../../components/CustomAlert/CustomAlert';
+import {ImagePickerModal} from '../../components/ImagePickerModal/ImagePickerModal';
+import {Placeholder} from '../../components/InputField/InputField';
+import {DEFAULT_PROFILE_IMAGE} from '../../constants/defaultImage';
+import {updateProfile} from '../../services/UpdateProfile';
+import {useDeviceCheck} from '../../services/useDeviceCheck';
 import {
   setAlertMessage,
   setAlertTitle,
@@ -35,11 +35,11 @@ import {
   setImage,
   setIsVisible,
 } from '../../store/slices/registrationSlice';
-import { RootState } from '../../store/store';
-import { useThemeColors } from '../../themes/colors';
-import { useImagesColors } from '../../themes/images';
-import { ProfileScreenNavigationProp } from '../../types/usenavigation.type';
-import { getStyles } from './EditProfile.styles';
+import {RootState} from '../../store/store';
+import {useThemeColors} from '../../themes/colors';
+import {useImagesColors} from '../../themes/images';
+import {ProfileScreenNavigationProp} from '../../types/usenavigation.type';
+import {getStyles} from './EditProfile.styles';
 
 export const BackButton = () => {
   const colors = useThemeColors();
@@ -88,7 +88,14 @@ export const EditProfile = () => {
   };
   const setToken = useRef('');
 
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<{
+    phoneNumber: string;
+    profilePicture: string;
+    firstName: string;
+    lastName: string;
+    email?: string;
+    token: string;
+  }>();
 
   const showAlert = useCallback(
     (type: string, title: string, message: string) => {
@@ -117,7 +124,9 @@ export const EditProfile = () => {
       dispatch(
         setEditProfileForm({key: 'lastName', value: userData.lastName || ''}),
       );
-      dispatch(setEditProfileForm({key: 'email', value: userData.email || ''}));
+      dispatch(
+        setEditProfileForm({key: 'email', value: userData.email || null}),
+      );
       dispatch(
         setEditProfileForm({
           key: 'phoneNumber',
@@ -130,7 +139,7 @@ export const EditProfile = () => {
       setInitialValues({
         firstName: userData.firstName || '',
         lastName: userData.lastName || '',
-        email: userData.email || '',
+        email: userData.email || null,
         phoneNumber: userData.phoneNumber || '',
         token: AccessToken,
         image: initialImage,
@@ -192,7 +201,7 @@ export const EditProfile = () => {
             setInitialValues({
               firstName: updatedUser.firstName || '',
               lastName: updatedUser.lastName || '',
-              email: updatedUser.email || '',
+              email: updatedUser.email || null,
               phoneNumber: updatedUser.phoneNumber || '',
               token: editProfileForm.token,
               image: updatedUser.profilePicture || '',
