@@ -24,7 +24,7 @@ describe('Test for editProfile service', () => {
       firstName: 'Goldie',
       lastName: 'S',
       email: 'goldie@gmail.com',
-      image: 'image.jpg',
+      profilePicture: 'image.jpg',
     };
 
     const mockResponse = {success: true};
@@ -61,7 +61,7 @@ describe('Test for editProfile service', () => {
       firstName: 'Anoosha',
       lastName: 'Sanugula',
       email: 'anu@gmail.com',
-      image: 'img.jpg',
+      profilePicture: 'img.jpg',
     };
 
     const mockResponse = {success: true};
@@ -94,7 +94,7 @@ describe('Test for editProfile service', () => {
       firstName: 'Goldie',
       lastName: 'S',
       email: 'goldie@gmail.com',
-      image: 'image.jpg',
+      profilePicture: 'image.jpg',
     };
 
     mockedFetch.mockRejectedValueOnce(new Error('Network Error'));
@@ -107,7 +107,7 @@ describe('Test for editProfile service', () => {
       firstName: 'Goldie',
       lastName: 'S',
       email: 'goldie@gmail.com',
-      image: 'image.jpg',
+      profilePicture: 'image.jpg',
     };
 
     const expectedBody = {
@@ -131,6 +131,46 @@ describe('Test for editProfile service', () => {
       headers: {
         'Content-Type': 'application/json',
         authorization: `Bearer ${payload.token}`,
+      },
+      body: JSON.stringify(expectedBody),
+    });
+
+    expect(result.status).toBe(200);
+    expect(result.data).toEqual(mockResponse);
+  });
+  it('should include email as null if new email is empty', async () => {
+    const user = {
+      phoneNumber: '9440058809',
+      firstName: 'Anoosha',
+      lastName: 'Sanugula',
+      email: 'anu@gmail.com',
+      profilePicture: 'img.jpg',
+    };
+
+    const nullEmailPayload = {
+      ...payload,
+      email: '',
+    };
+
+    const expectedBody = {
+      phoneNumber: nullEmailPayload.phoneNumber,
+      email: null,
+    };
+
+    const mockResponse = {success: true};
+    mockedFetch.mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: jest.fn().mockResolvedValue(mockResponse),
+    });
+
+    const result = await updateProfile(nullEmailPayload, user);
+
+    expect(mockedFetch).toHaveBeenCalledWith(`${API_URL}/api/user`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        authorization: `Bearer ${nullEmailPayload.token}`,
       },
       body: JSON.stringify(expectedBody),
     });

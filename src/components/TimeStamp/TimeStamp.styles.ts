@@ -4,10 +4,10 @@ export const Timestampstyle = (colors: Colors) =>
   StyleSheet.create({
     color: {
       color: colors.darkGray,
-      fontSize: 12,
+      fontSize: 11,
     },
     sentColor: {
       color: colors.messageTextBox,
-      fontSize: 12,
+      fontSize: 11,
     },
   });
