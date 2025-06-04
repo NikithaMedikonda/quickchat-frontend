@@ -1,6 +1,6 @@
 import { Dimensions, StyleSheet } from 'react-native';
 import { Colors } from '../../themes/colors';
-const { width, height } = Dimensions.get('window');
+const {width, height} = Dimensions.get('window');
 export const individualChatStyles = (colors: Colors) => {
   return StyleSheet.create({
     container: {
@@ -83,12 +83,13 @@ export const individualChatStyles = (colors: Colors) => {
       flexDirection: 'row',
       justifyContent: 'flex-end',
       alignItems: 'center',
+      gap: 5,
     },
     chatHeaderContainer: {
       flex: 0,
     },
     chatMainContainer: {
-      flex: 1.00,
+      flex: 1.0,
       paddingBottom: 40,
       paddingHorizontal: 20,
       marginTop: 10,
