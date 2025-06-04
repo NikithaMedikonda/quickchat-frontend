@@ -1,5 +1,12 @@
 import { useNavigation } from '@react-navigation/native';
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Image,
@@ -12,8 +19,12 @@ import {
 } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { useDispatch, useSelector } from 'react-redux';
+import { CustomAlert } from '../../components/CustomAlert/CustomAlert';
 import { ImagePickerModal } from '../../components/ImagePickerModal/ImagePickerModal';
 import { Placeholder } from '../../components/InputField/InputField';
+import { DEFAULT_PROFILE_IMAGE } from '../../constants/defaultImage';
+import { updateProfile } from '../../services/UpdateProfile';
+import { useDeviceCheck } from '../../services/useDeviceCheck';
 import {
   setAlertMessage,
   setAlertTitle,
@@ -21,21 +32,18 @@ import {
   setAlertVisible,
   setEditProfileForm,
   setErrors,
+  setImage,
   setIsVisible,
 } from '../../store/slices/registrationSlice';
-import {updateProfile} from '../../services/UpdateProfile';
-import {ProfileScreenNavigationProp} from '../../types/usenavigation.type';
-import {DEFAULT_PROFILE_IMAGE} from '../../constants/defaultImage';
-import {CustomAlert} from '../../components/CustomAlert/CustomAlert';
-import {useImagesColors} from '../../themes/images';
-import { useDeviceCheck } from '../../services/useDeviceCheck';
 import { RootState } from '../../store/store';
 import { useThemeColors } from '../../themes/colors';
+import { useImagesColors } from '../../themes/images';
+import { ProfileScreenNavigationProp } from '../../types/usenavigation.type';
 import { getStyles } from './EditProfile.styles';
 
 export const BackButton = () => {
   const colors = useThemeColors();
-   useDeviceCheck();
+  useDeviceCheck();
   const {androidBackArrow, iOSBackArrow} = useImagesColors();
   const profileNavigation = useNavigation<ProfileScreenNavigationProp>();
   const styles = getStyles(colors);
@@ -99,6 +107,9 @@ export const EditProfile = () => {
       const userData = userDataString ? JSON.parse(userDataString) : {};
       setToken.current = AccessToken;
 
+      const initialImage = userData.profilePicture || '';
+      dispatch(setImage(initialImage));
+
       setUser(userData);
       dispatch(
         setEditProfileForm({key: 'firstName', value: userData.firstName || ''}),
@@ -114,7 +125,7 @@ export const EditProfile = () => {
         }),
       );
       dispatch(setEditProfileForm({key: 'token', value: AccessToken}));
-      dispatch(setEditProfileForm({key: 'image', value: editedImage}));
+      dispatch(setEditProfileForm({key: 'image', value: initialImage}));
 
       setInitialValues({
         firstName: userData.firstName || '',
@@ -122,13 +133,14 @@ export const EditProfile = () => {
         email: userData.email || '',
         phoneNumber: userData.phoneNumber || '',
         token: AccessToken,
-        image: editedImage,
+        image: initialImage,
       });
     } catch (error) {
       dispatch(setAlertVisible(true));
       showAlert('error', 'Error', 'Something went wrong');
     }
-  }, [dispatch, editedImage, showAlert]);
+  }, [dispatch, showAlert]);
+
   const renderHeaderLeft = useCallback(() => <BackButton />, []);
   useEffect(() => {
     getUserData();
@@ -175,10 +187,16 @@ export const EditProfile = () => {
           const result = await updateProfile(payloadToUpdate, user);
           if (result.status === 200) {
             dispatch(setAlertVisible(true));
-            await EncryptedStorage.setItem(
-              'user',
-              JSON.stringify(result.data.user),
-            );
+            const updatedUser = result.data.user;
+            await EncryptedStorage.setItem('user', JSON.stringify(updatedUser));
+            setInitialValues({
+              firstName: updatedUser.firstName || '',
+              lastName: updatedUser.lastName || '',
+              email: updatedUser.email || '',
+              phoneNumber: updatedUser.phoneNumber || '',
+              token: editProfileForm.token,
+              image: updatedUser.profilePicture || '',
+            });
             showAlert('success', 'Success', 'Profile updated successfully');
             setTimeout(() => {
               dispatch(setAlertVisible(false));
@@ -203,6 +221,9 @@ export const EditProfile = () => {
           dispatch(setAlertVisible(true));
           showAlert('error', 'Error', 'Failed to update profile');
         }
+      } else {
+        dispatch(setAlertVisible(true));
+        showAlert('error', 'Error', 'Something went wrong');
       }
     }
   };
@@ -220,20 +241,21 @@ export const EditProfile = () => {
       title: 'Email',
     },
   ] as const;
-  const renderedImage = imageUri || user?.profilePicture || DEFAULT_PROFILE_IMAGE;
+  const renderedImage =
+    imageUri || user?.profilePicture || DEFAULT_PROFILE_IMAGE;
 
   const isFormChanged = useMemo(() => {
-  if (!initialValues){
-    return false;
-  }
-  return (
-    initialValues.firstName !== editProfileForm.firstName ||
-    initialValues.lastName !== editProfileForm.lastName ||
-    initialValues.email !== editProfileForm.email ||
-    initialValues.phoneNumber !== editProfileForm.phoneNumber ||
-    initialValues.image !== imageUri
-  );
-}, [initialValues, editProfileForm,imageUri]);
+    if (!initialValues) {
+      return false;
+    }
+    const imageChanged = (initialValues.image || '') !== (editedImage || '');
+    return (
+      initialValues.firstName !== editProfileForm.firstName ||
+      initialValues.lastName !== editProfileForm.lastName ||
+      initialValues.email !== editProfileForm.email ||
+      imageChanged
+    );
+  }, [initialValues, editProfileForm, editedImage]);
 
   return (
     <KeyboardAvoidingView
@@ -272,8 +294,8 @@ export const EditProfile = () => {
         ))}
         <View style={styles.buttonRow}>
           <TouchableOpacity
-          accessibilityHint="Save-button"
-           accessibilityState={{ disabled:!isFormChanged }}
+            accessibilityHint="Save-button"
+            accessibilityState={{disabled: !isFormChanged}}
             style={[
               styles.touchableButton,
               !isFormChanged && styles.touchableButtonDisabled,
