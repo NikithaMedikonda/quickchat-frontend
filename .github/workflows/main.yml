@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - edit-profile-image-bug-fix
+      - password-guidelines
 
 jobs:
   lint-and-test:
