@@ -1,5 +1,5 @@
-import { NavigationContainer, RouteProp } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import {NavigationContainer, RouteProp} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {
   fireEvent,
   render,
@@ -8,18 +8,19 @@ import {
 } from '@testing-library/react-native';
 
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { Provider } from 'react-redux';
-import { checkBlockStatus } from '../../services/CheckBlockStatus';
-import { CheckUserDeleteStatus } from '../../services/CheckUserDeleteStatus';
-import { getMessagesBetween } from '../../services/GetMessagesBetween';
-import { messageDecryption } from '../../services/MessageDecryption';
-import { messageEncryption } from '../../services/MessageEncryption';
-import { updateMessageStatus } from '../../services/UpdateMessageStatus';
+import {Provider} from 'react-redux';
+import {checkBlockStatus} from '../../services/CheckBlockStatus';
+import {CheckUserDeleteStatus} from '../../services/CheckUserDeleteStatus';
+import {getMessagesBetween} from '../../services/GetMessagesBetween';
+import {messageDecryption} from '../../services/MessageDecryption';
+import {messageEncryption} from '../../services/MessageEncryption';
+import {updateMessageStatus} from '../../services/UpdateMessageStatus';
 import * as socket from '../../socket/socket';
-import { resetForm } from '../../store/slices/registrationSlice';
-import { store } from '../../store/store';
-import { HomeStackParamList } from '../../types/usenavigation.type';
-import { IndividualChat } from './IndividualChat';
+import {resetForm} from '../../store/slices/registrationSlice';
+import {store} from '../../store/store';
+import {HomeStackParamList} from '../../types/usenavigation.type';
+import {IndividualChat} from './IndividualChat';
+import {checkUserOnline} from '../../services/CheckUserOnline';
 
 type IndividualChatRouteProp = RouteProp<HomeStackParamList, 'individualChat'>;
 const mockRoute: IndividualChatRouteProp = {
@@ -541,7 +542,7 @@ describe('IndividualChat', () => {
           recipientPhoneNumber: '+919999999999',
           message: 'encrypted-hello',
           timestamp: new Date().toISOString(),
-          status: 'sent',
+          status: 'delivered',
         });
         return Promise.resolve();
       },
@@ -566,7 +567,7 @@ describe('IndividualChat', () => {
     await waitFor(
       () => {
         const elements = screen.getAllByText('Hello!');
-        expect(elements).toHaveLength(2);
+        expect(elements).toHaveLength(1);
       },
       {timeout: 2000},
     );
@@ -783,8 +784,144 @@ describe('IndividualChat', () => {
       expect(mockSend).not.toHaveBeenCalled();
     });
   });
-});
+  test('should sendPrivateMessage and the messages should be read when the user is online with this user', async () => {
+    (EncryptedStorage.getItem as jest.Mock).mockImplementation(
+      (key: string) => {
+        if (key === 'user') {
+          return Promise.resolve(
+            JSON.stringify({phoneNumber: '+919999999999'}),
+          );
+        }
+        if (key === 'privateKey') {
+          return Promise.resolve('mock-private-key');
+        }
+        if (key === 'authToken') {
+          return Promise.resolve('mock-auth-token');
+        }
+        return Promise.resolve(null);
+      },
+    );
+    (messageEncryption as jest.Mock).mockResolvedValue('encrypted-message');
+    (socket.sendPrivateMessage as jest.Mock).mockResolvedValue({});
 
+    (socket.receiveOnline as jest.Mock).mockImplementation(
+      async ({setIsOnline}) => setIsOnline(true),
+    );
+    (checkUserOnline as jest.Mock).mockResolvedValue({
+      status: 200,
+      data: {data: {socketId: '12332431'}},
+    });
+    render(
+      <NavigationContainer>
+        <Provider store={store}>
+          <IndividualChat
+            navigation={
+              mockNavigation as NativeStackNavigationProp<
+                HomeStackParamList,
+                'individualChat'
+              >
+            }
+            route={mockRoute}
+          />
+        </Provider>
+      </NavigationContainer>,
+    );
+    await waitFor(() => {
+      expect(EncryptedStorage.getItem).toHaveBeenCalledWith('user');
+    });
+
+    const input = screen.getByPlaceholderText('Type a message..');
+    const sendButton = screen.getByA11yHint('send-message-icon');
+
+    fireEvent.changeText(input, 'Hello, test!');
+    fireEvent.press(sendButton);
+
+    await waitFor(() => {
+      expect(socket.sendPrivateMessage).toHaveBeenCalled();
+    });
+
+    const calledPayload = (socket.sendPrivateMessage as jest.Mock).mock
+      .calls[0][0];
+    expect(calledPayload.senderPhoneNumber).toBe('+919999999999');
+    expect(calledPayload.recipientPhoneNumber).toBe('+918522041688');
+    expect(calledPayload.message).toBe('encrypted-message');
+    expect(calledPayload.status).toBe('read');
+
+    await waitFor(() => {
+      expect(screen.getByText('Hello, test!')).toBeTruthy();
+    });
+  });
+  test('should sendPrivateMessage and the messages should be delivered when the user is online with this user', async () => {
+    (EncryptedStorage.getItem as jest.Mock).mockImplementation(
+      (key: string) => {
+        if (key === 'user') {
+          return Promise.resolve(
+            JSON.stringify({phoneNumber: '+919999999999'}),
+          );
+        }
+        if (key === 'privateKey') {
+          return Promise.resolve('mock-private-key');
+        }
+        if (key === 'authToken') {
+          return Promise.resolve('mock-auth-token');
+        }
+        return Promise.resolve(null);
+      },
+    );
+    (messageEncryption as jest.Mock).mockResolvedValue('encrypted-message');
+    (socket.sendPrivateMessage as jest.Mock).mockResolvedValue({});
+
+    (socket.receiveOnline as jest.Mock).mockImplementation(
+      async ({setIsOnline}) => setIsOnline(false),
+    );
+    (socket.receiveOffline as jest.Mock).mockImplementation(
+      async ({setIsOnline}) => setIsOnline(false),
+    );
+    (checkUserOnline as jest.Mock).mockResolvedValue({
+      status: 200,
+      data: {data: {socketId: '12332431'}},
+    });
+    render(
+      <NavigationContainer>
+        <Provider store={store}>
+          <IndividualChat
+            navigation={
+              mockNavigation as NativeStackNavigationProp<
+                HomeStackParamList,
+                'individualChat'
+              >
+            }
+            route={mockRoute}
+          />
+        </Provider>
+      </NavigationContainer>,
+    );
+    await waitFor(() => {
+      expect(EncryptedStorage.getItem).toHaveBeenCalledWith('user');
+    });
+
+    const input = screen.getByPlaceholderText('Type a message..');
+    const sendButton = screen.getByA11yHint('send-message-icon');
+
+    fireEvent.changeText(input, 'Hello, test!');
+    fireEvent.press(sendButton);
+
+    await waitFor(() => {
+      expect(socket.sendPrivateMessage).toHaveBeenCalled();
+    });
+
+    const calledPayload = (socket.sendPrivateMessage as jest.Mock).mock
+      .calls[0][0];
+    expect(calledPayload.senderPhoneNumber).toBe('+919999999999');
+    expect(calledPayload.recipientPhoneNumber).toBe('+918522041688');
+    expect(calledPayload.message).toBe('encrypted-message');
+    expect(calledPayload.status).toBe('delivered');
+
+    await waitFor(() => {
+      expect(screen.getByText('Hello, test!')).toBeTruthy();
+    });
+  });
+});
 describe('User Delete Status', () => {
   test('should set isDeleted to true when user is deleted', async () => {
     (CheckUserDeleteStatus as jest.Mock).mockResolvedValue({
@@ -948,7 +1085,7 @@ describe('User Delete Status', () => {
     );
 
     await waitFor(() => {
-      expect(CheckUserDeleteStatus).toHaveBeenCalledTimes(1);
+      expect(CheckUserDeleteStatus).toHaveBeenCalledTimes(2);
     });
 
     jest.clearAllMocks();
@@ -973,7 +1110,7 @@ describe('User Delete Status', () => {
     );
 
     await waitFor(() => {
-      expect(CheckUserDeleteStatus).toHaveBeenCalledTimes(1);
+      expect(CheckUserDeleteStatus).toHaveBeenCalledTimes(2);
       expect(CheckUserDeleteStatus).toHaveBeenCalledWith({
         authToken: 'mock-auth-token',
         phoneNumber: '+918888888888',

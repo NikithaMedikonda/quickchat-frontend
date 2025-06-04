@@ -25,7 +25,7 @@ import {
   receivePrivateMessage,
   sendPrivateMessage,
 } from '../../socket/socket';
-import { hide, show } from '../../store/slices/loadingSlice';
+import {hide, show} from '../../store/slices/loadingSlice';
 import {
   setAlertMessage,
   setAlertTitle,
@@ -33,8 +33,8 @@ import {
   setAlertVisible,
   setReceivePhoneNumber,
 } from '../../store/slices/registrationSlice';
-import { RootState } from '../../store/store';
-import { useThemeColors } from '../../themes/colors';
+import {RootState} from '../../store/store';
+import {useThemeColors} from '../../themes/colors';
 import {
   AllMessages,
   ReceivePrivateMessage,
@@ -156,9 +156,34 @@ export const IndividualChat = ({route}: Props) => {
   }, [showAlert, user.phoneNumber]);
 
   useEffect(() => {
-    const withChattingPhoneNumber = user.phoneNumber;
-    newSocket.emit('online_with', withChattingPhoneNumber);
+    const getUserDeleteStatus = async () => {
+      try {
+        const token = await EncryptedStorage.getItem('authToken');
+        if (!token) {
+          showAlert('info', 'Network Error', 'Unable to get user details');
+          return;
+        }
+        const result = await CheckUserDeleteStatus({
+          phoneNumber: user.phoneNumber,
+          authToken: token,
+        });
+        if (result.status === 200) {
+          setIsDeleted(result.data.isDeleted);
+        }
+      } catch (error) {
+        showAlert('info', 'Network Error', 'Unable to fetch details');
+      }
+    };
+
+    getUserDeleteStatus();
+  }, [showAlert, user.phoneNumber]);
+
+  useEffect(() => {
     setSocket(newSocket);
+    const withChattingPhoneNumber = user.phoneNumber;
+    if (!isBlocked) {
+      newSocket.emit('online_with', withChattingPhoneNumber);
+    }
     async function checkJoined() {
       receiveJoined({
         userPhoneNumber: user.phoneNumber,
@@ -166,7 +191,7 @@ export const IndividualChat = ({route}: Props) => {
       });
     }
     checkJoined();
-  }, [user.phoneNumber]);
+  }, [user.phoneNumber, isBlocked]);
   useEffect(() => {
     async function offline() {
       const updateStatus = async () => {
@@ -194,56 +219,73 @@ export const IndividualChat = ({route}: Props) => {
   }, [user.phoneNumber]);
   useEffect(() => {
     async function getMessages() {
-      if (isCleared) {
-        setAllMessages([]);
-        return;
-      }
-      const authToken = await EncryptedStorage.getItem('authToken');
-      if (authToken) {
-        const userStatus = await checkUserOnline({
-          phoneNumber: user.phoneNumber,
-          authToken: authToken,
-        });
-        setSocketId(userStatus.data.data.socketId);
-      }
-      dispatch(show());
-      const currentUser = await EncryptedStorage.getItem('user');
-      if (currentUser) {
-        const parsedUser: User = JSON.parse(currentUser);
-        currentUserPhoneNumberRef.current = parsedUser.phoneNumber;
-      }
-      const userData = {
-        senderPhoneNumber: currentUserPhoneNumberRef.current,
-        receiverPhoneNumber: recipientPhoneNumber,
-      };
-      const Messages = await getMessagesBetween(userData);
-      if (Messages.status === 200) {
-        const data = Messages.data;
-        const privateKey = await EncryptedStorage.getItem('privateKey');
-        const formattedMessages = [];
-        if (privateKey) {
-          for (const msg of data.chats) {
-            try {
-              const decryptedMessage = await messageDecryption({
-                encryptedMessage: msg.content,
-                myPrivateKey: privateKey,
-                senderPublicKey: user.publicKey,
-              });
-              formattedMessages.push({
-                senderPhoneNumber: msg.sender.phoneNumber,
-                recipientPhoneNumber: msg.receiver.phoneNumber,
-                message: decryptedMessage,
-                timestamp: msg.createdAt,
-                status: msg.status,
-              });
-            } catch (error) {
-              dispatch(hide());
-            }
-          }
-          setFetchMessages(formattedMessages);
+      try {
+        if (isCleared) {
+          setAllMessages([]);
+          return;
         }
+        const authToken = await EncryptedStorage.getItem('authToken');
+
+        if (authToken) {
+          const userStatus = await checkUserOnline({
+            phoneNumber: user.phoneNumber,
+            authToken: authToken,
+            requestedUserPhoneNumber: currentUserPhoneNumberRef.current,
+          });
+          if (userStatus.status === 200) {
+            setSocketId(userStatus.data.data.socketId);
+          }
+        }
+        dispatch(show());
+        const currentUser = await EncryptedStorage.getItem('user');
+        if (currentUser) {
+          const parsedUser: User = JSON.parse(currentUser);
+          currentUserPhoneNumberRef.current = parsedUser.phoneNumber;
+        }
+        const userData = {
+          senderPhoneNumber: currentUserPhoneNumberRef.current,
+          receiverPhoneNumber: recipientPhoneNumber,
+        };
+        const Messages = await getMessagesBetween(userData);
+        if (Messages.status === 200) {
+          const data = Messages.data;
+          const privateKey = await EncryptedStorage.getItem('privateKey');
+          const formattedMessages = [];
+          if (privateKey) {
+            for (const msg of data.chats) {
+              try {
+                const decryptedMessage = await messageDecryption({
+                  encryptedMessage: msg.content,
+                  myPrivateKey: privateKey,
+                  senderPublicKey: user.publicKey,
+                });
+                if (
+                  msg.status === 'sent' &&
+                  msg.receiver.phoneNumber === currentUserPhoneNumberRef.current
+                ) {
+                  continue;
+                } else {
+                  formattedMessages.push({
+                    senderPhoneNumber: msg.sender.phoneNumber,
+                    recipientPhoneNumber: msg.receiver.phoneNumber,
+                    message: decryptedMessage,
+                    timestamp: msg.createdAt,
+                    status: msg.status,
+                  });
+                }
+              } catch (error) {
+                dispatch(hide());
+              }
+            }
+            setFetchMessages(formattedMessages);
+            setReceivedMessages([]);
+            setSendMessages([]);
+          }
+        }
+        dispatch(hide());
+      } catch (e) {
+        setFetchMessages([]);
       }
-      dispatch(hide());
     }
 
     getMessages();
@@ -257,8 +299,6 @@ export const IndividualChat = ({route}: Props) => {
     user.publicKey,
   ]);
   useEffect(() => {
-    setSocket(newSocket);
-
     async function receiveMessage() {
       const handleNewMessage = async (data: SentPrivateMessage) => {
         const privateKey = await EncryptedStorage.getItem('privateKey');
@@ -335,7 +375,9 @@ export const IndividualChat = ({route}: Props) => {
     }
     checkOnline();
     const withChattingPhoneNumber = user.phoneNumber;
-    newSocket.emit('online_with', withChattingPhoneNumber);
+    if (!isBlocked) {
+      newSocket.emit('online_with', withChattingPhoneNumber);
+    }
     const sendMessage = async () => {
       if (socket && message.trim() !== '') {
         const privateKey = await EncryptedStorage.getItem('privateKey');
@@ -354,9 +396,11 @@ export const IndividualChat = ({route}: Props) => {
           const userStatus = await checkUserOnline({
             phoneNumber: user.phoneNumber,
             authToken: authToken,
+            requestedUserPhoneNumber: currentUserPhoneNumberRef.current,
           });
-
-          setSocketId(userStatus.data.data.socketId);
+          if (userStatus.status === 200 || userStatus.status === 203) {
+            setSocketId(userStatus.data.data.socketId);
+          }
         }
 
         if (socketId && !isOnlineWith) {
@@ -394,6 +438,7 @@ export const IndividualChat = ({route}: Props) => {
     socketId,
     user.phoneNumber,
     user.publicKey,
+    isBlocked,
   ]);
 
   useEffect(() => {
