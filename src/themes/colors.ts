@@ -8,13 +8,14 @@ export const useThemeColors = () => {
     profileOptionsText: '#FFFFFF',
     buttonText: '#000000',
     inputText: '#000000',
-    modalOverlayBackground: 'rgba(0, 0, 0, 0.6)',
+    modalOverlayBackground: 'rgba(0, 0, 0, 0.8)',
     darkGray: '##3C4142',
     messageTextBox: '#FFFFFF',
     sendMessage: '#1877F2',
     receiveMessage: '#FFFFFF',
     chatBackground:'#121212',
     modalBackground: 'rgba(128, 128, 128, 0.2)',
+    warningColor: '#f5b041',
   };
 };
 
@@ -33,5 +34,6 @@ export type Colors = {
   sendMessage: string;
   receiveMessage: string;
   chatBackground:string;
-  modalBackground:string
+  modalBackground:string;
+  warningColor: string;
 };

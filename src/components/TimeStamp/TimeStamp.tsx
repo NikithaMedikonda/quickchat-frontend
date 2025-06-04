@@ -6,9 +6,11 @@ import { Timestampstyle } from './TimeStamp.styles';
 export const TimeStamp = ({
   messageTime,
   isSent,
+  showFullTime = false,
 }: {
   messageTime: Date | string;
   isSent: boolean;
+  showFullTime?: boolean;
 }) => {
   const colors = useThemeColors();
   const styles = Timestampstyle(colors);
@@ -23,11 +25,17 @@ export const TimeStamp = ({
       'day',
     )
   ) {
-    displayTime = 'Yesterday';
+    displayTime = showFullTime
+      ? `Yesterday, ${messageReceivedTime.format('h:mm A')}`
+      : 'Yesterday';
   } else if (messageReceivedTime.isAfter(moment().subtract(7, 'days'))) {
-    displayTime = messageReceivedTime.format('dddd');
+    displayTime = showFullTime
+      ? messageReceivedTime.format('dddd, h:mm A')
+      : messageReceivedTime.format('dddd');
   } else {
-    displayTime = messageReceivedTime.format('MMM D, YYYY');
+     displayTime = showFullTime
+      ? messageReceivedTime.format('MMM D, YYYY, h:mm A')
+      : messageReceivedTime.format('MMM D, YYYY');
   }
   return (
     <View>

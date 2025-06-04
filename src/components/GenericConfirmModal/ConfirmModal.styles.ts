@@ -19,9 +19,9 @@ export const confirmModalStyles = (colors: Colors) => {
       shadowOffset: {width: 0, height: 2},
       shadowOpacity: 0.3,
       shadowRadius: 4,
-      display:'flex',
-      justifyContent:'center',
-      alignItems:'center',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
     },
     message: {
       fontSize: 16,
@@ -29,6 +29,13 @@ export const confirmModalStyles = (colors: Colors) => {
       marginBottom: 20,
       color: colors.text,
       fontWeight: '500',
+    },
+    warningText: {
+      fontSize: 14,
+      textAlign: 'center',
+      marginBottom: 16,
+      fontWeight: 'bold',
+      color: colors.warningColor,
     },
     buttonContainer: {
       flexDirection: 'row',

@@ -4,5 +4,6 @@
     "Unread Chats":"చదవని చాట్‌లు",
     "Quick Chat":"క్విక్ చాట్",
     "Edit Profile":"ప్రొఫైల్ సవరించండి",
-    "No messages yet? That just means the best one is about to be sent—by you!":"ఇంకా ఒక్క మెసేజ్ కూడా లేదా? అద్భుతమైనదే నువ్వే పంపబోతున్నావేమో!"
+    "No messages yet? That just means the best one is about to be sent—by you!":"ఇంకా ఒక్క మెసేజ్ కూడా లేదా? అద్భుతమైనదే నువ్వే పంపబోతున్నావేమో!",
+    "EmptyUnreadMessage": "మీరు అన్నీ చదివారు!\nచదవని సందేశాలు లేవు."
 }

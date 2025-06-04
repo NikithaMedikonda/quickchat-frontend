@@ -1,7 +1,7 @@
 import { Dimensions, StyleSheet } from 'react-native';
 import { Colors } from '../../themes/colors.ts';
 
-const {width, height} = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 export const getStyles = (colors: Colors) =>
   StyleSheet.create({
@@ -19,7 +19,7 @@ export const getStyles = (colors: Colors) =>
       flexDirection: 'row',
       justifyContent: 'flex-start',
       width: width * 0.6,
-      paddingRight: 10,
+      paddingRight: 7,
     },
     messageDetailsContainer: {
       display: 'flex',

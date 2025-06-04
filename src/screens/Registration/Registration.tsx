@@ -35,7 +35,7 @@ import {useThemeColors} from '../../themes/colors';
 import {HomeTabsProps, NavigationProps} from '../../types/usenavigation.type';
 import {CustomAlert} from '../../components/CustomAlert/CustomAlert';
 import {getStyles} from './Registration.styles';
-import { getDeviceId } from '../../services/GenerateDeviceId';
+import {getDeviceId} from '../../services/GenerateDeviceId';
 
 export const Registration = () => {
   const {alertType, alertTitle, alertMessage} = useSelector(
@@ -125,9 +125,17 @@ export const Registration = () => {
           publicKey: keys.publicKey,
           privateKey: keys.privateKey,
         },
-        {deviceId:deviceId},
+        {deviceId: deviceId},
       );
-      if (result.status === 409) {
+      if (result.status === 404) {
+        dispatch(hide());
+        dispatch(setAlertVisible(true));
+        showAlert(
+          'error',
+          'Registration failed',
+          'Sorry, this account is deleted',
+        );
+      } else if (result.status === 409) {
         dispatch(hide());
         dispatch(setAlertVisible(true));
         showAlert(
@@ -137,11 +145,7 @@ export const Registration = () => {
         );
       } else if (result.status === 200) {
         dispatch(hide());
-         showAlert(
-          'success',
-          'Success',
-          'Successfully registered',
-        );
+        showAlert('success', 'Success', 'Successfully registered');
         dispatch(setAlertVisible(true));
         dispatch(
           setLoginSuccess({
@@ -151,8 +155,8 @@ export const Registration = () => {
           }),
         );
         setTimeout(() => {
-              dispatch(setAlertVisible(false));
-            }, 2000);
+          dispatch(setAlertVisible(false));
+        }, 2000);
         await EncryptedStorage.setItem('authToken', result.data.accessToken);
         await EncryptedStorage.setItem(
           'refreshToken',
@@ -258,6 +262,5 @@ export const Registration = () => {
       </ScrollView>
       <CustomAlert type={alertType} title={alertTitle} message={alertMessage} />
     </KeyboardAvoidingView>
-
   );
 };

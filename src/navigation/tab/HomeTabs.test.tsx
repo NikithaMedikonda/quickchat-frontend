@@ -1,8 +1,9 @@
 import { NavigationContainer } from '@react-navigation/native';
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
-import { Provider } from 'react-redux';
-import { store } from '../../store/store';
-import { HomeTabs } from './HomeTabs';
+import {fireEvent, render, waitFor} from '@testing-library/react-native';
+import {Provider} from 'react-redux';
+import {store} from '../../store/store';
+import {HomeTabs} from './HomeTabs';
+
 
 jest.mock('react-native-encrypted-storage', () => ({
   getItem: jest
@@ -12,6 +13,10 @@ jest.mock('react-native-encrypted-storage', () => ({
     ),
   setItem: jest.fn(),
   clear: jest.fn(),
+}));
+
+jest.mock('../../services/useDeviceCheck', () => ({
+  useDeviceCheck: jest.fn(),
 }));
 
 jest.mock('react-native-contacts', () => ({
@@ -65,8 +70,8 @@ describe('Welcome Screen', () => {
       );
     });
   });
-  it('navigates to profileScreen when profile tab is pressed', async () => {
-    const {getByText} = render(
+    it('navigates to profileScreen when Profile tab is pressed', async () => {
+    const { getByText} = render(
       <Provider store={store}>
         <NavigationContainer>
           <HomeTabs />

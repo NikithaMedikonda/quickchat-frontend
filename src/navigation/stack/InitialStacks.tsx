@@ -80,10 +80,8 @@ export const InitialStacks = () => {
     getUser();
   }, [dispatch]);
 
-  if(initialRoute === null){
-    return (
-      <LoadingComponent/>
-    );
+  if (initialRoute === null) {
+    return <LoadingComponent />;
   }
 
   return (

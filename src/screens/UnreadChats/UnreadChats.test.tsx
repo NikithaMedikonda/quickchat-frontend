@@ -9,35 +9,19 @@ import { Provider } from 'react-redux';
 import { numberNameIndex } from '../../helpers/nameNumberIndex';
 import { getAllChats } from '../../services/GetAllChats';
 import { store } from '../../store/store';
-import { AllChats, Chat } from './AllChats';
+import { UnreadChats, Chat } from './UnreadChats';
 
 const mockChats = [
   {
     chatId: '1',
     contactName: 'User A',
     contactProfilePic: null,
-    lastMessageStatus: 'sent',
-    lastMessageText: 'Hello there!',
-    lastMessageTimestamp: '2025-05-25T12:00:00Z',
-    lastMessageType: 'sentMessage',
-    phoneNumber: '+1234567890',
-    unreadCount: 3,
-    isBlocked: false,
-    onBlockStatusChange: jest.fn(),
-    publicKey: '',
-  },
-  {
-    chatId: '2',
-    contactName: 'User B',
-    contactProfilePic: null,
     lastMessageStatus: 'delivered',
     lastMessageText: 'How are you doing?',
-    lastMessageTimestamp: '2025-05-24T11:30:00Z',
-    lastMessageType: 'sentMessage',
-    phoneNumber: '+1234567999',
-    unreadCount: 0,
-    isBlocked: false,
-    onBlockStatusChange: jest.fn(),
+    lastMessageTimestamp: '2025-04-10T11:30:00Z',
+    lastMessageType: 'ReceivedMessage',
+    phoneNumber: '8978363862',
+    unreadCount: 3,
     publicKey: '',
   },
 ];
@@ -70,7 +54,7 @@ jest.mock('../../services/MessageDecryption', () => ({
 }));
 
 jest.mock('../../services/MessageDecryption', () => ({
-  messageDecryption: jest.fn().mockImplementation(({encryptedMessage}) => {
+  messageDecryption: jest.fn().mockImplementation(({ encryptedMessage }) => {
     if (encryptedMessage === 'Hello there!') {
       return '✓Hello there!';
     }
@@ -87,9 +71,6 @@ jest.mock('../../helpers/nameNumberIndex', () => ({
   numberNameIndex: jest.fn(),
 }));
 
-jest.mock('../../services/useDeviceCheck', () => ({
-  useDeviceCheck: jest.fn(),
-}));
 jest.mock('../../services/GetAllChats', () => ({
   getAllChats: jest.fn(),
 }));
@@ -98,36 +79,17 @@ jest.mock('../../helpers/normalisePhoneNumber', () => ({
   normalise: jest.fn(),
 }));
 
-describe('AllChats Component', () => {
+describe('Unread chats component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
+  beforeAll(() => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date('2025-04-24T12:00:00').getTime());
+  });
 
-  it('should display header title correctly', async () => {
-    (numberNameIndex as jest.Mock).mockResolvedValue({});
-    (getAllChats as jest.Mock).mockResolvedValue({
-      status: 200,
-      data: {chats: []},
-    });
-
-    await waitFor(() => {
-      render(
-        <Provider store={store}>
-          <NavigationContainer>
-            <AllChats />
-          </NavigationContainer>
-        </Provider>,
-      );
-    });
-
-    await waitFor(() => {
-      expect(mockSetOptions).toHaveBeenCalledWith(
-        expect.objectContaining({
-          headerTitle: 'Quick Chat',
-          headerTitleAlign: 'center',
-        }),
-      );
-    });
+  afterAll(() => {
+    jest.useRealTimers();
   });
 
   it('should logout and redirect if numberNameIndex returns null', async () => {
@@ -137,7 +99,7 @@ describe('AllChats Component', () => {
       render(
         <Provider store={store}>
           <NavigationContainer>
-            <AllChats />
+            <UnreadChats />
           </NavigationContainer>
         </Provider>,
       );
@@ -154,13 +116,13 @@ describe('AllChats Component', () => {
 
   it('should logout and redirect to login on 401 response', async () => {
     (numberNameIndex as jest.Mock).mockResolvedValue({});
-    (getAllChats as jest.Mock).mockResolvedValue({status: 401});
+    (getAllChats as jest.Mock).mockResolvedValue({ status: 401 });
 
     await waitFor(() => {
       render(
         <Provider store={store}>
           <NavigationContainer>
-            <AllChats />
+            <UnreadChats />
           </NavigationContainer>
         </Provider>,
       );
@@ -175,18 +137,18 @@ describe('AllChats Component', () => {
     });
   });
 
-  it('should render Home component when no chats are available', async () => {
+  it('should render text when no chats count is less than zero', async () => {
     (numberNameIndex as jest.Mock).mockResolvedValue({});
     (getAllChats as jest.Mock).mockResolvedValue({
       status: 200,
-      data: {chats: emptyChats},
+      data: { chats: emptyChats },
     });
 
     await waitFor(() => {
       render(
         <Provider store={store}>
           <NavigationContainer>
-            <AllChats />
+            <UnreadChats />
           </NavigationContainer>
         </Provider>,
       );
@@ -194,25 +156,24 @@ describe('AllChats Component', () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText('One message. Infinite possibilities.'),
+        screen.getByText('EmptyUnreadMessage'),
       ).toBeTruthy();
-      expect(screen.getByText('What are you waiting for?')).toBeTruthy();
     });
   });
 
-  it('should render all chats with correct information', async () => {
+  it('should render unread chats with correct information', async () => {
     (numberNameIndex as jest.Mock).mockResolvedValue({});
 
     (getAllChats as jest.Mock).mockResolvedValue({
       status: 200,
-      data: {chats: mockChats},
+      data: { chats: mockChats },
     });
 
     await waitFor(() => {
       render(
         <Provider store={store}>
           <NavigationContainer>
-            <AllChats />
+            <UnreadChats />
           </NavigationContainer>
         </Provider>,
       );
@@ -220,87 +181,45 @@ describe('AllChats Component', () => {
 
     await waitFor(() => {
       const profileImage = screen.getAllByAccessibilityHint('profile-image');
-      expect(profileImage.length).toBe(2);
-      expect(screen.getByText('+1234567890')).toBeTruthy();
-      expect(screen.getByText('May 25, 2025')).toBeTruthy();
+      expect(profileImage.length).toBe(1);
+      expect(screen.getByText('8978363862')).toBeTruthy();
+      expect(screen.getByText('Apr 10, 2025')).toBeTruthy();
       expect(screen.getByText('3')).toBeTruthy();
-      expect(screen.getByText('+1234567999')).toBeTruthy();
       expect(screen.getByText(/How are you doing\?/)).toBeTruthy();
-
-      expect(screen.getByText('May 25, 2025')).toBeTruthy();
     });
   });
 
   it('should navigate to individual chat when chatbox is pressed', async () => {
     (numberNameIndex as jest.Mock).mockResolvedValue({});
+
     (getAllChats as jest.Mock).mockResolvedValue({
       status: 200,
-      data: {chats: mockChats},
+      data: { chats: mockChats },
     });
-
-    const { getByText } = render(
-      <Provider store={store}>
-        <NavigationContainer>
-          <AllChats />
-        </NavigationContainer>
-      </Provider>
-    );
 
     await waitFor(() => {
-      expect(getByText('+1234567890')).toBeTruthy();
+      render(
+        <Provider store={store}>
+          <NavigationContainer>
+            <UnreadChats />
+          </NavigationContainer>
+        </Provider>,
+      );
     });
-
-    fireEvent.press(getByText('+1234567890'));
-
     await waitFor(() => {
-
-      expect(screen.getByText('+1234567890')).toBeTruthy();
+      expect(screen.getByText('8978363862')).toBeTruthy();
     });
-    fireEvent.press(screen.getByText('+1234567890'));
+    fireEvent.press(screen.getByText('8978363862'));
 
     expect(mockNavigate).toHaveBeenCalledWith('individualChat', {
       user: {
-        name: '+1234567890',
+        name: '8978363862',
         profilePicture: null,
-        phoneNumber: '+1234567890',
+        phoneNumber: '8978363862',
         isBlocked: false,
         publicKey: '',
         onBlockStatusChange: expect.any(Function),
       },
-    });
-  });
-
-
-  it('should render plus icon for adding new chats', async () => {
-    await waitFor(() => {
-      render(
-        <Provider store={store}>
-          <NavigationContainer>
-            <AllChats />
-          </NavigationContainer>
-        </Provider>,
-      );
-    });
-    await waitFor(() => {
-      expect(screen.getByAccessibilityHint('plus-image')).toBeTruthy();
-    });
-  });
-
-  it('should navigate to contacts when plus icon is pressed', async () => {
-    await waitFor(() => {
-      render(
-        <Provider store={store}>
-          <NavigationContainer>
-            <AllChats />
-          </NavigationContainer>
-        </Provider>,
-      );
-    });
-
-    await waitFor(() => {
-      const plusIcon = screen.getByAccessibilityHint('plus-image');
-      fireEvent.press(plusIcon);
-      expect(mockNavigate).toHaveBeenCalledWith('contacts');
     });
   });
 
@@ -309,14 +228,14 @@ describe('AllChats Component', () => {
 
     (getAllChats as jest.Mock).mockResolvedValue({
       status: 500,
-      data: {chats: mockChats},
+      data: { chats: mockChats },
     });
 
     await waitFor(() => {
       render(
         <Provider store={store}>
           <NavigationContainer>
-            <AllChats />
+            <UnreadChats />
           </NavigationContainer>
         </Provider>,
       );
@@ -324,7 +243,7 @@ describe('AllChats Component', () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText('One message. Infinite possibilities.'),
+        screen.getByText('EmptyUnreadMessage'),
       ).toBeTruthy();
     });
   });

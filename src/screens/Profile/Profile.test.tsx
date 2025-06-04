@@ -18,6 +18,10 @@ jest.mock('react-native-encrypted-storage', () => ({
   getItem: jest.fn(),
 }));
 
+jest.mock('../../services/useDeviceCheck', () => ({
+  useDeviceCheck: jest.fn(),
+}));
+
 jest.mock('react-native-alert-notification', () => ({
   ALERT_TYPE: {
     DANGER: 'DANGER',

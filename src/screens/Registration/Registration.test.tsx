@@ -1,10 +1,9 @@
-import { NavigationContainer } from '@react-navigation/native';
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
-import { Provider } from 'react-redux';
-import { resetForm } from '../../store/slices/registrationSlice';
-import { store } from '../../store/store';
-import { Registration } from './Registration';
-
+import {NavigationContainer} from '@react-navigation/native';
+import {fireEvent, render, waitFor} from '@testing-library/react-native';
+import {Provider} from 'react-redux';
+import {resetForm} from '../../store/slices/registrationSlice';
+import {store} from '../../store/store';
+import {Registration} from './Registration';
 
 jest.mock('react-native-image-crop-picker', () => ({
   openPicker: jest.fn().mockResolvedValue({path: 'mocked/image/path.jpg'}),
@@ -94,7 +93,6 @@ jest.mock('react-i18next', () => ({
   }),
 }));
 
-
 const mockNavigate = jest.fn();
 const mockReplace = jest.fn();
 
@@ -108,7 +106,7 @@ describe('Registration Screen', () => {
     render(
       <Provider store={store}>
         <NavigationContainer>
-            <Registration />
+          <Registration />
         </NavigationContainer>
       </Provider>,
     );
@@ -135,14 +133,14 @@ describe('Registration Screen', () => {
     });
   });
 
-it('should activate image picker modal', async () => {
-  const {getByAccessibilityHint} = renderComponent();
-  fireEvent.press(getByAccessibilityHint('logo'));
-  await waitFor(() => {
-    const state = store.getState();
-    expect(state.registration.isVisible).toBe(true);
+  it('should activate image picker modal', async () => {
+    const {getByAccessibilityHint} = renderComponent();
+    fireEvent.press(getByAccessibilityHint('logo'));
+    await waitFor(() => {
+      const state = store.getState();
+      expect(state.registration.isVisible).toBe(true);
+    });
   });
-});
 
   it('shows password mismatch error', async () => {
     const {getByPlaceholderText, getByText} = renderComponent();
@@ -166,7 +164,6 @@ it('should activate image picker modal', async () => {
     });
   });
 
-
   it('should check the phone number', async () => {
     const {getByPlaceholderText, getByText} = renderComponent();
     fireEvent.changeText(getByPlaceholderText('Phone number'), '');
@@ -175,7 +172,6 @@ it('should activate image picker modal', async () => {
       expect(getByText('Phone number required!')).toBeTruthy();
     });
   });
-
 
   it('should check the length of phone number', async () => {
     const {getByPlaceholderText, getByText} = renderComponent();
@@ -214,7 +210,7 @@ it('should activate image picker modal', async () => {
         accessToken: 'mockedToken',
         refreshToken: 'refreshToken',
         user: {},
-        deviceId:'qdshjgdjfwgrwfhk',
+        deviceId: 'qdshjgdjfwgrwfhk',
       },
     });
 
@@ -239,7 +235,37 @@ it('should activate image picker modal', async () => {
       expect(mockReplace).toHaveBeenCalledWith('hometabs');
     });
   });
+  it('shows account deleted error (404)', async () => {
+    const {registerUser} = require('../../services/RegisterUser.ts');
+    registerUser.mockResolvedValue({
+      status: 404,
+    });
 
+    const {getByPlaceholderText, getByText} = renderComponent();
+
+    fireEvent.changeText(getByPlaceholderText('First Name'), 'test');
+    fireEvent.changeText(getByPlaceholderText('Last Name'), 'user');
+    fireEvent.changeText(getByPlaceholderText('Phone number'), '1234567890');
+    fireEvent.changeText(getByPlaceholderText('Password'), 'Password@123');
+    fireEvent.changeText(
+      getByPlaceholderText('Confirm Password'),
+      'Password@123',
+    );
+    fireEvent.changeText(
+      getByPlaceholderText('Email (Optional)'),
+      'user@gmail.com',
+    );
+
+    fireEvent.press(getByText('Register'));
+
+    await waitFor(() => {
+      const state = store.getState();
+      expect(state.registration.alertMessage).toBe(
+        'Sorry, this account is deleted',
+      );
+      expect(state.registration.alertType).toBe('error');
+    });
+  });
   it('shows already exists error (409)', async () => {
     const {registerUser} = require('../../services/RegisterUser.ts');
     registerUser.mockResolvedValue({
@@ -264,10 +290,12 @@ it('should activate image picker modal', async () => {
     fireEvent.press(getByText('Register'));
 
     await waitFor(() => {
-    const state = store.getState();
-    expect(state.registration.alertMessage).toBe('User already exists with this number or email');
-    expect(state.registration.alertType).toBe('error');
-  });
+      const state = store.getState();
+      expect(state.registration.alertMessage).toBe(
+        'User already exists with this number or email',
+      );
+      expect(state.registration.alertType).toBe('error');
+    });
   });
 
   it('shows generic error if server fails', async () => {
@@ -295,13 +323,15 @@ it('should activate image picker modal', async () => {
 
     await waitFor(() => {
       expect(registerUser).toHaveBeenCalled();
-const state = store.getState();
-    expect(state.registration.alertMessage).toBe('Something went wrong while registering');
-    expect(state.registration.alertType).toBe('error');
+      const state = store.getState();
+      expect(state.registration.alertMessage).toBe(
+        'Something went wrong while registering',
+      );
+      expect(state.registration.alertType).toBe('error');
     });
   });
 
-    it('shows generic error if server fails with error message', async () => {
+  it('shows generic error if server fails with error message', async () => {
     const {registerUser} = require('../../services/RegisterUser.ts');
     registerUser.mockRejectedValue(new Error('Server failure'));
 
@@ -324,9 +354,11 @@ const state = store.getState();
 
     await waitFor(() => {
       expect(registerUser).toHaveBeenCalled();
-    const state = store.getState();
-    expect(state.registration.alertMessage).toBe('Please check your internet');
-    expect(state.registration.alertType).toBe('info');
+      const state = store.getState();
+      expect(state.registration.alertMessage).toBe(
+        'Please check your internet',
+      );
+      expect(state.registration.alertType).toBe('info');
     });
   });
 });

@@ -16,6 +16,7 @@ interface ConfirmModalProps {
   visible: boolean;
   message: string;
   confirmText?: string;
+  isWarning?: boolean;
   onClose: () => void;
   onConfirm: () => void;
 }
@@ -24,6 +25,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
   visible,
   message,
   confirmText = 'Yes',
+  isWarning,
   onClose,
   onConfirm,
 }) => {
@@ -42,6 +44,11 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
             <View style={styles.modal}>
               <Image source={warning} style={styles.image} />
               <Text style={styles.message}>{message}</Text>
+              {isWarning && (
+                <Text style={styles.warningText}>
+                  {t('chatHistoryVisibilityWarning')}
+                </Text>
+              )}
               <View style={styles.buttonContainer}>
                 <TouchableOpacity style={styles.cancelButton} onPress={onClose}>
                   <Text style={styles.cancelText}>{t('Cancel')}</Text>

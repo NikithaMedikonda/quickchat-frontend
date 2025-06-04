@@ -230,6 +230,7 @@ export const ProfileMoreOptionsModal = ({
           confirmText={buttonTypes}
           onClose={handleModalClose}
           onConfirm={onConfirmDelete}
+          isWarning={true}
         />
       )}
       <CustomAlert type={alertType} title={alertTitle} message={alertMessage} />
