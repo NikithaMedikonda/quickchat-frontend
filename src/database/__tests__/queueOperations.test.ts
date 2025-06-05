@@ -4,7 +4,7 @@ import {
     deleteFromQueue,
     getQueuedMessages,
     insertToQueue,
-    updateMessageStatus,
+    updateLocalMessageStatus,
 } from '../services/queueOperations';
 import { MessageType } from '../types/message';
 
@@ -96,7 +96,7 @@ describe('Test for updateMessageStatus function', () => {
 
     mockExecuteSql.mockResolvedValueOnce([]);
 
-    await updateMessageStatus(message);
+    await updateLocalMessageStatus(message);
 
     expect(mockExecuteSql).toHaveBeenCalledWith(
       expect.stringContaining(
