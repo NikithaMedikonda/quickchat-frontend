@@ -1,4 +1,3 @@
-
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { IndividualChat } from '../../screens/IndividualChat/IndividualChat';
 import { UnreadChats } from '../../screens/UnreadChats/UnreadChats';

@@ -17,7 +17,7 @@ const unreadChatSlice = createSlice({
       state.count += 1;
     },
     decrementUnread: (state) => {
-      if (state.count > 0) {state.count -= 1;}
+      if (state.count > 0) { state.count -= 1; }
     },
     resetUnread: (state) => {
       state.count = 0;
