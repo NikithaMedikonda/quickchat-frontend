@@ -1,18 +1,21 @@
-import { API_URL } from '../constants/api';
-import { keyEncryption } from './KeyEncryption';
+import {API_URL} from '../constants/api';
+import {keyEncryption} from './KeyEncryption';
 
-export const registerUser = async (payload: {
-  image: string;
-  firstName: string;
-  lastName: string;
-  phoneNumber: string;
-  password: string;
-  email: string;
-}, keys: {
-  publicKey: string;
-  privateKey : string;
-},
-deviceId:{deviceId:string;}) => {
+export const registerUser = async (
+  payload: {
+    image: string;
+    firstName: string;
+    lastName: string;
+    phoneNumber: string;
+    password: string;
+    email: string | null;
+  },
+  keys: {
+    publicKey: string;
+    privateKey: string;
+  },
+  deviceId: {deviceId: string},
+) => {
   const encryptedPrivateKey = await keyEncryption({
     privateKey: keys.privateKey,
     password: payload.password,
@@ -20,14 +23,14 @@ deviceId:{deviceId:string;}) => {
 
   const userData = {
     phoneNumber: payload.phoneNumber,
-    firstName: payload.firstName,
-    lastName: payload.lastName,
+    firstName: payload.firstName.trim(),
+    lastName: payload.lastName.trim(),
     profilePicture: payload.image,
-    email: payload.email,
+    email: payload.email?.trim() || null,
     password: payload.password,
     publicKey: keys.publicKey,
     privateKey: encryptedPrivateKey,
-    deviceId:deviceId.deviceId,
+    deviceId: deviceId.deviceId,
   };
 
   try {

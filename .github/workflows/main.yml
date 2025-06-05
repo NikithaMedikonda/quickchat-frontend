@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - unread-tab-icon
 
 jobs:
   lint-and-test:

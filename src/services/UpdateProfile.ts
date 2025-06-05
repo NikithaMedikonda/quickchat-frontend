@@ -6,34 +6,40 @@ export const updateProfile = async (
     image: string;
     firstName: string;
     lastName: string;
-    email: string;
+    email?: string;
     token: string;
   },
   user: {
     phoneNumber: string;
-    image?: string;
+    profilePicture: string;
     firstName: string;
     lastName: string;
-    email: string;
+    email?: string;
   },
 ) => {
-  const userData: any = {};
+  const userData: {
+    phoneNumber?: string;
+    profilePicture?: string;
+    firstName?: string;
+    lastName?: string;
+    email?: string | null;
+  } = {};
   if (user.phoneNumber === editProfileForm.phoneNumber) {
     userData.phoneNumber = editProfileForm.phoneNumber;
   }
   if (user.firstName !== editProfileForm.firstName) {
-    userData.firstName = editProfileForm.firstName;
+    userData.firstName = editProfileForm.firstName.trim();
   }
 
   if (user.lastName !== editProfileForm.lastName) {
-    userData.lastName = editProfileForm.lastName;
+    userData.lastName = editProfileForm.lastName.trim();
   }
 
   if (user.email !== editProfileForm.email) {
-    userData.email = editProfileForm.email;
+    userData.email = editProfileForm.email?.trim() || null;
   }
 
-  if (user.image !== editProfileForm.image) {
+  if (user.profilePicture !== editProfileForm.image) {
     userData.profilePicture = editProfileForm.image;
   }
   const response = await fetch(`${API_URL}/api/user`, {

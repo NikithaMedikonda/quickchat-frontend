@@ -48,7 +48,7 @@ export const getStyles = (colors: Colors) =>
     placeholder: {
       color: colors.gray,
     },
-    phoneNumber:{
+    phoneNumber: {
       height: height * 0.044,
       fontSize: 16,
       borderRadius: 10,
@@ -60,5 +60,13 @@ export const getStyles = (colors: Colors) =>
     },
     keyboardView: {
       flex: 1,
+    },
+    passwordView: {
+      marginTop: 4,
+    },
+    passwordText: {
+      fontSize: 11.5,
+      color: colors.passwordInfo,
+      paddingHorizontal: 13,
     },
   });
