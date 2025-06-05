@@ -8,6 +8,12 @@ import {
 } from '@testing-library/react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { Provider } from 'react-redux';
+import { getDBInstance } from '../../database/connection/connection';
+import { clearChatLocally } from '../../database/services/chatOperations';
+import {
+  deleteUserRestriction,
+  insertUserRestriction,
+} from '../../database/services/userRestriction';
 import { deleteChat } from '../../services/DeleteChat';
 import { blockUser } from '../../services/UserBlock';
 import { unblockUser } from '../../services/UserUnblock';
@@ -42,6 +48,24 @@ jest.mock('../../services/UserUnblock', () => ({
 }));
 jest.mock('../../services/DeleteChat', () => ({
   deleteChat: jest.fn(() => Promise.resolve({status: 200})),
+}));
+
+jest.mock('../../database/connection/connection', () => ({
+  getDBInstance: jest.fn(),
+}));
+
+const mockExecuteSql = jest.fn();
+(getDBInstance as jest.Mock).mockResolvedValue({
+  executeSql: mockExecuteSql,
+});
+
+jest.mock('../../database/services/userRestriction', () => ({
+  insertUserRestriction: jest.fn(),
+  deleteUserRestriction: jest.fn(),
+}));
+
+jest.mock('../../database/services/chatOperations.ts', () => ({
+  clearChatLocally: jest.fn(),
 }));
 
 const mockReplace = jest.fn();
@@ -130,6 +154,7 @@ describe('ChatOptionsModal', () => {
       });
       expect(mockOnBlockStatusChange).toHaveBeenCalledWith(true);
     });
+    expect(insertUserRestriction).toHaveBeenCalledWith('1234567890', '');
   });
 
   it('calls unblockUser and onBlockStatusChange(true) when confirming unblock', async () => {
@@ -161,6 +186,7 @@ describe('ChatOptionsModal', () => {
       });
       expect(mockOnBlockStatusChange).toHaveBeenCalledWith(false);
     });
+    expect(deleteUserRestriction).toHaveBeenCalledWith('1234567890', '');
   });
 
   it('should check if any error occur while getting block status', async () => {
@@ -267,6 +293,14 @@ describe('ChatOptionsModal', () => {
   });
 
   it('calls deleteChat and shows success alert on confirm delete', async () => {
+    mockExecuteSql.mockResolvedValueOnce([
+      {
+        rows: {
+          length: 1,
+          item: () => ({id: '123', message: 'Hello'}),
+        },
+      },
+    ]);
     renderComponent();
     jest.useFakeTimers();
     fireEvent.press(screen.getByText('Delete Chat'));
@@ -275,6 +309,7 @@ describe('ChatOptionsModal', () => {
 
     await waitFor(() => {
       expect(deleteChat).toHaveBeenCalled();
+      expect(clearChatLocally as jest.Mock).toHaveBeenCalled();
     });
 
     act(() => {
