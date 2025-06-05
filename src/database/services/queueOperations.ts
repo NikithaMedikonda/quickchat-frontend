@@ -1,6 +1,6 @@
-import { createChatId } from '../../utils/chatId';
-import { getDBInstance } from '../connection/connection';
-import { MessageType } from '../types/message';
+import {createChatId} from '../../utils/chatId';
+import {getDBInstance} from '../connection/connection';
+import {MessageType} from '../types/message';
 
 export const insertToQueue = async (message: MessageType) => {
   const db = await getDBInstance();
@@ -45,11 +45,11 @@ export const getQueuedMessages = async (chatId: string) => {
   return messages;
 };
 
-export const updateMessageStatus = async (message: MessageType) => {
+export const updateLocalMessageStatus = async (message: MessageType) => {
   const db = await getDBInstance();
   await db.executeSql(
     'UPDATE Messages SET status = ?, message = ? WHERE id = ?',
-    ['sent', message.message, message.id],
+    [message.status, message.message, message.id],
   );
 };
 
