@@ -1,22 +1,33 @@
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { ScrollView, Text, View } from 'react-native';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {useCallback, useEffect, useRef, useState} from 'react';
+import {useTranslation} from 'react-i18next';
+import {ScrollView, Text, View} from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { useDispatch, useSelector } from 'react-redux';
-import { Socket } from 'socket.io-client';
-import { CustomAlert } from '../../components/CustomAlert/CustomAlert';
-import { IndividualChatHeader } from '../../components/IndividualChatHeader/IndividualChatHeader';
-import { MessageInput } from '../../components/MessageInput/MessageInput';
-import { MessageStatusTicks } from '../../components/MessageStatusTicks/MessageStatusTicks';
-import { TimeStamp } from '../../components/TimeStamp/TimeStamp';
-import { checkBlockStatus } from '../../services/CheckBlockStatus';
-import { CheckUserDeleteStatus } from '../../services/CheckUserDeleteStatus';
-import { checkUserOnline } from '../../services/CheckUserOnline';
-import { getMessagesBetween } from '../../services/GetMessagesBetween';
-import { messageDecryption } from '../../services/MessageDecryption';
-import { messageEncryption } from '../../services/MessageEncryption';
-import { updateMessageStatus } from '../../services/UpdateMessageStatus';
+import {useDispatch, useSelector} from 'react-redux';
+import {Socket} from 'socket.io-client';
+import {CustomAlert} from '../../components/CustomAlert/CustomAlert';
+import {IndividualChatHeader} from '../../components/IndividualChatHeader/IndividualChatHeader';
+import {MessageInput} from '../../components/MessageInput/MessageInput';
+import {MessageStatusTicks} from '../../components/MessageStatusTicks/MessageStatusTicks';
+import {TimeStamp} from '../../components/TimeStamp/TimeStamp';
+import {insertToMessages} from '../../database/services/messageOperations';
+import {
+  deleteFromQueue,
+  getQueuedMessages,
+  insertToQueue,
+  updateLocalMessageStatus,
+} from '../../database/services/queueOperations';
+import {checkBlockedStatusLocal} from '../../database/services/userRestriction';
+import {MessageType} from '../../database/types/message';
+import {useSocketConnection} from '../../hooks/useSocketConnection';
+import {checkBlockStatus} from '../../services/CheckBlockStatus';
+import {CheckUserDeleteStatus} from '../../services/CheckUserDeleteStatus';
+import {checkUserOnline} from '../../services/CheckUserOnline';
+import {getMessagesBetween} from '../../services/GetMessagesBetween';
+import {messageDecryption} from '../../services/MessageDecryption';
+import {messageEncryption} from '../../services/MessageEncryption';
+import {updateMessageStatus} from '../../services/UpdateMessageStatus';
+import {useDeviceCheck} from '../../services/useDeviceCheck';
 import {
   newSocket,
   receiveJoined,
@@ -24,8 +35,9 @@ import {
   receiveOnline,
   receivePrivateMessage,
   sendPrivateMessage,
+  socketConnection,
 } from '../../socket/socket';
-import {hide, show} from '../../store/slices/loadingSlice';
+import {hide} from '../../store/slices/loadingSlice';
 import {
   setAlertMessage,
   setAlertTitle,
@@ -37,19 +49,20 @@ import {RootState} from '../../store/store';
 import {useThemeColors} from '../../themes/colors';
 import {
   AllMessages,
+  PendingMessages,
   ReceivePrivateMessage,
   SentPrivateMessage,
 } from '../../types/messsage.types';
 import {HomeStackParamList} from '../../types/usenavigation.type';
+import {createChatId} from '../../utils/chatId';
+import {generateMessageId} from '../../utils/messageId';
 import {User} from '../Profile/Profile';
 import {individualChatStyles} from './IndividualChat.styles';
-import { useDeviceCheck } from '../../services/useDeviceCheck';
-
 
 type Props = NativeStackScreenProps<HomeStackParamList, 'individualChat'>;
 
 export const IndividualChat = ({route}: Props) => {
-   useDeviceCheck();
+  useDeviceCheck();
   const {t} = useTranslation('individualChat');
   const [message, setMessage] = useState('');
   const [isOnlineWith, setIsOnlineWith] = useState<boolean>(false);
@@ -64,6 +77,7 @@ export const IndividualChat = ({route}: Props) => {
     ReceivePrivateMessage[]
   >([]);
   const [sendMessages, setSendMessages] = useState<SentPrivateMessage[]>([]);
+  const [pendingMessages, setPendingMessages] = useState<PendingMessages[]>([]);
   const [fetchMessages, setFetchMessages] = useState<ReceivePrivateMessage[]>(
     [],
   );
@@ -76,11 +90,12 @@ export const IndividualChat = ({route}: Props) => {
   const styles = individualChatStyles(colors);
   const scrollViewRef = useRef<ScrollView>(null);
   const [isCleared, setIsCleared] = useState(false);
+  const {isConnected} = useSocketConnection();
 
   const [socketId, setSocketId] = useState<string | null>(null);
   const scrollToBottom = async () => {
     if (scrollViewRef.current) {
-      scrollViewRef.current.scrollToEnd({animated: true});
+      scrollViewRef.current.scrollToEnd();
     }
   };
 
@@ -115,13 +130,21 @@ export const IndividualChat = ({route}: Props) => {
         }
         if (currentUser && token) {
           const userData = JSON.parse(currentUser);
-          const result = await checkBlockStatus({
-            blockerPhoneNumber: userData.phoneNumber,
-            blockedPhoneNumber: user.phoneNumber,
-            authToken: token,
-          });
-          if (result.status === 200) {
-            setIsUserBlocked(result.data.isBlocked);
+          if (isConnected) {
+            const response = await checkBlockStatus({
+              blockerPhoneNumber: userData.phoneNumber,
+              blockedPhoneNumber: user.phoneNumber,
+              authToken: token,
+            });
+            if (response.status === 200) {
+              setIsUserBlocked(response.data.isBlocked);
+            }
+          } else {
+            const result = await checkBlockedStatusLocal(
+              userData.phoneNumber,
+              user.phoneNumber,
+            );
+            setIsUserBlocked(result);
           }
         }
       } catch (error) {
@@ -130,30 +153,7 @@ export const IndividualChat = ({route}: Props) => {
     };
 
     getBlockStatus();
-  }, [showAlert, user.phoneNumber]);
-
-  useEffect(() => {
-    const getUserDeleteStatus = async () => {
-      try {
-        const token = await EncryptedStorage.getItem('authToken');
-        if (!token) {
-          showAlert('info', 'Network Error', 'Unable to get user details');
-          return;
-        }
-        const result = await CheckUserDeleteStatus({
-          phoneNumber: user.phoneNumber,
-          authToken: token,
-        });
-        if (result.status === 200) {
-          setIsDeleted(result.data.isDeleted);
-        }
-      } catch (error) {
-        showAlert('info', 'Network Error', 'Unable to fetch details');
-      }
-    };
-
-    getUserDeleteStatus();
-  }, [showAlert, user.phoneNumber]);
+  }, [showAlert, user.phoneNumber, isConnected]);
 
   useEffect(() => {
     const getUserDeleteStatus = async () => {
@@ -236,7 +236,6 @@ export const IndividualChat = ({route}: Props) => {
             setSocketId(userStatus.data.data.socketId);
           }
         }
-        dispatch(show());
         const currentUser = await EncryptedStorage.getItem('user');
         if (currentUser) {
           const parsedUser: User = JSON.parse(currentUser);
@@ -282,7 +281,6 @@ export const IndividualChat = ({route}: Props) => {
             setSendMessages([]);
           }
         }
-        dispatch(hide());
       } catch (e) {
         setFetchMessages([]);
       }
@@ -302,7 +300,6 @@ export const IndividualChat = ({route}: Props) => {
     async function receiveMessage() {
       const handleNewMessage = async (data: SentPrivateMessage) => {
         const privateKey = await EncryptedStorage.getItem('privateKey');
-
         let decryptedMessage: string;
         if (privateKey) {
           decryptedMessage = await messageDecryption({
@@ -348,19 +345,6 @@ export const IndividualChat = ({route}: Props) => {
     };
     updateStatus();
 
-    async function checkOffline() {
-      const currentUser = await EncryptedStorage.getItem('user');
-
-      if (currentUser) {
-        const parsedUser: User = JSON.parse(currentUser);
-        currentUserPhoneNumberRef.current = parsedUser.phoneNumber;
-        await receiveOffline({
-          withChattingNumber: currentUserPhoneNumberRef.current,
-          setIsOnline: setIsOnlineWith,
-        });
-      }
-    }
-    checkOffline();
     async function checkOnline() {
       const currentUser = await EncryptedStorage.getItem('user');
 
@@ -379,7 +363,7 @@ export const IndividualChat = ({route}: Props) => {
       newSocket.emit('online_with', withChattingPhoneNumber);
     }
     const sendMessage = async () => {
-      if (socket && message.trim() !== '') {
+      if (socket) {
         const privateKey = await EncryptedStorage.getItem('privateKey');
         let encryptedMessage = message.trim();
         if (privateKey) {
@@ -392,7 +376,7 @@ export const IndividualChat = ({route}: Props) => {
         const timestamp = new Date().toISOString();
         let status = 'sent';
         const authToken = await EncryptedStorage.getItem('authToken');
-        if (authToken) {
+        if (authToken && isConnected) {
           const userStatus = await checkUserOnline({
             phoneNumber: user.phoneNumber,
             authToken: authToken,
@@ -402,7 +386,6 @@ export const IndividualChat = ({route}: Props) => {
             setSocketId(userStatus.data.data.socketId);
           }
         }
-
         if (socketId && !isOnlineWith) {
           status = 'delivered';
         } else if (socketId && isOnlineWith) {
@@ -417,12 +400,38 @@ export const IndividualChat = ({route}: Props) => {
           timestamp,
           status: status,
         };
-        await sendPrivateMessage(payload);
+        const id = generateMessageId(
+          currentUserPhoneNumberRef.current,
+          recipientPhoneNumber,
+          timestamp,
+        );
+        if (isConnected) {
+          await sendPrivateMessage(payload);
+          const localMessage: MessageType = {
+            ...payload,
+            id: id,
+            receiverPhoneNumber: recipientPhoneNumber,
+          };
+          await insertToMessages(localMessage);
+          setSendMessages(prev => [
+            ...prev,
+            {...payload, message: message.trim()},
+          ]);
+        } else {
+          payload.status = 'pending';
+          const localMessage: MessageType = {
+            ...payload,
+            id: id,
+            receiverPhoneNumber: recipientPhoneNumber,
+          };
+          await insertToQueue(localMessage);
+          await insertToMessages(localMessage);
+          setPendingMessages(prev => [
+            ...prev,
+            {...payload, message: message.trim()},
+          ]);
+        }
 
-        setSendMessages(prev => [
-          ...prev,
-          {...payload, message: message.trim()},
-        ]);
         setMessage('');
       }
     };
@@ -439,16 +448,134 @@ export const IndividualChat = ({route}: Props) => {
     user.phoneNumber,
     user.publicKey,
     isBlocked,
+    isConnected,
+  ]);
+
+  const processQueueMessages = useCallback(async () => {
+    const currentUser = await EncryptedStorage.getItem('user');
+    if (currentUser) {
+      const parsedUser: User = JSON.parse(currentUser);
+      currentUserPhoneNumberRef.current = parsedUser.phoneNumber;
+    }
+    const userData = {
+      senderPhoneNumber: currentUserPhoneNumberRef.current,
+      receiverPhoneNumber: recipientPhoneNumber,
+    };
+    const chatId = createChatId(
+      userData.receiverPhoneNumber,
+      userData.senderPhoneNumber,
+    );
+    const authToken = await EncryptedStorage.getItem('authToken');
+
+    if (authToken) {
+      const userStatus = await checkUserOnline({
+        phoneNumber: user.phoneNumber,
+        authToken: authToken,
+        requestedUserPhoneNumber: currentUserPhoneNumberRef.current,
+      });
+      if (userStatus.status === 200) {
+        setSocketId(userStatus.data.data.socketId);
+      }
+    }
+    async function checkOffline() {
+      if (currentUser) {
+        await receiveOffline({
+          withChattingNumber: currentUserPhoneNumberRef.current,
+          setIsOnline: setIsOnlineWith,
+        });
+      }
+    }
+    await checkOffline();
+
+    async function checkOnline() {
+      if (currentUser) {
+        await receiveOnline({
+          withChattingNumber: currentUserPhoneNumberRef.current,
+          setIsOnline: setIsOnlineWith,
+        });
+      }
+    }
+    await checkOnline();
+
+    let status: string;
+    if (socketId && !isOnlineWith) {
+      status = 'delivered';
+    } else if (socketId && isOnlineWith) {
+      status = 'read';
+    } else {
+      status = 'sent';
+    }
+
+    const messages = await getQueuedMessages(chatId);
+    const resultantMessages = messages.map((queuedMessage: MessageType) => ({
+      ...queuedMessage,
+      recipientPhoneNumber: queuedMessage.receiverPhoneNumber,
+    }));
+    const privateKey = await EncryptedStorage.getItem('privateKey');
+    setPendingMessages(resultantMessages);
+    for (const queuedMessage of messages) {
+      const decryptedMessage = await messageDecryption({
+        encryptedMessage: queuedMessage.message,
+        myPrivateKey: privateKey!,
+        senderPublicKey: user.publicKey,
+      });
+      const payload: SentPrivateMessage = {
+        recipientPhoneNumber: queuedMessage.receiverPhoneNumber,
+        message: queuedMessage.message,
+        senderPhoneNumber: queuedMessage.senderPhoneNumber,
+        timestamp: queuedMessage.timestamp,
+        status: status,
+      };
+      await sendPrivateMessage(payload);
+      setPendingMessages(prev =>
+        prev.filter(msg => msg.id !== queuedMessage.id),
+      );
+      setSendMessages(prev => [
+        ...prev,
+        {...payload, message: decryptedMessage},
+      ]);
+      queuedMessage.status = status;
+      await updateLocalMessageStatus(queuedMessage);
+      await deleteFromQueue(queuedMessage.id);
+    }
+  }, [
+    isOnlineWith,
+    recipientPhoneNumber,
+    socketId,
+    user.phoneNumber,
+    user.publicKey,
   ]);
 
   useEffect(() => {
-    const all = [...fetchMessages, ...sendMessages, ...receivedMessages];
+    if (isConnected) {
+      async function connect() {
+        const anotherUser = await EncryptedStorage.getItem('user');
+        if (anotherUser) {
+          const parsedUser: User = JSON.parse(anotherUser);
+          await socketConnection(parsedUser.phoneNumber);
+        }
+      }
+      connect();
+      const withChattingPhoneNumber = user.phoneNumber;
+      if (!isBlocked) {
+        newSocket.emit('online_with', withChattingPhoneNumber);
+      }
+      processQueueMessages();
+    }
+  }, [isBlocked, isConnected, processQueueMessages, user.phoneNumber]);
+  useEffect(() => {
+    const all = [
+      ...fetchMessages,
+      ...sendMessages,
+      ...receivedMessages,
+      ...pendingMessages,
+    ];
     const Messages = all.sort(
       (a, b) =>
         new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
     );
     setAllMessages(Messages);
-  }, [receivedMessages, sendMessages, fetchMessages]);
+  }, [receivedMessages, sendMessages, fetchMessages, pendingMessages]);
 
   return (
     <View style={styles.container}>

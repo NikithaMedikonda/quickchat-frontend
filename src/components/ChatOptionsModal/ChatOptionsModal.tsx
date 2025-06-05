@@ -11,6 +11,11 @@ import {
 } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { useDispatch, useSelector } from 'react-redux';
+import { clearChatLocally } from '../../database/services/chatOperations';
+import {
+  deleteUserRestriction,
+  insertUserRestriction,
+} from '../../database/services/userRestriction';
 import { deleteChat } from '../../services/DeleteChat';
 import { blockUser } from '../../services/UserBlock';
 import { unblockUser } from '../../services/UserUnblock';
@@ -24,6 +29,7 @@ import { RootState } from '../../store/store';
 import { useThemeColors } from '../../themes/colors';
 import { useImagesColors } from '../../themes/images';
 import { HomeTabsProps } from '../../types/usenavigation.type';
+import { createChatId } from '../../utils/chatId';
 import { CustomAlert } from '../CustomAlert/CustomAlert';
 import { ConfirmModal } from '../GenericConfirmModal/ConfirmModal';
 import { getStyles } from './ChatOptionsModal.styles';
@@ -113,6 +119,10 @@ export const ChatOptionsModal = ({
           });
           if (result && result.status === 200) {
             onBlockStatusChange?.(false);
+            await deleteUserRestriction(
+              userData.phoneNumber,
+              receiverPhoneNumber,
+            );
           }
         } else {
           const result = await blockUser({
@@ -122,6 +132,10 @@ export const ChatOptionsModal = ({
           });
           if (result && result.status === 200) {
             onBlockStatusChange?.(true);
+            await insertUserRestriction(
+              userData.phoneNumber,
+              receiverPhoneNumber,
+            );
           }
         }
       }
@@ -147,6 +161,11 @@ export const ChatOptionsModal = ({
         });
 
         if (result && (result.status === 200 || result.status === 204)) {
+          const chatId = createChatId(
+            userData.phoneNumber,
+            receiverPhoneNumber,
+          );
+          await clearChatLocally(chatId, userData.phoneNumber, timestamp);
           setIsCleared(true);
           showAlert('success', 'Deleted', 'Chat deleted successfully.');
           setTimeout(() => {

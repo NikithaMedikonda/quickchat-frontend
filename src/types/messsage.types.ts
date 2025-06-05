@@ -30,7 +30,7 @@ export type ReceivePrivateMessage = {
   timestamp: string;
 };
 export type Chats = {
-  content: {nonce:string,encrypted:string};
+  content: {nonce: string; encrypted: string};
   createdAt: string;
   status: string;
   sender: {
@@ -46,4 +46,12 @@ export type AllMessages = {
   senderPhoneNumber: string;
   timestamp: string;
   status?: string;
+};
+export type PendingMessages = {
+  id?: string;
+  recipientPhoneNumber: string;
+  message: string;
+  senderPhoneNumber: string;
+  timestamp: string;
+  status: string;
 };
