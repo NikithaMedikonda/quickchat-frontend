@@ -1,12 +1,14 @@
-import { StyleSheet, Image, View } from 'react-native';
-import sentImage from '../../assets/sent.png';
+import { Image, StyleSheet, View } from 'react-native';
 import deliveredImage from '../../assets/delivered.png';
+import pendingImage from '../../assets/pendingDark.png';
 import readImage from '../../assets/readTick.png';
+import sentImage from '../../assets/sent.png';
+
 interface Props {
   status: 'sent' | 'delivered' | 'read' | string;
 }
 
-export const MessageStatusTicks = ({ status }: Props) => {
+export const MessageStatusTicks = ({status}: Props) => {
   let source;
 
   switch (status) {
@@ -19,12 +21,20 @@ export const MessageStatusTicks = ({ status }: Props) => {
     case 'read':
       source = readImage;
       break;
+    case 'pending':
+      source = pendingImage;
+      break;
     default:
       return null;
   }
   return (
     <View style={styles.container}>
-      <Image accessibilityHint={`Message status is ${status}`} source={source} style={styles.tickImage} resizeMode="contain" />
+      <Image
+        accessibilityHint={`Message status is ${status}`}
+        source={source}
+        style={styles.tickImage}
+        resizeMode="contain"
+      />
     </View>
   );
 };
