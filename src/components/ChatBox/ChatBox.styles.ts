@@ -36,7 +36,7 @@ export const getStyles = (colors: Colors) =>
     },
     badgeContainer: {
       alignItems: 'flex-end',
-      height: height * 0.025,
+      height: height * 0.030,
       width: width * 0.2,
     },
   });
