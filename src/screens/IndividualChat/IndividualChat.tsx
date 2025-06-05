@@ -91,15 +91,6 @@ export const IndividualChat = ({route}: Props) => {
   const scrollViewRef = useRef<ScrollView>(null);
   const [isCleared, setIsCleared] = useState(false);
   const {isConnected} = useSocketConnection();
-  // const [variable, setVariable] = useState('checking');
-
-  // useEffect(() => {
-  //   if (isConnected) {
-  //     setVariable('connected');
-  //   } else {
-  //     setVariable('not connected');
-  //   }
-  // }, [isConnected]);
 
   const [socketId, setSocketId] = useState<string | null>(null);
   const scrollToBottom = async () => {
@@ -601,7 +592,6 @@ export const IndividualChat = ({route}: Props) => {
       </View>
       <View style={styles.chatMainContainer}>
         <View style={styles.chatInnerContainer}>
-          {/* <Text style={styles.sentMessage}>{variable}</Text> */}
           <ScrollView
             ref={scrollViewRef}
             style={styles.chatContainer}
