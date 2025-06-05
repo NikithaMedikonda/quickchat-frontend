@@ -30,10 +30,10 @@ export const ChatBox = ({
             </View>
             <View style={styles.messageDetailsContainer}>
                 <View style={styles.timeStampContainer}>
-                    <TimeStamp messageTime={timestamp} isSent={true} showFullTime = {false}/>
+                    <TimeStamp messageTime={timestamp} isSent={true} showFullTime={false} />
                 </View>
                 <View style={styles.badgeContainer}>
-                    <Badge messageCount={unreadCount} variant="center" />
+                    <Badge messageCount={unreadCount} variant="center"/>
                 </View>
             </View>
         </View>

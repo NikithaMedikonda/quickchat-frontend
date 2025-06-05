@@ -1,17 +1,17 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
-import { Image, View } from 'react-native';
-
-import { HomeStacks } from '../stack/HomeStacks';
-import { ProfileStack } from '../stack/ProfileStacks';
-
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Image, View } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
+import { useSelector } from 'react-redux';
+import { Badge } from '../../components/Badge/Badge.tsx';
 import { User } from '../../screens/Profile/Profile';
 import { newSocket, socketConnection } from '../../socket/socket';
 import { useThemeColors } from '../../themes/colors';
 import { useImagesColors } from '../../themes/images';
+import { HomeStacks } from '../stack/HomeStacks';
+import { ProfileStack } from '../stack/ProfileStacks';
 import { UnreadStacks } from '../stack/UnreadStacks.tsx';
 import { styles } from './HomeTabs.styles';
 
@@ -33,6 +33,7 @@ const HomeTabIcon = ({ focused }: { focused: boolean }) => {
 
 const UnreadTabIcon = ({ focused }: { focused: boolean }) => {
   const { tabUnread } = useImagesColors();
+  const unreadCount = useSelector((state: any) => state.unread?.count ?? 0);
   return (
     <View style={styles.iconContainer}>
       {!focused ? (
@@ -42,6 +43,11 @@ const UnreadTabIcon = ({ focused }: { focused: boolean }) => {
           source={require('../../assets/highlight-unread-message.png')}
           style={styles.icon}
         />
+      )}
+      {unreadCount > 0 && (
+        <View style={styles.unreadCount}>
+          <Badge messageCount={unreadCount} />
+        </View>
       )}
     </View>
   );
@@ -122,15 +128,25 @@ export const HomeTabs = () => {
       <Tab.Screen
         name="unread"
         component={UnreadStacks}
-        options={{
-          tabBarIcon: UnreadTabIcon,
-          tabBarLabel: t('Unread Chats'),
-          headerStyle: { backgroundColor: colors.background },
-          headerTitleAlign: 'center',
-          headerTitle: t('Quick Chat'),
-          headerTitleStyle: { color: colors.text },
+        options={({ route }) => {
+          const routeName = getFocusedRouteNameFromRoute(route) ?? '';
+          const hideTabBar = routeName === 'individualChat';
+          return {
+            headerShown: false,
+            tabBarIcon: UnreadTabIcon,
+            tabBarLabel: t('Unread Chats'),
+            headerStyle: { backgroundColor: colors.background },
+            headerTitleAlign: 'center',
+            tabBarStyle: {
+              display: hideTabBar ? 'none' : 'flex',
+              backgroundColor: colors.background,
+              height: 100,
+              borderTopWidth: 0,
+            },
+          };
         }}
       />
+
       <Tab.Screen
         name="profileStack"
         component={ProfileStack}
