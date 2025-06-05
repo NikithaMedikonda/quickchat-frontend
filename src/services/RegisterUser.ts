@@ -1,4 +1,5 @@
 import { API_URL } from '../constants/api';
+import { getFCMToken } from '../permissions/NotificationPermissions';
 import { keyEncryption } from './KeyEncryption';
 
 export const registerUser = async (payload: {
@@ -17,7 +18,7 @@ deviceId:{deviceId:string;}) => {
     privateKey: keys.privateKey,
     password: payload.password,
   });
-
+  const fcmToken = await getFCMToken();
   const userData = {
     phoneNumber: payload.phoneNumber,
     firstName: payload.firstName,
@@ -28,6 +29,7 @@ deviceId:{deviceId:string;}) => {
     publicKey: keys.publicKey,
     privateKey: encryptedPrivateKey,
     deviceId:deviceId.deviceId,
+    fcmToken:fcmToken,
   };
 
   try {
