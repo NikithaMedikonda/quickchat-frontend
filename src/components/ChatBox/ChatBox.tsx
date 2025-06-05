@@ -33,7 +33,7 @@ export const ChatBox = ({
                     <TimeStamp messageTime={timestamp} isSent={true} showFullTime={false} />
                 </View>
                 <View style={styles.badgeContainer}>
-                    <Badge messageCount={unreadCount} />
+                    <Badge messageCount={unreadCount} variant="center"/>
                 </View>
             </View>
         </View>
