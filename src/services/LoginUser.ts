@@ -11,7 +11,6 @@ export const loginUser = async (
     deviceId,
     fcmToken,
   };
-
   const response = await fetch(`${API_URL}/api/user`, {
     method: 'POST',
     headers: {
