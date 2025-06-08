@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - push-notification-android
 
 jobs:
   lint-and-test:
