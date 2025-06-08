@@ -23,7 +23,6 @@ export const getFCMToken = async (): Promise<string | null> => {
 
   await setupNotificationChannel();
   const token = await messaging().getToken();
-  console.log('FCM Token:', token);
   return token;
 };
 
