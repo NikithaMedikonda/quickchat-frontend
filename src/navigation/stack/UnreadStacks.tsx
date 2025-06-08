@@ -1,4 +1,3 @@
-
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { IndividualChat } from '../../screens/IndividualChat/IndividualChat';
 import { UnreadChats } from '../../screens/UnreadChats/UnreadChats';
@@ -11,7 +10,7 @@ const Stack = createNativeStackNavigator<UnreadStackParamList>();
             <Stack.Screen
                 name="unread"
                 component={UnreadChats}
-                options={{ headerShown: false }}
+                options={{ headerShown: true }}
             />
             <Stack.Screen
                 name="individualChat"

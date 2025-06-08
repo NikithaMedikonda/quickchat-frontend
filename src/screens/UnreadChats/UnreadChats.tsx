@@ -1,10 +1,9 @@
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { useCallback, useState } from 'react';
+import { useCallback, useLayoutEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { useDispatch } from 'react-redux';
-
-import { useTranslation } from 'react-i18next';
 import { ChatBox } from '../../components/ChatBox/ChatBox';
 import { numberNameIndex } from '../../helpers/nameNumberIndex';
 import { normalise } from '../../helpers/normalisePhoneNumber';
@@ -18,9 +17,10 @@ import {
   setAlertType,
   setAlertVisible,
 } from '../../store/slices/registrationSlice';
+import { setUnreadCount } from '../../store/slices/unreadChatSlice';
 import { useThemeColors } from '../../themes/colors';
 import { NavigationProps, UnreadStacKProps } from '../../types/usenavigation.type';
-import { getStyles } from '../AllChats/AllChats.styles';
+import { getStyles } from './UnreadChats.style';
 export interface Chat {
   chatId: string;
   contactName: string | null;
@@ -43,9 +43,21 @@ export const UnreadChats = () => {
   const dispatch = useDispatch();
   const colors = useThemeColors();
   const styles = getStyles(colors);
-
   const [chats, setChats] = useState<Chat[]>([]);
   const [contactNameMap, setContactNameMap] = useState<ContactNameMap>({});
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: t('Quick Chat'),
+      headerTitleAlign: 'center',
+      headerStyle: {
+        backgroundColor: colors.background,
+      },
+      headerTitleStyle: {
+        color: colors.text,
+      },
+    });
+  });
 
   const showAlert = useCallback(
     (type: string, title: string, message: string) => {
@@ -102,6 +114,9 @@ export const UnreadChats = () => {
 
             const allChats = response.data.chats;
             const unreadChats = allChats.filter((chat: { unreadCount: number; }) => chat.unreadCount > 0);
+
+            const totalUnreadChats = unreadChats.length;
+            dispatch(setUnreadCount(totalUnreadChats));
 
             setChats(unreadChats);
           }

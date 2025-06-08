@@ -361,4 +361,46 @@ describe('Registration Screen', () => {
       expect(state.registration.alertType).toBe('info');
     });
   });
+
+  it('renders Placeholder inputs with correct titles', () => {
+    const {getByPlaceholderText} = renderComponent();
+    expect(getByPlaceholderText('First Name')).toBeTruthy();
+    expect(getByPlaceholderText('Last Name')).toBeTruthy();
+    expect(getByPlaceholderText('Password')).toBeTruthy();
+    expect(getByPlaceholderText('Confirm Password')).toBeTruthy();
+    expect(getByPlaceholderText('Email (Optional)')).toBeTruthy();
+  });
+
+  it('updates form value in Redux store on input change', async () => {
+    const {getByPlaceholderText} = renderComponent();
+    const firstNameInput = getByPlaceholderText('First Name');
+
+    fireEvent.changeText(firstNameInput, 'Anu');
+
+    await waitFor(() => {
+      const state = store.getState();
+      expect(state.registration.form.firstName).toBe('Anu');
+    });
+  });
+
+  it('shows and hides password hint based on focus state', async () => {
+    const {getByPlaceholderText, getByText, queryByText} = renderComponent();
+
+    const passwordInput = getByPlaceholderText('Password');
+    fireEvent(passwordInput, 'focus');
+
+    await waitFor(() => {
+      expect(
+        getByText(/Password must contain: At least 8 characters, 1 capital/i),
+      ).toBeTruthy();
+    });
+
+    fireEvent(passwordInput, 'blur');
+
+    await waitFor(() => {
+      expect(
+        queryByText(/Password must contain: At least 8 characters, 1 capital/i),
+      ).toBeNull();
+    });
+  });
 });
