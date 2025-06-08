@@ -92,7 +92,6 @@ export function Login() {
     try {
       const deviceId = await getDeviceId();
       const result = await loginUser(form, deviceId);
-
       if (result.status === 200) {
         const user = result?.data?.user;
         const privateKey = await keyDecryption({
