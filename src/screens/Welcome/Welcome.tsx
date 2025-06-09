@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
-import { Image, View } from 'react-native';
+import { Image, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { Button } from '../../components/Button/Button.tsx';
 import { CustomAlert } from '../../components/CustomAlert/CustomAlert.tsx';
@@ -27,6 +27,9 @@ export const Welcome = () => {
           source={logo}
           accessibilityHint="logo-image"
         />
+        <Text style={styles.name}>
+          QuickChat
+        </Text>
       </View>
       <View>
         <Button
