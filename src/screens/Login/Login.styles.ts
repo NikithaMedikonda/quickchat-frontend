@@ -4,14 +4,6 @@ const {width, height} = Dimensions.get('window');
 
 export const loginStyles = (colors: Colors) =>
   StyleSheet.create({
-    container: {
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: colors.background,
-      height: height,
-      width: width,
-    },
     image: {
       width: width * 0.501,
       height: height * 0.33,
@@ -66,8 +58,8 @@ export const loginStyles = (colors: Colors) =>
     },
     loginMainContainer: {
       backgroundColor: colors.background,
-      justifyContent: 'center',
       alignItems: 'center',
+      justifyContent:'center',
       height: height,
       width: width,
     },
