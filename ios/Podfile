@@ -17,6 +17,13 @@ prepare_react_native_project!
 use_frameworks! :linkage => :static
 $RNFirebaseAsStaticFramework = true
 
+
+pod 'Firebase/Analytics'
+
+# Add the pods for Firebase Core and Messaging (FCM for notifications)
+pod 'Firebase/Core'
+pod 'Firebase/Messaging'
+
 setup_permissions([
   # 'AppTrackingTransparency',
   # 'Bluetooth',
