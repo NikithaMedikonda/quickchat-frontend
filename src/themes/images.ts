@@ -1,7 +1,7 @@
-import {ImageSourcePropType} from 'react-native';
+import { ImageSourcePropType } from 'react-native';
 import AndroidBackArrowDark from '../assets/AndroidBackArrowDark.png';
-import chatblockLight from '../assets/chatblockLight.png';
 import BinLight from '../assets/BinLight.png';
+import chatblockLight from '../assets/chatblockLight.png';
 import HomeAddDark from '../assets/HomeAddDark.png';
 import IOSBackArrowDark from '../assets/IOSBackArrowDark.png';
 import LogOutLight from '../assets/LogOutLight.png';
