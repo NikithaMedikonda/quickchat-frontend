@@ -1,13 +1,13 @@
-import {ImageSourcePropType} from 'react-native';
+import { ImageSourcePropType } from 'react-native';
 import AndroidBackArrowDark from '../assets/AndroidBackArrowDark.png';
-import chatblockLight from '../assets/chatblockLight.png';
 import BinLight from '../assets/BinLight.png';
+import chatblockLight from '../assets/chatblockLight.png';
 import HomeAddDark from '../assets/HomeAddDark.png';
 import IOSBackArrowDark from '../assets/IOSBackArrowDark.png';
 import LogOutLight from '../assets/LogOutLight.png';
 import PencilLight from '../assets/PencilLight.png';
 import ProfileDotsDark from '../assets/ProfileDotsDark.png';
-import QuickChatDarkLogo from '../assets/QuickChatDarkLogo.png';
+import QuickChatLogo from '../assets/QuickChatLogo.png';
 import TabMessageDark from '../assets/TabMessageDark.png';
 import TabProfileDark from '../assets/TabProfileDark.png';
 import TabUnreadDark from '../assets/TabUnreadDark.png';
@@ -27,7 +27,7 @@ export const useImagesColors = (): {
   iOSBackArrow: ImageSourcePropType;
 } => {
   return {
-    logo: QuickChatDarkLogo,
+    logo: QuickChatLogo,
     tabHome: TabMessageDark,
     tabUnread: TabUnreadDark,
     tabProfile: TabProfileDark,
