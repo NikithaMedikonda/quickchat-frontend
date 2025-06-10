@@ -28,7 +28,7 @@ describe('Welcome Screen', () => {
   );
     const image = screen.getByA11yHint('logo-image');
     expect(image.props.source).toEqual({
-      testUri: '../../../src/assets/QuickChatDarkLogo.png',
+      testUri: '../../../src/assets/QuickChatLogo.png',
     });
   });
 
