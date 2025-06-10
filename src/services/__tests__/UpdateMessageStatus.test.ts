@@ -8,11 +8,9 @@ jest.mock('react-native-encrypted-storage', () => ({
   getItem: jest.fn(),
 }));
 describe('update message status', () => {
-  const time = Date.now();
   const payload = {
     senderPhoneNumber: '+918522041688',
     receiverPhoneNumber: '+919866349126',
-    timestamp:time,
     previousStatus: 'delivered',
     currentStatus: 'read',
   };
