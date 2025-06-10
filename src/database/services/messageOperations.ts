@@ -1,37 +1,37 @@
-import { createChatId } from '../../utils/chatId';
-import { getDBInstance } from '../connection/connection';
-import { MessageType } from '../types/message';
+import {createChatId} from '../../utils/chatId';
+import {getDBInstance} from '../connection/connection';
+import {MessageType} from '../types/message';
 
 export const insertToMessages = async (message: MessageType) => {
-  const db = await getDBInstance();
+    const db = await getDBInstance();
 
-  const messagetoInsert = {
-    id: message.id,
-    chatId: createChatId(
-      message.receiverPhoneNumber,
-      message.senderPhoneNumber,
-    ),
-    senderPhoneNumber: message.senderPhoneNumber,
-    receiverPhoneNumber: message.receiverPhoneNumber,
-    message: message.message,
-    status: message.status,
-    timestamp: message.timestamp,
-  };
+    const messagetoInsert = {
+      id: message.id,
+      chatId: createChatId(
+        message.receiverPhoneNumber,
+        message.senderPhoneNumber,
+      ),
+      senderPhoneNumber: message.senderPhoneNumber,
+      receiverPhoneNumber: message.receiverPhoneNumber,
+      message: message.message,
+      status: message.status,
+      timestamp: message.timestamp,
+    };
 
-  await db.executeSql(
-    `INSERT OR IGNORE INTO Messages
+    await db.executeSql(
+      `INSERT OR IGNORE INTO Messages
           (id, chatId, senderPhoneNumber, receiverPhoneNumber, message, status, timestamp)
           VALUES (?, ?, ?, ?, ?, ?, ?)`,
-    [
-      String(messagetoInsert.id),
-      messagetoInsert.chatId,
-      String(messagetoInsert.senderPhoneNumber),
-      String(messagetoInsert.receiverPhoneNumber),
-      messagetoInsert.message,
-      messagetoInsert.status,
-      messagetoInsert.timestamp,
-    ],
-  );
+      [
+        String(messagetoInsert.id),
+        messagetoInsert.chatId,
+        String(messagetoInsert.senderPhoneNumber),
+        String(messagetoInsert.receiverPhoneNumber),
+        messagetoInsert.message,
+        messagetoInsert.status,
+        messagetoInsert.timestamp,
+      ],
+    );
 };
 
 export const getMessagesByChatId = async (
