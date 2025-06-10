@@ -1,15 +1,17 @@
-import { NavigationContainer } from '@react-navigation/native';
+import {NavigationContainer} from '@react-navigation/native';
 import {
   fireEvent,
   render,
   screen,
   waitFor,
 } from '@testing-library/react-native';
-import { Provider } from 'react-redux';
-import { numberNameIndex } from '../../helpers/nameNumberIndex';
-import { getAllChats } from '../../services/GetAllChats';
-import { store } from '../../store/store';
-import { AllChats, Chat } from './AllChats';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import {Provider} from 'react-redux';
+import {numberNameIndex} from '../../helpers/nameNumberIndex';
+import {getAllChats} from '../../services/GetAllChats';
+import {newSocket} from '../../socket/socket';
+import {store} from '../../store/store';
+import {AllChats, Chat} from './AllChats';
 
 const mockChats = [
   {
@@ -62,7 +64,9 @@ jest.mock('@react-navigation/native', () => {
 
 jest.mock('react-native-encrypted-storage', () => ({
   clear: jest.fn(),
-  getItem: jest.fn().mockResolvedValue('mock-private-key'),
+  getItem: jest
+    .fn()
+    .mockResolvedValue(JSON.stringify({phoneNumber: '1234567890'})),
 }));
 
 jest.mock('../../services/MessageDecryption', () => ({
@@ -97,6 +101,9 @@ jest.mock('../../services/GetAllChats', () => ({
 jest.mock('../../helpers/normalisePhoneNumber', () => ({
   normalise: jest.fn(),
 }));
+
+const mockOn = jest.fn();
+newSocket.on = mockOn;
 
 describe('AllChats Component', () => {
   beforeEach(() => {
@@ -238,12 +245,12 @@ describe('AllChats Component', () => {
       data: {chats: mockChats},
     });
 
-    const { getByText } = render(
+    const {getByText} = render(
       <Provider store={store}>
         <NavigationContainer>
           <AllChats />
         </NavigationContainer>
-      </Provider>
+      </Provider>,
     );
 
     await waitFor(() => {
@@ -253,7 +260,6 @@ describe('AllChats Component', () => {
     fireEvent.press(getByText('+1234567890'));
 
     await waitFor(() => {
-
       expect(screen.getByText('+1234567890')).toBeTruthy();
     });
     fireEvent.press(screen.getByText('+1234567890'));
@@ -269,7 +275,6 @@ describe('AllChats Component', () => {
       },
     });
   });
-
 
   it('should render plus icon for adding new chats', async () => {
     await waitFor(() => {
@@ -327,5 +332,35 @@ describe('AllChats Component', () => {
         screen.getByText('One message. Infinite possibilities.'),
       ).toBeTruthy();
     });
+  });
+
+  it('should increment updateStatusCount when data.isOnline is true', async () => {
+    (numberNameIndex as jest.Mock).mockResolvedValue({});
+    (getAllChats as jest.Mock).mockResolvedValue({
+      status: 200,
+      data: {chats: []},
+    });
+
+    newSocket.on = mockOn;
+
+    render(
+      <Provider store={store}>
+        <NavigationContainer>
+          <AllChats />
+        </NavigationContainer>
+      </Provider>,
+    );
+
+    await waitFor(() => expect(EncryptedStorage.getItem).toHaveBeenCalled());
+
+    const registeredHandler = mockOn.mock.calls[0][1];
+    const initialCallCount = (getAllChats as jest.Mock).mock.calls.length;
+
+    await waitFor(() => {
+      registeredHandler({isOnline: true});
+    });
+
+    const finalCallCount = (getAllChats as jest.Mock).mock.calls.length;
+    expect(finalCallCount).toBe(initialCallCount + 1);
   });
 });
