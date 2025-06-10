@@ -1,21 +1,17 @@
-import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {useCallback, useEffect, useLayoutEffect, useState} from 'react';
 import {ScrollView, TouchableOpacity, View} from 'react-native';
-import EncryptedStorage from 'react-native-encrypted-storage';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
-import {ChatBox} from '../../components/ChatBox/ChatBox';
-import {PlusIcon} from '../../components/PlusIcon/PlusIcon';
-import {numberNameIndex} from '../../helpers/nameNumberIndex';
-import {normalise} from '../../helpers/normalisePhoneNumber';
+import EncryptedStorage from 'react-native-encrypted-storage';
 import {getAllChats} from '../../services/GetAllChats';
-import {hide} from '../../store/slices/loadingSlice';
-import {logout} from '../../store/slices/loginSlice';
-import {useThemeColors} from '../../themes/colors';
-import {HomeStackProps, NavigationProps} from '../../types/usenavigation.type';
-
 import {messageDecryption} from '../../services/MessageDecryption';
 import {useDeviceCheck} from '../../services/useDeviceCheck';
-import {newSocket} from '../../socket/socket';
+import {numberNameIndex} from '../../helpers/nameNumberIndex';
+import {normalise} from '../../helpers/normalisePhoneNumber';
+import {ChatBox} from '../../components/ChatBox/ChatBox';
+import {PlusIcon} from '../../components/PlusIcon/PlusIcon';
+import {hide} from '../../store/slices/loadingSlice';
+import {logout} from '../../store/slices/loginSlice';
 import {
   setAlertMessage,
   setAlertTitle,
@@ -24,9 +20,12 @@ import {
 } from '../../store/slices/registrationSlice';
 import {setUnreadCount} from '../../store/slices/unreadChatSlice';
 import {RootState} from '../../store/store';
+import {HomeStackProps, NavigationProps} from '../../types/usenavigation.type';
+import {useThemeColors} from '../../themes/colors';
+import {getStyles} from './AllChats.styles';
 import {Home} from '../Home/Home';
 import {User} from '../Profile/Profile';
-import {getStyles} from './AllChats.styles';
+import {newSocket} from '../../socket/socket';
 
 export interface Chat {
   chatId: string;
@@ -91,7 +90,7 @@ export const AllChats = () => {
     };
     fetchUser();
 
-    const handleUpdateStatus = (data: any) => {
+    const handleUpdateStatus = (data: {isOnline: boolean}) => {
       if (data.isOnline) {
         setUpdateStatusCount(prevCount => prevCount + 1);
       }
