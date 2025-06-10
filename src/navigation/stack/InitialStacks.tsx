@@ -10,11 +10,13 @@ import {Login} from '../../screens/Login/Login';
 import {Registration} from '../../screens/Registration/Registration';
 import {setLoginSuccess} from '../../store/slices/loginSlice';
 import {Welcome} from '../../screens/Welcome/Welcome';
+import {useSocketConnection} from '../../hooks/useSocketConnection';
 
 const Stack = createNativeStackNavigator();
 
 export const InitialStacks = () => {
   const [initialRoute, setInitialRoute] = useState<string | null>(null);
+  const {isConnected} = useSocketConnection();
   const dispatch = useDispatch();
   useEffect(() => {
     const getUser = async () => {
@@ -77,8 +79,13 @@ export const InitialStacks = () => {
         dispatch(hide());
       }
     };
-    getUser();
-  }, [dispatch]);
+    if (isConnected) {
+      getUser();
+    } else {
+      setInitialRoute('hometabs');
+      dispatch(hide());
+    }
+  }, [dispatch, isConnected]);
 
   if (initialRoute === null) {
     return <LoadingComponent />;
