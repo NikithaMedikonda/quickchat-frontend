@@ -1,5 +1,5 @@
-import {Dimensions, StyleSheet} from 'react-native';
-import {Colors} from '../../themes/colors';
+import { Dimensions, StyleSheet } from 'react-native';
+import { Colors } from '../../themes/colors';
 const {width, height} = Dimensions.get('window');
 
 export const loginStyles = (colors: Colors) =>
