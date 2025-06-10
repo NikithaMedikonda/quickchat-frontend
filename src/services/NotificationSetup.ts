@@ -19,7 +19,9 @@ export const requestNotificationPermission = async () => {
 
 export const getFCMToken = async (): Promise<string | null> => {
   const hasPermission = await requestNotificationPermission();
-  if (!hasPermission) return null;
+  if (!hasPermission) {
+    return null;
+  }
 
   await setupNotificationChannel();
   const token = await messaging().getToken();
