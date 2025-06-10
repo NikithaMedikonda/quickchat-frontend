@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-
+      - update-user-validation-flow
 jobs:
   lint-and-test:
     uses: ./.github/workflows/lint-and-test.yml
