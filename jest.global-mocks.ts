@@ -13,7 +13,6 @@ jest.mock('@react-native-firebase/messaging', () => () => ({
   setBackgroundMessageHandler: jest.fn(),
 }));
 
-// Mock Notifee
 jest.mock('@notifee/react-native', () => ({
   AndroidImportance: {
     HIGH: 4,
