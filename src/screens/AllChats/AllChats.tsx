@@ -1,5 +1,7 @@
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {useCallback, useEffect, useLayoutEffect, useState} from 'react';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
+import {useCallback, useLayoutEffect, useState} from 'react';
 import {ScrollView, TouchableOpacity, View} from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {useDispatch, useSelector} from 'react-redux';
@@ -7,8 +9,8 @@ import {ChatBox} from '../../components/ChatBox/ChatBox';
 import {PlusIcon} from '../../components/PlusIcon/PlusIcon';
 import {numberNameIndex} from '../../helpers/nameNumberIndex';
 import {normalise} from '../../helpers/normalisePhoneNumber';
-import {getAllChats} from '../../services/GetAllChats';
-import {hide} from '../../store/slices/loadingSlice';
+import {getAllChats, getMissedChats} from '../../services/GetAllChats';
+import {hide, show} from '../../store/slices/loadingSlice';
 import {logout} from '../../store/slices/loginSlice';
 import {useThemeColors} from '../../themes/colors';
 import {HomeStackProps, NavigationProps} from '../../types/usenavigation.type';
@@ -27,6 +29,16 @@ import {RootState} from '../../store/store';
 import {Home} from '../Home/Home';
 import {User} from '../Profile/Profile';
 import {getStyles} from './AllChats.styles';
+import {useDeviceCheck} from '../../services/useDeviceCheck';
+import {getStyles} from './AllChats.styles';
+import {messageDecryption} from '../../services/MessageDecryption';
+import {
+  getLasySyncedTime,
+  updateLastSyncedTime,
+} from '../../database/services/userOperation';
+import {User} from '../Profile/Profile';
+import {insertToMessages} from '../../database/services/messageOperations';
+import {generateMessageId} from '../../utils/messageId';
 
 export interface Chat {
   chatId: string;
@@ -98,9 +110,19 @@ export const AllChats = () => {
     };
     newSocket.on(`isOnline_with_${currentUserPhoneNumber}`, handleUpdateStatus);
   }, [currentUserPhoneNumber, updateStatusCount]);
+  const showAlert = useCallback(
+    (type: string, title: string, message: string) => {
+      dispatch(setAlertType(type));
+      dispatch(setAlertTitle(title));
+      dispatch(setAlertMessage(message));
+      dispatch(setAlertVisible(true));
+    },
+    [dispatch],
+  );
 
   useFocusEffect(
     useCallback(() => {
+      dispatch(show());
       const fetchChats = async () => {
         const phoneNameMap = await numberNameIndex();
         if (phoneNameMap === null) {
@@ -115,8 +137,15 @@ export const AllChats = () => {
         }
 
         setContactNameMap(phoneNameMap as ContactNameMap);
-
+        const currentUser = await EncryptedStorage.getItem('user');
+        if (!currentUser) {
+          return;
+        }
+        const parsedUser: User = JSON.parse(currentUser);
+        const lastSyncedTime = await getLasySyncedTime(parsedUser.phoneNumber);
+        // console.log('last', lastSyncedTime);
         const response = await getAllChats();
+        const response2 = await getMissedChats(lastSyncedTime);
 
         if (response.status === 401 || response.data === null) {
           dispatch(logout());
@@ -149,9 +178,43 @@ export const AllChats = () => {
 
             const totalUnreadChats = unreadChats.length;
             dispatch(setUnreadCount(totalUnreadChats));
+            dispatch(hide());
           }
         } else {
           showAlert('info', 'Unable to Fetch Chats', 'Please try again later.');
+        }
+        if (response2.status === 200 && response2.data) {
+          const missedChats = response2.data;
+          let latestTimestamp: string = new Date().toISOString();
+          for (const chat of missedChats) {
+            for (const message of chat.messages) {
+              if (message.senderPhoneNumber === parsedUser.phoneNumber) {
+                console.log('going here');
+                continue;
+              }
+              const messageToInsert = {
+                id: generateMessageId(
+                  parsedUser.phoneNumber,
+                  chat.senderPhoneNumber,
+                  message.createdAt,
+                ),
+                senderPhoneNumber: chat.senderPhoneNumber as string,
+                receiverPhoneNumber: parsedUser.phoneNumber as string,
+                message: message.content as string,
+                status: message.status as 'sent' | 'delivered' | 'read',
+                timestamp: message.createdAt as string,
+              };
+              // latestTimestamp = message.createdAt;
+              await insertToMessages(messageToInsert);
+            }
+          }
+          await updateLastSyncedTime(latestTimestamp, parsedUser.phoneNumber);
+
+          const lastSyncedTime = await getLasySyncedTime(
+            parsedUser.phoneNumber,
+          );
+          console.log('last after',new Date(lastSyncedTime).toDateString());
+          console.log('last after',new Date(lastSyncedTime).toTimeString());
         }
       };
       if (msgCount >= 0 || updateStatusCount >= 0) {
@@ -180,6 +243,7 @@ export const AllChats = () => {
                   phoneNumber: chat.phoneNumber,
                   isBlocked: false,
                   publicKey: chat.publicKey,
+                  onBlockStatusChange: () => {},
                   onBlockStatusChange: () => {},
                 },
               })

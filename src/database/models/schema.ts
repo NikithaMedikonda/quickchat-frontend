@@ -14,6 +14,12 @@ export const createTables = async (db: SQLiteDatabase) => {
     );
   `);
 
+  await db.executeSql(`CREATE TABLE IF NOT EXISTS User (
+    id TEXT PRIMARY KEY,
+    phoneNumber TEXT,
+    lastSyncedAt TEXT);
+  `);
+
   await db.executeSql(`
     CREATE TABLE IF NOT EXISTS Messages (
       id TEXT PRIMARY KEY,

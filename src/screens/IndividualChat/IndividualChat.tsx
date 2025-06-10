@@ -10,7 +10,10 @@ import {IndividualChatHeader} from '../../components/IndividualChatHeader/Indivi
 import {MessageInput} from '../../components/MessageInput/MessageInput';
 import {MessageStatusTicks} from '../../components/MessageStatusTicks/MessageStatusTicks';
 import {TimeStamp} from '../../components/TimeStamp/TimeStamp';
-import {insertToMessages} from '../../database/services/messageOperations';
+import {
+  getMessagesByChatId,
+  insertToMessages,
+} from '../../database/services/messageOperations';
 import {
   deleteFromQueue,
   getQueuedMessages,
@@ -23,7 +26,6 @@ import {useSocketConnection} from '../../hooks/useSocketConnection';
 import {checkBlockStatus} from '../../services/CheckBlockStatus';
 import {CheckUserDeleteStatus} from '../../services/CheckUserDeleteStatus';
 import {checkUserOnline} from '../../services/CheckUserOnline';
-import {getMessagesBetween} from '../../services/GetMessagesBetween';
 import {messageDecryption} from '../../services/MessageDecryption';
 import {messageEncryption} from '../../services/MessageEncryption';
 import {updateMessageStatus} from '../../services/UpdateMessageStatus';
@@ -245,30 +247,35 @@ export const IndividualChat = ({route}: Props) => {
           senderPhoneNumber: currentUserPhoneNumberRef.current,
           receiverPhoneNumber: recipientPhoneNumber,
         };
-        const Messages = await getMessagesBetween(userData);
-        if (Messages.status === 200) {
-          const data = Messages.data;
+        const chatId = createChatId(
+          userData.senderPhoneNumber,
+          userData.receiverPhoneNumber,
+        );
+        const localMessages = await getMessagesByChatId(
+          chatId,
+          currentUserPhoneNumberRef.current,
+        );
           const privateKey = await EncryptedStorage.getItem('privateKey');
           const formattedMessages = [];
           if (privateKey) {
-            for (const msg of data.chats) {
+            for (const msg of localMessages) {
               try {
                 const decryptedMessage = await messageDecryption({
-                  encryptedMessage: msg.content,
+                  encryptedMessage: msg.message,
                   myPrivateKey: privateKey,
                   senderPublicKey: user.publicKey,
                 });
                 if (
                   msg.status === 'sent' &&
-                  msg.receiver.phoneNumber === currentUserPhoneNumberRef.current
+                  msg.phoneNumber === currentUserPhoneNumberRef.current
                 ) {
                   continue;
                 } else {
                   formattedMessages.push({
-                    senderPhoneNumber: msg.sender.phoneNumber,
-                    recipientPhoneNumber: msg.receiver.phoneNumber,
+                    senderPhoneNumber: msg.senderPhoneNumber,
+                    recipientPhoneNumber: msg.receiverPhoneNumber,
                     message: decryptedMessage,
-                    timestamp: msg.createdAt,
+                    timestamp: msg.timestamp,
                     status: msg.status,
                   });
                 }
@@ -280,15 +287,13 @@ export const IndividualChat = ({route}: Props) => {
             setReceivedMessages([]);
             setSendMessages([]);
           }
-        }
       } catch (e) {
         setFetchMessages([]);
       }
     }
-
     getMessages();
   }, [
-    isOnlineWith,
+    // isOnlineWith,
     recipientPhoneNumber,
     socketId,
     user.phoneNumber,
@@ -308,10 +313,22 @@ export const IndividualChat = ({route}: Props) => {
             senderPublicKey: user.publicKey,
           });
         }
+        // const id = generateMessageId(
+        //   currentUserPhoneNumberRef.current,
+        //   recipientPhoneNumber,
+        //   data.timestamp,
+        // );
+        // const payload: MessageType = {
+        //   ...data,
+        //   receiverPhoneNumber: data.recipientPhoneNumber,
+        //   id: id,
+        //   status: 'read',
+        // };
         setReceivedMessages(prev => [
           ...prev,
           {...data, message: decryptedMessage},
         ]);
+        // await insertToMessages(payload);
       };
       await receivePrivateMessage(recipientPhoneNumber, handleNewMessage);
     }
