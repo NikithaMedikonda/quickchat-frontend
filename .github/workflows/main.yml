@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - update-app-icon
 
 jobs:
   lint-and-test:
