@@ -1,13 +1,14 @@
+import {useCallback, useEffect, useState} from 'react';
+import {Image, View} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {
   getFocusedRouteNameFromRoute,
   useFocusEffect,
 } from '@react-navigation/native';
-import {useCallback, useEffect, useState} from 'react';
-import {useTranslation} from 'react-i18next';
-import {Image, View} from 'react-native';
-import EncryptedStorage from 'react-native-encrypted-storage';
 import {useDispatch, useSelector} from 'react-redux';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import {useTranslation} from 'react-i18next';
+
 import {Badge} from '../../components/Badge/Badge.tsx';
 import {User} from '../../screens/Profile/Profile';
 import {getAllChats} from '../../services/GetAllChats.ts';
@@ -21,6 +22,7 @@ import {useImagesColors} from '../../themes/images';
 import {HomeStacks} from '../stack/HomeStacks';
 import {ProfileStack} from '../stack/ProfileStacks';
 import {UnreadStacks} from '../stack/UnreadStacks.tsx';
+
 import {styles} from './HomeTabs.styles';
 
 const HomeTabIcon = ({focused}: {focused: boolean}) => {
@@ -81,7 +83,7 @@ export const HomeTabs = () => {
   const [newMessageCount, setMessageCount] = useState(0);
   const dispatch = useDispatch();
   useEffect(() => {
-    const handleNewMessage = (data: any) => {
+    const handleNewMessage = (data: {newMessage: boolean}) => {
       if (data.newMessage) {
         setMessageCount(prevCount => prevCount + 1);
       }
