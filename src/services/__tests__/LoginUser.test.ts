@@ -12,6 +12,18 @@ describe('loginUser', () => {
     jest.clearAllMocks();
   });
 
+jest.mock('@react-native-firebase/app', () => ({}));
+jest.mock('@react-native-firebase/messaging', () => () => ({
+  getToken: jest.fn().mockResolvedValue('mocked-token'),
+  requestPermission: jest.fn(),
+  onMessage: jest.fn(),
+}));
+jest.mock('@notifee/react-native', () => ({
+  AndroidImportance: {},
+  requestPermission: jest.fn(),
+}));
+
+
   it('should register a user with correct data and return response', async () => {
     const mockResponse = {
       accessToken: 'fake-jwt',
@@ -23,9 +35,9 @@ describe('loginUser', () => {
         phoneNumber: '9876543210',
         email: 'test@example.com',
         profilePicture: 'image.jpg',
-
         isDeleted: false,
       },
+      fcmToken:'mocked-token',
     };
 
     mockedFetch.mockResolvedValueOnce({
@@ -37,7 +49,7 @@ describe('loginUser', () => {
     expect(mockedFetch).toHaveBeenCalledWith(`${API_URL}/api/user`, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({...payload, deviceId: '29u38'}),
+      body: JSON.stringify({...payload, deviceId: '29u38', fcmToken:'mocked-token'}),
     });
 
     expect(result.status).toBe(200);
@@ -54,7 +66,7 @@ describe('loginUser', () => {
       json: jest.fn().mockResolvedValue(mockErrorResponse),
     });
 
-    const result = await loginUser(payload,'34324');
+    const result = await loginUser(payload, '34324');
 
     expect(result.status).toBe(404);
     expect(result.data).toEqual(mockErrorResponse);
@@ -63,6 +75,6 @@ describe('loginUser', () => {
   it('should throw if fetch fails', async () => {
     mockedFetch.mockRejectedValueOnce(new Error('Network Error'));
 
-    await expect(loginUser(payload,'1234')).rejects.toThrow('Network Error');
+    await expect(loginUser(payload, '1234')).rejects.toThrow('Network Error');
   });
 });

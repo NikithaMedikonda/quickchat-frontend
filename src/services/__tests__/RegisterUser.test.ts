@@ -18,6 +18,12 @@ jest.mock('react-native-libsodium', () => ({
   crypto_secretbox_easy: jest.fn(() => new Uint8Array(64).fill(2)),
   randombytes_buf: jest.fn(() => new Uint8Array(24).fill(3)),
 }));
+jest.mock('@react-native-firebase/messaging', () => () => ({
+  getToken: jest.fn().mockResolvedValue('mocked-token'),
+  requestPermission: jest.fn(),
+  onMessage: jest.fn(),
+}));
+
 
 jest.mock('react-native-device-info', () => ({
   getUniqueId: jest.fn(),
@@ -40,6 +46,9 @@ describe('registerUser', () => {
   const deviceId = {
     deviceId: 'gfjdaskjhskqdhgfcdsvjbk',
   };
+  const fcmToken = {
+    fcmToken: 'gfjdaskjdhsfhafhhskqdhgfcdsvjbk',
+  };
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -60,6 +69,7 @@ describe('registerUser', () => {
       publicKey: keys.publicKey,
       privateKey: encryptedPrivateKey,
       deviceId: deviceId.deviceId,
+       fcmToken: 'mocked-token',
     };
 
     const mockResponse = {
@@ -76,6 +86,7 @@ describe('registerUser', () => {
         publicKey: keys.publicKey,
         privateKey: encryptedPrivateKey,
         deviceId: deviceId.deviceId,
+        fcmToken: fcmToken.fcmToken,
       },
     };
 

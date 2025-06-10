@@ -1,4 +1,4 @@
-import { StyleSheet, Dimensions } from 'react-native';
+import { Dimensions, StyleSheet } from 'react-native';
 import { Colors } from '../../themes/colors.ts';
 
 const { width, height } = Dimensions.get('window');
@@ -24,5 +24,16 @@ export const getStyles = (colors: Colors) =>
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
+    },
+    name: {
+      fontFamily: 'Merriweather',
+      fontWeight: '500',
+      color: colors.text,
+      fontSize: Math.min(width * 0.12, 48),
+      textAlign: 'center',
+      marginBottom: height * 0.015,
+      textShadowColor: 'rgba(0, 122, 255, 0.5)',
+      textShadowOffset: { width: 0, height: 2 },
+      textShadowRadius: 8,
     },
   });

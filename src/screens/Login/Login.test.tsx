@@ -1,4 +1,4 @@
-import {NavigationContainer} from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 import {
   fireEvent,
   render,
@@ -6,16 +6,16 @@ import {
   waitFor,
 } from '@testing-library/react-native';
 import phone from 'phone';
-import {Provider} from 'react-redux';
-import {loginUser} from '../../services/LoginUser';
-import {store} from '../../store/store';
-import {Login} from './Login';
+import { Provider } from 'react-redux';
+import { loginUser } from '../../services/LoginUser';
+import { store } from '../../store/store';
+import { Login } from './Login';
 
 jest.mock('react-native-phone-input', () => {
-  const {useState, forwardRef} = require('react');
-  const {TextInput} = require('react-native');
+  const { useState, forwardRef } = require('react');
+  const { TextInput } = require('react-native');
   const MockPhoneInput = forwardRef(
-    (props: {value: any; onChangePhoneNumber: any}, ref: any) => {
+    (props: { value: any; onChangePhoneNumber: any }, ref: any) => {
       const [phoneNumber, setPhoneNumber] = useState(props.value);
       const handleChangeText = (text: any) => {
         setPhoneNumber(text);
@@ -111,7 +111,7 @@ describe('Login Screen', () => {
     jest.resetAllMocks();
   });
 
-  test('should render the elements correctly', async() => {
+  test('should render the elements correctly', async () => {
     await waitFor(() => {
       expect(screen.getByPlaceholderText('Phone number')).toBeOnTheScreen();
       expect(screen.getByPlaceholderText('Password')).toBeOnTheScreen();
@@ -140,7 +140,7 @@ describe('Login Screen', () => {
   test('should change the value of password upon entering', async () => {
     const phoneNumber = screen.getByPlaceholderText('Password');
 
-    fireEvent.changeText(phoneNumber, {target: {value: 'Anu@1234'}});
+    fireEvent.changeText(phoneNumber, { target: { value: 'Anu@1234' } });
 
     await waitFor(() => {
       expect(phoneNumber.props.value.target.value).toBe('Anu@1234');
@@ -173,7 +173,7 @@ describe('Login Screen', () => {
     fireEvent.changeText(phoneNumber, '8522041688');
     fireEvent.changeText(screen.getByPlaceholderText('Password'), 'Anu@1234');
     fireEvent.press(screen.getByText('Login'));
-    await waitFor(() => {});
+    await waitFor(() => { });
   });
 
   test('should show alert if user not existed with this phone number', async () => {
@@ -202,7 +202,7 @@ describe('Login Screen', () => {
     });
   });
 
-    test('should show alert if user is already login with this phone number', async () => {
+  test('should show alert if user is already login with this phone number', async () => {
     (phone as jest.Mock).mockReturnValue({
       isValid: true,
       phoneNumber: '+918522041688',
