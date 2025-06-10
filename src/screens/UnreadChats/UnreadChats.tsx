@@ -1,26 +1,30 @@
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { useCallback, useLayoutEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
+import {useCallback, useLayoutEffect, useState} from 'react';
+import {useTranslation} from 'react-i18next';
+import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { useDispatch } from 'react-redux';
-import { ChatBox } from '../../components/ChatBox/ChatBox';
-import { numberNameIndex } from '../../helpers/nameNumberIndex';
-import { normalise } from '../../helpers/normalisePhoneNumber';
-import { getAllChats } from '../../services/GetAllChats';
-import { messageDecryption } from '../../services/MessageDecryption';
-import { hide } from '../../store/slices/loadingSlice';
-import { logout } from '../../store/slices/loginSlice';
+import {useDispatch, useSelector} from 'react-redux';
+import {ChatBox} from '../../components/ChatBox/ChatBox';
+import {numberNameIndex} from '../../helpers/nameNumberIndex';
+import {normalise} from '../../helpers/normalisePhoneNumber';
+import {getAllChats} from '../../services/GetAllChats';
+import {messageDecryption} from '../../services/MessageDecryption';
+import {hide} from '../../store/slices/loadingSlice';
+import {logout} from '../../store/slices/loginSlice';
 import {
   setAlertMessage,
   setAlertTitle,
   setAlertType,
   setAlertVisible,
 } from '../../store/slices/registrationSlice';
-import { setUnreadCount } from '../../store/slices/unreadChatSlice';
-import { useThemeColors } from '../../themes/colors';
-import { NavigationProps, UnreadStacKProps } from '../../types/usenavigation.type';
-import { getStyles } from './UnreadChats.style';
+import {setUnreadCount} from '../../store/slices/unreadChatSlice';
+import {RootState} from '../../store/store';
+import {useThemeColors} from '../../themes/colors';
+import {
+  NavigationProps,
+  UnreadStacKProps,
+} from '../../types/usenavigation.type';
+import {getStyles} from './UnreadChats.style';
 export interface Chat {
   chatId: string;
   contactName: string | null;
@@ -37,7 +41,7 @@ export interface Chat {
 type ContactNameMap = Record<string, string>;
 
 export const UnreadChats = () => {
-  const { t } = useTranslation('home');
+  const {t} = useTranslation('home');
   const navigation = useNavigation<NavigationProps>();
   const unreadStackNavigation = useNavigation<UnreadStacKProps>();
   const dispatch = useDispatch();
@@ -45,7 +49,7 @@ export const UnreadChats = () => {
   const styles = getStyles(colors);
   const [chats, setChats] = useState<Chat[]>([]);
   const [contactNameMap, setContactNameMap] = useState<ContactNameMap>({});
-
+  const {msgCount} = useSelector((state: RootState) => state.unread);
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: t('Quick Chat'),
@@ -85,7 +89,6 @@ export const UnreadChats = () => {
         }
 
         setContactNameMap(phoneNameMap as ContactNameMap);
-
         const response = await getAllChats();
 
         if (response.status === 401 || response.data === null) {
@@ -113,7 +116,9 @@ export const UnreadChats = () => {
             }
 
             const allChats = response.data.chats;
-            const unreadChats = allChats.filter((chat: { unreadCount: number; }) => chat.unreadCount > 0);
+            const unreadChats = allChats.filter(
+              (chat: {unreadCount: number}) => chat.unreadCount > 0,
+            );
 
             const totalUnreadChats = unreadChats.length;
             dispatch(setUnreadCount(totalUnreadChats));
@@ -124,9 +129,10 @@ export const UnreadChats = () => {
           showAlert('info', 'Unable to Fetch Chats', 'Please try again later.');
         }
       };
-
-      fetchChats();
-    }, [dispatch, navigation, showAlert]),
+      if (msgCount >= 0) {
+        fetchChats();
+      }
+    }, [dispatch, msgCount, navigation, showAlert]),
   );
 
   return (
@@ -134,9 +140,7 @@ export const UnreadChats = () => {
       <ScrollView style={styles.chatsContainer}>
         {chats.length === 0 ? (
           <View style={styles.noMessagesContainer}>
-            <Text style={styles.unreadtext}>
-              {t('EmptyUnreadMessage')}
-            </Text>
+            <Text style={styles.unReadText}>{t('EmptyUnreadMessage')}</Text>
           </View>
         ) : (
           chats.map(chat => (
@@ -152,7 +156,7 @@ export const UnreadChats = () => {
                     phoneNumber: chat.phoneNumber,
                     isBlocked: false,
                     publicKey: chat.publicKey,
-                    onBlockStatusChange: () => { },
+                    onBlockStatusChange: () => {},
                   },
                 })
               }>
@@ -174,4 +178,3 @@ export const UnreadChats = () => {
     </View>
   );
 };
-
