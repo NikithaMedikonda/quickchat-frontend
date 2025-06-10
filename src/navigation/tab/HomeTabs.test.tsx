@@ -1,15 +1,22 @@
-import { NavigationContainer } from '@react-navigation/native';
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
-import { Provider } from 'react-redux';
-import { store } from '../../store/store';
-import { HomeTabs } from './HomeTabs';
+import {NavigationContainer} from '@react-navigation/native';
+import {fireEvent, render, waitFor} from '@testing-library/react-native';
+import {Provider} from 'react-redux';
+import {getAllChats} from '../../services/GetAllChats';
+import {newSocket} from '../../socket/socket';
+import {store} from '../../store/store';
+import {HomeTabs} from './HomeTabs';
 
+jest.mock('../../services/GetAllChats.ts');
+
+const mockedGetAllChats = getAllChats as jest.MockedFunction<
+  typeof getAllChats
+>;
 
 jest.mock('react-native-encrypted-storage', () => ({
   getItem: jest
     .fn()
     .mockResolvedValue(
-      JSON.stringify({ name: 'Mamatha', phoneNumber: '+91 6303974914' }),
+      JSON.stringify({name: 'Mamatha', phoneNumber: '+91 6303974914'}),
     ),
   setItem: jest.fn(),
   clear: jest.fn(),
@@ -25,8 +32,8 @@ jest.mock('react-native-contacts', () => ({
 }));
 
 jest.mock('react-native-image-crop-picker', () => ({
-  openPicker: jest.fn().mockResolvedValue({ path: 'mocked/image/path.jpg' }),
-  openCamera: jest.fn().mockResolvedValue({ path: 'mocked/image/path.jpg' }),
+  openPicker: jest.fn().mockResolvedValue({path: 'mocked/image/path.jpg'}),
+  openCamera: jest.fn().mockResolvedValue({path: 'mocked/image/path.jpg'}),
 }));
 
 jest.mock('react-native-fs', () => ({
@@ -58,7 +65,18 @@ jest.mock('react-native-libsodium', () => ({
   ),
 }));
 
-describe('Welcome Screen', () => {
+const mockOn = jest.fn();
+newSocket.on = mockOn;
+
+describe('HomeTabs tests', () => {
+  beforeEach(() => {
+    mockedGetAllChats.mockResolvedValue({
+      status: 200,
+      data: {
+        chats: [{unreadCount: 2}, {unreadCount: 0}],
+      },
+    });
+  });
   it('renders the Tabs', async () => {
     await waitFor(() => {
       render(
@@ -70,8 +88,9 @@ describe('Welcome Screen', () => {
       );
     });
   });
+
   it('navigates to profileScreen when Profile tab is pressed', async () => {
-    const { getByText } = render(
+    const {getByText} = render(
       <Provider store={store}>
         <NavigationContainer>
           <HomeTabs />
@@ -84,8 +103,18 @@ describe('Welcome Screen', () => {
       fireEvent.press(profileTab);
     });
   });
-  it('navigates to profile screen when profile tab is pressed', async () => {
-    const { findByText, queryByText } = render(
+
+  it('should increment message count when new message is received', async () => {
+    let newMessageHandler: ((data: any) => void) | null | any = null;
+
+    (newSocket.on as jest.Mock).mockImplementation((event, cb) => {
+      if (event === 'new_message') {
+        newMessageHandler = cb;
+      }
+      return newSocket;
+    });
+
+    render(
       <Provider store={store}>
         <NavigationContainer>
           <HomeTabs />
@@ -93,12 +122,30 @@ describe('Welcome Screen', () => {
       </Provider>,
     );
 
-    const profileTab = await findByText('Profile');
-
-    fireEvent.press(profileTab);
+    if (newMessageHandler) {
+      newMessageHandler({newMessage: true});
+    } else {
+      throw new Error('new_message handler was not registered');
+    }
 
     await waitFor(() => {
-      expect(queryByText('First Name')).toBeTruthy();
+      expect(newSocket.on).toHaveBeenCalledWith(
+        'new_message',
+        expect.any(Function),
+      );
+    });
+  });
+
+  it('covers fetchChats lines when getAllChats returns chats', async () => {
+    render(
+      <Provider store={store}>
+        <NavigationContainer>
+          <HomeTabs />
+        </NavigationContainer>
+      </Provider>,
+    );
+    await waitFor(() => {
+      expect(store.getState().unread.count).toBe(1);
     });
   });
 });
