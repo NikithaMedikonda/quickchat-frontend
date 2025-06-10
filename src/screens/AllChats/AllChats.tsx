@@ -1,11 +1,8 @@
-
-import { useFocusEffect, useNavigation} from '@react-navigation/native';
-import { useCallback, useLayoutEffect, useState} from 'react';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
+import {useCallback, useEffect, useLayoutEffect, useState} from 'react';
 import {ScrollView, TouchableOpacity, View} from 'react-native';
-import {useDispatch} from 'react-redux';
-import {useThemeColors} from '../../themes/colors';
-import {HomeStackProps, NavigationProps} from '../../types/usenavigation.type';
 import EncryptedStorage from 'react-native-encrypted-storage';
+import {useDispatch, useSelector} from 'react-redux';
 import {ChatBox} from '../../components/ChatBox/ChatBox';
 import {PlusIcon} from '../../components/PlusIcon/PlusIcon';
 import {numberNameIndex} from '../../helpers/nameNumberIndex';
@@ -13,17 +10,23 @@ import {normalise} from '../../helpers/normalisePhoneNumber';
 import {getAllChats} from '../../services/GetAllChats';
 import {hide} from '../../store/slices/loadingSlice';
 import {logout} from '../../store/slices/loginSlice';
+import {useThemeColors} from '../../themes/colors';
+import {HomeStackProps, NavigationProps} from '../../types/usenavigation.type';
 
+import {messageDecryption} from '../../services/MessageDecryption';
+import {useDeviceCheck} from '../../services/useDeviceCheck';
+import {newSocket} from '../../socket/socket';
 import {
   setAlertMessage,
   setAlertTitle,
   setAlertType,
   setAlertVisible,
 } from '../../store/slices/registrationSlice';
+import {setUnreadCount} from '../../store/slices/unreadChatSlice';
+import {RootState} from '../../store/store';
 import {Home} from '../Home/Home';
-import { useDeviceCheck } from '../../services/useDeviceCheck';
-import { getStyles } from './AllChats.styles';
-import { messageDecryption } from '../../services/MessageDecryption';
+import {User} from '../Profile/Profile';
+import {getStyles} from './AllChats.styles';
 
 export interface Chat {
   chatId: string;
@@ -46,9 +49,12 @@ export const AllChats = () => {
   const dispatch = useDispatch();
   const colors = useThemeColors();
   const styles = getStyles(colors);
-
+  const [currentUserPhoneNumber, setCurrentUserPhoneNumber] =
+    useState<string>('');
   const [chats, setChats] = useState<Chat[]>([]);
   const [contactNameMap, setContactNameMap] = useState<ContactNameMap>({});
+  const {msgCount} = useSelector((state: RootState) => state.unread);
+  const [updateStatusCount, setUpdateStatusCount] = useState(0);
   useDeviceCheck();
 
   useLayoutEffect(() => {
@@ -64,17 +70,34 @@ export const AllChats = () => {
     });
   });
 
+  const showAlert = useCallback(
+    (type: string, title: string, message: string) => {
+      dispatch(setAlertType(type));
+      dispatch(setAlertTitle(title));
+      dispatch(setAlertMessage(message));
+      dispatch(setAlertVisible(true));
+    },
+    [dispatch],
+  );
 
-const showAlert = useCallback(
-  (type: string, title: string, message: string) => {
-    dispatch(setAlertType(type));
-    dispatch(setAlertTitle(title));
-    dispatch(setAlertMessage(message));
-    dispatch(setAlertVisible(true));
-  },
-  [dispatch]
-);
+  useEffect(() => {
+    const fetchUser = async () => {
+      const currentUser = await EncryptedStorage.getItem('user');
 
+      if (currentUser) {
+        const parsedUser: User = JSON.parse(currentUser);
+        setCurrentUserPhoneNumber(parsedUser.phoneNumber);
+      }
+    };
+    fetchUser();
+
+    const handleUpdateStatus = (data: any) => {
+      if (data.isOnline) {
+        setUpdateStatusCount(prevCount => prevCount + 1);
+      }
+    };
+    newSocket.on(`isOnline_with_${currentUserPhoneNumber}`, handleUpdateStatus);
+  }, [currentUserPhoneNumber, updateStatusCount]);
 
   useFocusEffect(
     useCallback(() => {
@@ -119,14 +142,22 @@ const showAlert = useCallback(
               }
             }
             setChats(response.data.chats);
+            const allChats = response.data.chats;
+            const unreadChats = allChats.filter(
+              (chat: {unreadCount: number}) => chat.unreadCount > 0,
+            );
+
+            const totalUnreadChats = unreadChats.length;
+            dispatch(setUnreadCount(totalUnreadChats));
           }
         } else {
           showAlert('info', 'Unable to Fetch Chats', 'Please try again later.');
         }
       };
-
-      fetchChats();
-    }, [dispatch, navigation, showAlert]),
+      if (msgCount >= 0 || updateStatusCount >= 0) {
+        fetchChats();
+      }
+    }, [msgCount, updateStatusCount, dispatch, showAlert, navigation]),
   );
 
   if (chats.length === 0) {
@@ -149,7 +180,7 @@ const showAlert = useCallback(
                   phoneNumber: chat.phoneNumber,
                   isBlocked: false,
                   publicKey: chat.publicKey,
-                  onBlockStatusChange: () => { },
+                  onBlockStatusChange: () => {},
                 },
               })
             }>
