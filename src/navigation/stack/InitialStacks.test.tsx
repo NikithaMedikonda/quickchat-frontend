@@ -1,9 +1,9 @@
-import { NavigationContainer } from '@react-navigation/native';
-import { render, waitFor } from '@testing-library/react-native';
+import {NavigationContainer} from '@react-navigation/native';
+import {render, waitFor} from '@testing-library/react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { Provider } from 'react-redux';
-import { store } from '../../store/store';
-import { InitialStacks } from './InitialStacks';
+import {Provider} from 'react-redux';
+import {store} from '../../store/store';
+import {InitialStacks} from './InitialStacks';
 
 global.fetch = jest.fn();
 
@@ -17,6 +17,12 @@ jest.mock('react-native-encrypted-storage', () => ({
     ),
   setItem: jest.fn(),
   clear: jest.fn(),
+}));
+let mockIsConnected = true;
+jest.mock('../../hooks/useSocketConnection', () => ({
+  useSocketConnection: () => ({
+    isConnected: mockIsConnected,
+  }),
 }));
 jest.mock('react-native-device-info', () => ({
   getUniqueId: jest.fn(),
