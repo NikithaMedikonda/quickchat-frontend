@@ -3,8 +3,7 @@ name: QuickChat-frontend CI/CD
 on:
   push:
     branches:
-      - main
-      - new-message-reflect
+      - offline/deleted-user
 
 jobs:
   lint-and-test:
