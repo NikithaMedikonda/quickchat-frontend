@@ -5,8 +5,6 @@ import notifee, {
   AuthorizationStatus,
 } from '@notifee/react-native';
 import {PermissionsAndroid, Platform} from 'react-native';
-import {numberNameIndex} from '../helpers/nameNumberIndex';
-import {normalise} from '../helpers/normalisePhoneNumber';
 
 export const requestNotificationPermission = async (): Promise<boolean> => {
   if (Platform.OS === 'android') {
@@ -22,7 +20,6 @@ export const requestNotificationPermission = async (): Promise<boolean> => {
     );
   }
 };
-
 
 export const setupNotificationChannel = async () => {
   if (Platform.OS === 'android') {
@@ -50,27 +47,21 @@ export const getFCMToken = async (): Promise<string | null> => {
 };
 export const listenForForegroundMessages = () => {
   return messaging().onMessage(async remoteMessage => {
-
-    const title = remoteMessage.data?.title;
-    const rawBody = remoteMessage.data?.body;
-    const body =
-      typeof rawBody === 'string' ? rawBody : JSON.stringify(rawBody);
-    const index = await numberNameIndex();
-    if (title && body && index) {
-      const normalisedBody = normalise(body);
-      const name = index[normalisedBody] || body;
-
-      await notifee.displayNotification({
-        title: 'Quick Chat',
-        body: `New Message from ${name}`,
-        android: {
-          channelId: 'quickchat',
-          smallIcon: 'ic_launcher',
-          pressAction: {
-            id: 'default',
-          },
+    const senderPhoneNumber =
+      remoteMessage.data && remoteMessage.data.senderPhoneNumber
+        ? remoteMessage.data.senderPhoneNumber
+        : '';
+    console.log(senderPhoneNumber);
+    await notifee.displayNotification({
+      title: 'Quick Chat',
+      body: `New Message from ${senderPhoneNumber}`,
+      android: {
+        channelId: 'quickchat',
+        smallIcon: 'ic_stat_notification',
+        pressAction: {
+          id: 'default',
         },
-      });
-    }
+      },
+    });
   });
 };
