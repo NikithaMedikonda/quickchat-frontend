@@ -82,8 +82,20 @@ export const InitialStacks = () => {
     if (isConnected) {
       getUser();
     } else {
-      setInitialRoute('hometabs');
-      dispatch(hide());
+      dispatch(show());
+      async function checkUserHasToken() {
+        const userString = await EncryptedStorage.getItem('user');
+        const accessToken = await EncryptedStorage.getItem('authToken');
+        const refreshToken = await EncryptedStorage.getItem('refreshToken');
+        if(!userString || !accessToken || !refreshToken){
+          setInitialRoute('welcome');
+          dispatch(hide());
+        }else{
+        setInitialRoute('hometabs');
+        dispatch(hide());
+        }
+      }
+      checkUserHasToken();
     }
   }, [dispatch, isConnected]);
 
