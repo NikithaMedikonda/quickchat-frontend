@@ -41,3 +41,22 @@ export const checkBlockedStatusLocal = async (
   );
   return result.rows.length > 0;
 };
+
+export const insertDeletedUser = async (phoneNumber: string) => {
+  const db = await getDBInstance();
+  await db.executeSql(
+    `INSERT OR IGNORE INTO DeletedUsers (phoneNumber)
+       VALUES (?)`,
+    [phoneNumber],
+  );
+};
+
+export const isUserDeletedLocal = async (phoneNumber: string) => {
+  const db = await getDBInstance();
+  const [result] = await db.executeSql(
+    `SELECT * FROM DeletedUsers 
+    WHERE phoneNumber = ?`,
+    [phoneNumber],
+  );
+  return result.rows.length > 0;
+};
