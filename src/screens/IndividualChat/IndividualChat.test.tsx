@@ -1,5 +1,5 @@
-import { NavigationContainer, RouteProp } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import {NavigationContainer, RouteProp} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {
   fireEvent,
   render,
@@ -8,28 +8,32 @@ import {
 } from '@testing-library/react-native';
 
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { Provider } from 'react-redux';
-import { getDBInstance } from '../../database/connection/connection';
-import { insertToMessages } from '../../database/services/messageOperations';
+import {Provider} from 'react-redux';
+import {getDBInstance} from '../../database/connection/connection';
+import {insertToMessages} from '../../database/services/messageOperations';
 import {
   deleteFromQueue,
   getQueuedMessages,
   insertToQueue,
   updateLocalMessageStatus,
 } from '../../database/services/queueOperations';
-import { checkBlockedStatusLocal } from '../../database/services/userRestriction';
-import { checkBlockStatus } from '../../services/CheckBlockStatus';
-import { CheckUserDeleteStatus } from '../../services/CheckUserDeleteStatus';
-import { checkUserOnline } from '../../services/CheckUserOnline';
-import { getMessagesBetween } from '../../services/GetMessagesBetween';
-import { messageDecryption } from '../../services/MessageDecryption';
-import { messageEncryption } from '../../services/MessageEncryption';
-import { updateMessageStatus } from '../../services/UpdateMessageStatus';
+import {
+  checkBlockedStatusLocal,
+  insertDeletedUser,
+  isUserDeletedLocal,
+} from '../../database/services/userRestriction';
+import {checkBlockStatus} from '../../services/CheckBlockStatus';
+import {CheckUserDeleteStatus} from '../../services/CheckUserDeleteStatus';
+import {checkUserOnline} from '../../services/CheckUserOnline';
+import {getMessagesBetween} from '../../services/GetMessagesBetween';
+import {messageDecryption} from '../../services/MessageDecryption';
+import {messageEncryption} from '../../services/MessageEncryption';
+import {updateMessageStatus} from '../../services/UpdateMessageStatus';
 import * as socket from '../../socket/socket';
-import { resetForm } from '../../store/slices/registrationSlice';
-import { store } from '../../store/store';
-import { HomeStackParamList } from '../../types/usenavigation.type';
-import { IndividualChat } from './IndividualChat';
+import {resetForm} from '../../store/slices/registrationSlice';
+import {store} from '../../store/store';
+import {HomeStackParamList} from '../../types/usenavigation.type';
+import {IndividualChat} from './IndividualChat';
 
 type IndividualChatRouteProp = RouteProp<HomeStackParamList, 'individualChat'>;
 const mockRoute: IndividualChatRouteProp = {
@@ -101,6 +105,8 @@ jest.mock('../../services/UpdateMessageStatus', () => ({
 
 jest.mock('../../database/services/userRestriction', () => ({
   checkBlockedStatusLocal: jest.fn(),
+  insertDeletedUser: jest.fn(),
+  isUserDeletedLocal: jest.fn(),
 }));
 
 jest.mock('../../database/services/queueOperations', () => ({
@@ -281,6 +287,7 @@ describe('IndividualChat', () => {
         expect(checkBlockedStatusLocal).toHaveBeenCalled();
       });
     });
+
     test('should check block status on component mount with valid user and token', async () => {
       mockExecuteSql.mockResolvedValue([
         {
@@ -679,6 +686,7 @@ describe('IndividualChat', () => {
       {timeout: 2000},
     );
   });
+
   test('calls sendPrivateMessage and updates sendMessages when message is sent', async () => {
     mockIsConnected = true;
     (EncryptedStorage.getItem as jest.Mock).mockImplementation(
@@ -887,6 +895,7 @@ describe('IndividualChat', () => {
       expect(mockSend).not.toHaveBeenCalled();
     });
   });
+
   test('should sendPrivateMessage and the messages should be read when the user is online with this user', async () => {
     (EncryptedStorage.getItem as jest.Mock).mockImplementation(
       (key: string) => {
@@ -953,6 +962,7 @@ describe('IndividualChat', () => {
       expect(elements).toBeTruthy();
     });
   });
+
   test('should sendPrivateMessage and the messages should be delivered when the user is online with this user', async () => {
     mockIsConnected = true;
     (EncryptedStorage.getItem as jest.Mock).mockImplementation(
@@ -1025,8 +1035,64 @@ describe('IndividualChat', () => {
     });
   });
 });
+
 describe('User Delete Status', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    setupMocks();
+    mockIsConnected = true;
+  });
+
+  test('should call CheckUserDeleteStatus when local check returns false', async () => {
+    (isUserDeletedLocal as jest.Mock).mockResolvedValue(false);
+    (CheckUserDeleteStatus as jest.Mock).mockResolvedValue({
+      status: 200,
+      data: {isDeleted: true},
+    });
+
+    render(
+      <NavigationContainer>
+        <Provider store={store}>
+          <IndividualChat
+            navigation={mockNavigation as any}
+            route={mockRoute}
+          />
+        </Provider>
+      </NavigationContainer>,
+    );
+
+    await waitFor(() => {
+      expect(isUserDeletedLocal).toHaveBeenCalledWith('+918522041688');
+    });
+
+    await waitFor(() => {
+      expect(CheckUserDeleteStatus).toHaveBeenCalled();
+    });
+  });
+
+  test('should not call CheckUserDeleteStatus when local check returns true', async () => {
+    (isUserDeletedLocal as jest.Mock).mockResolvedValue(true);
+
+    render(
+      <NavigationContainer>
+        <Provider store={store}>
+          <IndividualChat
+            navigation={mockNavigation as any}
+            route={mockRoute}
+          />
+        </Provider>
+      </NavigationContainer>,
+    );
+
+    await waitFor(() => {
+      expect(isUserDeletedLocal).toHaveBeenCalledWith('+918522041688');
+    });
+
+    expect(CheckUserDeleteStatus).not.toHaveBeenCalled();
+  });
+
   test('should set isDeleted to true when user is deleted', async () => {
+    (isUserDeletedLocal as jest.Mock).mockResolvedValue(false);
     (CheckUserDeleteStatus as jest.Mock).mockResolvedValue({
       status: 200,
       data: {isDeleted: true},
@@ -1051,9 +1117,14 @@ describe('User Delete Status', () => {
     await waitFor(() => {
       expect(CheckUserDeleteStatus).toHaveBeenCalled();
     });
+
+    await waitFor(() => {
+      expect(insertDeletedUser).toHaveBeenCalledWith('+918522041688');
+    });
   });
 
   test('should set isdeleted to false when user is not deleted', async () => {
+    (isUserDeletedLocal as jest.Mock).mockResolvedValue(false);
     (CheckUserDeleteStatus as jest.Mock).mockResolvedValue({
       status: 200,
       data: {isDeleted: false},
@@ -1080,7 +1151,30 @@ describe('User Delete Status', () => {
     });
   });
 
+  test('should use local deleted status when offline', async () => {
+    mockIsConnected = false;
+    (isUserDeletedLocal as jest.Mock).mockResolvedValue(true);
+
+    render(
+      <NavigationContainer>
+        <Provider store={store}>
+          <IndividualChat
+            navigation={mockNavigation as any}
+            route={mockRoute}
+          />
+        </Provider>
+      </NavigationContainer>,
+    );
+
+    await waitFor(() => {
+      expect(isUserDeletedLocal).toHaveBeenCalledWith('+918522041688');
+    });
+
+    expect(CheckUserDeleteStatus).not.toHaveBeenCalled();
+  });
+
   test('should handle CheckUserDeleteStatus API error gracefully', async () => {
+    (isUserDeletedLocal as jest.Mock).mockResolvedValue(false);
     (CheckUserDeleteStatus as jest.Mock).mockRejectedValue(
       new Error('API Error'),
     );
@@ -1107,6 +1201,7 @@ describe('User Delete Status', () => {
   });
 
   test('should handle non-200 status from CheckUserDeleteStatus', async () => {
+    (isUserDeletedLocal as jest.Mock).mockResolvedValue(false);
     (CheckUserDeleteStatus as jest.Mock).mockResolvedValue({
       status: 400,
       data: {error: 'Bad request'},
@@ -1132,6 +1227,7 @@ describe('User Delete Status', () => {
       expect(CheckUserDeleteStatus).toHaveBeenCalled();
     });
   });
+
   test('should not call CheckUserDeleteStatus when auth token is missing', async () => {
     jest.clearAllMocks();
     (EncryptedStorage.getItem as jest.Mock).mockImplementation(
@@ -1171,6 +1267,7 @@ describe('User Delete Status', () => {
         return Promise.resolve(null);
       },
     );
+    (isUserDeletedLocal as jest.Mock).mockResolvedValue(false);
     (CheckUserDeleteStatus as jest.Mock).mockResolvedValue({
       status: 200,
       data: {isDeleted: false},
