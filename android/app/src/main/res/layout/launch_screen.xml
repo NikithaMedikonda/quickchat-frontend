@@ -20,7 +20,7 @@
         android:textColor="#FFFFFF"
         android:textSize="32sp"
         android:textStyle="bold"
-        android:layout_marginTop="350dp"
+        android:layout_marginTop="420dp"
         android:layout_centerHorizontal="true" />
 <TextView
         android:id="@+id/app_description"
@@ -28,8 +28,8 @@
         android:layout_height="wrap_content"
         android:text="Connecting hearts"
         android:textColor="#FFFFFF"
-        android:textSize="17sp"
-        android:layout_marginTop="400dp"
+        android:textSize="16sp"
+        android:layout_marginTop="480dp"
         android:layout_marginStart="80dp"
         android:layout_centerHorizontal="true" />
 </RelativeLayout>
