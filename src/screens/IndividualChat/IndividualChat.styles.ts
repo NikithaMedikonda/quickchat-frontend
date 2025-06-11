@@ -126,5 +126,18 @@ export const individualChatStyles = (colors: Colors) => {
       marginBottom: 12,
       lineHeight: 22,
     },
+    dateGroupHeader: {
+  alignItems: 'center',
+  marginVertical: 10,
+},
+dateGroupText: {
+  fontSize: 12,
+  fontWeight: '600',
+  color: colors.text,
+  backgroundColor: colors.gray,
+  paddingVertical: 4,
+  paddingHorizontal: 12,
+  borderRadius: 8,
+},
   });
 };
