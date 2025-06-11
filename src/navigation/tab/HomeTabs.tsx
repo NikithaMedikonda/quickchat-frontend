@@ -1,22 +1,32 @@
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
-import { useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Image, View } from 'react-native';
+import {useCallback, useEffect, useState} from 'react';
+import {Image, View} from 'react-native';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {
+  getFocusedRouteNameFromRoute,
+  useFocusEffect,
+} from '@react-navigation/native';
+import {useDispatch, useSelector} from 'react-redux';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { useSelector } from 'react-redux';
-import { Badge } from '../../components/Badge/Badge.tsx';
-import { User } from '../../screens/Profile/Profile';
-import { newSocket, socketConnection } from '../../socket/socket';
-import { useThemeColors } from '../../themes/colors';
-import { useImagesColors } from '../../themes/images';
-import { HomeStacks } from '../stack/HomeStacks';
-import { ProfileStack } from '../stack/ProfileStacks';
-import { UnreadStacks } from '../stack/UnreadStacks.tsx';
-import { styles } from './HomeTabs.styles';
+import {useTranslation} from 'react-i18next';
 
-const HomeTabIcon = ({ focused }: { focused: boolean }) => {
-  const { tabHome } = useImagesColors();
+import {Badge} from '../../components/Badge/Badge.tsx';
+import {User} from '../../screens/Profile/Profile';
+import {getAllChats} from '../../services/GetAllChats.ts';
+import {newSocket, socketConnection} from '../../socket/socket';
+import {
+  setNewMessageCount,
+  setUnreadCount,
+} from '../../store/slices/unreadChatSlice.ts';
+import {useThemeColors} from '../../themes/colors';
+import {useImagesColors} from '../../themes/images';
+import {HomeStacks} from '../stack/HomeStacks';
+import {ProfileStack} from '../stack/ProfileStacks';
+import {UnreadStacks} from '../stack/UnreadStacks.tsx';
+
+import {styles} from './HomeTabs.styles';
+
+const HomeTabIcon = ({focused}: {focused: boolean}) => {
+  const {tabHome} = useImagesColors();
   return (
     <View style={styles.iconContainer}>
       {!focused ? (
@@ -31,8 +41,8 @@ const HomeTabIcon = ({ focused }: { focused: boolean }) => {
   );
 };
 
-const UnreadTabIcon = ({ focused }: { focused: boolean }) => {
-  const { tabUnread } = useImagesColors();
+const UnreadTabIcon = ({focused}: {focused: boolean}) => {
+  const {tabUnread} = useImagesColors();
   const unreadCount = useSelector((state: any) => state.unread?.count ?? 0);
   return (
     <View style={styles.iconContainer}>
@@ -53,8 +63,8 @@ const UnreadTabIcon = ({ focused }: { focused: boolean }) => {
   );
 };
 
-const ProfileTabIcon = ({ focused }: { focused: boolean }) => {
-  const { tabProfile } = useImagesColors();
+const ProfileTabIcon = ({focused}: {focused: boolean}) => {
+  const {tabProfile} = useImagesColors();
   return (
     <View style={styles.iconContainer}>
       {!focused ? (
@@ -70,6 +80,21 @@ const ProfileTabIcon = ({ focused }: { focused: boolean }) => {
 };
 
 export const HomeTabs = () => {
+  const [newMessageCount, setMessageCount] = useState(0);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    const handleNewMessage = (data: {newMessage: boolean}) => {
+      if (data.newMessage) {
+        setMessageCount(prevCount => prevCount + 1);
+      }
+    };
+
+    newSocket.on('new_message', handleNewMessage);
+
+    return () => {
+      newSocket.off('new_message', handleNewMessage);
+    };
+  }, [dispatch, newMessageCount]);
   useEffect(() => {
     async function connect() {
       const user = await EncryptedStorage.getItem('user');
@@ -83,9 +108,27 @@ export const HomeTabs = () => {
       newSocket.disconnect();
     };
   }, []);
+  useFocusEffect(
+    useCallback(() => {
+      const fetchChats = async () => {
+        const response = await getAllChats();
+        if (response.status === 200) {
+          const allChats = response.data.chats;
+          const unreadChats = allChats.filter(
+            (chat: {unreadCount: number}) => chat.unreadCount > 0,
+          );
+
+          const totalUnreadChats = unreadChats.length;
+          dispatch(setUnreadCount(totalUnreadChats));
+        }
+      };
+      dispatch(setNewMessageCount(newMessageCount));
+      fetchChats();
+    }, [dispatch, newMessageCount]),
+  );
   const Tab = createBottomTabNavigator();
   const colors = useThemeColors();
-  const { t } = useTranslation('home');
+  const {t} = useTranslation('home');
   return (
     <Tab.Navigator
       screenOptions={{
@@ -109,7 +152,7 @@ export const HomeTabs = () => {
       <Tab.Screen
         name="homeStacks"
         component={HomeStacks}
-        options={({ route }) => {
+        options={({route}) => {
           const routeName = getFocusedRouteNameFromRoute(route) ?? 'home';
           const hideTabBar = routeName === 'individualChat';
           return {
@@ -128,14 +171,14 @@ export const HomeTabs = () => {
       <Tab.Screen
         name="unread"
         component={UnreadStacks}
-        options={({ route }) => {
+        options={({route}) => {
           const routeName = getFocusedRouteNameFromRoute(route) ?? '';
           const hideTabBar = routeName === 'individualChat';
           return {
             headerShown: false,
             tabBarIcon: UnreadTabIcon,
             tabBarLabel: t('Unread Chats'),
-            headerStyle: { backgroundColor: colors.background },
+            headerStyle: {backgroundColor: colors.background},
             headerTitleAlign: 'center',
             tabBarStyle: {
               display: hideTabBar ? 'none' : 'flex',
@@ -155,7 +198,7 @@ export const HomeTabs = () => {
           tabBarIcon: ProfileTabIcon,
           tabBarLabel: t('Profile'),
         }}
-        listeners={({ navigation }) => ({
+        listeners={({navigation}) => ({
           tabPress: event => {
             event.preventDefault();
             navigation.navigate('profileStack', {

@@ -3,16 +3,14 @@ import { API_URL } from '../constants/api';
 export const updateMessageStatus = async (payload: {
   senderPhoneNumber: string;
   receiverPhoneNumber: string;
-  timestamp: number;
   previousStatus: string;
   currentStatus: string;
 }) => {
   const token = await EncryptedStorage.getItem('authToken');
-  const {senderPhoneNumber, receiverPhoneNumber, timestamp,previousStatus,currentStatus} = payload;
+  const {senderPhoneNumber, receiverPhoneNumber, previousStatus,currentStatus} = payload;
   const messageData = {
     senderPhoneNumber,
     receiverPhoneNumber,
-    timestamp,
     previousStatus,
     currentStatus,
   };

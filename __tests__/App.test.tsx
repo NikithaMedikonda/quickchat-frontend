@@ -12,6 +12,19 @@ jest.mock('react-native-device-info', () => ({
   getUniqueId: jest.fn(),
 }));
 
+jest.mock('@react-native-firebase/app', () => ({}));
+jest.mock('@react-native-firebase/messaging', () => () => ({
+  getToken: jest.fn().mockResolvedValue('mocked-fcm-token'),
+  requestPermission: jest.fn(),
+}));
+jest.mock('@notifee/react-native', () => ({
+  AndroidImportance: {},
+  requestPermission: jest.fn(),
+}));
+jest.mock('../src/permissions/NotificationPermissions', () => ({
+  getFCMToken: jest.fn(),
+  listenForForegroundMessages: jest.fn(),
+}));
 jest.mock('react-native-image-crop-picker', () => ({
   openCamera: jest.fn().mockResolvedValue({path: 'mocked/path.jpg'}),
   openPicker: jest.fn().mockResolvedValue({path: 'mocked/path.jpg'}),

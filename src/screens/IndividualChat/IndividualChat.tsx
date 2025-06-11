@@ -337,7 +337,6 @@ export const IndividualChat = ({route}: Props) => {
       const details = {
         senderPhoneNumber: user.phoneNumber,
         receiverPhoneNumber: currentUserPhoneNumberRef.current,
-        timestamp: Date.now(),
         previousStatus: 'delivered',
         currentStatus: 'read',
       };

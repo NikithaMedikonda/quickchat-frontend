@@ -10,6 +10,8 @@ import './src/i18n/i18n.config';
 import { i18next } from './src/i18n/i18n.config';
 import { InitialStacks } from './src/navigation/stack/InitialStacks';
 import { store } from './src/store/store';
+import { getFCMToken } from './src/permissions/NotificationPermissions';
+import { listenForForegroundMessages } from './src/permissions/NotificationPermissions';
 
 export const App = () => {
   useEffect(() => {
@@ -23,7 +25,10 @@ export const App = () => {
     };
     initialiseDB();
   }, []);
-
+    useEffect(() => {
+    getFCMToken();
+    listenForForegroundMessages();
+  }, []);
   return (
     <Provider store={store}>
       <NavigationContainer>

@@ -14,7 +14,7 @@ export const getStyles = (colors: Colors) =>
       paddingTop: 20,
       backgroundColor: colors.background,
     },
-    unreadtext: {
+    unReadText: {
       color: colors.gray,
       fontSize: 18,
       fontWeight: 'bold',
