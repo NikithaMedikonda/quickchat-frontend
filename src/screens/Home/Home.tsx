@@ -35,10 +35,10 @@ export const Home = () => {
         source={require('./../../assets/homescreen.png')}
       />
       <Text style={styles.description}>
-        {t('One message. Infinite possibilities.')}
+        {t('Start messages text')}
       </Text>
       <Text style={styles.description}>
-        {t('What are you waiting for?')}
+        {t('User friendly question')}
       </Text>
     </View>
     <View style={styles.plusContainer}>
