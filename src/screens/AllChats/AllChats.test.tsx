@@ -164,9 +164,6 @@ describe('AllChats Component', () => {
     );
 
     await waitFor(() => {
-      // expect(
-      //   screen.getByText('Start messages text'),
-      // ).toBeTruthy();
       expect(screen.getByText('User friendly question')).toBeTruthy();
     });
   });
@@ -329,9 +326,6 @@ describe('AllChats Component', () => {
     });
 
     await waitFor(() => {
-      // expect(
-      //   screen.getByText('Start messages text'),
-      // ).toBeTruthy();
       expect(dispatchSpy).toHaveBeenCalledWith(
         expect.objectContaining({
           type: 'loading/hide',
