@@ -1,3 +1,4 @@
+import { getDBInstance } from '../connection/connection';
 import {
   createUserInstance,
   getLastSyncedTime,
@@ -5,8 +6,6 @@ import {
   updateLastSyncedTime,
   upsertUserInfo,
 } from '../services/userOperations';
-
-import { getDBInstance } from '../connection/connection';
 
 jest.mock('../connection/connection', () => ({
   getDBInstance: jest.fn(),
@@ -112,7 +111,6 @@ describe('userOperation DB functions', () => {
   });
 
   test('createUserInstance inserts a user with given phoneNumber and time', async () => {
-
     mockExecuteSql.mockResolvedValueOnce([]);
 
     await expect(
@@ -137,7 +135,6 @@ describe('userOperation DB functions', () => {
   });
 
   test('getLastSyncedTime returns lastSyncedAt if found', async () => {
-
     const mockDate = '2024-01-01T12:00:00Z';
 
     mockExecuteSql.mockResolvedValueOnce([
@@ -156,7 +153,6 @@ describe('userOperation DB functions', () => {
   });
 
   test('getLastSyncedTime inserts default if user not found', async () => {
-
     const defaultDate = new Date(0).toISOString();
 
     mockExecuteSql
@@ -178,14 +174,12 @@ describe('userOperation DB functions', () => {
   });
 
   test('getLastSyncedTime throws on DB failure', async () => {
-
     mockExecuteSql.mockRejectedValueOnce(new Error('DB crash'));
 
     await expect(getLastSyncedTime('fail')).rejects.toThrow('DB crash');
   });
 
   test('updateLastSyncedTime updates the timestamp correctly', async () => {
-
     mockExecuteSql.mockResolvedValueOnce([]);
 
     await expect(
@@ -199,7 +193,6 @@ describe('userOperation DB functions', () => {
   });
 
   test('updateLastSyncedTime handles DB error', async () => {
-
     mockExecuteSql.mockRejectedValueOnce(new Error('Update failed'));
 
     await expect(
