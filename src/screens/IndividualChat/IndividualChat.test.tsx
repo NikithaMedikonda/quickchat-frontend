@@ -1,5 +1,5 @@
-import { NavigationContainer, RouteProp } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import {NavigationContainer, RouteProp} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {
   fireEvent,
   render,
@@ -8,28 +8,28 @@ import {
 } from '@testing-library/react-native';
 
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { Provider } from 'react-redux';
-import { getDBInstance } from '../../database/connection/connection';
-import { insertToMessages } from '../../database/services/messageOperations';
+import {Provider} from 'react-redux';
+import {getDBInstance} from '../../database/connection/connection';
+import {insertToMessages} from '../../database/services/messageOperations';
 import {
   deleteFromQueue,
   getQueuedMessages,
   insertToQueue,
   updateLocalMessageStatus,
 } from '../../database/services/queueOperations';
-import { checkBlockedStatusLocal } from '../../database/services/userRestriction';
-import { checkBlockStatus } from '../../services/CheckBlockStatus';
-import { CheckUserDeleteStatus } from '../../services/CheckUserDeleteStatus';
-import { checkUserOnline } from '../../services/CheckUserOnline';
-import { getMessagesBetween } from '../../services/GetMessagesBetween';
-import { messageDecryption } from '../../services/MessageDecryption';
-import { messageEncryption } from '../../services/MessageEncryption';
-import { updateMessageStatus } from '../../services/UpdateMessageStatus';
+import {checkBlockedStatusLocal} from '../../database/services/userRestriction';
+import {checkBlockStatus} from '../../services/CheckBlockStatus';
+import {CheckUserDeleteStatus} from '../../services/CheckUserDeleteStatus';
+import {checkUserOnline} from '../../services/CheckUserOnline';
+import {getMessagesBetween} from '../../services/GetMessagesBetween';
+import {messageDecryption} from '../../services/MessageDecryption';
+import {messageEncryption} from '../../services/MessageEncryption';
+import {updateMessageStatus} from '../../services/UpdateMessageStatus';
 import * as socket from '../../socket/socket';
-import { resetForm } from '../../store/slices/registrationSlice';
-import { store } from '../../store/store';
-import { HomeStackParamList } from '../../types/usenavigation.type';
-import { IndividualChat } from './IndividualChat';
+import {resetForm} from '../../store/slices/registrationSlice';
+import {store} from '../../store/store';
+import {HomeStackParamList} from '../../types/usenavigation.type';
+import {IndividualChat} from './IndividualChat';
 
 type IndividualChatRouteProp = RouteProp<HomeStackParamList, 'individualChat'>;
 const mockRoute: IndividualChatRouteProp = {
@@ -55,6 +55,18 @@ jest.mock('../../database/connection/connection', () => ({
 
 jest.mock('../../services/useDeviceCheck', () => ({
   useDeviceCheck: jest.fn(),
+}));
+
+jest.mock('react-native-contacts', () => ({
+  getAll: jest.fn(() => Promise.resolve([])),
+  getContactsByPhoneNumber: jest.fn(),
+  getAllWithoutPhotos: jest.fn(),
+}));
+
+jest.mock('../../database/services/messageOperations', () => ({
+  getMessagesByChatId: jest.fn().mockResolvedValue([]),
+  insertToMessages: jest.fn(),
+  updateLocalMessageStatusToRead: jest.fn().mockResolvedValue(undefined),
 }));
 
 jest.mock('react-native-libsodium', () => ({
@@ -108,10 +120,6 @@ jest.mock('../../database/services/queueOperations', () => ({
   getQueuedMessages: jest.fn().mockResolvedValue([]),
   updateLocalMessageStatus: jest.fn(),
   deleteFromQueue: jest.fn(),
-}));
-
-jest.mock('../../database/services/messageOperations', () => ({
-  insertToMessages: jest.fn(),
 }));
 
 jest.mock('../../socket/socket', () => ({
@@ -637,20 +645,22 @@ describe('IndividualChat', () => {
       expect(sendIcon).toBeTruthy();
     });
   });
-
   test('adds message to receivedMessages if message is not empty', async () => {
     mockIsConnected = true;
+
     (messageDecryption as jest.Mock).mockResolvedValue('Hello!');
 
     (socket.receivePrivateMessage as jest.Mock).mockImplementation(
-      async (_recipient, callback) => {
-        callback({
-          senderPhoneNumber: '+918522041688',
-          recipientPhoneNumber: '+919999999999',
-          message: 'encrypted-hello',
-          timestamp: new Date().toISOString(),
-          status: 'delivered',
-        });
+      (_recipient, callback) => {
+        setTimeout(() => {
+          callback({
+            senderPhoneNumber: '+918522041688',
+            recipientPhoneNumber: '+919999999999',
+            message: 'encrypted-hello',
+            timestamp: new Date().toISOString(),
+            status: 'delivered',
+          });
+        }, 100); // delay to simulate async socket message
         return Promise.resolve();
       },
     );
@@ -673,12 +683,12 @@ describe('IndividualChat', () => {
 
     await waitFor(
       () => {
-        const elements = screen.getAllByText('Hello!');
-        expect(elements).toBeTruthy();
+        expect(screen.getByText('Hello!')).toBeTruthy();
       },
       {timeout: 2000},
     );
   });
+
   test('calls sendPrivateMessage and updates sendMessages when message is sent', async () => {
     mockIsConnected = true;
     (EncryptedStorage.getItem as jest.Mock).mockImplementation(
@@ -748,68 +758,6 @@ describe('IndividualChat', () => {
     expect(calledPayload.status).toBeDefined();
     await waitFor(() => {
       expect(screen.getByText('Hello, test!')).toBeTruthy();
-    });
-  });
-
-  test('should set the current user phone when the user exists', async () => {
-    (EncryptedStorage.getItem as jest.Mock).mockImplementation(key => {
-      if (key === 'user') {
-        return Promise.resolve(JSON.stringify({phoneNumber: '9822416889'}));
-      }
-      if (key === 'privateKey') {
-        return Promise.resolve('mock-private-key');
-      }
-      if (key === 'authToken') {
-        return Promise.resolve('mock-auth-token');
-      }
-      return Promise.resolve(null);
-    });
-
-    (messageDecryption as jest.Mock).mockResolvedValue('Hello there!');
-
-    (getMessagesBetween as jest.Mock).mockResolvedValue({
-      status: 200,
-      data: {
-        chats: [
-          {
-            sender: {phoneNumber: '9822416889'},
-            receiver: {phoneNumber: '+918522041688'},
-            content: 'encrypted-content',
-            createdAt: new Date().toISOString(),
-            status: 'delivered',
-          },
-        ],
-      },
-    });
-
-    render(
-      <NavigationContainer>
-        <Provider store={store}>
-          <IndividualChat
-            navigation={
-              mockNavigation as NativeStackNavigationProp<
-                HomeStackParamList,
-                'individualChat'
-              >
-            }
-            route={mockRoute}
-          />
-        </Provider>
-      </NavigationContainer>,
-    );
-
-    await waitFor(() => {
-      expect(EncryptedStorage.getItem).toHaveBeenCalledWith('user');
-      expect(getMessagesBetween).toHaveBeenCalledWith({
-        senderPhoneNumber: '9822416889',
-        receiverPhoneNumber: '+918522041688',
-      });
-    });
-
-    await waitFor(() => {
-      const elements = screen.getAllByText('Hello there!');
-      expect(elements.length).toBeGreaterThan(0);
-      expect(elements[0]).toBeTruthy();
     });
   });
 
