@@ -178,7 +178,7 @@ export const IndividualChat = ({route}: Props) => {
             phoneNumber: user.phoneNumber,
             authToken: token,
           });
-          if (result.status === 200) {
+          if (result.status === 200 && result.data.isDeleted === true) {
             setIsDeleted(result.data.isDeleted);
             insertDeletedUser(user.phoneNumber);
           }

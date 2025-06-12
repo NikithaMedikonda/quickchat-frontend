@@ -137,6 +137,7 @@ export const ContactsDisplay = () => {
               size="large"
               color="white"
             />
+
           </View>
         ) : (
           <View>
