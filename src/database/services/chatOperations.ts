@@ -1,12 +1,12 @@
-import { SQLiteDatabase } from 'react-native-sqlite-storage';
-import { numberNameIndex } from '../../helpers/nameNumberIndex';
-import { normalise } from '../../helpers/normalisePhoneNumber';
-import { getUserByPhoneNumber } from '../../services/GetUser';
-import { setUnreadCount } from '../../store/slices/unreadChatSlice';
-import { store } from '../../store/store';
-import { createChatId } from '../../utils/chatId';
-import { getDBInstance } from '../connection/connection';
-import { isUserStoredLocally, upsertUserInfo } from './userOperations';
+import {SQLiteDatabase} from 'react-native-sqlite-storage';
+import {numberNameIndex} from '../../helpers/nameNumberIndex';
+import {normalise} from '../../helpers/normalisePhoneNumber';
+import {getUserByPhoneNumber} from '../../services/GetUser';
+import {setUnreadCount} from '../../store/slices/unreadChatSlice';
+import {store} from '../../store/store';
+import {createChatId} from '../../utils/chatId';
+import {getDBInstance} from '../connection/connection';
+import {isUserStoredLocally, upsertUserInfo} from './userOperations';
 
 export const clearChatLocally = async (
   chatId: string,
@@ -128,7 +128,9 @@ export const getAllChatsFromLocal = async (
         ? row.userBPhoneNumber
         : row.userAPhoneNumber;
 
-    const contactName = phoneNameMap ? phoneNameMap[normalise(contactPhone)] : contactPhone;
+    const contactName = phoneNameMap
+      ? phoneNameMap[normalise(contactPhone)] ?? contactPhone
+      : contactPhone;
     const [userResult] = await db.executeSql(
       'SELECT * FROM LocalUsers WHERE phoneNumber = ?',
       [contactPhone],
