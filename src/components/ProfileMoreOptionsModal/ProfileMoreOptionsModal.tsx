@@ -122,7 +122,6 @@ export const ProfileMoreOptionsModal = ({
         }, 1000);
       }
     } catch (error) {
-      console.log(error);
       showAlert('info', 'Logout failed', 'Something went wrong while logout');
     }
 

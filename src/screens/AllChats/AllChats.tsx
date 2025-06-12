@@ -1,19 +1,19 @@
-import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {useCallback, useEffect, useLayoutEffect, useState} from 'react';
 import {ScrollView, TouchableOpacity, View} from 'react-native';
-import EncryptedStorage from 'react-native-encrypted-storage';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import {messageDecryption} from '../../services/MessageDecryption';
+import {useDeviceCheck} from '../../services/useDeviceCheck';
 import {ChatBox} from '../../components/ChatBox/ChatBox';
 import {PlusIcon} from '../../components/PlusIcon/PlusIcon';
-import {useThemeColors} from '../../themes/colors';
-import {HomeStackProps, NavigationProps} from '../../types/usenavigation.type';
-import {newSocket} from '../../socket/socket';
+import {hide} from '../../store/slices/loadingSlice';
 import {setUnreadCount} from '../../store/slices/unreadChatSlice';
 import {RootState} from '../../store/store';
-import {Home} from '../Home/Home';
-import {useDeviceCheck} from '../../services/useDeviceCheck';
+import {HomeStackProps, NavigationProps} from '../../types/usenavigation.type';
+import {useThemeColors} from '../../themes/colors';
 import {getStyles} from './AllChats.styles';
-import {messageDecryption} from '../../services/MessageDecryption';
+import {Home} from '../Home/Home';
 import {User} from '../Profile/Profile';
 import {
   getAllChatsFromLocal,
@@ -21,7 +21,8 @@ import {
   LocalChat,
 } from '../../database/services/chatOperations';
 import {getDBInstance} from '../../database/connection/connection';
-import {hide} from '../../store/slices/loadingSlice';
+import {newSocket} from '../../socket/socket';
+
 export interface Chat {
   chatId: string;
   contactName: string | null;
@@ -74,7 +75,7 @@ export const AllChats = () => {
     };
     fetchUser();
 
-    const handleUpdateStatus = (data: any) => {
+    const handleUpdateStatus = (data: {isOnline: boolean}) => {
       if (data.isOnline) {
         setUpdateStatusCount(prevCount => prevCount + 1);
       }

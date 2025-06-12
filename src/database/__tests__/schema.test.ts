@@ -15,6 +15,7 @@ describe('Test for createTables function', () => {
     mockExecuteSql.mockResolvedValueOnce([]);
     mockExecuteSql.mockResolvedValueOnce([]);
     mockExecuteSql.mockResolvedValueOnce([]);
+    mockExecuteSql.mockResolvedValueOnce([]);
 
     await createTables(mockDb);
 
@@ -40,6 +41,9 @@ describe('Test for createTables function', () => {
     );
     expect(mockExecuteSql.mock.calls[6][0]).toMatch(
       /CREATE TABLE IF NOT EXISTS LocalUsers/i,
+    );
+    expect(mockExecuteSql.mock.calls[5][0]).toMatch(
+      /CREATE TABLE IF NOT EXISTS DeletedUsers/i,
     );
   });
 });

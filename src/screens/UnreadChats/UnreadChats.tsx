@@ -53,7 +53,7 @@ export const UnreadChats = () => {
   const {msgCount} = useSelector((state: RootState) => state.unread);
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: t('Quick Chat'),
+      headerTitle: t('App Name'),
       headerTitleAlign: 'center',
       headerStyle: {
         backgroundColor: colors.background,

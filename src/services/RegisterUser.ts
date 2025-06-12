@@ -1,5 +1,6 @@
-import {API_URL} from '../constants/api';
-import {keyEncryption} from './KeyEncryption';
+import { API_URL } from '../constants/api';
+import { getFCMToken } from '../permissions/NotificationPermissions';
+import { keyEncryption } from './KeyEncryption';
 
 export const registerUser = async (
   payload: {
@@ -20,7 +21,7 @@ export const registerUser = async (
     privateKey: keys.privateKey,
     password: payload.password,
   });
-
+  const fcmToken = await getFCMToken();
   const userData = {
     phoneNumber: payload.phoneNumber,
     firstName: payload.firstName.trim(),
@@ -30,7 +31,8 @@ export const registerUser = async (
     password: payload.password,
     publicKey: keys.publicKey,
     privateKey: encryptedPrivateKey,
-    deviceId: deviceId.deviceId,
+    deviceId:deviceId.deviceId,
+    fcmToken:fcmToken,
   };
 
   try {

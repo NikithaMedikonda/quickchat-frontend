@@ -190,9 +190,9 @@ describe('AllChats Component', () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText('One message. Infinite possibilities.'),
+        screen.getByText('Start messages text'),
       ).toBeTruthy();
-      expect(screen.getByText('What are you waiting for?')).toBeTruthy();
+      expect(screen.getByText('User friendly question')).toBeTruthy();
     });
   });
 
@@ -354,6 +354,9 @@ describe('AllChats Component', () => {
     });
 
     await waitFor(() => {
+      expect(
+        screen.getByText('Start messages text'),
+      ).toBeTruthy();
       expect(dispatchSpy).toHaveBeenCalledWith(
         expect.objectContaining({
           type: 'loading/hide',

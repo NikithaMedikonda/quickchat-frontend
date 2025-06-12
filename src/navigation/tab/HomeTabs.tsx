@@ -1,12 +1,14 @@
+import { useEffect, useState} from 'react';
+import {Image, View} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {
   getFocusedRouteNameFromRoute,
 } from '@react-navigation/native';
-import { useEffect, useState} from 'react';
-import {useTranslation} from 'react-i18next';
-import {Image, View} from 'react-native';
-import EncryptedStorage from 'react-native-encrypted-storage';
 import {useDispatch, useSelector} from 'react-redux';
+import {useTranslation} from 'react-i18next';
+import EncryptedStorage from 'react-native-encrypted-storage';
+
+
 import {Badge} from '../../components/Badge/Badge.tsx';
 import {User} from '../../screens/Profile/Profile';
 import {getAllChats, getMissedChats} from '../../services/GetAllChats.ts';
@@ -20,6 +22,7 @@ import {useImagesColors} from '../../themes/images';
 import {HomeStacks} from '../stack/HomeStacks';
 import {ProfileStack} from '../stack/ProfileStacks';
 import {UnreadStacks} from '../stack/UnreadStacks.tsx';
+
 import {styles} from './HomeTabs.styles';
 import {insertToMessages} from '../../database/services/messageOperations.ts';
 import {
@@ -91,7 +94,7 @@ export const HomeTabs = () => {
   const chatTrigger = useSelector((state: RootState) => state.chat);
 
   useEffect(() => {
-    const handleNewMessage = (data: any) => {
+    const handleNewMessage = (data: {newMessage: boolean}) => {
       if (data.newMessage) {
         setMessageCount(prevCount => prevCount + 1);
       }

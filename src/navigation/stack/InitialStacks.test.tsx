@@ -1,9 +1,9 @@
-import { NavigationContainer } from '@react-navigation/native';
-import { render, waitFor } from '@testing-library/react-native';
+import {NavigationContainer} from '@react-navigation/native';
+import {render, waitFor} from '@testing-library/react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { Provider } from 'react-redux';
-import { store } from '../../store/store';
-import { InitialStacks } from './InitialStacks';
+import {Provider} from 'react-redux';
+import {store} from '../../store/store';
+import {InitialStacks} from './InitialStacks';
 
 global.fetch = jest.fn();
 
@@ -17,6 +17,12 @@ jest.mock('react-native-encrypted-storage', () => ({
     ),
   setItem: jest.fn(),
   clear: jest.fn(),
+}));
+let mockIsConnected = true;
+jest.mock('../../hooks/useSocketConnection', () => ({
+  useSocketConnection: () => ({
+    isConnected: mockIsConnected,
+  }),
 }));
 jest.mock('react-native-device-info', () => ({
   getUniqueId: jest.fn(),
@@ -170,6 +176,33 @@ describe('InitialStacks', () => {
     });
   });
 
+  it('should navigate to HomeTabs on valid access token', async () => {
+    (EncryptedStorage.getItem as jest.Mock).mockImplementation(
+      (key: string) => {
+        if (key === 'user') {
+          return JSON.stringify({name: 'Test'});
+        }
+        if (key === 'authToken') {
+          return 'valid-token';
+        }
+        if (key === 'refreshToken') {
+          return 'refresh-token';
+        }
+      },
+    );
+
+    fetchMock.mockResolvedValue({
+      json: async () => ({message: 'Access token valid'}),
+    });
+
+    const {getByText} = renderWithProviders();
+
+    await waitFor(() => {
+      expect(getByText('Start messages text')).toBeTruthy();
+      expect(getByText('User friendly question')).toBeTruthy();
+    });
+  });
+
   it('should store new tokens if access token is refreshed', async () => {
     (EncryptedStorage.getItem as jest.Mock).mockImplementation(
       (key: string) => {
@@ -211,8 +244,8 @@ describe('InitialStacks', () => {
         );
       });
       await waitFor(() => {
-        expect(getByText('One message. Infinite possibilities.')).toBeTruthy();
-        expect(getByText('What are you waiting for?')).toBeTruthy();
+        expect(getByText('Start messages text')).toBeTruthy();
+        expect(getByText('User friendly question')).toBeTruthy();
       });
     } catch (error) {
       console.log(

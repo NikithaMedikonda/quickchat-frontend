@@ -14,6 +14,7 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import PhoneInput from 'react-native-phone-input';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button } from '../../components/Button/Button';
+import { CustomAlert } from '../../components/CustomAlert/CustomAlert';
 import { Placeholder } from '../../components/InputField/InputField';
 import { keyDecryption } from '../../services/KeyDecryption';
 import { loginUser } from '../../services/LoginUser';
@@ -24,20 +25,19 @@ import {
   setLoginField,
   setLoginSuccess,
 } from '../../store/slices/loginSlice';
+import {
+  setAlertMessage,
+  setAlertTitle,
+  setAlertType,
+  setAlertVisible,
+} from '../../store/slices/registrationSlice';
 import { RootState } from '../../store/store';
 import { useThemeColors } from '../../themes/colors';
 import { useImagesColors } from '../../themes/images';
 import { HomeTabsProps, NavigationProps } from '../../types/usenavigation.type';
-import {
-  setAlertTitle,
-  setAlertType,
-  setAlertVisible,
-  setAlertMessage,
-} from '../../store/slices/registrationSlice';
-import { CustomAlert } from '../../components/CustomAlert/CustomAlert';
 
-import { loginStyles } from './Login.styles';
 import { getDeviceId } from '../../services/GenerateDeviceId';
+import { loginStyles } from './Login.styles';
 
 export function Login() {
   const homeNavigation = useNavigation<HomeTabsProps>();
@@ -92,7 +92,6 @@ export function Login() {
     try {
       const deviceId = await getDeviceId();
       const result = await loginUser(form, deviceId);
-
       if (result.status === 200) {
         const user = result?.data?.user;
         const privateKey = await keyDecryption({

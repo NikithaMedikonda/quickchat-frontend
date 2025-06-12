@@ -69,4 +69,10 @@ export const createTables = async (db: SQLiteDatabase) => {
   );
 `);
 
+
+    await db.executeSql(`
+    CREATE TABLE IF NOT EXISTS DeletedUsers (
+    id TEXT PRIMARY KEY,
+    phoneNumber TEXT
+  );`);
 };

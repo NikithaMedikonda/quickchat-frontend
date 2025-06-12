@@ -25,8 +25,8 @@ describe('Home Screen Tests', () => {
   });
   it('renders the description', () => {
     const { getByText } = render(<Home />);
-    expect(getByText('One message. Infinite possibilities.')).toBeTruthy();
-    expect(getByText('What are you waiting for?')).toBeTruthy();
+    expect(getByText('Start messages text')).toBeTruthy();
+    expect(getByText('User friendly question')).toBeTruthy();
   });
   it('render the plus-image icon', () => {
     render(< Home />);
