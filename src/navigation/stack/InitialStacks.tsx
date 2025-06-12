@@ -10,11 +10,13 @@ import {Login} from '../../screens/Login/Login';
 import {Registration} from '../../screens/Registration/Registration';
 import {setLoginSuccess} from '../../store/slices/loginSlice';
 import {Welcome} from '../../screens/Welcome/Welcome';
+import {useSocketConnection} from '../../hooks/useSocketConnection';
 
 const Stack = createNativeStackNavigator();
 
 export const InitialStacks = () => {
   const [initialRoute, setInitialRoute] = useState<string | null>(null);
+  const {isConnected} = useSocketConnection();
   const dispatch = useDispatch();
   useEffect(() => {
     const getUser = async () => {
@@ -77,8 +79,25 @@ export const InitialStacks = () => {
         dispatch(hide());
       }
     };
-    getUser();
-  }, [dispatch]);
+    if (isConnected) {
+      getUser();
+    } else {
+      dispatch(show());
+      async function checkUserHasToken() {
+        const userString = await EncryptedStorage.getItem('user');
+        const accessToken = await EncryptedStorage.getItem('authToken');
+        const refreshToken = await EncryptedStorage.getItem('refreshToken');
+        if(!userString || !accessToken || !refreshToken){
+          setInitialRoute('welcome');
+          dispatch(hide());
+        }else{
+        setInitialRoute('hometabs');
+        dispatch(hide());
+        }
+      }
+      checkUserHasToken();
+    }
+  }, [dispatch, isConnected]);
 
   if (initialRoute === null) {
     return <LoadingComponent />;

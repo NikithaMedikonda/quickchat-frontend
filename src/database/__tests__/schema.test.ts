@@ -15,10 +15,11 @@ describe('Test for createTables function', () => {
     mockExecuteSql.mockResolvedValueOnce([]);
     mockExecuteSql.mockResolvedValueOnce([]);
     mockExecuteSql.mockResolvedValueOnce([]);
+    mockExecuteSql.mockResolvedValueOnce([]);
 
     await createTables(mockDb);
 
-    expect(mockExecuteSql).toHaveBeenCalledTimes(5);
+    expect(mockExecuteSql).toHaveBeenCalledTimes(6);
     expect(mockExecuteSql.mock.calls[0][0]).toMatch(
       /CREATE TABLE IF NOT EXISTS Chats/i,
     );
@@ -33,6 +34,9 @@ describe('Test for createTables function', () => {
     );
     expect(mockExecuteSql.mock.calls[4][0]).toMatch(
       /CREATE TABLE IF NOT EXISTS UserRestrictions/i,
+    );
+    expect(mockExecuteSql.mock.calls[5][0]).toMatch(
+      /CREATE TABLE IF NOT EXISTS DeletedUsers/i,
     );
   });
 });
