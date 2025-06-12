@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - new-message-reflect
+      - handle-self-chat
 
 jobs:
   lint-and-test:
