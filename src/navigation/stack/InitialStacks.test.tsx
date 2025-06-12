@@ -167,8 +167,8 @@ describe('InitialStacks', () => {
     const {getByText} = renderWithProviders();
 
     await waitFor(() => {
-      expect(getByText('One message. Infinite possibilities.')).toBeTruthy();
-      expect(getByText('What are you waiting for?')).toBeTruthy();
+      expect(getByText('Start messages text')).toBeTruthy();
+      expect(getByText('User friendly question')).toBeTruthy();
     });
   });
 
@@ -206,8 +206,8 @@ describe('InitialStacks', () => {
         'refreshToken',
         'new-refresh-token',
       );
-      expect(getByText('One message. Infinite possibilities.')).toBeTruthy();
-      expect(getByText('What are you waiting for?')).toBeTruthy();
+      expect(getByText('Start messages text')).toBeTruthy();
+      expect(getByText('User friendly question')).toBeTruthy();
     });
   });
 

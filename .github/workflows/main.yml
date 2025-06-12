@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - update-splash-screen-android
 
 jobs:
   lint-and-test:
