@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {useRef, useEffect} from 'react';
 import {View, Text, StyleSheet, Animated, Easing} from 'react-native'; // Import Easing
 
@@ -49,7 +50,7 @@ export const MessageSyncLoader = () => {
       createPingOpacity(0, 3),
       createPingOpacity(1, 3),
       createPingOpacity(2, 3),
-  ]
+  ];
 
   return (
     <View style={styles.container}>
@@ -195,3 +196,4 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
 });
+
