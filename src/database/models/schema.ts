@@ -33,7 +33,7 @@ export const createTables = async (db: SQLiteDatabase) => {
   `);
 
   await db.executeSql(`
-    CREATE TABLE  IF NOT EXISTS Queue (
+    CREATE TABLE IF NOT EXISTS Queue (
       id TEXT PRIMARY KEY,
       chatId TEXT,
       senderPhoneNumber TEXT,
@@ -59,4 +59,14 @@ export const createTables = async (db: SQLiteDatabase) => {
       blockerPhoneNumber TEXT,
       blockedPhoneNumber TEXT
     );`);
+
+  await db.executeSql(`
+  CREATE TABLE IF NOT EXISTS LocalUsers (
+    phoneNumber TEXT PRIMARY KEY,
+    name TEXT,
+    profilePicture TEXT,
+    publicKey TEXT
+  );
+`);
+
 };
