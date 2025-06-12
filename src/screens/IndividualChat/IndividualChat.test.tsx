@@ -1515,4 +1515,58 @@ describe('Test for IndividualChat processing queuing messages', () => {
       expect(checkUserOnline as jest.Mock).toHaveBeenCalled();
     });
   });
+
+  test('should call selfChat when sender and recipient phone numbers are the same, even in the offline mode', async () => {
+    const testMessage = 'Hello to self';
+    const encryptedMessage = 'encrypted-hello';
+    mockIsConnected = false;
+    (EncryptedStorage.getItem as jest.Mock).mockImplementation(
+      async (key: string) => {
+        if (key === 'user') {
+          return JSON.stringify({phoneNumber: '+918522041688'});
+        }
+        if (key === 'privateKey') {
+          return 'mock-private-key';
+        }
+        return null;
+      },
+    );
+    (socket.sendPrivateMessage as jest.Mock).mockResolvedValue({});
+    (messageEncryption as jest.Mock).mockResolvedValue(encryptedMessage);
+    (insertToMessages as jest.Mock).mockResolvedValue({});
+    (insertToQueue as jest.Mock).mockResolvedValue({});
+
+    (socket.receiveOnline as jest.Mock).mockImplementation(
+      async ({setIsOnline}) => setIsOnline(true),
+    );
+
+    (socket.receiveOffline as jest.Mock).mockImplementation(
+      async ({setIsOnline}) => setIsOnline(false),
+    );
+    render(
+      <NavigationContainer>
+        <Provider store={store}>
+          <IndividualChat
+            navigation={
+              mockNavigation as NativeStackNavigationProp<
+                HomeStackParamList,
+                'individualChat'
+              >
+            }
+            route={mockRoute}
+          />
+        </Provider>
+      </NavigationContainer>,
+    );
+
+    const input = await screen.getByPlaceholderText('Type a message..');
+    fireEvent.changeText(input, testMessage);
+
+    const sendButton = await screen.getByA11yHint('send-message-icon');
+    fireEvent.press(sendButton);
+    await waitFor(() => {
+      expect(insertToMessages).toHaveBeenCalledTimes(1);
+      expect(insertToQueue).toHaveBeenCalledTimes(1);
+    });
+  });
 });
