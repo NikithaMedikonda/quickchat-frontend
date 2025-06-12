@@ -88,11 +88,11 @@ export const AllChats = () => {
       const fetchChats = async () => {
         const db = await getDBInstance();
         const currentUser = await EncryptedStorage.getItem('user');
-        if (!currentUser) {
-          return;
-        }
+        // if (!currentUser) {
+        //   return;
+        // }
 
-        const parsed = JSON.parse(currentUser);
+        const parsed = JSON.parse(currentUser!);
         const chatsOfUser = await getAllChatsFromLocal(db, parsed.phoneNumber);
         const privateKey = await EncryptedStorage.getItem('privateKey');
         if (privateKey) {
