@@ -1,9 +1,9 @@
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {useCallback, useEffect, useRef, useState} from 'react';
-import {useTranslation} from 'react-i18next';
 import {ScrollView, Text, View} from 'react-native';
-import EncryptedStorage from 'react-native-encrypted-storage';
 import {useDispatch, useSelector} from 'react-redux';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {useTranslation} from 'react-i18next';
+import EncryptedStorage from 'react-native-encrypted-storage';
 import {Socket} from 'socket.io-client';
 import {CustomAlert} from '../../components/CustomAlert/CustomAlert';
 import {IndividualChatHeader} from '../../components/IndividualChatHeader/IndividualChatHeader';
@@ -17,8 +17,13 @@ import {
   insertToQueue,
   updateLocalMessageStatus,
 } from '../../database/services/queueOperations';
-import {checkBlockedStatusLocal} from '../../database/services/userRestriction';
+import {
+  checkBlockedStatusLocal,
+  insertDeletedUser,
+  isUserDeletedLocal,
+} from '../../database/services/userRestriction';
 import {MessageType} from '../../database/types/message';
+import {GroupMessagesByDate} from '../../hooks/GroupMessagesByDate';
 import {useSocketConnection} from '../../hooks/useSocketConnection';
 import {checkBlockStatus} from '../../services/CheckBlockStatus';
 import {CheckUserDeleteStatus} from '../../services/CheckUserDeleteStatus';
@@ -163,12 +168,23 @@ export const IndividualChat = ({route}: Props) => {
           showAlert('info', 'Network Error', 'Unable to get user details');
           return;
         }
-        const result = await CheckUserDeleteStatus({
-          phoneNumber: user.phoneNumber,
-          authToken: token,
-        });
-        if (result.status === 200) {
-          setIsDeleted(result.data.isDeleted);
+        if (isConnected) {
+          const isDeletedLocal = await isUserDeletedLocal(user.phoneNumber);
+          if (isDeletedLocal) {
+            setIsDeleted(isDeletedLocal);
+            return;
+          }
+          const result = await CheckUserDeleteStatus({
+            phoneNumber: user.phoneNumber,
+            authToken: token,
+          });
+          if (result.status === 200) {
+            setIsDeleted(result.data.isDeleted);
+            insertDeletedUser(user.phoneNumber);
+          }
+        } else {
+          const isDeletedLocal = await isUserDeletedLocal(user.phoneNumber);
+          setIsDeleted(isDeletedLocal);
         }
       } catch (error) {
         showAlert('info', 'Network Error', 'Unable to fetch details');
@@ -176,7 +192,7 @@ export const IndividualChat = ({route}: Props) => {
     };
 
     getUserDeleteStatus();
-  }, [showAlert, user.phoneNumber]);
+  }, [showAlert, user.phoneNumber, isConnected]);
 
   useEffect(() => {
     setSocket(newSocket);
@@ -650,42 +666,61 @@ export const IndividualChat = ({route}: Props) => {
           setIsCleared={setIsCleared}
         />
       </View>
+
       <View style={styles.chatMainContainer}>
         <View style={styles.chatInnerContainer}>
           <ScrollView
             ref={scrollViewRef}
             style={styles.chatContainer}
             onContentSizeChange={scrollToBottom}>
-            {allMessages.length > 0 &&
-              allMessages.map((msg: any, index: any) => {
-                const isSent =
-                  msg.senderPhoneNumber === currentUserPhoneNumberRef.current;
-
-                return (
-                  <View
-                    key={index}
-                    style={[
-                      isSent
-                        ? styles.sentMessageBlock
-                        : styles.receiveMessageBlock,
-                      isSent ? styles.sentMessage : styles.receivedMessage,
-                    ]}>
-                    <Text
-                      style={
-                        isSent
-                          ? styles.sentMessageText
-                          : styles.receiveMessageText
-                      }>
-                      {msg.message}
-                    </Text>
-                    <View style={styles.timestampContainer}>
-                      <TimeStamp messageTime={msg.timestamp} isSent={isSent} />
-                      {isSent && <MessageStatusTicks status={msg.status} />}
+            {allMessages.length > 0 ? (
+              Object.entries(GroupMessagesByDate(allMessages)).map(
+                ([groupTitle, messages]) => (
+                  <View key={groupTitle}>
+                    <View style={styles.dateGroupHeader}>
+                      <Text style={styles.dateGroupText}>{groupTitle}</Text>
                     </View>
+                    {messages.map((msg, index) => {
+                      const isSent =
+                        msg.senderPhoneNumber ===
+                        currentUserPhoneNumberRef.current;
+                      return (
+                        <View
+                          key={`${groupTitle}-${index}`}
+                          style={[
+                            isSent
+                              ? styles.sentMessageBlock
+                              : styles.receiveMessageBlock,
+                            isSent
+                              ? styles.sentMessage
+                              : styles.receivedMessage,
+                          ]}>
+                          <Text
+                            style={
+                              isSent
+                                ? styles.sentMessageText
+                                : styles.receiveMessageText
+                            }>
+                            {msg.message}
+                          </Text>
+                          <View style={styles.timestampContainer}>
+                            <TimeStamp
+                              messageTime={msg.timestamp}
+                              isSent={isSent}
+                            />
+                            {isSent && (
+                              <MessageStatusTicks
+                                status={msg.status ?? 'sent'}
+                              />
+                            )}
+                          </View>
+                        </View>
+                      );
+                    })}
                   </View>
-                );
-              })}
-            {allMessages.length === 0 && (
+                ),
+              )
+            ) : (
               <View style={styles.infoContainer}>
                 <Text style={styles.infoMessage}>
                   {t('Ready to chat? Start typing and hit send! 🤗')}
@@ -693,6 +728,7 @@ export const IndividualChat = ({route}: Props) => {
               </View>
             )}
           </ScrollView>
+
           {isDeleted ? (
             <View style={styles.ShowErrorContainer}>
               <Text style={styles.errorText}>

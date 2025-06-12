@@ -53,4 +53,10 @@ export const createTables = async (db: SQLiteDatabase) => {
       blockerPhoneNumber TEXT,
       blockedPhoneNumber TEXT
     );`);
+
+    await db.executeSql(`
+    CREATE TABLE IF NOT EXISTS DeletedUsers (
+    id TEXT PRIMARY KEY,
+    phoneNumber TEXT
+  );`);
 };
