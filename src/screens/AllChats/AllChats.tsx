@@ -1,45 +1,27 @@
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {useCallback, useEffect, useLayoutEffect, useState} from 'react';
-import {useFocusEffect, useNavigation} from '@react-navigation/native';
-import {useCallback, useLayoutEffect, useState} from 'react';
 import {ScrollView, TouchableOpacity, View} from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {useDispatch, useSelector} from 'react-redux';
 import {ChatBox} from '../../components/ChatBox/ChatBox';
 import {PlusIcon} from '../../components/PlusIcon/PlusIcon';
-import {numberNameIndex} from '../../helpers/nameNumberIndex';
-import {normalise} from '../../helpers/normalisePhoneNumber';
-import {getAllChats, getMissedChats} from '../../services/GetAllChats';
-import {hide, show} from '../../store/slices/loadingSlice';
-import {logout} from '../../store/slices/loginSlice';
 import {useThemeColors} from '../../themes/colors';
 import {HomeStackProps, NavigationProps} from '../../types/usenavigation.type';
-
-import {messageDecryption} from '../../services/MessageDecryption';
-import {useDeviceCheck} from '../../services/useDeviceCheck';
 import {newSocket} from '../../socket/socket';
-import {
-  setAlertMessage,
-  setAlertTitle,
-  setAlertType,
-  setAlertVisible,
-} from '../../store/slices/registrationSlice';
 import {setUnreadCount} from '../../store/slices/unreadChatSlice';
 import {RootState} from '../../store/store';
 import {Home} from '../Home/Home';
-import {User} from '../Profile/Profile';
-import {getStyles} from './AllChats.styles';
 import {useDeviceCheck} from '../../services/useDeviceCheck';
 import {getStyles} from './AllChats.styles';
 import {messageDecryption} from '../../services/MessageDecryption';
-import {
-  getLasySyncedTime,
-  updateLastSyncedTime,
-} from '../../database/services/userOperation';
 import {User} from '../Profile/Profile';
-import {insertToMessages} from '../../database/services/messageOperations';
-import {generateMessageId} from '../../utils/messageId';
-
+import {
+  getAllChatsFromLocal,
+  getTotalUnreadCount,
+  LocalChat,
+} from '../../database/services/chatOperations';
+import {getDBInstance} from '../../database/connection/connection';
+import {hide} from '../../store/slices/loadingSlice';
 export interface Chat {
   chatId: string;
   contactName: string | null;
@@ -53,8 +35,6 @@ export interface Chat {
   publicKey: string;
 }
 
-type ContactNameMap = Record<string, string>;
-
 export const AllChats = () => {
   const navigation = useNavigation<NavigationProps>();
   const homeStackNavigation = useNavigation<HomeStackProps>();
@@ -63,10 +43,11 @@ export const AllChats = () => {
   const styles = getStyles(colors);
   const [currentUserPhoneNumber, setCurrentUserPhoneNumber] =
     useState<string>('');
-  const [chats, setChats] = useState<Chat[]>([]);
-  const [contactNameMap, setContactNameMap] = useState<ContactNameMap>({});
+  const [chats, setChats] = useState<LocalChat[]>([]);
   const {msgCount} = useSelector((state: RootState) => state.unread);
   const [updateStatusCount, setUpdateStatusCount] = useState(0);
+  const chatTrigger = useSelector((state: RootState) => state.chat);
+
   useDeviceCheck();
 
   useLayoutEffect(() => {
@@ -81,16 +62,6 @@ export const AllChats = () => {
       },
     });
   });
-
-  const showAlert = useCallback(
-    (type: string, title: string, message: string) => {
-      dispatch(setAlertType(type));
-      dispatch(setAlertTitle(title));
-      dispatch(setAlertMessage(message));
-      dispatch(setAlertVisible(true));
-    },
-    [dispatch],
-  );
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -110,117 +81,43 @@ export const AllChats = () => {
     };
     newSocket.on(`isOnline_with_${currentUserPhoneNumber}`, handleUpdateStatus);
   }, [currentUserPhoneNumber, updateStatusCount]);
-  const showAlert = useCallback(
-    (type: string, title: string, message: string) => {
-      dispatch(setAlertType(type));
-      dispatch(setAlertTitle(title));
-      dispatch(setAlertMessage(message));
-      dispatch(setAlertVisible(true));
-    },
-    [dispatch],
-  );
 
   useFocusEffect(
     useCallback(() => {
-      dispatch(show());
       const fetchChats = async () => {
-        const phoneNameMap = await numberNameIndex();
-        if (phoneNameMap === null) {
-          dispatch(logout());
-          showAlert('error', 'Session Expired', 'Please login again.');
-          await EncryptedStorage.clear();
-          setTimeout(() => {
-            dispatch(setAlertVisible(false));
-            navigation.replace('login');
-          }, 1000);
-          return;
-        }
-
-        setContactNameMap(phoneNameMap as ContactNameMap);
+        const db = await getDBInstance();
         const currentUser = await EncryptedStorage.getItem('user');
         if (!currentUser) {
           return;
         }
-        const parsedUser: User = JSON.parse(currentUser);
-        const lastSyncedTime = await getLasySyncedTime(parsedUser.phoneNumber);
-        // console.log('last', lastSyncedTime);
-        const response = await getAllChats();
-        const response2 = await getMissedChats(lastSyncedTime);
 
-        if (response.status === 401 || response.data === null) {
-          dispatch(logout());
-          showAlert('error', 'Session Expired', 'Please login again.');
-          await EncryptedStorage.clear();
-          setTimeout(() => {
-            dispatch(setAlertVisible(false));
-            navigation.replace('login');
-          }, 1000);
-        } else if (response.status === 200 && response.data) {
-          const privateKey = await EncryptedStorage.getItem('privateKey');
-          if (privateKey) {
-            for (const chat of response.data.chats) {
-              try {
-                const decryptedMessage = await messageDecryption({
-                  encryptedMessage: chat.lastMessageText,
-                  myPrivateKey: privateKey,
-                  senderPublicKey: chat.publicKey,
-                });
-                chat.lastMessageText = decryptedMessage;
-              } catch (error) {
-                dispatch(hide());
-              }
-            }
-            setChats(response.data.chats);
-            const allChats = response.data.chats;
-            const unreadChats = allChats.filter(
-              (chat: {unreadCount: number}) => chat.unreadCount > 0,
-            );
-
-            const totalUnreadChats = unreadChats.length;
-            dispatch(setUnreadCount(totalUnreadChats));
-            dispatch(hide());
-          }
-        } else {
-          showAlert('info', 'Unable to Fetch Chats', 'Please try again later.');
-        }
-        if (response2.status === 200 && response2.data) {
-          const missedChats = response2.data;
-          let latestTimestamp: string = new Date().toISOString();
-          for (const chat of missedChats) {
-            for (const message of chat.messages) {
-              if (message.senderPhoneNumber === parsedUser.phoneNumber) {
-                console.log('going here');
-                continue;
-              }
-              const messageToInsert = {
-                id: generateMessageId(
-                  parsedUser.phoneNumber,
-                  chat.senderPhoneNumber,
-                  message.createdAt,
-                ),
-                senderPhoneNumber: chat.senderPhoneNumber as string,
-                receiverPhoneNumber: parsedUser.phoneNumber as string,
-                message: message.content as string,
-                status: message.status as 'sent' | 'delivered' | 'read',
-                timestamp: message.createdAt as string,
-              };
-              // latestTimestamp = message.createdAt;
-              await insertToMessages(messageToInsert);
+        const parsed = JSON.parse(currentUser);
+        const chatsOfUser = await getAllChatsFromLocal(db, parsed.phoneNumber);
+        const privateKey = await EncryptedStorage.getItem('privateKey');
+        if (privateKey) {
+          for (const chat of chatsOfUser) {
+            try {
+              const decryptedMessage = await messageDecryption({
+                encryptedMessage: chat.lastMessageText,
+                myPrivateKey: privateKey,
+                senderPublicKey: chat.publicKey,
+              });
+              chat.lastMessageText = decryptedMessage;
+            } catch (error) {
+              dispatch(hide());
             }
           }
-          await updateLastSyncedTime(latestTimestamp, parsedUser.phoneNumber);
-
-          const lastSyncedTime = await getLasySyncedTime(
-            parsedUser.phoneNumber,
-          );
-          console.log('last after',new Date(lastSyncedTime).toDateString());
-          console.log('last after',new Date(lastSyncedTime).toTimeString());
         }
+        setChats(chatsOfUser);
+
+        const totalUnread = await getTotalUnreadCount(db);
+        dispatch(setUnreadCount(totalUnread));
       };
-      if (msgCount >= 0 || updateStatusCount >= 0) {
+      fetchChats();
+      if (msgCount >= 0 || updateStatusCount >= 0 || chatTrigger) {
         fetchChats();
       }
-    }, [msgCount, updateStatusCount, dispatch, showAlert, navigation]),
+    }, [msgCount, updateStatusCount, chatTrigger, dispatch]),
   );
 
   if (chats.length === 0) {
@@ -236,27 +133,26 @@ export const AllChats = () => {
             onPress={() =>
               homeStackNavigation.navigate('individualChat', {
                 user: {
-                  name:
-                    contactNameMap[normalise(chat.phoneNumber)] ||
-                    chat.phoneNumber,
+                  name: chat.contactName,
                   profilePicture: chat.contactProfilePic,
                   phoneNumber: chat.phoneNumber,
                   isBlocked: false,
                   publicKey: chat.publicKey,
-                  onBlockStatusChange: () => {},
                   onBlockStatusChange: () => {},
                 },
               })
             }>
             <ChatBox
               image={chat.contactProfilePic}
-              name={
-                contactNameMap[normalise(chat.phoneNumber)] || chat.phoneNumber
-              }
+              name={chat.contactName}
               description={chat.lastMessageText}
               timestamp={chat.lastMessageTimestamp}
               unreadCount={chat.unreadCount}
-              status={chat.lastMessageStatus}
+              status={
+                chat.lastMessageType === 'sentMessage'
+                  ? chat.lastMessageStatus
+                  : undefined
+              }
             />
           </TouchableOpacity>
         ))}
