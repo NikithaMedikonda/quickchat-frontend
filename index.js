@@ -1,10 +1,50 @@
 /**
  * @format
  */
-import {AppRegistry} from 'react-native';
+import { AppRegistry } from 'react-native';
+import messaging from '@react-native-firebase/messaging';
+import notifee, { AndroidImportance } from '@notifee/react-native';
 import '@react-native-firebase/app';
-import './firebase-messaging';
-import {App} from './App';
-import {name as appName} from './app.json';
+import { App } from './App';
+import { name as appName } from './app.json';
 import './src/i18n/i18n.config';
+import { numberNameIndex } from './src/helpers/nameNumberIndex';
+import { normalise } from './src/helpers/normalisePhoneNumber';
+messaging().setBackgroundMessageHandler(async (remoteMessage) => {
+  await notifee.createChannel({
+    id: 'quickchat',
+    name: 'Quick Chat Notifications',
+    importance: AndroidImportance.HIGH,
+  });
+
+    const rawPhnoneNumber = remoteMessage.data?.senderPhoneNumber;
+    const rawPhoto = remoteMessage.data?.profilePicture;
+    const senderPhoneNumber = typeof rawPhnoneNumber === 'string' ? rawPhnoneNumber : undefined;
+    const profilePicture = typeof rawPhoto === 'string' ? rawPhoto : undefined;
+    let contactName;
+    if (senderPhoneNumber) {
+      try {
+        const nameIndex = await numberNameIndex();
+        const normalizedSender = normalise(senderPhoneNumber);
+        contactName = nameIndex?.[normalizedSender] || senderPhoneNumber;
+      } catch (error) {
+        contactName = senderPhoneNumber;
+      }
+    }
+    if (senderPhoneNumber || profilePicture) {
+      await notifee.displayNotification({
+        title:contactName,
+        body: 'New message',
+        android: {
+          channelId: 'quickchat',
+          smallIcon:'ic_stat_notification',
+          largeIcon:profilePicture,
+          pressAction: {
+            id: 'default',
+          },
+        },
+      });
+    }
+});
+
 AppRegistry.registerComponent(appName, () => App);
