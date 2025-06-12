@@ -64,7 +64,7 @@ export const EditProfile = () => {
   const colors = useThemeColors();
   const profileNavigation = useNavigation<ProfileScreenNavigationProp>();
   const styles = getStyles(colors);
-  const {t} = useTranslation(['home', 'auth']);
+  const {t} = useTranslation(['auth']);
   const dispatch = useDispatch();
   const imageUri = useSelector(
     (state: RootState) => state.registration.imageUri,

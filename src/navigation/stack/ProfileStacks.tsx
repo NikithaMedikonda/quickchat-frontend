@@ -15,7 +15,7 @@ export const ProfileStack = () => {
         name="profileScreen"
         component={Profile}
         options={{
-          title: t('Profile'),
+          title: t('Profile Screen'),
           headerShown: true,
           headerStyle: {
             backgroundColor: colors.background,
