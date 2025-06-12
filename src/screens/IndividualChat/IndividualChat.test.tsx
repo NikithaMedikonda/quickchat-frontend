@@ -667,7 +667,7 @@ describe('IndividualChat', () => {
             timestamp: new Date().toISOString(),
             status: 'delivered',
           });
-        }, 100); 
+        }, 100);
         return Promise.resolve();
       },
     );
