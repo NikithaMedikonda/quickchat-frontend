@@ -2,7 +2,6 @@ import {useNavigation} from '@react-navigation/native';
 import {useCallback, useEffect, useLayoutEffect, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {
-  ActivityIndicator,
   Alert,
   Image,
   Platform,
@@ -24,6 +23,7 @@ import {ContactDetails} from '../../types/contact.types';
 import {HomeStackProps, HomeTabsProps} from '../../types/usenavigation.type';
 import {getStyles} from './ContactsDisplay.styles';
 import { useDeviceCheck } from '../../services/useDeviceCheck';
+import { MessageSyncLoader } from '../../CustomLoadings/ContactLoading';
 
 export const BackButton = () => {
   const colors = useThemeColors();
@@ -132,11 +132,13 @@ export const ContactsDisplay = () => {
         }>
         {loading ? (
           <View style={styles.activityContainer}>
-            <ActivityIndicator
+            {/* <ActivityIndicator
               accessibilityHint="loader"
               size="large"
               color="white"
-            />
+            /> */}
+            <MessageSyncLoader/>
+
           </View>
         ) : (
           <View>
