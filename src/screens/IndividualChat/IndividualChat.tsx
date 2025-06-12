@@ -1,18 +1,24 @@
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {useCallback, useEffect, useRef, useState} from 'react';
-import {useTranslation} from 'react-i18next';
-import {ScrollView, Text, View} from 'react-native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { ScrollView, Text, View } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {useDispatch, useSelector} from 'react-redux';
-import {Socket} from 'socket.io-client';
-import {CustomAlert} from '../../components/CustomAlert/CustomAlert';
-import {IndividualChatHeader} from '../../components/IndividualChatHeader/IndividualChatHeader';
-import {MessageInput} from '../../components/MessageInput/MessageInput';
-import {MessageStatusTicks} from '../../components/MessageStatusTicks/MessageStatusTicks';
-import {TimeStamp} from '../../components/TimeStamp/TimeStamp';
+import { useDispatch, useSelector } from 'react-redux';
+import { Socket } from 'socket.io-client';
+import { CustomAlert } from '../../components/CustomAlert/CustomAlert';
+import { IndividualChatHeader } from '../../components/IndividualChatHeader/IndividualChatHeader';
+import { MessageInput } from '../../components/MessageInput/MessageInput';
+import { MessageStatusTicks } from '../../components/MessageStatusTicks/MessageStatusTicks';
+import { TimeStamp } from '../../components/TimeStamp/TimeStamp';
+import { getDBInstance } from '../../database/connection/connection';
+import {
+  getTotalUnreadCount,
+  resetUnreadCount,
+} from '../../database/services/chatOperations';
 import {
   getMessagesByChatId,
   insertToMessages,
+  updateLocalMessageStatusToRead,
 } from '../../database/services/messageOperations';
 import {
   deleteFromQueue,
@@ -20,16 +26,16 @@ import {
   insertToQueue,
   updateLocalMessageStatus,
 } from '../../database/services/queueOperations';
-import {checkBlockedStatusLocal} from '../../database/services/userRestriction';
-import {MessageType} from '../../database/types/message';
-import {useSocketConnection} from '../../hooks/useSocketConnection';
-import {checkBlockStatus} from '../../services/CheckBlockStatus';
-import {CheckUserDeleteStatus} from '../../services/CheckUserDeleteStatus';
-import {checkUserOnline} from '../../services/CheckUserOnline';
-import {messageDecryption} from '../../services/MessageDecryption';
-import {messageEncryption} from '../../services/MessageEncryption';
-import {updateMessageStatus} from '../../services/UpdateMessageStatus';
-import {useDeviceCheck} from '../../services/useDeviceCheck';
+import { checkBlockedStatusLocal } from '../../database/services/userRestriction';
+import { MessageType } from '../../database/types/message';
+import { useSocketConnection } from '../../hooks/useSocketConnection';
+import { checkBlockStatus } from '../../services/CheckBlockStatus';
+import { CheckUserDeleteStatus } from '../../services/CheckUserDeleteStatus';
+import { checkUserOnline } from '../../services/CheckUserOnline';
+import { messageDecryption } from '../../services/MessageDecryption';
+import { messageEncryption } from '../../services/MessageEncryption';
+import { updateMessageStatus } from '../../services/UpdateMessageStatus';
+import { useDeviceCheck } from '../../services/useDeviceCheck';
 import {
   newSocket,
   receiveJoined,
@@ -39,7 +45,7 @@ import {
   sendPrivateMessage,
   socketConnection,
 } from '../../socket/socket';
-import {hide} from '../../store/slices/loadingSlice';
+import { hide } from '../../store/slices/loadingSlice';
 import {
   setAlertMessage,
   setAlertTitle,
@@ -47,19 +53,20 @@ import {
   setAlertVisible,
   setReceivePhoneNumber,
 } from '../../store/slices/registrationSlice';
-import {RootState} from '../../store/store';
-import {useThemeColors} from '../../themes/colors';
+import { setUnreadCount } from '../../store/slices/unreadChatSlice';
+import { RootState } from '../../store/store';
+import { useThemeColors } from '../../themes/colors';
 import {
   AllMessages,
   PendingMessages,
   ReceivePrivateMessage,
   SentPrivateMessage,
 } from '../../types/messsage.types';
-import {HomeStackParamList} from '../../types/usenavigation.type';
-import {createChatId} from '../../utils/chatId';
-import {generateMessageId} from '../../utils/messageId';
-import {User} from '../Profile/Profile';
-import {individualChatStyles} from './IndividualChat.styles';
+import { HomeStackParamList } from '../../types/usenavigation.type';
+import { createChatId } from '../../utils/chatId';
+import { generateMessageId } from '../../utils/messageId';
+import { User } from '../Profile/Profile';
+import { individualChatStyles } from './IndividualChat.styles';
 
 type Props = NativeStackScreenProps<HomeStackParamList, 'individualChat'>;
 
@@ -181,6 +188,93 @@ export const IndividualChat = ({route}: Props) => {
   }, [showAlert, user.phoneNumber]);
 
   useEffect(() => {
+    async function getMessages() {
+      const currentUser = await EncryptedStorage.getItem('user');
+      if (currentUser) {
+        const parsedUser: User = JSON.parse(currentUser);
+        currentUserPhoneNumberRef.current = parsedUser.phoneNumber;
+      }
+      const chatId = createChatId(
+        user.phoneNumber,
+        currentUserPhoneNumberRef.current,
+      );
+      await resetUnreadCount(await getDBInstance(), chatId);
+      const totalUnread = await getTotalUnreadCount(await getDBInstance());
+      dispatch(setUnreadCount(totalUnread));
+      try {
+        if (isCleared) {
+          setAllMessages([]);
+          return;
+        }
+        const authToken = await EncryptedStorage.getItem('authToken');
+
+        if (isConnected) {
+          if (authToken) {
+            const userStatus = await checkUserOnline({
+              phoneNumber: user.phoneNumber,
+              authToken: authToken,
+              requestedUserPhoneNumber: currentUserPhoneNumberRef.current,
+            });
+            if (userStatus.status === 200) {
+              setSocketId(userStatus.data.data.socketId);
+            }
+          }
+        }
+
+        const localMessages = await getMessagesByChatId(
+          chatId,
+          currentUserPhoneNumberRef.current,
+        );
+        const privateKey = await EncryptedStorage.getItem('privateKey');
+        const formattedMessages = [];
+        if (privateKey) {
+          for (const msg of localMessages) {
+            try {
+              const decryptedMessage = await messageDecryption({
+                encryptedMessage: msg.message,
+                myPrivateKey: privateKey,
+                senderPublicKey: user.publicKey,
+              });
+              if (
+                msg.status === 'sent' &&
+                msg.phoneNumber === currentUserPhoneNumberRef.current
+              ) {
+                continue;
+              } else {
+                formattedMessages.push({
+                  senderPhoneNumber: msg.senderPhoneNumber,
+                  recipientPhoneNumber: msg.receiverPhoneNumber,
+                  message: decryptedMessage,
+                  timestamp: msg.timestamp,
+                  status: msg.status,
+                });
+              }
+            } catch (error) {
+              console.log('Decryption error:', error);
+              dispatch(hide());
+            }
+          }
+          setFetchMessages(formattedMessages);
+          setReceivedMessages([]);
+          setSendMessages([]);
+        }
+      } catch (e) {
+        setFetchMessages([]);
+      }
+    }
+    getMessages();
+  }, [
+    isOnlineWith,
+    recipientPhoneNumber,
+    socketId,
+    user.phoneNumber,
+    isCleared,
+    dispatch,
+    user.publicKey,
+    isConnected,
+  ]);
+
+  useEffect(() => {
     setSocket(newSocket);
     const withChattingPhoneNumber = user.phoneNumber;
     if (!isBlocked) {
@@ -211,6 +305,7 @@ export const IndividualChat = ({route}: Props) => {
           currentStatus: 'read',
         };
         await updateMessageStatus(details);
+        await updateLocalMessageStatusToRead(details);
       };
       updateStatus();
       await newSocket.emit('offline_with', user.phoneNumber);
@@ -219,88 +314,7 @@ export const IndividualChat = ({route}: Props) => {
       offline();
     };
   }, [user.phoneNumber]);
-  useEffect(() => {
-    async function getMessages() {
-      try {
-        if (isCleared) {
-          setAllMessages([]);
-          return;
-        }
-        const authToken = await EncryptedStorage.getItem('authToken');
 
-        if (authToken) {
-          const userStatus = await checkUserOnline({
-            phoneNumber: user.phoneNumber,
-            authToken: authToken,
-            requestedUserPhoneNumber: currentUserPhoneNumberRef.current,
-          });
-          if (userStatus.status === 200) {
-            setSocketId(userStatus.data.data.socketId);
-          }
-        }
-        const currentUser = await EncryptedStorage.getItem('user');
-        if (currentUser) {
-          const parsedUser: User = JSON.parse(currentUser);
-          currentUserPhoneNumberRef.current = parsedUser.phoneNumber;
-        }
-        const userData = {
-          senderPhoneNumber: currentUserPhoneNumberRef.current,
-          receiverPhoneNumber: recipientPhoneNumber,
-        };
-        const chatId = createChatId(
-          userData.senderPhoneNumber,
-          userData.receiverPhoneNumber,
-        );
-        const localMessages = await getMessagesByChatId(
-          chatId,
-          currentUserPhoneNumberRef.current,
-        );
-          const privateKey = await EncryptedStorage.getItem('privateKey');
-          const formattedMessages = [];
-          if (privateKey) {
-            for (const msg of localMessages) {
-              try {
-                const decryptedMessage = await messageDecryption({
-                  encryptedMessage: msg.message,
-                  myPrivateKey: privateKey,
-                  senderPublicKey: user.publicKey,
-                });
-                if (
-                  msg.status === 'sent' &&
-                  msg.phoneNumber === currentUserPhoneNumberRef.current
-                ) {
-                  continue;
-                } else {
-                  formattedMessages.push({
-                    senderPhoneNumber: msg.senderPhoneNumber,
-                    recipientPhoneNumber: msg.receiverPhoneNumber,
-                    message: decryptedMessage,
-                    timestamp: msg.timestamp,
-                    status: msg.status,
-                  });
-                }
-              } catch (error) {
-                dispatch(hide());
-              }
-            }
-            setFetchMessages(formattedMessages);
-            setReceivedMessages([]);
-            setSendMessages([]);
-          }
-      } catch (e) {
-        setFetchMessages([]);
-      }
-    }
-    getMessages();
-  }, [
-    // isOnlineWith,
-    recipientPhoneNumber,
-    socketId,
-    user.phoneNumber,
-    isCleared,
-    dispatch,
-    user.publicKey,
-  ]);
   useEffect(() => {
     async function receiveMessage() {
       const handleNewMessage = async (data: SentPrivateMessage) => {
@@ -313,22 +327,10 @@ export const IndividualChat = ({route}: Props) => {
             senderPublicKey: user.publicKey,
           });
         }
-        // const id = generateMessageId(
-        //   currentUserPhoneNumberRef.current,
-        //   recipientPhoneNumber,
-        //   data.timestamp,
-        // );
-        // const payload: MessageType = {
-        //   ...data,
-        //   receiverPhoneNumber: data.recipientPhoneNumber,
-        //   id: id,
-        //   status: 'read',
-        // };
         setReceivedMessages(prev => [
           ...prev,
           {...data, message: decryptedMessage},
         ]);
-        // await insertToMessages(payload);
       };
       await receivePrivateMessage(recipientPhoneNumber, handleNewMessage);
     }
@@ -358,6 +360,15 @@ export const IndividualChat = ({route}: Props) => {
         currentStatus: 'read',
       };
       await updateMessageStatus(details);
+      await updateLocalMessageStatusToRead(details);
+      newSocket.emit('messages_read_ack', {
+        chatId: createChatId(
+          currentUserPhoneNumberRef.current,
+          recipientPhoneNumber,
+        ),
+        senderPhoneNumber: currentUserPhoneNumberRef.current,
+        receiverPhoneNumber: recipientPhoneNumber,
+      });
     };
     updateStatus();
 
@@ -421,7 +432,7 @@ export const IndividualChat = ({route}: Props) => {
           recipientPhoneNumber,
           timestamp,
         );
-        if (isConnected) {
+        if (isConnected && message.trim() !== '') {
           await sendPrivateMessage(payload);
           const localMessage: MessageType = {
             ...payload,
