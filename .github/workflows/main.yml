@@ -3,8 +3,7 @@ name: QuickChat-frontend CI/CD
 on:
   push:
     branches:
-      - main
-      - update-splash-screen-android
+      - fix-translation-warnings
 
 jobs:
   lint-and-test:
