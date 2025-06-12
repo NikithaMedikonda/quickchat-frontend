@@ -197,7 +197,7 @@ export const IndividualChat = ({route}: Props) => {
   useEffect(() => {
     setSocket(newSocket);
     const withChattingPhoneNumber = user.phoneNumber;
-    if (!isBlocked) {
+    if (!isBlocked && currentUserPhoneNumberRef.current !== user.phoneNumber) {
       newSocket.emit('online_with', withChattingPhoneNumber);
     }
     async function checkJoined() {
@@ -263,7 +263,8 @@ export const IndividualChat = ({route}: Props) => {
         };
         const Messages = await getMessagesBetween(userData);
         if (Messages.status === 200) {
-          const data = Messages.data;
+          const data = await Messages.data;
+
           const privateKey = await EncryptedStorage.getItem('privateKey');
           const formattedMessages = [];
           if (privateKey) {
@@ -274,24 +275,19 @@ export const IndividualChat = ({route}: Props) => {
                   myPrivateKey: privateKey,
                   senderPublicKey: user.publicKey,
                 });
-                if (
-                  msg.status === 'sent' &&
-                  msg.receiver.phoneNumber === currentUserPhoneNumberRef.current
-                ) {
-                  continue;
-                } else {
-                  formattedMessages.push({
-                    senderPhoneNumber: msg.sender.phoneNumber,
-                    recipientPhoneNumber: msg.receiver.phoneNumber,
-                    message: decryptedMessage,
-                    timestamp: msg.createdAt,
-                    status: msg.status,
-                  });
-                }
+
+                formattedMessages.push({
+                  senderPhoneNumber: msg.sender.phoneNumber,
+                  recipientPhoneNumber: msg.receiver.phoneNumber,
+                  message: decryptedMessage,
+                  timestamp: msg.createdAt,
+                  status: msg.status,
+                });
               } catch (error) {
                 dispatch(hide());
               }
             }
+
             setFetchMessages(formattedMessages);
             setReceivedMessages([]);
             setSendMessages([]);
@@ -374,7 +370,10 @@ export const IndividualChat = ({route}: Props) => {
     }
     checkOnline();
     const withChattingPhoneNumber = user.phoneNumber;
-    if (!isBlocked) {
+    if (
+      !isBlocked &&
+      currentUserPhoneNumberRef.current !== recipientPhoneNumber
+    ) {
       newSocket.emit('online_with', withChattingPhoneNumber);
     }
     const sendMessage = async () => {
@@ -452,7 +451,51 @@ export const IndividualChat = ({route}: Props) => {
     };
 
     if (message) {
-      sendMessage();
+      async function selfChat() {
+        const privateKey = await EncryptedStorage.getItem('privateKey');
+        let encryptedMessage = message.trim();
+        if (privateKey) {
+          encryptedMessage = await messageEncryption({
+            message: message.trim(),
+            myPrivateKey: privateKey,
+            recipientPublicKey: user.publicKey,
+          });
+        }
+        const timestamp = new Date().toISOString();
+        const payload: SentPrivateMessage = {
+          recipientPhoneNumber,
+          senderPhoneNumber: currentUserPhoneNumberRef.current,
+          message: encryptedMessage,
+          timestamp,
+          status: 'read',
+        };
+        const id = generateMessageId(
+          currentUserPhoneNumberRef.current,
+          recipientPhoneNumber,
+          timestamp,
+        );
+        const localMessage: MessageType = {
+          ...payload,
+          id: id,
+          receiverPhoneNumber: recipientPhoneNumber,
+        };
+        setSendMessages(prev => [
+          ...prev,
+          {...payload, message: message.trim()},
+        ]);
+        if (isConnected) {
+          await sendPrivateMessage(payload);
+          await insertToMessages(localMessage);
+        } else {
+          await insertToQueue({...localMessage, status: 'pending'});
+          await insertToMessages(localMessage);
+        }
+      }
+      if (currentUserPhoneNumberRef.current === recipientPhoneNumber) {
+        selfChat();
+      } else {
+        sendMessage();
+      }
     }
   }, [
     isOnlineWith,
@@ -522,12 +565,15 @@ export const IndividualChat = ({route}: Props) => {
     }
 
     const messages = await getQueuedMessages(chatId);
+
     const resultantMessages = messages.map((queuedMessage: MessageType) => ({
       ...queuedMessage,
       recipientPhoneNumber: queuedMessage.receiverPhoneNumber,
     }));
     const privateKey = await EncryptedStorage.getItem('privateKey');
-    setPendingMessages(resultantMessages);
+    if (currentUserPhoneNumberRef.current !== recipientPhoneNumber) {
+      setPendingMessages(resultantMessages);
+    }
     for (const queuedMessage of messages) {
       const decryptedMessage = await messageDecryption({
         encryptedMessage: queuedMessage.message,
@@ -542,15 +588,19 @@ export const IndividualChat = ({route}: Props) => {
         status: status,
       };
       await sendPrivateMessage(payload);
-      setPendingMessages(prev =>
-        prev.filter(msg => msg.id !== queuedMessage.id),
-      );
-      setSendMessages(prev => [
-        ...prev,
-        {...payload, message: decryptedMessage},
-      ]);
-      queuedMessage.status = status;
-      await updateLocalMessageStatus(queuedMessage);
+
+      if (currentUserPhoneNumberRef.current !== recipientPhoneNumber) {
+        setPendingMessages(prev =>
+          prev.filter(msg => msg.id !== queuedMessage.id),
+        );
+        setSendMessages(prev => [
+          ...prev,
+          {...payload, message: decryptedMessage},
+        ]);
+        queuedMessage.status = status;
+        await updateLocalMessageStatus(queuedMessage);
+      }
+
       await deleteFromQueue(queuedMessage.id);
     }
   }, [
@@ -567,17 +617,28 @@ export const IndividualChat = ({route}: Props) => {
         const anotherUser = await EncryptedStorage.getItem('user');
         if (anotherUser) {
           const parsedUser: User = JSON.parse(anotherUser);
-          await socketConnection(parsedUser.phoneNumber);
+          if (parsedUser.phoneNumber !== recipientPhoneNumber) {
+            await socketConnection(parsedUser.phoneNumber);
+          }
         }
       }
       connect();
       const withChattingPhoneNumber = user.phoneNumber;
-      if (!isBlocked) {
+      if (
+        !isBlocked &&
+        currentUserPhoneNumberRef.current !== recipientPhoneNumber
+      ) {
         newSocket.emit('online_with', withChattingPhoneNumber);
       }
       processQueueMessages();
     }
-  }, [isBlocked, isConnected, processQueueMessages, user.phoneNumber]);
+  }, [
+    isBlocked,
+    isConnected,
+    processQueueMessages,
+    user.phoneNumber,
+    recipientPhoneNumber,
+  ]);
   useEffect(() => {
     const all = [
       ...fetchMessages,
