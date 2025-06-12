@@ -1,5 +1,5 @@
-import { NavigationContainer, RouteProp } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import {NavigationContainer, RouteProp} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {
   fireEvent,
   render,
@@ -8,28 +8,28 @@ import {
 } from '@testing-library/react-native';
 
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { Provider } from 'react-redux';
-import { getDBInstance } from '../../database/connection/connection';
-import { insertToMessages } from '../../database/services/messageOperations';
+import {Provider} from 'react-redux';
+import {getDBInstance} from '../../database/connection/connection';
+import {insertToMessages} from '../../database/services/messageOperations';
 import {
   deleteFromQueue,
   getQueuedMessages,
   insertToQueue,
   updateLocalMessageStatus,
 } from '../../database/services/queueOperations';
-import { checkBlockedStatusLocal } from '../../database/services/userRestriction';
-import { checkBlockStatus } from '../../services/CheckBlockStatus';
-import { CheckUserDeleteStatus } from '../../services/CheckUserDeleteStatus';
-import { checkUserOnline } from '../../services/CheckUserOnline';
-import { getMessagesBetween } from '../../services/GetMessagesBetween';
-import { messageDecryption } from '../../services/MessageDecryption';
-import { messageEncryption } from '../../services/MessageEncryption';
-import { updateMessageStatus } from '../../services/UpdateMessageStatus';
+import {checkBlockedStatusLocal} from '../../database/services/userRestriction';
+import {checkBlockStatus} from '../../services/CheckBlockStatus';
+import {CheckUserDeleteStatus} from '../../services/CheckUserDeleteStatus';
+import {checkUserOnline} from '../../services/CheckUserOnline';
+import {getMessagesBetween} from '../../services/GetMessagesBetween';
+import {messageDecryption} from '../../services/MessageDecryption';
+import {messageEncryption} from '../../services/MessageEncryption';
+import {updateMessageStatus} from '../../services/UpdateMessageStatus';
 import * as socket from '../../socket/socket';
-import { resetForm } from '../../store/slices/registrationSlice';
-import { store } from '../../store/store';
-import { HomeStackParamList } from '../../types/usenavigation.type';
-import { IndividualChat } from './IndividualChat';
+import {resetForm} from '../../store/slices/registrationSlice';
+import {store} from '../../store/store';
+import {HomeStackParamList} from '../../types/usenavigation.type';
+import {IndividualChat} from './IndividualChat';
 
 type IndividualChatRouteProp = RouteProp<HomeStackParamList, 'individualChat'>;
 const mockRoute: IndividualChatRouteProp = {
@@ -637,7 +637,58 @@ describe('IndividualChat', () => {
       expect(sendIcon).toBeTruthy();
     });
   });
+  test('should call selfChat when sender and recipient phone numbers are the same', async () => {
+    const testMessage = 'Hello to self';
+    const encryptedMessage = 'encrypted-hello';
+    mockIsConnected = true;
+    (EncryptedStorage.getItem as jest.Mock).mockImplementation(
+      async (key: string) => {
+        if (key === 'user') {
+          return JSON.stringify({phoneNumber: '+918522041688'});
+        }
+        if (key === 'privateKey') {
+          return 'mock-private-key';
+        }
+        return null;
+      },
+    );
+    (socket.sendPrivateMessage as jest.Mock).mockResolvedValue({});
+    (messageEncryption as jest.Mock).mockResolvedValue(encryptedMessage);
+    (insertToMessages as jest.Mock).mockResolvedValue({});
+    (insertToQueue as jest.Mock).mockResolvedValue({});
 
+    (socket.receiveOnline as jest.Mock).mockImplementation(
+      async ({setIsOnline}) => setIsOnline(true),
+    );
+
+    (socket.receiveOffline as jest.Mock).mockImplementation(
+      async ({setIsOnline}) => setIsOnline(false),
+    );
+    render(
+      <NavigationContainer>
+        <Provider store={store}>
+          <IndividualChat
+            navigation={
+              mockNavigation as NativeStackNavigationProp<
+                HomeStackParamList,
+                'individualChat'
+              >
+            }
+            route={mockRoute}
+          />
+        </Provider>
+      </NavigationContainer>,
+    );
+
+    const input = await screen.getByPlaceholderText('Type a message..');
+    fireEvent.changeText(input, testMessage);
+
+    const sendButton = await screen.getByA11yHint('send-message-icon');
+    fireEvent.press(sendButton);
+    await waitFor(() => {
+      expect(insertToMessages).toHaveBeenCalledTimes(1);
+    });
+  });
   test('adds message to receivedMessages if message is not empty', async () => {
     mockIsConnected = true;
     (messageDecryption as jest.Mock).mockResolvedValue('Hello!');
