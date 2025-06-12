@@ -1,10 +1,16 @@
+import EncryptedStorage from 'react-native-encrypted-storage';
+import { SQLiteDatabase } from 'react-native-sqlite-storage';
+import { getUserByPhoneNumber } from '../../services/GetUser';
+import { incrementTrigger } from '../../store/slices/chatSlice';
+import { store } from '../../store/store';
 import { createChatId } from '../../utils/chatId';
 import { getDBInstance } from '../connection/connection';
 import { MessageType } from '../types/message';
+import { upsertChatMetadata } from './chatOperations';
+import { isUserStoredLocally, upsertUserInfo } from './userOperations';
 
 export const insertToMessages = async (message: MessageType) => {
   const db = await getDBInstance();
-
   const messagetoInsert = {
     id: message.id,
     chatId: createChatId(
@@ -17,7 +23,13 @@ export const insertToMessages = async (message: MessageType) => {
     status: message.status,
     timestamp: message.timestamp,
   };
-
+  const messageResult = await db.executeSql(
+    'SELECT * FROM Messages WHERE message = ?',
+    [messagetoInsert.message],
+  );
+  if (messageResult[0].rows.length > 0) {
+    return;
+  }
   await db.executeSql(
     `INSERT OR IGNORE INTO Messages
           (id, chatId, senderPhoneNumber, receiverPhoneNumber, message, status, timestamp)
@@ -32,6 +44,45 @@ export const insertToMessages = async (message: MessageType) => {
       messagetoInsert.timestamp,
     ],
   );
+
+  const currentUser = await EncryptedStorage.getItem('user');
+  if (!currentUser) {
+    return;
+  }
+  const parsedUser = JSON.parse(currentUser);
+  const currentUserPhoneNumber = parsedUser.phoneNumber;
+
+  if (currentUserPhoneNumber) {
+    const sender = message.senderPhoneNumber;
+    const isSenderCurrentUser = sender === currentUserPhoneNumber;
+
+    if (!isSenderCurrentUser) {
+      const exists = await isUserStoredLocally(db, sender);
+      if (!exists) {
+        const remoteUser = await getUserByPhoneNumber(
+          messagetoInsert.senderPhoneNumber,
+        );
+        if (remoteUser) {
+          await upsertUserInfo(db, {
+            phoneNumber: sender,
+            profilePicture: remoteUser.profilePicture,
+            publicKey: remoteUser.publicKey,
+          });
+        }
+      }
+    }
+
+    await upsertChatMetadata(
+      messagetoInsert.senderPhoneNumber,
+      messagetoInsert.receiverPhoneNumber,
+      messagetoInsert.message,
+      messagetoInsert.timestamp,
+      messagetoInsert.status,
+      isSenderCurrentUser,
+    );
+
+    store.dispatch(incrementTrigger());
+  }
 };
 
 export const getMessagesByChatId = async (
@@ -63,4 +114,24 @@ export const getMessagesByChatId = async (
     messages.push(result[0].rows.item(i));
   }
   return messages;
+};
+
+export const updateLocalMessageStatusToRead = async (details: {
+  senderPhoneNumber: string;
+  receiverPhoneNumber: string;
+  previousStatus: string;
+  currentStatus: string;
+}): Promise<void> => {
+  const db: SQLiteDatabase = await getDBInstance();
+  const query = `
+    UPDATE Messages
+    SET status = ?
+    WHERE senderPhoneNumber = ? AND receiverPhoneNumber = ? AND status = ?
+  `;
+  await db.executeSql(query, [
+    details.currentStatus,
+    details.receiverPhoneNumber,
+    details.senderPhoneNumber,
+    details.previousStatus,
+  ]);
 };

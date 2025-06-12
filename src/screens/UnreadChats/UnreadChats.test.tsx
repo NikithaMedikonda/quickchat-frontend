@@ -8,8 +8,9 @@ import {
 import { Provider } from 'react-redux';
 import { numberNameIndex } from '../../helpers/nameNumberIndex';
 import { getAllChats } from '../../services/GetAllChats';
+import { incrementTrigger } from '../../store/slices/chatSlice';
 import { store } from '../../store/store';
-import { UnreadChats, Chat } from './UnreadChats';
+import { Chat, UnreadChats } from './UnreadChats';
 
 const mockChats = [
   {
@@ -54,7 +55,7 @@ jest.mock('../../services/MessageDecryption', () => ({
 }));
 
 jest.mock('../../services/MessageDecryption', () => ({
-  messageDecryption: jest.fn().mockImplementation(({ encryptedMessage }) => {
+  messageDecryption: jest.fn().mockImplementation(({encryptedMessage}) => {
     if (encryptedMessage === 'Hello there!') {
       return '✓Hello there!';
     }
@@ -77,6 +78,10 @@ jest.mock('../../services/GetAllChats', () => ({
 
 jest.mock('../../helpers/normalisePhoneNumber', () => ({
   normalise: jest.fn(),
+}));
+
+jest.mock('../../store/slices/chatSlice', () => ({
+  incrementTrigger: jest.fn(() => ({type: 'INCREMENT_TRIGGER'})),
 }));
 
 describe('Unread chats component', () => {
@@ -116,7 +121,7 @@ describe('Unread chats component', () => {
 
   it('should logout and redirect to login on 401 response', async () => {
     (numberNameIndex as jest.Mock).mockResolvedValue({});
-    (getAllChats as jest.Mock).mockResolvedValue({ status: 401 });
+    (getAllChats as jest.Mock).mockResolvedValue({status: 401});
 
     await waitFor(() => {
       render(
@@ -141,7 +146,7 @@ describe('Unread chats component', () => {
     (numberNameIndex as jest.Mock).mockResolvedValue({});
     (getAllChats as jest.Mock).mockResolvedValue({
       status: 200,
-      data: { chats: emptyChats },
+      data: {chats: emptyChats},
     });
 
     await waitFor(() => {
@@ -155,9 +160,7 @@ describe('Unread chats component', () => {
     });
 
     await waitFor(() => {
-      expect(
-        screen.getByText('EmptyUnreadMessage'),
-      ).toBeTruthy();
+      expect(screen.getByText('EmptyUnreadMessage')).toBeTruthy();
     });
   });
 
@@ -166,7 +169,7 @@ describe('Unread chats component', () => {
 
     (getAllChats as jest.Mock).mockResolvedValue({
       status: 200,
-      data: { chats: mockChats },
+      data: {chats: mockChats},
     });
 
     await waitFor(() => {
@@ -194,7 +197,7 @@ describe('Unread chats component', () => {
 
     (getAllChats as jest.Mock).mockResolvedValue({
       status: 200,
-      data: { chats: mockChats },
+      data: {chats: mockChats},
     });
 
     await waitFor(() => {
@@ -225,7 +228,6 @@ describe('Unread chats component', () => {
 
   it('should not set chats if response status is not 200', async () => {
     (numberNameIndex as jest.Mock).mockResolvedValue({});
-
     (getAllChats as jest.Mock).mockResolvedValue({
       status: 500,
       data: { chats: mockChats },
@@ -242,9 +244,44 @@ describe('Unread chats component', () => {
     });
 
     await waitFor(() => {
-      expect(
-        screen.getByText('EmptyUnreadMessage'),
-      ).toBeTruthy();
+      expect(screen.getByText('EmptyUnreadMessage')).toBeTruthy();
+    });
+  });
+
+  it('should dispatch incrementTrigger after fetching unread chats', async () => {
+    jest.spyOn(store, 'dispatch').mockImplementation(jest.fn());
+
+    (numberNameIndex as jest.Mock).mockResolvedValue({});
+    (getAllChats as jest.Mock).mockResolvedValue({
+      status: 200,
+      data: {
+        chats: [
+          {
+            chatId: '1',
+            contactName: 'User A',
+            contactProfilePic: null,
+            lastMessageStatus: 'delivered',
+            lastMessageText: 'How are you doing?',
+            lastMessageTimestamp: '2025-04-10T11:30:00Z',
+            lastMessageType: 'receivedMessage',
+            phoneNumber: '8978363862',
+            unreadCount: 3,
+            publicKey: '',
+          },
+        ],
+      },
+    });
+
+      render(
+        <Provider store={store}>
+          <NavigationContainer>
+            <UnreadChats />
+          </NavigationContainer>
+        </Provider>,
+      );
+
+    await waitFor(() => {
+      expect(store.dispatch).toHaveBeenCalledWith(incrementTrigger());
     });
   });
 });

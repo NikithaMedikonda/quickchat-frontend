@@ -14,6 +14,12 @@ export const createTables = async (db: SQLiteDatabase) => {
     );
   `);
 
+  await db.executeSql(`CREATE TABLE IF NOT EXISTS User (
+    id TEXT PRIMARY KEY,
+    phoneNumber TEXT,
+    lastSyncedAt TEXT);
+  `);
+
   await db.executeSql(`
     CREATE TABLE IF NOT EXISTS Messages (
       id TEXT PRIMARY KEY,
@@ -27,7 +33,7 @@ export const createTables = async (db: SQLiteDatabase) => {
   `);
 
   await db.executeSql(`
-    CREATE TABLE  IF NOT EXISTS Queue (
+    CREATE TABLE IF NOT EXISTS Queue (
       id TEXT PRIMARY KEY,
       chatId TEXT,
       senderPhoneNumber TEXT,
@@ -53,6 +59,16 @@ export const createTables = async (db: SQLiteDatabase) => {
       blockerPhoneNumber TEXT,
       blockedPhoneNumber TEXT
     );`);
+
+  await db.executeSql(`
+  CREATE TABLE IF NOT EXISTS LocalUsers (
+    phoneNumber TEXT PRIMARY KEY,
+    name TEXT,
+    profilePicture TEXT,
+    publicKey TEXT
+  );
+`);
+
 
     await db.executeSql(`
     CREATE TABLE IF NOT EXISTS DeletedUsers (

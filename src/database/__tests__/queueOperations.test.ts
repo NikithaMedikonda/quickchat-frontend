@@ -1,10 +1,11 @@
 import { createChatId } from '../../utils/chatId';
 import * as connectionModule from '../connection/connection';
+import { upsertChatMetadata } from '../services/chatOperations';
 import {
-    deleteFromQueue,
-    getQueuedMessages,
-    insertToQueue,
-    updateLocalMessageStatus,
+  deleteFromQueue,
+  getQueuedMessages,
+  insertToQueue,
+  updateLocalMessageStatus,
 } from '../services/queueOperations';
 import { MessageType } from '../types/message';
 
@@ -16,6 +17,10 @@ jest.mock('../connection/connection', () => ({
 
 jest.mock('../../utils/chatId', () => ({
   createChatId: jest.fn(),
+}));
+
+jest.mock('../services/chatOperations', () => ({
+  upsertChatMetadata: jest.fn(),
 }));
 
 describe('Tests for insertToQueue function', () => {
@@ -103,6 +108,36 @@ describe('Test for updateMessageStatus function', () => {
         'UPDATE Messages SET status = ?, message = ? WHERE id = ?',
       ),
       ['sent', 'Hello again', 'msg1'],
+    );
+  });
+
+  it('should update message status and upsert chat metadata', async () => {
+    const message: MessageType = {
+      id: 'msg1',
+      senderPhoneNumber: '111',
+      receiverPhoneNumber: '222',
+      message: 'Updated message',
+      timestamp: '1000',
+      status: 'delivered',
+    };
+
+    mockExecuteSql.mockResolvedValueOnce([]);
+
+    await updateLocalMessageStatus(message);
+
+    expect(mockExecuteSql).toHaveBeenCalledWith(
+      expect.stringContaining(
+        'UPDATE Messages SET status = ?, message = ? WHERE id = ?',
+      ),
+      ['delivered', 'Updated message', 'msg1'],
+    );
+    expect(upsertChatMetadata).toHaveBeenCalledWith(
+      '111',
+      '222',
+      'Updated message',
+      '1000',
+      'delivered',
+      true,
     );
   });
 });
