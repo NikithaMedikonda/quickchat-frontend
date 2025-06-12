@@ -37,7 +37,6 @@ import {useSocketConnection} from '../../hooks/useSocketConnection';
 import {checkBlockStatus} from '../../services/CheckBlockStatus';
 import {CheckUserDeleteStatus} from '../../services/CheckUserDeleteStatus';
 import {checkUserOnline} from '../../services/CheckUserOnline';
-import {getMessagesBetween} from '../../services/GetMessagesBetween';
 import {messageDecryption} from '../../services/MessageDecryption';
 import {messageEncryption} from '../../services/MessageEncryption';
 import {updateMessageStatus} from '../../services/UpdateMessageStatus';
@@ -202,7 +201,7 @@ export const IndividualChat = ({route}: Props) => {
     };
 
     getUserDeleteStatus();
-  }, [showAlert, user.phoneNumber]);
+  }, [isConnected, showAlert, user.phoneNumber]);
 
   useEffect(() => {
     async function getMessages() {
