@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - handle-self-chat
 
 jobs:
   lint-and-test:
