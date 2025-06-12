@@ -254,7 +254,7 @@ describe('InitialStacks', () => {
     }
   });
 
-  it('should navigate to HomeTabs on valid access token', async () => {
+  it('should navigate to HomeTabs on valid access token ', async () => {
     (EncryptedStorage.getItem as jest.Mock).mockImplementation(
       (key: string) => {
         if (key === 'user') {
