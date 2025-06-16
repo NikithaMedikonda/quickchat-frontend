@@ -1,14 +1,10 @@
-import { useEffect, useState} from 'react';
-import {Image, View} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {
-  getFocusedRouteNameFromRoute,
-} from '@react-navigation/native';
-import {useDispatch, useSelector} from 'react-redux';
+import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
+import {useEffect, useState} from 'react';
 import {useTranslation} from 'react-i18next';
+import {Image, View} from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-
-
+import {useDispatch, useSelector} from 'react-redux';
 import {Badge} from '../../components/Badge/Badge.tsx';
 import {User} from '../../screens/Profile/Profile';
 import {getAllChats, getMissedChats} from '../../services/GetAllChats.ts';
@@ -23,16 +19,16 @@ import {HomeStacks} from '../stack/HomeStacks';
 import {ProfileStack} from '../stack/ProfileStacks';
 import {UnreadStacks} from '../stack/UnreadStacks.tsx';
 
-import {styles} from './HomeTabs.styles';
+import {getDBInstance} from '../../database/connection/connection.ts';
+import {getTotalUnreadCount} from '../../database/services/chatOperations.ts';
 import {insertToMessages} from '../../database/services/messageOperations.ts';
 import {
-  updateLastSyncedTime,
   getLastSyncedTime,
+  updateLastSyncedTime,
 } from '../../database/services/userOperations.ts';
-import {generateMessageId} from '../../utils/messageId.ts';
-import {getTotalUnreadCount} from '../../database/services/chatOperations.ts';
-import {getDBInstance} from '../../database/connection/connection.ts';
 import {RootState} from '../../store/store.ts';
+import {generateMessageId} from '../../utils/messageId.ts';
+import {styles} from './HomeTabs.styles';
 
 const HomeTabIcon = ({focused}: {focused: boolean}) => {
   const {tabHome} = useImagesColors();
@@ -139,6 +135,11 @@ export const HomeTabs = () => {
     const syncMessages = async () => {
       const currentUser = await EncryptedStorage.getItem('user');
       if (!currentUser) {
+        return;
+      }
+      const firstSync = await EncryptedStorage.getItem('firstSync');
+      if (firstSync && firstSync === 'true') {
+        EncryptedStorage.setItem('firstSync', 'false');
         return;
       }
       const parsedUser: User = JSON.parse(currentUser);
