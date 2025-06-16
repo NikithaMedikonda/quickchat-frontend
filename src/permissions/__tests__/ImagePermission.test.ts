@@ -1,6 +1,6 @@
-import {Platform, Alert} from 'react-native';
-import {check, request, RESULTS} from 'react-native-permissions';
-import {requestPermissions} from '../ImagePermissions';
+import { Platform, Alert } from 'react-native';
+import { check, request, RESULTS } from 'react-native-permissions';
+import { requestPermissions } from '../ImagePermissions';
 
 jest.mock('react-native-permissions', () => ({
   check: jest.fn(),
@@ -31,44 +31,73 @@ const setPlatform = (os: 'ios' | 'android') => {
   });
 };
 
+const setAndroidVersion = (version: number) => {
+  Object.defineProperty(Platform, 'Version', {
+    get: () => version,
+  });
+};
+
 describe('Test cases for requestPermissions function', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  test('should return false when Android camera permission is granted after request', async () => {
+  test('should return true when Android camera permission is granted after request', async () => {
     setPlatform('android');
+    setAndroidVersion(32);
     (check as jest.Mock).mockResolvedValue(RESULTS.DENIED);
     (request as jest.Mock).mockResolvedValue(RESULTS.GRANTED);
 
     const result = await requestPermissions('camera');
-    expect(result).toBe(false);
+    expect(result).toBe(true);
   });
 
-  test('should return true when Android camera permission is denied after request', async () => {
+  test('should return false when Android camera permission is denied after request', async () => {
     setPlatform('android');
+    setAndroidVersion(32);
     (check as jest.Mock).mockResolvedValue(RESULTS.DENIED);
     (request as jest.Mock).mockResolvedValue(RESULTS.DENIED);
 
     const result = await requestPermissions('camera');
+    expect(result).toBe(false);
+  });
+
+  test('should return true when Android gallery permission is already granted (below Android 13)', async () => {
+    setPlatform('android');
+    setAndroidVersion(32);
+    (check as jest.Mock).mockResolvedValue(RESULTS.GRANTED);
+
+    const result = await requestPermissions('gallery');
     expect(result).toBe(true);
   });
 
-  test('should return false when Android gallery permission is already granted', async () => {
+  test('should return false when Android gallery permission is denied after request (below Android 13)', async () => {
     setPlatform('android');
-    (check as jest.Mock).mockResolvedValue(RESULTS.GRANTED);
+    setAndroidVersion(32);
+    (check as jest.Mock).mockResolvedValue(RESULTS.DENIED);
+    (request as jest.Mock).mockResolvedValue(RESULTS.DENIED);
 
     const result = await requestPermissions('gallery');
     expect(result).toBe(false);
   });
 
-  test('should return true when Android gallery permission is denied after request', async () => {
+  test('should return true when Android 13+ gallery permission (READ_MEDIA_IMAGES) is already granted', async () => {
     setPlatform('android');
+    setAndroidVersion(33);
+    (check as jest.Mock).mockResolvedValue(RESULTS.GRANTED);
+
+    const result = await requestPermissions('gallery');
+    expect(result).toBe(true);
+  });
+
+  test('should return false when Android 13+ gallery permission (READ_MEDIA_IMAGES) is denied after request', async () => {
+    setPlatform('android');
+    setAndroidVersion(33);
     (check as jest.Mock).mockResolvedValue(RESULTS.DENIED);
     (request as jest.Mock).mockResolvedValue(RESULTS.DENIED);
 
     const result = await requestPermissions('gallery');
-    expect(result).toBe(true);
+    expect(result).toBe(false);
   });
 
   test('should return true when iOS camera permission is denied initially but granted after request', async () => {
