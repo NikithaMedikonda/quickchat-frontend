@@ -37,6 +37,7 @@ export const setupNotificationChannel = async () => {
       id: 'quickchat',
       name: 'Default Channel',
       importance: AndroidImportance.HIGH,
+      sound: 'default',
     });
   }
 };
@@ -58,6 +59,7 @@ export const getFCMToken = async (): Promise<string | null> => {
 export const listenForForegroundMessages = () => {
   return messaging().onMessage(async remoteMessage => {
     const rawPhnoneNumber = remoteMessage.data?.senderPhoneNumber;
+    console.log(remoteMessage);
     const rawPhoto = remoteMessage.data?.profilePicture;
     const senderPhoneNumber =
       typeof rawPhnoneNumber === 'string' ? rawPhnoneNumber : undefined;
