@@ -177,30 +177,30 @@ describe('Tests for ContactsDisplay Component', () => {
       expect(mockNavigation.goBack).toHaveBeenCalled();
     });
   });
-it('should set empty contacts if index is falsy', async () => {
-  const mockContacts = {
-    registeredUsers: [
-      {phoneNumber: '+916303961097', profilePicture: '', name: 'Usha'},
-    ],
-    unRegisteredUsers: ['+916303974914'],
-  };
-  (getContacts as jest.Mock).mockResolvedValue(mockContacts);
-  (numberNameIndex as jest.Mock).mockResolvedValue(null);
-  renderComponent();
-  await waitFor(() => {
-    expect(screen.queryByText('Usha')).toBeNull();
+  it('should set empty contacts if index is falsy', async () => {
+    const mockContacts = {
+      registeredUsers: [
+        {phoneNumber: '+916303961097', profilePicture: '', name: 'Usha'},
+      ],
+      unRegisteredUsers: ['+916303974914'],
+    };
+    (getContacts as jest.Mock).mockResolvedValue(mockContacts);
+    (numberNameIndex as jest.Mock).mockResolvedValue(null);
+    renderComponent();
+    await waitFor(() => {
+      expect(screen.queryByText('Usha')).toBeNull();
+    });
   });
-});
-it('should show alert when fetchContacts throws error', async () => {
-  const mockError = new Error('Something went wrong');
-  (getContacts as jest.Mock).mockRejectedValue(mockError);
-  (numberNameIndex as jest.Mock).mockResolvedValue({});
-  const alertSpy = jest.spyOn(Alert, 'alert');
-  renderComponent();
-  await waitFor(() => {
-    expect(alertSpy).toHaveBeenCalledWith(
-      'Error while fetching the contacts: Something went wrong',
-    );
+  it('should show alert when fetchContacts throws error', async () => {
+    const mockError = new Error('Something went wrong');
+    (getContacts as jest.Mock).mockRejectedValue(mockError);
+    (numberNameIndex as jest.Mock).mockResolvedValue({});
+    const alertSpy = jest.spyOn(Alert, 'alert');
+    renderComponent();
+    await waitFor(() => {
+      expect(alertSpy).toHaveBeenCalledWith(
+        'Error while fetching the contacts: Something went wrong',
+      );
+    });
   });
-});
 });
