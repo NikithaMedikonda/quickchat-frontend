@@ -17,20 +17,29 @@ export const ChatBoxContent = ({
 }) => {
   const colors = useThemeColors();
   const styles = getStyles(colors);
+  console.log('ChatBoxContent rendered with image:', image);
 
   return (
     <View style={styles.container}>
       <View style={styles.innerContent}>
         <Image
           style={styles.profileImage}
-          source={image ? {uri: image} : {uri: DEFAULT_PROFILE_IMAGE}}
+          source={
+            image
+              ? {
+                  uri: image.startsWith('data:image')
+                    ? image
+                    : `data:image/png;base64,${image}`,
+                }
+              : {uri: DEFAULT_PROFILE_IMAGE}
+          }
           accessibilityHint="profile-image"
         />
       </View>
       <View style={styles.details}>
         <Text style={styles.name}>{name}</Text>
         <View style={styles.descriptionWrapper}>
-          {status && <MessageStatusTicks status={status}/>}
+          {status && <MessageStatusTicks status={status} />}
           <Text
             style={styles.description}
             numberOfLines={1}

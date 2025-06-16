@@ -7,6 +7,13 @@ import {store} from '../../store/store';
 import {createChatId} from '../../utils/chatId';
 import {getDBInstance} from '../connection/connection';
 import {isUserStoredLocally, upsertUserInfo} from './userOperations';
+import RNFetchBlob from 'rn-fetch-blob';
+
+const fetchAndConvertToBase64 = async (url: string) => {
+  const res = await RNFetchBlob.config({ fileCache: false }).fetch('GET', url);
+  return await res.base64();
+};
+
 
 export const clearChatLocally = async (
   chatId: string,
@@ -139,9 +146,10 @@ export const getAllChatsFromLocal = async (
     if (!exists) {
       const remoteUser = await getUserByPhoneNumber(contactPhone);
       if (remoteUser) {
+         const base64Image = await fetchAndConvertToBase64(remoteUser.profilePicture);
         await upsertUserInfo(db, {
           phoneNumber: contactPhone,
-          profilePicture: remoteUser.profilePicture,
+          profilePicture: base64Image,
           publicKey: remoteUser.publicKey,
         });
       }
