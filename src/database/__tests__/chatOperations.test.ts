@@ -1,6 +1,6 @@
-import { getUserByPhoneNumber } from '../../services/GetUser';
-import { setUnreadCount } from '../../store/slices/unreadChatSlice';
-import { store } from '../../store/store';
+import {getUserByPhoneNumber} from '../../services/GetUser';
+import {setUnreadCount} from '../../store/slices/unreadChatSlice';
+import {store} from '../../store/store';
 import * as connectionModule from '../connection/connection';
 import {
   clearChatLocally,
@@ -9,7 +9,7 @@ import {
   resetUnreadCount,
   upsertChatMetadata,
 } from '../services/chatOperations';
-import { isUserStoredLocally, upsertUserInfo } from '../services/userOperations';
+import {isUserStoredLocally, upsertUserInfo} from '../services/userOperations';
 
 const mockExecuteSql = jest.fn();
 
@@ -72,6 +72,10 @@ describe('Tests for clearChatLocally function', () => {
       expect.stringContaining('UPDATE Conversations'),
       [expect.any(String), chatId, userPhoneNumber],
     );
+    expect(mockExecuteSql).toHaveBeenCalledWith(
+      expect.stringContaining('DELETE FROM Chats'),
+      [chatId],
+    );
   });
 
   it('should insert conversation if no record exists', async () => {
@@ -92,6 +96,10 @@ describe('Tests for clearChatLocally function', () => {
     expect(mockExecuteSql).toHaveBeenCalledWith(
       expect.stringContaining('INSERT INTO Conversations'),
       [chatId, userPhoneNumber, expect.any(String)],
+    );
+    expect(mockExecuteSql).toHaveBeenCalledWith(
+      expect.stringContaining('DELETE FROM Chats'),
+      [chatId],
     );
   });
 });
