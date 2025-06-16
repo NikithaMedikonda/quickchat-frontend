@@ -18,6 +18,13 @@ jest.mock('react-native-encrypted-storage', () => ({
   setItem: jest.fn(),
   clear: jest.fn(),
 }));
+jest.mock('@react-native-async-storage/async-storage', () => ({
+  setItem: jest.fn(),
+  getItem: jest.fn(),
+  removeItem: jest.fn(),
+  clear: jest.fn(),
+}));
+
 let mockIsConnected = true;
 jest.mock('../../hooks/useSocketConnection', () => ({
   useSocketConnection: () => ({
