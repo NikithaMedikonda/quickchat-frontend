@@ -78,16 +78,12 @@ export const listenForForegroundMessages = () => {
     let messageCount = 1;
 
     if (senderPhoneNumber) {
-      try {
         const storedCount = await AsyncStorage.getItem(
           `msgCount_${senderPhoneNumber}`,
         );
         if (storedCount) {
           messageCount = parseInt(storedCount, 10) + 1;
         }
-      } catch (e) {
-        console.error('Error reading message count in foreground:', e);
-      }
       await AsyncStorage.setItem(
         `msgCount_${senderPhoneNumber}`,
         messageCount.toString(),
