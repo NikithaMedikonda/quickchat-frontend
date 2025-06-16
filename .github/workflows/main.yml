@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - local-first-chats 
+      - custom-notification
 
 jobs:
   lint-and-test:
