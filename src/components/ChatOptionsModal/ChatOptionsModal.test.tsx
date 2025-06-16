@@ -426,6 +426,7 @@ describe('ChatOptionsModal', () => {
       expect(state.registration.alertType).toBe('info');
     });
   });
+
   it('shows alert if user not exist', async () => {
     const mockOnBlockStatusChange = jest.fn();
     (EncryptedStorage.getItem as jest.Mock).mockImplementation(key => {
@@ -459,6 +460,7 @@ describe('ChatOptionsModal', () => {
       expect(state.registration.alertType).toBe('info');
     });
   });
+
   it('shows alert if user and token not exist', async () => {
     const mockOnBlockStatusChange = jest.fn();
     (EncryptedStorage.getItem as jest.Mock).mockImplementation(key => {
