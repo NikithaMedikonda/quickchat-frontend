@@ -31,6 +31,7 @@ export const clearChatLocally = async (
       [chatId, userPhoneNumber, lastClearedAt],
     );
   }
+  await db.executeSql('DELETE FROM Chats WHERE id = ?', [chatId]);
 };
 
 export const upsertChatMetadata = async (
