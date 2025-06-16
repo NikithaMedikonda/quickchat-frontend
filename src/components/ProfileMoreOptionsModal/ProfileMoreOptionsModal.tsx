@@ -12,7 +12,9 @@ import {
 } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { useDispatch, useSelector } from 'react-redux';
+import { User } from '../../screens/Profile/Profile';
 import { deleteUser } from '../../services/DeleteUser';
+import { logoutUser } from '../../services/LogoutUser';
 import { hide, show } from '../../store/slices/loadingSlice';
 import { logout } from '../../store/slices/loginSlice';
 import {
@@ -23,19 +25,16 @@ import {
   setAlertVisible,
 } from '../../store/slices/registrationSlice';
 import { RootState } from '../../store/store';
+import { useThemeColors } from '../../themes/colors';
 import { useImagesColors } from '../../themes/images';
 import {
   InitialStackProps,
   NavigationProps,
   ProfileScreenNavigationProp,
 } from '../../types/usenavigation.type';
-import {User} from '../../screens/Profile/Profile';
-import {useThemeColors} from '../../themes/colors';
-import {getStyles} from './ProfileMoreOptionsModal.styles';
-import {CustomAlert} from '../CustomAlert/CustomAlert';
-import {logoutUser} from '../../services/LogoutUser';
+import { CustomAlert } from '../CustomAlert/CustomAlert';
 import { ConfirmModal } from '../GenericConfirmModal/ConfirmModal';
-
+import { getStyles } from './ProfileMoreOptionsModal.styles';
 
 export const ProfileMoreOptionsModal = ({
   visible,
@@ -115,7 +114,13 @@ export const ProfileMoreOptionsModal = ({
       const result = await logoutUser(payload);
       if (result.status === 200) {
         showAlert('success', 'Logged out', 'Successfully logged out');
+        const lastLoggedInUser = await EncryptedStorage.getItem(
+          'lastLoggedInUser',
+        );
         await EncryptedStorage.clear();
+        if (lastLoggedInUser) {
+          await EncryptedStorage.setItem('lastLoggedInUser', lastLoggedInUser);
+        }
         setTimeout(() => {
           dispatch(setAlertVisible(false));
           navigation.replace('login');
