@@ -1,6 +1,6 @@
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import phone from 'phone';
-import { useTranslation } from 'react-i18next';
+import {useTranslation} from 'react-i18next';
 import {
   Image,
   KeyboardAvoidingView,
@@ -12,13 +12,13 @@ import {
 } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import PhoneInput from 'react-native-phone-input';
-import { useDispatch, useSelector } from 'react-redux';
-import { Button } from '../../components/Button/Button';
-import { CustomAlert } from '../../components/CustomAlert/CustomAlert';
-import { Placeholder } from '../../components/InputField/InputField';
-import { keyDecryption } from '../../services/KeyDecryption';
-import { loginUser } from '../../services/LoginUser';
-import { hide, show } from '../../store/slices/loadingSlice';
+import {useDispatch, useSelector} from 'react-redux';
+import {Button} from '../../components/Button/Button';
+import {CustomAlert} from '../../components/CustomAlert/CustomAlert';
+import {Placeholder} from '../../components/InputField/InputField';
+import {keyDecryption} from '../../services/KeyDecryption';
+import {loginUser} from '../../services/LoginUser';
+import {hide, show} from '../../store/slices/loadingSlice';
 import {
   resetLoginForm,
   setLoginErrors,
@@ -31,24 +31,26 @@ import {
   setAlertType,
   setAlertVisible,
 } from '../../store/slices/registrationSlice';
-import { RootState } from '../../store/store';
-import { useThemeColors } from '../../themes/colors';
-import { useImagesColors } from '../../themes/images';
-import { HomeTabsProps, NavigationProps } from '../../types/usenavigation.type';
+import {RootState} from '../../store/store';
+import {useThemeColors} from '../../themes/colors';
+import {useImagesColors} from '../../themes/images';
+import {HomeTabsProps, NavigationProps} from '../../types/usenavigation.type';
 
-import { getDeviceId } from '../../services/GenerateDeviceId';
-import { loginStyles } from './Login.styles';
+import {getDeviceId} from '../../services/GenerateDeviceId';
+import {loginStyles} from './Login.styles';
+import {clearLocalStorage} from '../../database/services/clearStorage';
+import {syncFromRemote} from '../../services/SyncFromRemote';
 
 export function Login() {
   const homeNavigation = useNavigation<HomeTabsProps>();
   const navigate = useNavigation<NavigationProps>();
   const dispatch = useDispatch();
   const colors = useThemeColors();
-  const { logo } = useImagesColors();
+  const {logo} = useImagesColors();
   const styles = loginStyles(colors);
-  const { t } = useTranslation('auth');
-  const { form, errors } = useSelector((state: RootState) => state.login);
-  const { alertType, alertTitle, alertMessage } = useSelector(
+  const {t} = useTranslation('auth');
+  const {form, errors} = useSelector((state: RootState) => state.login);
+  const {alertType, alertTitle, alertMessage} = useSelector(
     (state: RootState) => state.registration,
   );
   const showAlert = (type: string, title: string, message: string) => {
@@ -59,7 +61,7 @@ export function Login() {
   };
 
   const handleInputChange = (key: keyof typeof form, value: string) => {
-    dispatch(setLoginField({ key, value }));
+    dispatch(setLoginField({key, value}));
   };
 
   const validateForm = () => {
@@ -123,6 +125,15 @@ export function Login() {
         );
         await EncryptedStorage.setItem('user', JSON.stringify(user));
         await EncryptedStorage.setItem('privateKey', privateKey);
+        const lastLoggedInUser = await EncryptedStorage.getItem(
+          'lastLoggedInUser',
+        );
+        if (lastLoggedInUser !== user.phoneNumber) {
+          await EncryptedStorage.setItem('lastLoggedInUser', user.phoneNumber);
+          await clearLocalStorage();
+          await syncFromRemote(user.phoneNumber);
+          await EncryptedStorage.setItem('firstSync', 'true');
+        }
 
         dispatch(resetLoginForm());
       } else if (result.status === 404) {
@@ -185,7 +196,7 @@ export function Login() {
           onChangePhoneNumber={(text: string) => {
             handleInputChange('phoneNumber', text);
           }}
-          onPressFlag={() => { }}
+          onPressFlag={() => {}}
         />
         {errors.phoneNumber && (
           <Text style={styles.error}>{t(`${errors.phoneNumber}`)}</Text>
