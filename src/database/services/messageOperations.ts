@@ -1,13 +1,13 @@
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { SQLiteDatabase } from 'react-native-sqlite-storage';
-import { getUserByPhoneNumber } from '../../services/GetUser';
-import { incrementTrigger } from '../../store/slices/chatSlice';
-import { store } from '../../store/store';
-import { createChatId } from '../../utils/chatId';
-import { getDBInstance } from '../connection/connection';
-import { MessageType } from '../types/message';
-import { upsertChatMetadata } from './chatOperations';
-import { isUserStoredLocally, upsertUserInfo } from './userOperations';
+import {SQLiteDatabase} from 'react-native-sqlite-storage';
+import {getUserByPhoneNumber} from '../../services/GetUser';
+import {incrementTrigger} from '../../store/slices/chatSlice';
+import {store} from '../../store/store';
+import {createChatId} from '../../utils/chatId';
+import {getDBInstance} from '../connection/connection';
+import {MessageType} from '../types/message';
+import {upsertChatMetadata} from './chatOperations';
+import {isUserStoredLocally, upsertUserInfo} from './userOperations';
 
 export const insertToMessages = async (message: MessageType) => {
   const db = await getDBInstance();
