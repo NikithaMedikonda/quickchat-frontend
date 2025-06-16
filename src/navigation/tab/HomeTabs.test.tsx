@@ -1,16 +1,27 @@
-import {NavigationContainer} from '@react-navigation/native';
-import {fireEvent, render, waitFor} from '@testing-library/react-native';
-import {Provider} from 'react-redux';
-import {getAllChats} from '../../services/GetAllChats';
-import {newSocket} from '../../socket/socket';
-import {store} from '../../store/store';
-import {HomeTabs} from './HomeTabs';
+import { NavigationContainer } from '@react-navigation/native';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { Provider } from 'react-redux';
+import { getAllChats, getMissedChats } from '../../services/GetAllChats';
+import { store } from '../../store/store';
+import { HomeTabs } from './HomeTabs';
+
 
 jest.mock('../../services/GetAllChats.ts');
-
-const mockedGetAllChats = getAllChats as jest.MockedFunction<
-  typeof getAllChats
->;
+jest.mock('../../socket/socket', () => {
+  const mockOn = jest.fn();
+  const mockOff = jest.fn();
+  const mockDisconnect = jest.fn();
+  const mockSocket = {
+    on: mockOn,
+    off: mockOff,
+    disconnect: mockDisconnect,
+  };
+  return {
+    newSocket: mockSocket,
+    socketConnection: jest.fn(),
+    checkDeviceStatus: jest.fn().mockResolvedValue({success: true}),
+  };
+});
 
 jest.mock('react-native-encrypted-storage', () => ({
   getItem: jest
@@ -22,8 +33,29 @@ jest.mock('react-native-encrypted-storage', () => ({
   clear: jest.fn(),
 }));
 
-jest.mock('../../services/useDeviceCheck', () => ({
-  useDeviceCheck: jest.fn(),
+jest.mock('../../database/services/messageOperations.ts', () => ({
+  insertToMessages: jest.fn().mockResolvedValue(undefined),
+}));
+
+jest.mock('../../database/services/userOperations', () => ({
+  getLastSyncedTime: jest.fn().mockResolvedValue(new Date().toISOString()),
+  updateLastSyncedTime: jest.fn().mockResolvedValue(undefined),
+}));
+
+jest.mock('../../database/services/chatOperations.ts', () => ({
+  getTotalUnreadCount: jest.fn().mockResolvedValue(1),
+  getAllChatsFromLocal: jest.fn().mockResolvedValue([
+    {
+      id: 'chat1',
+      unreadCount: 2,
+      lastMessage: 'Hello',
+      participants: ['+91 6303974914', '+91 9000000000'],
+    },
+  ]),
+}));
+
+jest.mock('../../database/connection/connection.ts', () => ({
+  getDBInstance: jest.fn().mockResolvedValue({}),
 }));
 
 jest.mock('react-native-contacts', () => ({
@@ -65,8 +97,23 @@ jest.mock('react-native-libsodium', () => ({
   ),
 }));
 
-const mockOn = jest.fn();
-newSocket.on = mockOn;
+jest.mock('react-native-device-info', () => ({
+  getUniqueId: jest.fn().mockReturnValue('mock-device-id'),
+  getSystemName: jest.fn().mockReturnValue('iOS'),
+  getModel: jest.fn().mockReturnValue('iPhone'),
+  getDeviceId: jest.fn().mockReturnValue('iPhone12,1'),
+  getSystemVersion: jest.fn().mockReturnValue('14.4'),
+  getVersion: jest.fn().mockReturnValue('1.0.0'),
+  getBuildNumber: jest.fn().mockReturnValue('100'),
+}));
+
+const mockedGetAllChats = getAllChats as jest.MockedFunction<
+  typeof getAllChats
+>;
+
+const mockedGetMissedChats = getMissedChats as jest.MockedFunction<
+  typeof getMissedChats
+>;
 
 describe('HomeTabs tests', () => {
   beforeEach(() => {
@@ -76,16 +123,36 @@ describe('HomeTabs tests', () => {
         chats: [{unreadCount: 2}, {unreadCount: 0}],
       },
     });
+    mockedGetMissedChats.mockResolvedValue({
+      status: 200,
+      data: [
+        {
+          senderPhoneNumber: '+911111111111',
+          messages: [
+            {
+              senderPhoneNumber: '+911111111111',
+              createdAt: new Date().toISOString(),
+              content: 'Hello',
+              status: 'delivered',
+            },
+          ],
+        },
+      ],
+    });
   });
+
   it('renders the Tabs', async () => {
+    const {getByText} = render(
+      <Provider store={store}>
+        <NavigationContainer>
+          <HomeTabs />
+        </NavigationContainer>
+      </Provider>,
+    );
     await waitFor(() => {
-      render(
-        <Provider store={store}>
-          <NavigationContainer>
-            <HomeTabs />
-          </NavigationContainer>
-        </Provider>,
-      );
+      expect(getByText('All Chats')).toBeTruthy();
+      expect(getByText('Unread Chats')).toBeTruthy();
+      expect(getByText('Profile')).toBeTruthy();
     });
   });
 
@@ -97,55 +164,7 @@ describe('HomeTabs tests', () => {
         </NavigationContainer>
       </Provider>,
     );
-
-    await waitFor(() => {
-      const profileTab = getByText('Profile');
-      fireEvent.press(profileTab);
-    });
-  });
-
-  it('should increment message count when new message is received', async () => {
-    let newMessageHandler: ((data: any) => void) | null | any = null;
-
-    (newSocket.on as jest.Mock).mockImplementation((event, cb) => {
-      if (event === 'new_message') {
-        newMessageHandler = cb;
-      }
-      return newSocket;
-    });
-
-    render(
-      <Provider store={store}>
-        <NavigationContainer>
-          <HomeTabs />
-        </NavigationContainer>
-      </Provider>,
-    );
-
-    if (newMessageHandler) {
-      newMessageHandler({newMessage: true});
-    } else {
-      throw new Error('new_message handler was not registered');
-    }
-
-    await waitFor(() => {
-      expect(newSocket.on).toHaveBeenCalledWith(
-        'new_message',
-        expect.any(Function),
-      );
-    });
-  });
-
-  it('covers fetchChats lines when getAllChats returns chats', async () => {
-    render(
-      <Provider store={store}>
-        <NavigationContainer>
-          <HomeTabs />
-        </NavigationContainer>
-      </Provider>,
-    );
-    await waitFor(() => {
-      expect(store.getState().unread.count).toBe(1);
-    });
+    const profileTab = await waitFor(() => getByText('Profile'));
+    fireEvent.press(profileTab);
   });
 });

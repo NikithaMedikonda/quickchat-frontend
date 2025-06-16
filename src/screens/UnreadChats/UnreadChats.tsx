@@ -1,30 +1,31 @@
-import {useFocusEffect, useNavigation} from '@react-navigation/native';
-import {useCallback, useLayoutEffect, useState} from 'react';
-import {useTranslation} from 'react-i18next';
-import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useCallback, useLayoutEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {useDispatch, useSelector} from 'react-redux';
-import {ChatBox} from '../../components/ChatBox/ChatBox';
-import {numberNameIndex} from '../../helpers/nameNumberIndex';
-import {normalise} from '../../helpers/normalisePhoneNumber';
-import {getAllChats} from '../../services/GetAllChats';
-import {messageDecryption} from '../../services/MessageDecryption';
-import {hide} from '../../store/slices/loadingSlice';
-import {logout} from '../../store/slices/loginSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { ChatBox } from '../../components/ChatBox/ChatBox';
+import { numberNameIndex } from '../../helpers/nameNumberIndex';
+import { normalise } from '../../helpers/normalisePhoneNumber';
+import { getAllChats } from '../../services/GetAllChats';
+import { messageDecryption } from '../../services/MessageDecryption';
+import { incrementTrigger } from '../../store/slices/chatSlice';
+import { hide } from '../../store/slices/loadingSlice';
+import { logout } from '../../store/slices/loginSlice';
 import {
   setAlertMessage,
   setAlertTitle,
   setAlertType,
   setAlertVisible,
 } from '../../store/slices/registrationSlice';
-import {setUnreadCount} from '../../store/slices/unreadChatSlice';
-import {RootState} from '../../store/store';
-import {useThemeColors} from '../../themes/colors';
+import { setUnreadCount } from '../../store/slices/unreadChatSlice';
+import { RootState } from '../../store/store';
+import { useThemeColors } from '../../themes/colors';
 import {
   NavigationProps,
   UnreadStacKProps,
 } from '../../types/usenavigation.type';
-import {getStyles} from './UnreadChats.style';
+import { getStyles } from './UnreadChats.style';
 export interface Chat {
   chatId: string;
   contactName: string | null;
@@ -122,7 +123,7 @@ export const UnreadChats = () => {
 
             const totalUnreadChats = unreadChats.length;
             dispatch(setUnreadCount(totalUnreadChats));
-
+            dispatch(incrementTrigger());
             setChats(unreadChats);
           }
         } else {

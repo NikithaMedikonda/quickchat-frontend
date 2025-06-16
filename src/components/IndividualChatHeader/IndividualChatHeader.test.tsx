@@ -28,6 +28,9 @@ jest.mock('react-native-encrypted-storage', () => ({
   removeItem: jest.fn(() => Promise.resolve()),
   clear: jest.fn(() => Promise.resolve()),
 }));
+jest.mock('react-native-contacts', () => ({
+  getAll: jest.fn(() => Promise.resolve([])),
+}));
 
 describe('Test for IndividualChatHeader component', () => {
   let userDetails = {
