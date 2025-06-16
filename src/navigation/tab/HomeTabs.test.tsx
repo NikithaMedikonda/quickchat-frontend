@@ -1,10 +1,10 @@
-import { NavigationContainer } from '@react-navigation/native';
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
-import { Provider } from 'react-redux';
-import { getAllChats, getMissedChats } from '../../services/GetAllChats';
-import { store } from '../../store/store';
-import { HomeTabs } from './HomeTabs';
-
+import {NavigationContainer} from '@react-navigation/native';
+import {fireEvent, render, waitFor} from '@testing-library/react-native';
+import {Provider} from 'react-redux';
+import {getAllChats, getMissedChats} from '../../services/GetAllChats';
+import {store} from '../../store/store';
+import {HomeTabs} from './HomeTabs';
+import EncryptedStorage from 'react-native-encrypted-storage';
 
 jest.mock('../../services/GetAllChats.ts');
 jest.mock('../../socket/socket', () => {
@@ -116,6 +116,10 @@ const mockedGetMissedChats = getMissedChats as jest.MockedFunction<
 >;
 
 describe('HomeTabs tests', () => {
+  const mockedEncryptedStorage = EncryptedStorage as jest.Mocked<
+    typeof EncryptedStorage
+  >;
+
   beforeEach(() => {
     mockedGetAllChats.mockResolvedValue({
       status: 200,
@@ -166,5 +170,34 @@ describe('HomeTabs tests', () => {
     );
     const profileTab = await waitFor(() => getByText('Profile'));
     fireEvent.press(profileTab);
+  });
+
+  it('does not sync messages if firstSync is true', async () => {
+    mockedEncryptedStorage.getItem = jest.fn().mockImplementation(key => {
+      if (key === 'user') {
+        return Promise.resolve(JSON.stringify({phoneNumber: '+916303974914'}));
+      }
+      if (key === 'firstSync') {
+        return Promise.resolve('true');
+      }
+      return Promise.resolve(null);
+    });
+
+    const {getByText} = render(
+      <Provider store={store}>
+        <NavigationContainer>
+          <HomeTabs />
+        </NavigationContainer>
+      </Provider>,
+    );
+
+    await waitFor(() => {
+      expect(getByText('All Chats')).toBeTruthy();
+    });
+
+    expect(mockedEncryptedStorage.setItem).toHaveBeenCalledWith(
+      'firstSync',
+      'false',
+    );
   });
 });
