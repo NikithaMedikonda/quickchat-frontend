@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - user-online-indicator
 
 jobs:
   lint-and-test:
