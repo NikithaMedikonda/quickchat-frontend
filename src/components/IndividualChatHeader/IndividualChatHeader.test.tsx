@@ -6,12 +6,12 @@ import {
   waitFor,
 } from '@testing-library/react-native';
 
-import { Platform } from 'react-native';
+import {Platform} from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { Provider } from 'react-redux';
-import { DEFAULT_PROFILE_IMAGE } from '../../constants/defaultImage';
-import { store } from '../../store/store';
-import { IndividualChatHeader } from './IndividualChatHeader';
+import {Provider} from 'react-redux';
+import {DEFAULT_PROFILE_IMAGE} from '../../constants/defaultImage';
+import {store} from '../../store/store';
+import {IndividualChatHeader} from './IndividualChatHeader';
 
 const mockNavigate = jest.fn();
 const mockGoBack = jest.fn();
@@ -38,6 +38,8 @@ describe('Test for IndividualChatHeader component', () => {
     profilePicture: '../../assets/user.png',
     phoneNumber: '',
     isBlocked: false,
+    isOnline: true,
+    socketId: '',
   };
   beforeEach(() => {
     render(
@@ -45,6 +47,7 @@ describe('Test for IndividualChatHeader component', () => {
         <IndividualChatHeader
           onBlockStatusChange={() => {}}
           setIsCleared={() => {}}
+          setSocketId={()=>{}}
           publicKey={''}
           {...userDetails}
         />
@@ -91,6 +94,7 @@ describe('Test for IndividualChatHeader component', () => {
           onBlockStatusChange={() => {}}
           setIsCleared={() => {}}
           publicKey={''}
+          setSocketId={() => {}}
           {...userDetails}
         />
         ,
@@ -138,8 +142,10 @@ describe('Platform-specific back arrow image tests', () => {
           profilePicture="someUri"
           phoneNumber=""
           isBlocked={false}
+          socketId=""
           onBlockStatusChange={() => {}}
           setIsCleared={() => {}}
+          setSocketId={() => {}}
           publicKey={''}
         />
         ,
@@ -162,8 +168,10 @@ describe('Platform-specific back arrow image tests', () => {
           profilePicture="someUri"
           phoneNumber=""
           isBlocked={false}
+          socketId=""
           onBlockStatusChange={() => {}}
           setIsCleared={() => {}}
+          setSocketId={() => {}}
           publicKey={''}
         />
         ,
@@ -183,9 +191,11 @@ describe('Platform-specific back arrow image tests', () => {
       <Provider store={store}>
         <IndividualChatHeader
           name="Test"
+          socketId=""
           profilePicture="someUri"
           phoneNumber=""
           isBlocked={false}
+          setSocketId={() => {}}
           onBlockStatusChange={() => {}}
           setIsCleared={() => {}}
           publicKey={''}
@@ -212,9 +222,11 @@ describe('Platform-specific back arrow image tests', () => {
           name="Test"
           profilePicture="someUri"
           phoneNumber=""
+          socketId=""
           isBlocked={false}
           onBlockStatusChange={() => {}}
           setIsCleared={() => {}}
+          setSocketId={() => {}}
           publicKey={''}
         />
         ,
@@ -228,5 +240,43 @@ describe('Platform-specific back arrow image tests', () => {
       expect(queryByText('Delete Chat')).toBeNull();
     });
   });
+  test('Should render the online status badge when socket id is string', () => {
+    render(
+      <Provider store={store}>
+        <IndividualChatHeader
+          name="Chitty"
+          profilePicture=""
+          phoneNumber=""
+          isBlocked={false}
+          socketId="Zhvyw6REcNc2DwgXAAAB"
+          onBlockStatusChange={() => {}}
+          setIsCleared={() => {}}
+          setSocketId={() => {}}
+          publicKey=""
+        />
+      </Provider>,
+    );
+     const onlineText = screen.queryByText('online');
+     expect(onlineText).toBeTruthy();
+  });
 
+  test('Should not render the online status badge when socket id is null', () => {
+    render(
+      <Provider store={store}>
+        <IndividualChatHeader
+          name="Chitty"
+          profilePicture=""
+          phoneNumber=""
+          isBlocked={false}
+          socketId= {null}
+          onBlockStatusChange={() => {}}
+          setIsCleared={() => {}}
+          setSocketId={() => {}}
+          publicKey=""
+        />
+      </Provider>,
+    );
+    const onlineText = screen.queryByText('online');
+    expect(onlineText).toBeNull();
+  });
 });
