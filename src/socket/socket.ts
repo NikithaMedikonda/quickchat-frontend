@@ -80,3 +80,24 @@ export async function receiveJoined({
     }
   });
 }
+export async function sendUpdatedMessages(data: {
+  senderPhoneNumber: string;
+  receiverPhoneNumber: string;
+  messages: string[];
+}) {
+  await newSocket.emit('read', data);
+}
+export async function receiveReadUpdate(
+  receiverPhoneNumber: string,
+  callback: (message: string[]) => void,
+) {
+  console.log('In update read update:', receiverPhoneNumber);
+  await newSocket.on(`status_${receiverPhoneNumber}`, callback);
+}
+export async function receiveDeliveredStatus(
+  senderPhoneNumber: string,
+  callback: (message: string[]) => void,
+) {
+  console.log('senderPhone number', senderPhoneNumber);
+  await newSocket.on(`delivered_status_${senderPhoneNumber}`, callback);
+}
