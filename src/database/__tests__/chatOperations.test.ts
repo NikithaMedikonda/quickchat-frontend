@@ -1,15 +1,17 @@
-import { getUserByPhoneNumber } from '../../services/GetUser';
-import { setUnreadCount } from '../../store/slices/unreadChatSlice';
-import { store } from '../../store/store';
+import {getUserByPhoneNumber} from '../../services/GetUser';
+import {setUnreadCount} from '../../store/slices/unreadChatSlice';
+import {store} from '../../store/store';
 import * as connectionModule from '../connection/connection';
 import {
   clearChatLocally,
   getAllChatsFromLocal,
   getTotalUnreadCount,
   resetUnreadCount,
+  updateChatMetadata,
   upsertChatMetadata,
 } from '../services/chatOperations';
-import { isUserStoredLocally, upsertUserInfo } from '../services/userOperations';
+import {updateSendMessageStatusToRead} from '../services/messageOperations';
+import {isUserStoredLocally, upsertUserInfo} from '../services/userOperations';
 
 const mockExecuteSql = jest.fn();
 
@@ -38,6 +40,15 @@ jest.mock('../../store/slices/unreadChatSlice', () => ({
 }));
 jest.mock('../../utils/chatId', () => ({
   createChatId: jest.fn(() => 'chat_123_456'),
+}));
+jest.mock('react-native-encrypted-storage', () => ({
+  getItem: jest
+    .fn()
+    .mockResolvedValue(
+      JSON.stringify({name: 'Mamatha', phoneNumber: '+916303974914'}),
+    ),
+  setItem: jest.fn(),
+  clear: jest.fn(),
 }));
 
 beforeEach(() => {
@@ -849,5 +860,58 @@ describe('Tests for getAllChatsFromLocal', () => {
         );
       });
     });
+  });
+});
+
+describe('Tests for updateChatMetaData function', () => {
+  it('should update the last message status if the message matches in chats table', async () => {
+    mockExecuteSql.mockResolvedValueOnce([{rows: {length: 1}}]);
+    const value = {
+      senderPhoneNumber: '123',
+      receiverPhoneNumber: '456',
+      messages: ['d', 'i'],
+    };
+    await updateSendMessageStatusToRead(value);
+    const updateValue = {
+      senderPhoneNumber: '123',
+      receiverPhoneNumber: '456',
+      status: 'read',
+      messages: ['d', 'i'],
+    };
+    await updateChatMetadata(
+      updateValue.senderPhoneNumber,
+      updateValue.receiverPhoneNumber,
+      updateValue.messages[0],
+      updateValue.status,
+    );
+    await updateChatMetadata(
+      updateValue.senderPhoneNumber,
+      updateValue.receiverPhoneNumber,
+      updateValue.messages[2],
+      updateValue.status,
+    );
+    expect(mockExecuteSql).toHaveBeenNthCalledWith(
+      1,
+      expect.stringContaining('UPDATE Messages'),
+      ['read', '123', '456', 'd'],
+    );
+
+    expect(mockExecuteSql).toHaveBeenNthCalledWith(
+      2,
+      expect.stringContaining('UPDATE Chats'),
+      ['read', 'chat_123_456', 'd'],
+    );
+
+    expect(mockExecuteSql).toHaveBeenNthCalledWith(
+      3,
+      expect.stringContaining('UPDATE Messages'),
+      ['read', '123', '456', 'i'],
+    );
+
+    expect(mockExecuteSql).toHaveBeenNthCalledWith(
+      4,
+      expect.stringContaining('UPDATE Chats'),
+      ['read', 'chat_123_456', 'i'],
+    );
   });
 });
