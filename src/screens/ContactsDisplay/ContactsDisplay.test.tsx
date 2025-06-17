@@ -1,4 +1,3 @@
-import {Alert, Platform} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {
   cleanup,
@@ -7,6 +6,7 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react-native';
+import {Alert, Platform} from 'react-native';
 import {Provider} from 'react-redux';
 import {numberNameIndex} from '../../helpers/nameNumberIndex';
 import {getContacts} from '../../services/GetContacts';
