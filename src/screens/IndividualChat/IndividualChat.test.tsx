@@ -1,5 +1,5 @@
-import { NavigationContainer, RouteProp } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import {NavigationContainer, RouteProp} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {
   fireEvent,
   render,
@@ -8,9 +8,12 @@ import {
 } from '@testing-library/react-native';
 
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { Provider } from 'react-redux';
-import { getDBInstance } from '../../database/connection/connection';
-import { insertToMessages } from '../../database/services/messageOperations';
+import {Provider} from 'react-redux';
+import {getDBInstance} from '../../database/connection/connection';
+import {
+  insertToMessages,
+  updateLocalMessageStatusToRead,
+} from '../../database/services/messageOperations';
 import {
   getQueuedMessages,
   insertToQueue,
@@ -20,18 +23,18 @@ import {
   insertDeletedUser,
   isUserDeletedLocal,
 } from '../../database/services/userRestriction';
-import { checkBlockStatus } from '../../services/CheckBlockStatus';
-import { CheckUserDeleteStatus } from '../../services/CheckUserDeleteStatus';
-import { checkUserOnline } from '../../services/CheckUserOnline';
-import { getMessagesBetween } from '../../services/GetMessagesBetween';
-import { messageDecryption } from '../../services/MessageDecryption';
-import { messageEncryption } from '../../services/MessageEncryption';
-import { updateMessageStatus } from '../../services/UpdateMessageStatus';
+import {checkBlockStatus} from '../../services/CheckBlockStatus';
+import {CheckUserDeleteStatus} from '../../services/CheckUserDeleteStatus';
+import {checkUserOnline} from '../../services/CheckUserOnline';
+import {getMessagesBetween} from '../../services/GetMessagesBetween';
+import {messageDecryption} from '../../services/MessageDecryption';
+import {messageEncryption} from '../../services/MessageEncryption';
+import {updateMessageStatus} from '../../services/UpdateMessageStatus';
 import * as socket from '../../socket/socket';
-import { resetForm } from '../../store/slices/registrationSlice';
-import { store } from '../../store/store';
-import { HomeStackParamList } from '../../types/usenavigation.type';
-import { IndividualChat } from './IndividualChat';
+import {resetForm} from '../../store/slices/registrationSlice';
+import {store} from '../../store/store';
+import {HomeStackParamList} from '../../types/usenavigation.type';
+import {IndividualChat} from './IndividualChat';
 
 type IndividualChatRouteProp = RouteProp<HomeStackParamList, 'individualChat'>;
 const mockRoute: IndividualChatRouteProp = {
@@ -66,7 +69,6 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
   clear: jest.fn(),
 }));
 
-
 jest.mock('react-native-contacts', () => ({
   getAll: jest.fn(() => Promise.resolve([])),
   getContactsByPhoneNumber: jest.fn(),
@@ -77,6 +79,7 @@ jest.mock('../../database/services/messageOperations', () => ({
   getMessagesByChatId: jest.fn().mockResolvedValue([]),
   insertToMessages: jest.fn(),
   updateLocalMessageStatusToRead: jest.fn().mockResolvedValue(undefined),
+  updateSendMessageStatusToRead: jest.fn().mockResolvedValue(undefined),
 }));
 
 jest.mock('react-native-libsodium', () => ({
@@ -141,6 +144,9 @@ jest.mock('../../socket/socket', () => ({
   receiveOffline: jest.fn(),
   receiveJoined: jest.fn(),
   socketConnection: jest.fn(),
+  sendUpdatedMessages: jest.fn(),
+  receiveReadUpdate: jest.fn(),
+  receiveDeliveredStatus: jest.fn(),
   newSocket: {
     emit: jest.fn(),
     on: jest.fn(),
@@ -1039,6 +1045,69 @@ describe('IndividualChat', () => {
       expect(screen.getByText('Hello, test!')).toBeTruthy();
     });
   });
+  test('should update the message status of the send messages', async () => {
+    mockIsConnected = true;
+    (EncryptedStorage.getItem as jest.Mock).mockImplementation(
+      (key: string) => {
+        if (key === 'user') {
+          return Promise.resolve(
+            JSON.stringify({phoneNumber: '+919999999999'}),
+          );
+        }
+        if (key === 'privateKey') {
+          return Promise.resolve('mock-private-key');
+        }
+        if (key === 'authToken') {
+          return Promise.resolve('mock-auth-token');
+        }
+        return Promise.resolve(null);
+      },
+    );
+    (messageEncryption as jest.Mock).mockResolvedValue('encrypted-message');
+    (socket.sendPrivateMessage as jest.Mock).mockResolvedValue({});
+
+    (socket.receiveOnline as jest.Mock).mockImplementation(
+      async ({setIsOnline}) => setIsOnline(false),
+    );
+    (socket.receiveOffline as jest.Mock).mockImplementation(
+      async ({setIsOnline}) => setIsOnline(false),
+    );
+    (checkUserOnline as jest.Mock).mockResolvedValue({
+      status: 200,
+      data: {data: {socketId: '12332431'}},
+    });
+    async function checking() {
+      updateLocalMessageStatusToRead;
+    }
+    (socket.newSocket.on as jest.Mock).mockImplementation(() => {
+      checking;
+    });
+
+    (socket.newSocket.on as jest.Mock).mockImplementation((event, callback) => {
+      if (event === 'status_+919876543210') {
+        callback({messages: ['msg1', 'msg2']});
+      }
+    });
+    render(
+      <NavigationContainer>
+        <Provider store={store}>
+          <IndividualChat
+            navigation={
+              mockNavigation as NativeStackNavigationProp<
+                HomeStackParamList,
+                'individualChat'
+              >
+            }
+            route={mockRoute}
+          />
+        </Provider>
+      </NavigationContainer>,
+    );
+
+    await waitFor(() => {
+      expect(updateLocalMessageStatusToRead).toHaveBeenCalledTimes(3);
+    });
+  });
 });
 
 describe('User Delete Status', () => {
@@ -1568,6 +1637,4 @@ describe('Test for IndividualChat processing queuing messages', () => {
       expect(insertToQueue).toHaveBeenCalledTimes(1);
     });
   });
-
 });
-
