@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - local-first-chats 
+      - user-online-indicator
 
 jobs:
   lint-and-test:
