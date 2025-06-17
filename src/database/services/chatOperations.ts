@@ -78,7 +78,18 @@ export const upsertChatMetadata = async (
   const totalUnread = await getTotalUnreadCount(db);
   store.dispatch(setUnreadCount(totalUnread));
 };
-
+export const updateChatMetadata = async (
+  senderPhoneNumber: string,
+  receiverPhoneNumber: string,
+  message: string,
+  status: string,
+) => {
+  const db = await getDBInstance();
+  const ChatId = await createChatId(senderPhoneNumber, receiverPhoneNumber);
+  const query =
+    'UPDATE Chats SET lastMessageStatus=? WHERE id=? AND lastMessage=?  ';
+  await db.executeSql(query, [status, ChatId, message]);
+};
 export const resetUnreadCount = async (db: SQLiteDatabase, chatId: string) => {
   await db.executeSql('UPDATE Chats SET unReadCount = 0 WHERE id = ?', [
     chatId,
@@ -148,7 +159,7 @@ export const getAllChatsFromLocal = async (
       }
     }
     const userRow = userResult.rows.length > 0 ? userResult.rows.item(0) : null;
-
+    console.log('User row:', row);
     allChats.push({
       chatId: row.id,
       contactName: contactName,
