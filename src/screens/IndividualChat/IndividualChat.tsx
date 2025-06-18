@@ -794,8 +794,10 @@ export const IndividualChat = ({route}: Props) => {
           phoneNumber={user.phoneNumber}
           publicKey={user.publicKey}
           isBlocked={isBlocked}
+          socketId ={socketId}
           onBlockStatusChange={handleBlockStatusChange}
           setIsCleared={setIsCleared}
+          setSocketId ={setSocketId}
         />
       </View>
 
