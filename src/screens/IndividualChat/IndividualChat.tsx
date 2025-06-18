@@ -20,6 +20,8 @@ import {
   getMessagesByChatId,
   insertToMessages,
   updateLocalMessageStatusToRead,
+  updateSendMessageStatusToDelivered,
+  updateSendMessageStatusToRead,
 } from '../../database/services/messageOperations';
 import {
   deleteFromQueue,
@@ -44,10 +46,12 @@ import {updateMessageStatus} from '../../services/UpdateMessageStatus';
 import {useDeviceCheck} from '../../services/useDeviceCheck';
 import {
   newSocket,
+  receiveDeliveredStatus,
   receiveJoined,
   receiveOffline,
   receiveOnline,
   receivePrivateMessage,
+  receiveReadUpdate,
   sendPrivateMessage,
   socketConnection,
 } from '../../socket/socket';
@@ -107,6 +111,8 @@ export const IndividualChat = ({route}: Props) => {
   const scrollViewRef = useRef<ScrollView>(null);
   const [isCleared, setIsCleared] = useState(false);
   const {isConnected} = useSocketConnection();
+  const [newUpdateCount, setNewUpdateCount] = useState(0);
+
   const processQueueRef = useRef(false);
   const wasConnectedRef = useRef(false);
   const screenContext = useSelector((state: RootState) => state.screenContext);
@@ -140,6 +146,23 @@ export const IndividualChat = ({route}: Props) => {
     },
     [dispatch],
   );
+
+  useEffect(() => {
+    if (!socket || !recipientPhoneNumber) {
+      return;
+    }
+
+    const handleStatusUpdate = (data: string[]) => {
+      updateSendMessageStatusToRead({
+        senderPhoneNumber: currentUserPhoneNumberRef.current,
+        receiverPhoneNumber: recipientPhoneNumber,
+        messages: data,
+      });
+      setNewUpdateCount(prev => prev + 1);
+    };
+
+    receiveReadUpdate(recipientPhoneNumber, handleStatusUpdate);
+  }, [recipientPhoneNumber, socket]);
   useEffect(() => {
     dispatch(setReceivePhoneNumber(user.phoneNumber));
   }, [dispatch, user.phoneNumber]);
@@ -301,7 +324,35 @@ export const IndividualChat = ({route}: Props) => {
     dispatch,
     user.publicKey,
     isConnected,
+    newUpdateCount,
   ]);
+
+  useEffect(() => {
+    async function updateToDelivered() {
+      const currentUser = await EncryptedStorage.getItem('user');
+
+      if (currentUser) {
+        const parsedUser: User = JSON.parse(currentUser);
+        currentUserPhoneNumberRef.current = parsedUser.phoneNumber;
+      }
+      if (!socket || !currentUserPhoneNumberRef.current) {
+        return;
+      }
+      const handleUpdateToDeliver = (data: string[]) => {
+        updateSendMessageStatusToDelivered({
+          senderPhoneNumber: currentUserPhoneNumberRef.current,
+          receiverPhoneNumber: recipientPhoneNumber,
+          messages: data,
+        });
+        setNewUpdateCount(prev => prev + 1);
+      };
+      receiveDeliveredStatus(
+        currentUserPhoneNumberRef.current,
+        handleUpdateToDeliver,
+      );
+    }
+    updateToDelivered();
+  }, [socket, socketId, recipientPhoneNumber]);
   useEffect(() => {
     newSocket.emit('online', user.phoneNumber);
     return () => {
@@ -445,6 +496,7 @@ export const IndividualChat = ({route}: Props) => {
         }
         const timestamp = new Date().toISOString();
         let status = 'sent';
+        let duplicateSocketId = null;
         const authToken = await EncryptedStorage.getItem('authToken');
         if (authToken && isConnected) {
           const userStatus = await checkUserOnline({
@@ -453,12 +505,13 @@ export const IndividualChat = ({route}: Props) => {
             requestedUserPhoneNumber: currentUserPhoneNumberRef.current,
           });
           if (userStatus.status === 200 || userStatus.status === 203) {
+            duplicateSocketId = userStatus.data.data.socketId;
             setSocketId(userStatus.data.data.socketId);
           }
         }
-        if (socketId && !isOnlineWith) {
+        if (duplicateSocketId && !isOnlineWith) {
           status = 'delivered';
-        } else if (socketId && isOnlineWith) {
+        } else if (duplicateSocketId && isOnlineWith) {
           status = 'read';
         } else {
           status = 'sent';
@@ -476,6 +529,7 @@ export const IndividualChat = ({route}: Props) => {
           timestamp,
         );
         if (isConnected && message.trim() !== '') {
+          setMessage('');
           await sendPrivateMessage(payload);
           const localMessage: MessageType = {
             ...payload,
@@ -619,14 +673,14 @@ export const IndividualChat = ({route}: Props) => {
       }
       await checkOnline();
 
-      let status: string;
-      if (duplicateSocketId && !isOnlineWith) {
-        status = 'delivered';
-      } else if (duplicateSocketId && isOnlineWith) {
-        status = 'read';
-      } else {
-        status = 'sent';
-      }
+    let status: string;
+    if (duplicateSocketId && !isOnlineWith) {
+      status = 'delivered';
+    } else if (duplicateSocketId && isOnlineWith) {
+      status = 'read';
+    } else {
+      status = 'sent';
+    }
 
       const messages = await getQueuedMessages(chatId);
       const resultantMessages = messages.map((queuedMessage: MessageType) => ({

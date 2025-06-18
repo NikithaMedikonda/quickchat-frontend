@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - sync-messages-on-new-login
+      - local-first-chats 
 
 jobs:
   lint-and-test:

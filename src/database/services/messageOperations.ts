@@ -6,8 +6,9 @@ import {store} from '../../store/store';
 import {createChatId} from '../../utils/chatId';
 import {getDBInstance} from '../connection/connection';
 import {MessageType} from '../types/message';
-import {upsertChatMetadata} from './chatOperations';
+import {updateChatMetadata, upsertChatMetadata} from './chatOperations';
 import {isUserStoredLocally, upsertUserInfo} from './userOperations';
+import {sendUpdatedMessages} from '../../socket/socket';
 
 export const insertToMessages = async (message: MessageType) => {
   const db = await getDBInstance();
@@ -123,15 +124,90 @@ export const updateLocalMessageStatusToRead = async (details: {
   currentStatus: string;
 }): Promise<void> => {
   const db: SQLiteDatabase = await getDBInstance();
+  const nonceArray = [];
   const query = `
     UPDATE Messages
     SET status = ?
     WHERE senderPhoneNumber = ? AND receiverPhoneNumber = ? AND status = ?
   `;
-  await db.executeSql(query, [
-    details.currentStatus,
-    details.receiverPhoneNumber,
+  const query2 = `
+    SELECT * FROM Messages
+    WHERE senderPhoneNumber = ? AND receiverPhoneNumber = ? AND status = ?
+  `;
+  const [result2] = await db.executeSql(query2, [
     details.senderPhoneNumber,
+    details.receiverPhoneNumber,
     details.previousStatus,
   ]);
+  await db.executeSql(query, [
+    details.currentStatus,
+    details.senderPhoneNumber,
+    details.receiverPhoneNumber,
+    details.previousStatus,
+  ]);
+  for (let i = 0; i < result2.rows.length; i++) {
+    nonceArray.push(result2.rows.item(i).message);
+  }
+  sendUpdatedMessages({
+    senderPhoneNumber: details.senderPhoneNumber,
+    receiverPhoneNumber: details.receiverPhoneNumber,
+    messages: nonceArray,
+  });
+};
+export const updateSendMessageStatusToRead = async (details: {
+  senderPhoneNumber: string;
+  receiverPhoneNumber: string;
+  messages: string[];
+}): Promise<void> => {
+  const db: SQLiteDatabase = await getDBInstance();
+  const query = `
+    UPDATE Messages
+    SET status = ?
+    WHERE senderPhoneNumber = ? AND receiverPhoneNumber = ? AND message = ?
+  `;
+
+  for (let i = 0; i < details.messages.length; i++) {
+    await db.executeSql(query, [
+      'read',
+      details.senderPhoneNumber,
+      details.receiverPhoneNumber,
+      details.messages[i],
+    ]);
+    await updateChatMetadata(
+      details.senderPhoneNumber,
+      details.receiverPhoneNumber,
+      details.messages[i],
+      'read',
+    );
+  }
+  store.dispatch(incrementTrigger());
+};
+export const updateSendMessageStatusToDelivered = async (details: {
+  senderPhoneNumber: string;
+  receiverPhoneNumber: string;
+  messages: string[];
+}): Promise<void> => {
+  const db: SQLiteDatabase = await getDBInstance();
+  const query = `
+    UPDATE Messages
+    SET status = ?
+    WHERE senderPhoneNumber = ? AND receiverPhoneNumber = ? AND message = ?
+  `;
+  const status = 'delivered';
+  for (let i = 0; i < details.messages.length; i++) {
+    await db.executeSql(query, [
+      status,
+      details.senderPhoneNumber,
+      details.receiverPhoneNumber,
+      details.messages[i],
+    ]);
+    await updateChatMetadata(
+      details.senderPhoneNumber,
+      details.receiverPhoneNumber,
+      details.messages[i],
+      status,
+    );
+  }
+
+  store.dispatch(incrementTrigger());
 };

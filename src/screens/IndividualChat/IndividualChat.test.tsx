@@ -8,9 +8,12 @@ import {
 } from '@testing-library/react-native';
 
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { Provider } from 'react-redux';
-import { getDBInstance } from '../../database/connection/connection';
-import { insertToMessages } from '../../database/services/messageOperations';
+import {Provider} from 'react-redux';
+import {getDBInstance} from '../../database/connection/connection';
+import {
+  insertToMessages,
+  updateLocalMessageStatusToRead,
+} from '../../database/services/messageOperations';
 import {
   getQueuedMessages,
   insertToQueue,
@@ -69,6 +72,7 @@ jest.mock('../../database/services/messageOperations', () => ({
   getMessagesByChatId: jest.fn().mockResolvedValue([]),
   insertToMessages: jest.fn(),
   updateLocalMessageStatusToRead: jest.fn().mockResolvedValue(undefined),
+  updateSendMessageStatusToRead: jest.fn().mockResolvedValue(undefined),
 }));
 
 jest.mock('react-native-libsodium', () => ({
@@ -133,6 +137,9 @@ jest.mock('../../socket/socket', () => ({
   receiveOffline: jest.fn(),
   receiveJoined: jest.fn(),
   socketConnection: jest.fn(),
+  sendUpdatedMessages: jest.fn(),
+  receiveReadUpdate: jest.fn(),
+  receiveDeliveredStatus: jest.fn(),
   newSocket: {
     emit: jest.fn(),
     on: jest.fn(),
@@ -1029,6 +1036,70 @@ describe('IndividualChat', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Hello, test!')).toBeTruthy();
+    });
+  });
+  test('should update the message status of the send messages', async () => {
+    mockIsConnected = true;
+    (EncryptedStorage.getItem as jest.Mock).mockImplementation(
+      (key: string) => {
+        if (key === 'user') {
+          return Promise.resolve(
+            JSON.stringify({phoneNumber: '+919999999999'}),
+          );
+        }
+        if (key === 'privateKey') {
+          return Promise.resolve('mock-private-key');
+        }
+        if (key === 'authToken') {
+          return Promise.resolve('mock-auth-token');
+        }
+        return Promise.resolve(null);
+      },
+    );
+    (messageEncryption as jest.Mock).mockResolvedValue('encrypted-message');
+    (socket.sendPrivateMessage as jest.Mock).mockResolvedValue({});
+
+    (socket.receiveOnline as jest.Mock).mockImplementation(
+      async ({setIsOnline}) => setIsOnline(false),
+    );
+    (socket.receiveOffline as jest.Mock).mockImplementation(
+      async ({setIsOnline}) => setIsOnline(false),
+    );
+    (checkUserOnline as jest.Mock).mockResolvedValue({
+      status: 200,
+      data: {data: {socketId: '12332431'}},
+    });
+    async function checking() {
+      updateLocalMessageStatusToRead;
+    }
+    (socket.newSocket.on as jest.Mock).mockImplementation(() => {
+      checking;
+    });
+
+
+    (socket.newSocket.on as jest.Mock).mockImplementation((event, callback) => {
+      if (event === 'status_+919876543210') {
+        callback({messages: ['msg1', 'msg2']});
+      }
+    });
+    render(
+      <NavigationContainer>
+        <Provider store={store}>
+          <IndividualChat
+            navigation={
+              mockNavigation as NativeStackNavigationProp<
+                HomeStackParamList,
+                'individualChat'
+              >
+            }
+            route={mockRoute}
+          />
+        </Provider>
+      </NavigationContainer>,
+    );
+
+    await waitFor(() => {
+      expect(updateLocalMessageStatusToRead).toHaveBeenCalledTimes(3);
     });
   });
 });

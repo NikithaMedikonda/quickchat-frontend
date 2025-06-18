@@ -9,7 +9,12 @@ import {
   sendPrivateMessage,
   socketConnection,
 } from '../socket/socket';
-import { SentPrivateMessage } from '../types/messsage.types';
+import {SentPrivateMessage} from '../types/messsage.types';
+import {
+  sendUpdatedMessages,
+  receiveReadUpdate,
+  receiveDeliveredStatus,
+} from './socket';
 
 let mockEmit: jest.Mock;
 let mockOn: jest.Mock;
@@ -266,5 +271,41 @@ describe('should test socket functions', () => {
     await expect(promise).rejects.toThrow('Device check timeout');
 
     jest.useRealTimers();
+  });
+
+  test('should emit read event on sendUpdatedMessages', async () => {
+    const data = {
+      senderPhoneNumber: '+91 8522041688',
+      receiverPhoneNumber: '+91 9440058809',
+      messages: ['Hello!'],
+    };
+
+    await sendUpdatedMessages(data);
+
+    expect(mockEmit).toHaveBeenCalledWith('read', data);
+  });
+
+  test('should register listener for read update on receiveReadUpdate', async () => {
+    const receiverPhoneNumber = '+91 9440058809';
+    const callback = jest.fn();
+
+    await receiveReadUpdate(receiverPhoneNumber, callback);
+
+    expect(mockOn).toHaveBeenCalledWith(
+      `status_${receiverPhoneNumber}`,
+      callback,
+    );
+  });
+
+  test('should register listener for delivered status on receiveDeliveredStatus', async () => {
+    const senderPhoneNumber = '+91 8522041688';
+    const callback = jest.fn();
+
+    await receiveDeliveredStatus(senderPhoneNumber, callback);
+
+    expect(mockOn).toHaveBeenCalledWith(
+      `delivered_status_${senderPhoneNumber}`,
+      callback,
+    );
   });
 });

@@ -7,6 +7,7 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react-native';
+import {Alert, Platform} from 'react-native';
 import {Provider} from 'react-redux';
 import {numberNameIndex} from '../../helpers/nameNumberIndex';
 import {getContacts} from '../../services/GetContacts';
@@ -55,11 +56,9 @@ jest.mock('react-native-alert-notification', () => ({
   },
   AlertNotificationRoot: ({children}: {children: React.ReactNode}) => children,
 }));
-
 describe('Tests for ContactsDisplay Component', () => {
   let mockNavigation: any;
   const {androidBackArrow, iOSBackArrow} = useImagesColors();
-
   const renderComponent = () => {
     render(
       <Provider store={store}>
