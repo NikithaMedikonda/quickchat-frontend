@@ -66,3 +66,17 @@ export const deleteFromQueue = async (messageId: string) => {
   const db = await getDBInstance();
   await db.executeSql('DELETE FROM Queue WHERE id = ?', [messageId]);
 };
+
+export const getAllQueuedMessages = async () => {
+  const db = await getDBInstance();
+
+  const [results] = await db.executeSql(
+    'SELECT * FROM Queue ORDER BY timestamp ASC',
+  );
+
+  const messages = [];
+  for (let i = 0; i < results.rows.length; i++) {
+    messages.push(results.rows.item(i));
+  }
+  return messages;
+};
