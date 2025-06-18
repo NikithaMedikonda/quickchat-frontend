@@ -15,6 +15,13 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
   clear: jest.fn(),
 }));
 
+jest.mock('rn-fetch-blob', () => ({
+  config: jest.fn(() => ({
+    fetch: jest.fn(() => Promise.resolve({
+      base64: jest.fn(() => Promise.resolve('mocked_base64_data')),
+    })),
+  })),
+}));
 
 jest.mock('react-native-device-info', () => ({
   getUniqueId: jest.fn(),

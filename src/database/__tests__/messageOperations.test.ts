@@ -7,6 +7,7 @@ import {
   updateSendMessageStatusToDelivered,
   updateSendMessageStatusToRead,
 } from '../services/messageOperations';
+import {fetchAndConvertToBase64} from '../services/chatOperations';
 import {sendUpdatedMessages} from '../../socket/socket';
 import {store} from '../../store/store';
 import {updateChatMetadata} from '../services/chatOperations';
@@ -19,6 +20,20 @@ jest.mock('../connection/connection', () => ({
 jest.mock('../../utils/chatId', () => ({
   createChatId: jest.fn(() => 'chat_123_456'),
 }));
+jest.mock('rn-fetch-blob', () => ({
+  config: jest.fn(() => ({
+    fetch: jest.fn(() =>
+      Promise.resolve({
+        base64: jest.fn(() => Promise.resolve('mocked_base64_data')),
+      }),
+    ),
+  })),
+}));
+jest.mock('../services/chatOperations', () => ({
+  upsertChatMetadata: jest.fn(),
+  fetchAndConvertToBase64: jest.fn(() => Promise.resolve('mocked_base64_data')),
+}));
+
 jest.mock('react-native-encrypted-storage', () => ({
   getItem: jest.fn(),
 }));
@@ -49,162 +64,6 @@ beforeEach(() => {
   jest.clearAllMocks();
   (connectionModule.getDBInstance as jest.Mock).mockResolvedValue({
     executeSql: mockExecuteSql,
-  });
-});
-
-describe('Tests for insertToMesssages', () => {
-  it('should return early if message already exists', async () => {
-    mockExecuteSql.mockResolvedValueOnce([{rows: {length: 1}}]);
-    const message = {
-      id: '1',
-      senderPhoneNumber: '123',
-      receiverPhoneNumber: '456',
-      message: 'Hello',
-      status: 'sent',
-      timestamp: '1000',
-    };
-    await insertToMessages(message);
-    expect(mockExecuteSql).toHaveBeenCalledTimes(1);
-  });
-
-  it('should return early if no current user', async () => {
-    mockExecuteSql.mockResolvedValueOnce([
-      {rows: {length: 0, item: jest.fn()}},
-    ]);
-    mockExecuteSql.mockResolvedValueOnce([]);
-    (EncryptedStorage.getItem as jest.Mock).mockResolvedValueOnce(null);
-    const message = {
-      id: '1',
-      senderPhoneNumber: '123',
-      receiverPhoneNumber: '456',
-      message: 'Hello',
-      status: 'sent',
-      timestamp: '1000',
-    };
-    await insertToMessages(message);
-    expect(mockExecuteSql).toHaveBeenCalledTimes(2);
-  });
-
-  it('should handle sender as current user', async () => {
-    mockExecuteSql.mockResolvedValueOnce([
-      {rows: {length: 0, item: jest.fn()}},
-    ]);
-    mockExecuteSql.mockResolvedValueOnce([]);
-    (EncryptedStorage.getItem as jest.Mock).mockResolvedValueOnce(
-      JSON.stringify({phoneNumber: '123'}),
-    );
-    const message = {
-      id: '1',
-      senderPhoneNumber: '123',
-      receiverPhoneNumber: '456',
-      message: 'Hello',
-      status: 'sent',
-      timestamp: '1000',
-    };
-    await insertToMessages(message);
-    const {upsertChatMetadata} = require('../services/chatOperations');
-    expect(upsertChatMetadata).toHaveBeenCalledWith(
-      '123',
-      '456',
-      'Hello',
-      '1000',
-      'sent',
-      true,
-    );
-  });
-
-  it('should handle sender is not current user and user exists locally', async () => {
-    mockExecuteSql.mockResolvedValueOnce([
-      {rows: {length: 0, item: jest.fn()}},
-    ]);
-    mockExecuteSql.mockResolvedValueOnce([]);
-    (EncryptedStorage.getItem as jest.Mock).mockResolvedValueOnce(
-      JSON.stringify({phoneNumber: '999'}),
-    );
-    const {isUserStoredLocally} = require('../services/userOperations');
-    isUserStoredLocally.mockResolvedValueOnce(true);
-    const message = {
-      id: '1',
-      senderPhoneNumber: '123',
-      receiverPhoneNumber: '456',
-      message: 'Hello',
-      status: 'sent',
-      timestamp: '1000',
-    };
-    await insertToMessages(message);
-    expect(isUserStoredLocally).toHaveBeenCalled();
-    const {upsertChatMetadata} = require('../services/chatOperations');
-    expect(upsertChatMetadata).toHaveBeenCalledWith(
-      '123',
-      '456',
-      'Hello',
-      '1000',
-      'sent',
-      false,
-    );
-  });
-
-  it('should handle sender is not current user, user not stored locally, remote user found', async () => {
-    mockExecuteSql.mockResolvedValueOnce([
-      {rows: {length: 0, item: jest.fn()}},
-    ]);
-    mockExecuteSql.mockResolvedValueOnce([]);
-    (EncryptedStorage.getItem as jest.Mock).mockResolvedValueOnce(
-      JSON.stringify({phoneNumber: '999'}),
-    );
-    const {
-      isUserStoredLocally,
-      upsertUserInfo,
-    } = require('../services/userOperations');
-    isUserStoredLocally.mockResolvedValueOnce(false);
-    const {getUserByPhoneNumber} = require('../../services/GetUser');
-    getUserByPhoneNumber.mockResolvedValueOnce({
-      profilePicture: 'pic',
-      publicKey: 'pub',
-    });
-    const message = {
-      id: '1',
-      senderPhoneNumber: '123',
-      receiverPhoneNumber: '456',
-      message: 'Hello',
-      status: 'sent',
-      timestamp: '1000',
-    };
-    await insertToMessages(message);
-    expect(getUserByPhoneNumber).toHaveBeenCalledWith('123');
-    expect(upsertUserInfo).toHaveBeenCalledWith(expect.anything(), {
-      phoneNumber: '123',
-      profilePicture: 'pic',
-      publicKey: 'pub',
-    });
-  });
-
-  it('should handle sender is not current user, user not stored locally, remote user not found', async () => {
-    mockExecuteSql.mockResolvedValueOnce([
-      {rows: {length: 0, item: jest.fn()}},
-    ]);
-    mockExecuteSql.mockResolvedValueOnce([]);
-    (EncryptedStorage.getItem as jest.Mock).mockResolvedValueOnce(
-      JSON.stringify({phoneNumber: '999'}),
-    );
-    const {
-      isUserStoredLocally,
-      upsertUserInfo,
-    } = require('../services/userOperations');
-    isUserStoredLocally.mockResolvedValueOnce(false);
-    const {getUserByPhoneNumber} = require('../../services/GetUser');
-    getUserByPhoneNumber.mockResolvedValueOnce(null);
-    const message = {
-      id: '1',
-      senderPhoneNumber: '123',
-      receiverPhoneNumber: '456',
-      message: 'Hello',
-      status: 'sent',
-      timestamp: '1000',
-    };
-    await insertToMessages(message);
-    expect(getUserByPhoneNumber).toHaveBeenCalledWith('123');
-    expect(upsertUserInfo).not.toHaveBeenCalled();
   });
 });
 
@@ -511,5 +370,162 @@ describe('updateSendMessageStatusToDelivered', () => {
     );
 
     expect(store.dispatch).toHaveBeenCalledWith({type: 'INCREMENT_TRIGGER'});
+  });
+});
+describe('Tests for insertToMesssages', () => {
+  it('should return early if message already exists', async () => {
+    mockExecuteSql.mockResolvedValueOnce([{rows: {length: 1}}]);
+    const message = {
+      id: '1',
+      senderPhoneNumber: '123',
+      receiverPhoneNumber: '456',
+      message: 'Hello',
+      status: 'sent',
+      timestamp: '1000',
+    };
+    await insertToMessages(message);
+    expect(mockExecuteSql).toHaveBeenCalledTimes(1);
+  });
+
+  it('should return early if no current user', async () => {
+    mockExecuteSql.mockResolvedValueOnce([
+      {rows: {length: 0, item: jest.fn()}},
+    ]);
+    mockExecuteSql.mockResolvedValueOnce([]);
+    (EncryptedStorage.getItem as jest.Mock).mockResolvedValueOnce(null);
+    const message = {
+      id: '1',
+      senderPhoneNumber: '123',
+      receiverPhoneNumber: '456',
+      message: 'Hello',
+      status: 'sent',
+      timestamp: '1000',
+    };
+    await insertToMessages(message);
+    expect(mockExecuteSql).toHaveBeenCalledTimes(2);
+  });
+
+  it('should handle sender as current user', async () => {
+    mockExecuteSql.mockResolvedValueOnce([
+      {rows: {length: 0, item: jest.fn()}},
+    ]);
+    mockExecuteSql.mockResolvedValueOnce([]);
+    (EncryptedStorage.getItem as jest.Mock).mockResolvedValueOnce(
+      JSON.stringify({phoneNumber: '123'}),
+    );
+    const message = {
+      id: '1',
+      senderPhoneNumber: '123',
+      receiverPhoneNumber: '456',
+      message: 'Hello',
+      status: 'sent',
+      timestamp: '1000',
+    };
+    await insertToMessages(message);
+    const {upsertChatMetadata} = require('../services/chatOperations');
+    expect(upsertChatMetadata).toHaveBeenCalledWith(
+      '123',
+      '456',
+      'Hello',
+      '1000',
+      'sent',
+      true,
+    );
+  });
+
+  it('should handle sender is not current user and user exists locally', async () => {
+    mockExecuteSql.mockResolvedValueOnce([
+      {rows: {length: 0, item: jest.fn()}},
+    ]);
+    mockExecuteSql.mockResolvedValueOnce([]);
+    (EncryptedStorage.getItem as jest.Mock).mockResolvedValueOnce(
+      JSON.stringify({phoneNumber: '999'}),
+    );
+    const {isUserStoredLocally} = require('../services/userOperations');
+    isUserStoredLocally.mockResolvedValueOnce(true);
+    const message = {
+      id: '1',
+      senderPhoneNumber: '123',
+      receiverPhoneNumber: '456',
+      message: 'Hello',
+      status: 'sent',
+      timestamp: '1000',
+    };
+    await insertToMessages(message);
+    expect(isUserStoredLocally).toHaveBeenCalled();
+    const {upsertChatMetadata} = require('../services/chatOperations');
+    expect(upsertChatMetadata).toHaveBeenCalledWith(
+      '123',
+      '456',
+      'Hello',
+      '1000',
+      'sent',
+      false,
+    );
+  });
+
+  it('should handle sender is not current user, user not stored locally, remote user not found', async () => {
+    mockExecuteSql.mockResolvedValueOnce([
+      {rows: {length: 0, item: jest.fn()}},
+    ]);
+    mockExecuteSql.mockResolvedValueOnce([]);
+    (EncryptedStorage.getItem as jest.Mock).mockResolvedValueOnce(
+      JSON.stringify({phoneNumber: '999'}),
+    );
+    const {
+      isUserStoredLocally,
+      upsertUserInfo,
+    } = require('../services/userOperations');
+    isUserStoredLocally.mockResolvedValueOnce(false);
+    const {getUserByPhoneNumber} = require('../../services/GetUser');
+    getUserByPhoneNumber.mockResolvedValueOnce(null);
+    const message = {
+      id: '1',
+      senderPhoneNumber: '123',
+      receiverPhoneNumber: '456',
+      message: 'Hello',
+      status: 'sent',
+      timestamp: '1000',
+    };
+    await insertToMessages(message);
+    expect(getUserByPhoneNumber).toHaveBeenCalledWith('123');
+    expect(upsertUserInfo).not.toHaveBeenCalled();
+  });
+  it('should handle sender is not current user, user not stored locally, remote user found', async () => {
+    mockExecuteSql.mockResolvedValueOnce([
+      {rows: {length: 0, item: jest.fn()}},
+    ]);
+    mockExecuteSql.mockResolvedValueOnce([]);
+    (EncryptedStorage.getItem as jest.Mock).mockResolvedValueOnce(
+      JSON.stringify({phoneNumber: '999'}),
+    );
+    const {
+      isUserStoredLocally,
+      upsertUserInfo,
+    } = require('../services/userOperations');
+    isUserStoredLocally.mockResolvedValueOnce(false);
+    const {getUserByPhoneNumber} = require('../../services/GetUser');
+    getUserByPhoneNumber.mockResolvedValueOnce({
+      profilePicture: 'mocked_base64_data',
+      publicKey: 'pub',
+    });
+    (fetchAndConvertToBase64 as jest.Mock).mockResolvedValue(
+      'mocked_base64_data',
+    );
+    const message = {
+      id: '1',
+      senderPhoneNumber: '123',
+      receiverPhoneNumber: '456',
+      message: 'Hello',
+      status: 'sent',
+      timestamp: '1000',
+    };
+    await insertToMessages(message);
+    expect(getUserByPhoneNumber).toHaveBeenCalledWith('123');
+    expect(upsertUserInfo).toHaveBeenCalledWith(expect.anything(), {
+      phoneNumber: '123',
+      profilePicture: 'mocked_base64_data',
+      publicKey: 'pub',
+    });
   });
 });

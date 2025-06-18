@@ -11,7 +11,8 @@ import './src/i18n/i18n.config';
 import { numberNameIndex } from './src/helpers/nameNumberIndex';
 import { normalise } from './src/helpers/normalisePhoneNumber';
 import { DEFAULT_PROFILE_IMAGE } from './src/constants/defaultImage';
-import EncryptedStorage from 'react-native-encrypted-storage';
+// import EncryptedStorage from 'react-native-encrypted-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 messaging().setBackgroundMessageHandler(async (remoteMessage) => {
   await notifee.createChannel({
     id: 'quickchat',
@@ -37,14 +38,14 @@ messaging().setBackgroundMessageHandler(async (remoteMessage) => {
   let messageCount = 1;
   if (senderPhoneNumber) {
     try {
-      const storedCount = await EncryptedStorage.getItem(`msgCount_${senderPhoneNumber}`);
+      const storedCount = await AsyncStorage.getItem(`msgCount_${senderPhoneNumber}`);
       if (storedCount) {
         messageCount = parseInt(storedCount, 10) + 1;
       }
     } catch (e) {
       console.error('Error reading message count:', e);
     }
-    await EncryptedStorage.setItem(`msgCount_${senderPhoneNumber}`, messageCount.toString());
+    await AsyncStorage.setItem(`msgCount_${senderPhoneNumber}`, messageCount.toString());
   }
 
 
@@ -57,6 +58,7 @@ messaging().setBackgroundMessageHandler(async (remoteMessage) => {
           channelId: 'quickchat',
           smallIcon:'ic_stat_notification',
           largeIcon:profilePicture || DEFAULT_PROFILE_IMAGE,
+          circularLargeIcon:true,
           pressAction: {
             id: 'default',
           },

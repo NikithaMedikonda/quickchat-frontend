@@ -46,7 +46,7 @@ describe('ChatBox Component', () => {
     render(<ChatBox {...mockProps} />);
     const imageComponent = screen.getByA11yHint('profile-image');
     expect(imageComponent.props.source).toEqual({
-      uri: 'profile-image',
+      uri: 'data:image/png;base64,profile-image',
     });
   });
 });

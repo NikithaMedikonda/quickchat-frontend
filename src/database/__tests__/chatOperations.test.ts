@@ -19,6 +19,14 @@ jest.mock('../connection/connection', () => ({
   getDBInstance: jest.fn(),
 }));
 
+jest.mock('rn-fetch-blob', () => ({
+  config: jest.fn(() => ({
+    fetch: jest.fn(() => Promise.resolve({
+      base64: jest.fn(() => Promise.resolve('mocked_base64_data')),
+    })),
+  })),
+}));
+
 jest.mock('../../helpers/nameNumberIndex', () => ({
   numberNameIndex: jest.fn().mockResolvedValue({'999': 'Test User'}),
 }));
@@ -337,7 +345,7 @@ describe('Tests for getAllChatsFromLocal', () => {
     expect(getUserByPhoneNumber).toHaveBeenCalledWith('999');
     expect(upsertUserInfo as jest.Mock).toHaveBeenCalledWith(db, {
       phoneNumber: '999',
-      profilePicture: 'pic.png',
+      profilePicture: 'mocked_base64_data',
       publicKey: 'pubkey',
     });
   });

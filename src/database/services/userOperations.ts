@@ -1,4 +1,5 @@
 import {SQLiteDatabase} from 'react-native-sqlite-storage';
+import RNFetchBlob from 'rn-fetch-blob';
 import {getDBInstance} from '../connection/connection';
 
 export const upsertUserInfo = async (
@@ -66,3 +67,69 @@ export const updateLastSyncedTime = async (
     [timestamp, phoneNumber],
   );
 };
+
+export const getAllUniquePhoneNumbers = async (): Promise<string[]> => {
+  try {
+    const db = await getDBInstance();
+    const results = await db.executeSql(`
+      SELECT DISTINCT userAPhoneNumber AS phoneNumber FROM Chats
+      UNION
+      SELECT DISTINCT userBPhoneNumber AS phoneNumber FROM Chats;
+    `);
+    const phoneNumbers: string[] = [];
+    if (results.length > 0) {
+      const resultSet = results[0];
+      const rows = resultSet.rows;
+      for (let i = 0; i < rows.length; i++) {
+        const item = rows.item(i);
+        phoneNumbers.push(item.phoneNumber);
+      }
+    }
+    return phoneNumbers;
+  } catch (error) {
+    return [];
+  }
+};
+
+export const convertUrlToBase64 = async (url: string): Promise<string> => {
+  try {
+    const res = await RNFetchBlob.config({ fileCache: false }).fetch('GET', url);
+    const base64Image = await res.base64();
+    return base64Image;
+  } catch (error) {
+    return '';
+  }
+};
+
+
+type UserProfile = {
+  phoneNumber: string;
+  profilePicture: string;
+};
+
+export const updateUserProfilePictures = async (
+  db: SQLiteDatabase,
+  profiles: UserProfile[] | undefined | null
+): Promise<void> => {
+  if (!profiles || !Array.isArray(profiles)) {
+    return;
+  }
+
+  for (const { phoneNumber, profilePicture } of profiles) {
+    try {
+      if (!profilePicture) {
+        continue;
+      }
+      const base64Image = await convertUrlToBase64(profilePicture);
+      if (base64Image) {
+        await db.executeSql(
+          'INSERT OR REPLACE INTO LocalUsers (phoneNumber, profilePicture) VALUES (?, ?);',
+          [phoneNumber, base64Image]
+        );
+      }
+    } catch {
+    }
+  }
+};
+
+
