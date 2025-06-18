@@ -57,7 +57,6 @@ import {
   sendPrivateMessage,
   socketConnection,
 } from '../../socket/socket';
-import {hide} from '../../store/slices/loadingSlice';
 import {
   setAlertMessage,
   setAlertTitle,
@@ -121,6 +120,7 @@ export const IndividualChat = ({route}: Props) => {
   const wasConnectedRef = useRef(false);
   const screenContext = useSelector((state: RootState) => state.screenContext);
   const isInIndividualChat = screenContext?.isInIndividualChat ?? false;
+  const [check, setCheck] = useState(0);
   useFocusEffect(
     useCallback(() => {
       dispatch(setCurrentScreen('individualChat'));
@@ -306,9 +306,10 @@ export const IndividualChat = ({route}: Props) => {
                 });
               }
             } catch (error) {
-              dispatch(hide());
+              // dispatch(hide());
             }
           }
+          console.log('formatted', formattedMessages);
           setFetchMessages(formattedMessages);
           setReceivedMessages([]);
           setSendMessages([]);
@@ -328,6 +329,7 @@ export const IndividualChat = ({route}: Props) => {
     user.publicKey,
     isConnected,
     newUpdateCount,
+    check,
   ]);
 
   useEffect(() => {
@@ -395,9 +397,14 @@ export const IndividualChat = ({route}: Props) => {
         };
         await updateMessageStatus(details);
         await updateLocalMessageStatusToRead(details);
+         setCheck(prev => prev + 1);
       };
       updateStatus();
       await newSocket.emit('offline_with', user.phoneNumber);
+      await resetUnreadCount(
+        await getDBInstance(),
+        createChatId(currentUserPhoneNumberRef.current, user.phoneNumber),
+      );
     }
     return () => {
       offline();
@@ -455,6 +462,7 @@ export const IndividualChat = ({route}: Props) => {
       };
       await updateMessageStatus(details);
       await updateLocalMessageStatusToRead(details);
+      setCheck(prev => prev + 1);
       newSocket.emit('messages_read_ack', {
         chatId: createChatId(
           currentUserPhoneNumberRef.current,
