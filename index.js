@@ -57,6 +57,7 @@ messaging().setBackgroundMessageHandler(async (remoteMessage) => {
           channelId: 'quickchat',
           smallIcon:'ic_stat_notification',
           largeIcon:profilePicture || DEFAULT_PROFILE_IMAGE,
+          circularLargeIcon:true,
           pressAction: {
             id: 'default',
           },
