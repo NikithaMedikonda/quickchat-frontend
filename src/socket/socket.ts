@@ -80,6 +80,22 @@ export async function receiveJoined({
     }
   });
 }
+export async function receiveDeleted({
+  userPhoneNumber,
+  setSocketId,
+}: {
+  userPhoneNumber: string;
+  setSocketId: (si: null) => void;
+}) {
+  await newSocket.on(
+    'I-deleted',
+    (data: {socketId: string; phoneNumber: string}) => {
+      if (data.phoneNumber === userPhoneNumber) {
+        setSocketId(null);
+      }
+    },
+  );
+}
 export async function offline({
   phoneNumber,
   setIsOnline,
