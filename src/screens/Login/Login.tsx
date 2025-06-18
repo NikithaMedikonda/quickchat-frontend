@@ -36,10 +36,10 @@ import {useThemeColors} from '../../themes/colors';
 import {useImagesColors} from '../../themes/images';
 import {HomeTabsProps, NavigationProps} from '../../types/usenavigation.type';
 
-import {getDeviceId} from '../../services/GenerateDeviceId';
-import {loginStyles} from './Login.styles';
 import {clearLocalStorage} from '../../database/services/clearStorage';
+import {getDeviceId} from '../../services/GenerateDeviceId';
 import {syncFromRemote} from '../../services/SyncFromRemote';
+import {loginStyles} from './Login.styles';
 
 export function Login() {
   const homeNavigation = useNavigation<HomeTabsProps>();
@@ -161,7 +161,7 @@ export function Login() {
         dispatch(hide());
         showAlert('error', 'Login failed', 'Something went wrong while login');
       }
-    } catch (error: any) {
+    } catch (error) {
       dispatch(hide());
       showAlert(
         'info',
