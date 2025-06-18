@@ -46,6 +46,7 @@ import {updateMessageStatus} from '../../services/UpdateMessageStatus';
 import {useDeviceCheck} from '../../services/useDeviceCheck';
 import {
   newSocket,
+  receiveDeleted,
   receiveDeliveredStatus,
   receiveJoined,
   receiveOffline,
@@ -153,7 +154,7 @@ export const IndividualChat = ({route}: Props) => {
     }
 
     const handleStatusUpdate = async (data: string[]) => {
-     await updateSendMessageStatusToRead({
+      await updateSendMessageStatusToRead({
         senderPhoneNumber: currentUserPhoneNumberRef.current,
         receiverPhoneNumber: recipientPhoneNumber,
         messages: data,
@@ -341,7 +342,7 @@ export const IndividualChat = ({route}: Props) => {
         return;
       }
       const handleUpdateToDeliver = async (data: string[]) => {
-       await updateSendMessageStatusToDelivered({
+        await updateSendMessageStatusToDelivered({
           senderPhoneNumber: currentUserPhoneNumberRef.current,
           receiverPhoneNumber: recipientPhoneNumber,
           messages: data,
@@ -374,7 +375,14 @@ export const IndividualChat = ({route}: Props) => {
         setSocketId: setSocketId,
       });
     }
+    async function checkDeletedSocketId() {
+      receiveDeleted({
+        userPhoneNumber: user.phoneNumber,
+        setSocketId: setSocketId,
+      });
+    }
     checkJoined();
+    checkDeletedSocketId();
   }, [user.phoneNumber, isBlocked]);
   useEffect(() => {
     async function offline() {
@@ -794,10 +802,10 @@ export const IndividualChat = ({route}: Props) => {
           phoneNumber={user.phoneNumber}
           publicKey={user.publicKey}
           isBlocked={isBlocked}
-          socketId ={socketId}
+          socketId={socketId}
           onBlockStatusChange={handleBlockStatusChange}
           setIsCleared={setIsCleared}
-          setSocketId ={setSocketId}
+          setSocketId={setSocketId}
         />
       </View>
 
