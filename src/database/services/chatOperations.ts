@@ -1,4 +1,5 @@
 import {SQLiteDatabase} from 'react-native-sqlite-storage';
+import RNFetchBlob from 'rn-fetch-blob';
 import {numberNameIndex} from '../../helpers/nameNumberIndex';
 import {normalise} from '../../helpers/normalisePhoneNumber';
 import {getUserByPhoneNumber} from '../../services/GetUser';
@@ -7,13 +8,12 @@ import {store} from '../../store/store';
 import {createChatId} from '../../utils/chatId';
 import {getDBInstance} from '../connection/connection';
 import {isUserStoredLocally, upsertUserInfo} from './userOperations';
-import RNFetchBlob from 'rn-fetch-blob';
 
-const fetchAndConvertToBase64 = async (url: string) => {
+
+export const fetchAndConvertToBase64 = async (url: string) => {
   const res = await RNFetchBlob.config({ fileCache: false }).fetch('GET', url);
   return await res.base64();
 };
-
 
 export const clearChatLocally = async (
   chatId: string,
@@ -145,11 +145,16 @@ export const getAllChatsFromLocal = async (
     const exists = await isUserStoredLocally(db, contactPhone);
     if (!exists) {
       const remoteUser = await getUserByPhoneNumber(contactPhone);
+      console.log(remoteUser?.profilePicture)
+      const profileBase64 = remoteUser?.profilePicture
+        ? await fetchAndConvertToBase64(remoteUser.profilePicture)
+        : null;
+        console.log(profileBase64)
+
       if (remoteUser) {
-         const base64Image = await fetchAndConvertToBase64(remoteUser.profilePicture);
         await upsertUserInfo(db, {
           phoneNumber: contactPhone,
-          profilePicture: base64Image,
+          profilePicture: profileBase64,
           publicKey: remoteUser.publicKey,
         });
       }
