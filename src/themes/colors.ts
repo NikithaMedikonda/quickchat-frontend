@@ -17,6 +17,7 @@ export const useThemeColors = () => {
     modalBackground: 'rgba(128, 128, 128, 0.2)',
     warningColor: '#f5b041',
     passwordInfo: 'darkgray',
+    onlineStatus: '#dadada',
   };
 };
 
@@ -38,4 +39,5 @@ export type Colors = {
   modalBackground: string;
   warningColor: string;
   passwordInfo: string;
+  onlineStatus: string;
 };

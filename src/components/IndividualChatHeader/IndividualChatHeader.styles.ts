@@ -33,7 +33,6 @@ export const individualChatHeaderStyles = (colors: Colors) => {
       marginRight: 8,
     },
     username: {
-      flex: 1,
       color: colors.text,
       fontSize: 15,
       fontWeight: '400',
@@ -43,6 +42,17 @@ export const individualChatHeaderStyles = (colors: Colors) => {
       height: width * 0.06,
       resizeMode: 'contain',
       tintColor: colors.text,
+    },
+    nameWithBadgeContainer: {
+      alignSelf: 'flex-start',
+      gap: 4,
+      flex: 1,
+      paddingTop: height * 0.01,
+    },
+    onlineIndicator: {
+      color: colors.onlineStatus,
+      fontSize: 15,
+      fontWeight: '400',
     },
   });
 };
