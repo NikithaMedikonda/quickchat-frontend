@@ -1,5 +1,7 @@
 import {
   checkDeviceStatus,
+  offline,
+  online,
   receiveJoined,
   receiveOffline,
   receiveOnline,
@@ -195,5 +197,74 @@ describe('should test socket functions', () => {
 
     expect(mockOn).toHaveBeenCalledWith('I-joined', expect.any(Function));
     expect(setSocketId).not.toHaveBeenCalled();
+  });
+  test('should register isOnline_<phoneNumber> event in online()', async () => {
+    const setIsOnline = jest.fn();
+    const phoneNumber = '+91 9999999999';
+
+    await online({phoneNumber, setIsOnline});
+
+    expect(mockOn).toHaveBeenCalledWith(
+      `isOnline_${phoneNumber}`,
+      expect.any(Function),
+    );
+  });
+  test('should register isOffline_<phoneNumber> event in offline()', async () => {
+    const setIsOnline = jest.fn();
+    const phoneNumber = '+91 8888888888';
+
+    await offline({phoneNumber, setIsOnline});
+
+    expect(mockOn).toHaveBeenCalledWith(
+      `isOffline_${phoneNumber}`,
+      expect.any(Function),
+    );
+  });
+  test('should call setIsOnline(true) when isOnline_<phoneNumber> event is triggered', async () => {
+    const setIsOnline = jest.fn();
+    const phoneNumber = '+91 7777777777';
+
+    let handlerFn: (data: { online: boolean }) => void = () => {};
+    mockOn.mockImplementation((event, callback) => {
+      if (event === `isOnline_${phoneNumber}`) {
+        handlerFn = callback;
+      }
+    });
+
+    await online({phoneNumber, setIsOnline});
+
+    handlerFn({online: true});
+
+    expect(setIsOnline).toHaveBeenCalledWith(true);
+  });
+
+  test('should call setIsOnline(false) when isOffline_<phoneNumber> event is triggered', async () => {
+    const setIsOnline = jest.fn();
+    const phoneNumber = '+91 6666666666';
+
+    let handlerFn: (data: { online: boolean }) => void = () => {};
+    mockOn.mockImplementation((event, callback) => {
+      if (event === `isOffline_${phoneNumber}`) {
+        handlerFn = callback;
+      }
+    });
+
+    await offline({phoneNumber, setIsOnline});
+
+    handlerFn({online: false});
+
+    expect(setIsOnline).toHaveBeenCalledWith(false);
+  });
+  test('should timeout if user_device_verified is not received in time', async () => {
+    jest.useFakeTimers();
+    const userPhoneNumber = '+91 9440058809';
+    const deviceId = 'device123';
+
+    const promise = checkDeviceStatus(userPhoneNumber, deviceId);
+    jest.advanceTimersByTime(5000);
+
+    await expect(promise).rejects.toThrow('Device check timeout');
+
+    jest.useRealTimers();
   });
 });
