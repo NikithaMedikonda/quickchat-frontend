@@ -37,6 +37,7 @@ export const setupNotificationChannel = async () => {
       id: 'quickchat',
       name: 'Default Channel',
       importance: AndroidImportance.HIGH,
+      sound:'default',
     });
   }
 };
@@ -98,6 +99,7 @@ export const listenForForegroundMessages = () => {
           channelId: 'quickchat',
           smallIcon: 'ic_stat_notification',
           largeIcon: profilePicture || DEFAULT_PROFILE_IMAGE,
+          circularLargeIcon:true,
           pressAction: {
             id: 'default',
           },
