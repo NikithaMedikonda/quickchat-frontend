@@ -1,34 +1,38 @@
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
-import {useEffect, useState} from 'react';
-import {useTranslation} from 'react-i18next';
-import {Image, View} from 'react-native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
+import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Image, View } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {useDispatch, useSelector} from 'react-redux';
-import {Badge} from '../../components/Badge/Badge.tsx';
-import {User} from '../../screens/Profile/Profile';
-import {getAllChats, getMissedChats} from '../../services/GetAllChats.ts';
-import {newSocket, socketConnection} from '../../socket/socket';
+import { useDispatch, useSelector } from 'react-redux';
+import { Badge } from '../../components/Badge/Badge.tsx';
+import { User } from '../../screens/Profile/Profile';
+import { getAllChats, getMissedChats } from '../../services/GetAllChats.ts';
+import { newSocket, online, sendPrivateMessage, socketConnection } from '../../socket/socket';
 import {
   setNewMessageCount,
   setUnreadCount,
 } from '../../store/slices/unreadChatSlice.ts';
-import {useThemeColors} from '../../themes/colors';
-import {useImagesColors} from '../../themes/images';
-import {HomeStacks} from '../stack/HomeStacks';
-import {ProfileStack} from '../stack/ProfileStacks';
-import {UnreadStacks} from '../stack/UnreadStacks.tsx';
+import { useThemeColors } from '../../themes/colors';
+import { useImagesColors } from '../../themes/images';
+import { HomeStacks } from '../stack/HomeStacks';
+import { ProfileStack } from '../stack/ProfileStacks';
+import { UnreadStacks } from '../stack/UnreadStacks.tsx';
 
-import {getDBInstance} from '../../database/connection/connection.ts';
-import {getTotalUnreadCount} from '../../database/services/chatOperations.ts';
-import {insertToMessages} from '../../database/services/messageOperations.ts';
+import { getDBInstance } from '../../database/connection/connection.ts';
+import { getTotalUnreadCount } from '../../database/services/chatOperations.ts';
+import { insertToMessages } from '../../database/services/messageOperations.ts';
+import { deleteFromQueue, getAllQueuedMessages, updateLocalMessageStatus } from '../../database/services/queueOperations.ts';
 import {
   getLastSyncedTime,
   updateLastSyncedTime,
 } from '../../database/services/userOperations.ts';
-import {RootState} from '../../store/store.ts';
-import {generateMessageId} from '../../utils/messageId.ts';
-import {styles} from './HomeTabs.styles';
+import { useSocketConnection } from '../../hooks/useSocketConnection.ts';
+import { checkUserOnline } from '../../services/CheckUserOnline.ts';
+import { RootState } from '../../store/store.ts';
+import { SentPrivateMessage } from '../../types/messsage.types.ts';
+import { generateMessageId } from '../../utils/messageId.ts';
+import { styles } from './HomeTabs.styles';
 
 const HomeTabIcon = ({focused}: {focused: boolean}) => {
   const {tabHome} = useImagesColors();
@@ -48,7 +52,7 @@ const HomeTabIcon = ({focused}: {focused: boolean}) => {
 
 const UnreadTabIcon = ({focused}: {focused: boolean}) => {
   const {tabUnread} = useImagesColors();
-  const unreadCount = useSelector((state: any) => state.unread?.count ?? 0);
+  const unreadCount = useSelector((state: RootState) => state.unread?.count ?? 0);
   return (
     <View style={styles.iconContainer}>
       {!focused ? (
@@ -88,6 +92,107 @@ export const HomeTabs = () => {
   const [newMessageCount, setMessageCount] = useState(0);
   const dispatch = useDispatch();
   const chatTrigger = useSelector((state: RootState) => state.chat);
+  const {isConnected} = useSocketConnection();
+  const currentUserPhoneNumberRef = useRef<string>('');
+  const [_socketId, setSocketId] = useState<string | null>(null);
+  const [_isOnlineWith, setIsOnlineWith] = useState<boolean>(false);
+  const isProcessingQueue = useRef(false);
+  const screenContext = useSelector((state: RootState) => state.screenContext);
+  const shouldProcessGlobalQueue =
+    screenContext?.shouldProcessGlobalQueue ?? true;
+
+  useEffect(() => {
+    if (isConnected && !isProcessingQueue.current && shouldProcessGlobalQueue) {
+      async function connect() {
+        const anotherUser = await EncryptedStorage.getItem('user');
+        if (anotherUser) {
+           const parsedUser: User = JSON.parse(anotherUser);
+          await socketConnection(parsedUser.phoneNumber);
+        }
+      }
+
+      const processQueueMessages = async () => {
+        if (isProcessingQueue.current || !shouldProcessGlobalQueue) {
+          return;
+        }
+
+        isProcessingQueue.current = true;
+
+        try {
+          const currentUser = await EncryptedStorage.getItem('user');
+          if (currentUser) {
+            const parsedUser: User = JSON.parse(currentUser);
+            currentUserPhoneNumberRef.current = parsedUser.phoneNumber;
+          }
+
+          const authToken = await EncryptedStorage.getItem('authToken');
+
+          async function checkOnline(receiverPhoneNumber: string) {
+            if (currentUser) {
+              await online({
+                phoneNumber: receiverPhoneNumber,
+                setIsOnline: setIsOnlineWith,
+              });
+            }
+          }
+
+          const messages = await getAllQueuedMessages();
+
+          for (const queuedMessage of messages) {
+            if (!shouldProcessGlobalQueue) {
+              break;
+            }
+            let currentSocketId: string | null = null;
+            let currentIsOnlineWith = false;
+
+            if (authToken) {
+              const userStatus = await checkUserOnline({
+                phoneNumber: queuedMessage.receiverPhoneNumber,
+                authToken: authToken,
+                requestedUserPhoneNumber: currentUserPhoneNumberRef.current,
+              });
+
+              if (userStatus.status === 200 || userStatus.status === 203) {
+                currentSocketId = userStatus.data.data.socketId;
+                setSocketId(currentSocketId);
+                await checkOnline(queuedMessage.receiverPhoneNumber);
+              }
+            }
+
+            let status: string;
+            if (currentSocketId && !currentIsOnlineWith) {
+              status = 'delivered';
+            } else if (currentSocketId && currentIsOnlineWith) {
+              status = 'read';
+            } else {
+              status = 'sent';
+            }
+
+            const payload: SentPrivateMessage = {
+              recipientPhoneNumber: queuedMessage.receiverPhoneNumber,
+              message: queuedMessage.message,
+              senderPhoneNumber: queuedMessage.senderPhoneNumber,
+              timestamp: queuedMessage.timestamp,
+              status: status,
+            };
+
+            await sendPrivateMessage(payload);
+            setMessageCount(prevCount => prevCount + 1);
+            queuedMessage.status = status;
+            await updateLocalMessageStatus(queuedMessage);
+            await deleteFromQueue(queuedMessage.id);
+          }
+        } catch (error) {
+          isProcessingQueue.current = false;
+        } finally {
+          isProcessingQueue.current = false;
+        }
+      };
+
+      connect();
+      processQueueMessages();
+    }
+  }, [isConnected, newMessageCount, shouldProcessGlobalQueue]);
 
   useEffect(() => {
     const handleNewMessage = (data: {newMessage: boolean}) => {
@@ -102,6 +207,7 @@ export const HomeTabs = () => {
       newSocket.off('new_message', handleNewMessage);
     };
   }, [dispatch, newMessageCount]);
+
   useEffect(() => {
     async function connect() {
       const user = await EncryptedStorage.getItem('user');
@@ -161,7 +267,7 @@ export const HomeTabs = () => {
               ),
               senderPhoneNumber: chat.senderPhoneNumber as string,
               receiverPhoneNumber: parsedUser.phoneNumber as string,
-              message: message.content as string,
+              message: message.content,
               status: message.status as 'sent' | 'delivered' | 'read',
               timestamp: message.createdAt as string,
             };
