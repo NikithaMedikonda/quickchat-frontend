@@ -22,6 +22,15 @@ jest.mock('@react-navigation/native', () => ({
     goBack: mockGoBack,
   }),
 }));
+
+jest.mock('rn-fetch-blob', () => ({
+  config: jest.fn(() => ({
+    fetch: jest.fn(() => Promise.resolve({
+      base64: jest.fn(() => Promise.resolve('mocked_base64_data')),
+    })),
+  })),
+}));
+
 jest.mock('react-native-encrypted-storage', () => ({
   setItem: jest.fn(() => Promise.resolve()),
   getItem: jest.fn(() => Promise.resolve(null)),
