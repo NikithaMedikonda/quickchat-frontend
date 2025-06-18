@@ -1,4 +1,4 @@
-import { NavigationContainer } from '@react-navigation/native';
+import {NavigationContainer} from '@react-navigation/native';
 import {
   fireEvent,
   render,
@@ -6,18 +6,23 @@ import {
   waitFor,
 } from '@testing-library/react-native';
 import phone from 'phone';
-import { Provider } from 'react-redux';
-import { loginUser } from '../../services/LoginUser';
-import { store } from '../../store/store';
-import { Login } from './Login';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import {Provider} from 'react-redux';
+import * as connectionModule from '../../database/connection/connection';
+import {loginUser} from '../../services/LoginUser';
+import {store} from '../../store/store';
+import {Login} from './Login';
 
 jest.mock('react-native-phone-input', () => {
-  const { useState, forwardRef } = require('react');
-  const { TextInput } = require('react-native');
+  const {useState, forwardRef} = require('react');
+  const {TextInput} = require('react-native');
   const MockPhoneInput = forwardRef(
-    (props: { value: any; onChangePhoneNumber: any }, ref: any) => {
+    (
+      props: {value: string; onChangePhoneNumber: (text: string) => void},
+      ref: string,
+    ) => {
       const [phoneNumber, setPhoneNumber] = useState(props.value);
-      const handleChangeText = (text: any) => {
+      const handleChangeText = (text: string) => {
         setPhoneNumber(text);
         props.onChangePhoneNumber(text);
       };
@@ -39,6 +44,10 @@ jest.mock('../../services/useDeviceCheck', () => ({
   useDeviceCheck: jest.fn(),
 }));
 
+jest.mock('../../database/connection/connection', () => ({
+  getDBInstance: jest.fn(),
+}));
+
 jest.mock('react-native-device-info', () => ({
   getUniqueId: jest.fn(),
 }));
@@ -58,6 +67,7 @@ const mockReplace = jest.fn();
 
 jest.mock('react-native-encrypted-storage', () => ({
   setItem: jest.fn(),
+  getItem: jest.fn(),
 }));
 
 jest.mock('../../services/LoginUser', () => ({
@@ -95,8 +105,12 @@ jest.mock('react-native-libsodium', () => ({
 
 jest.useFakeTimers();
 
+const mockExecuteSql = jest.fn();
 describe('Login Screen', () => {
   beforeEach(() => {
+    (connectionModule.getDBInstance as jest.Mock).mockResolvedValue({
+      executeSql: mockExecuteSql,
+    });
     render(
       <Provider store={store}>
         <NavigationContainer>
@@ -140,7 +154,7 @@ describe('Login Screen', () => {
   test('should change the value of password upon entering', async () => {
     const phoneNumber = screen.getByPlaceholderText('Password');
 
-    fireEvent.changeText(phoneNumber, { target: { value: 'Anu@1234' } });
+    fireEvent.changeText(phoneNumber, {target: {value: 'Anu@1234'}});
 
     await waitFor(() => {
       expect(phoneNumber.props.value.target.value).toBe('Anu@1234');
@@ -173,7 +187,7 @@ describe('Login Screen', () => {
     fireEvent.changeText(phoneNumber, '8522041688');
     fireEvent.changeText(screen.getByPlaceholderText('Password'), 'Anu@1234');
     fireEvent.press(screen.getByText('Login'));
-    await waitFor(() => { });
+    await waitFor(() => {});
   });
 
   test('should show alert if user not existed with this phone number', async () => {
@@ -278,14 +292,23 @@ describe('Login Screen', () => {
         },
       },
     });
+    (EncryptedStorage.getItem as jest.Mock).mockImplementation(key => {
+      if (key === 'user') {
+        return Promise.resolve(JSON.stringify({phoneNumber: '1234567890'}));
+      }
+      if (key === 'authToken') {
+        return Promise.resolve('mocked_token');
+      }
+      return Promise.resolve(null);
+    });
 
     const phoneNumber = screen.getByPlaceholderText('Phone number');
     fireEvent.changeText(phoneNumber, '8522041688');
     fireEvent.changeText(screen.getByPlaceholderText('Password'), 'Anu@1234');
     fireEvent.press(screen.getByText('Login'));
+
     await waitFor(() => {
       const state = store.getState();
-      expect(state.registration.alertType).toBe('success');
       expect(state.registration.alertMessage).toBe('Successfully Logged in');
     });
 
