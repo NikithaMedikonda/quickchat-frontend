@@ -6,9 +6,14 @@ import {store} from '../../store/store';
 import {createChatId} from '../../utils/chatId';
 import {getDBInstance} from '../connection/connection';
 import {MessageType} from '../types/message';
-import {updateChatMetadata, upsertChatMetadata} from './chatOperations';
+import {
+  getTotalUnreadCount,
+  updateChatMetadata,
+  upsertChatMetadata,
+} from './chatOperations';
 import {isUserStoredLocally, upsertUserInfo} from './userOperations';
 import {sendUpdatedMessages} from '../../socket/socket';
+import {setUnreadCount} from '../../store/slices/unreadChatSlice';
 
 export const insertToMessages = async (message: MessageType) => {
   const db = await getDBInstance();
@@ -82,6 +87,8 @@ export const insertToMessages = async (message: MessageType) => {
       isSenderCurrentUser,
     );
 
+    const totalUnread = await getTotalUnreadCount(await getDBInstance());
+    store.dispatch(setUnreadCount(totalUnread));
     store.dispatch(incrementTrigger());
   }
 };
@@ -180,6 +187,8 @@ export const updateSendMessageStatusToRead = async (details: {
       'read',
     );
   }
+  const totalUnread = await getTotalUnreadCount(await getDBInstance());
+  store.dispatch(setUnreadCount(totalUnread));
   store.dispatch(incrementTrigger());
 };
 export const updateSendMessageStatusToDelivered = async (details: {
@@ -208,6 +217,7 @@ export const updateSendMessageStatusToDelivered = async (details: {
       status,
     );
   }
-
+  const totalUnread = await getTotalUnreadCount(await getDBInstance());
+  store.dispatch(setUnreadCount(totalUnread));
   store.dispatch(incrementTrigger());
 };
