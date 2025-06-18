@@ -3,7 +3,7 @@ name: QuickChat-frontend CI/CD
 on:
   push:
     branches:
-      - self-chat-fix
+      - main
 
 jobs:
   lint-and-test:

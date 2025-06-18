@@ -1,16 +1,17 @@
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { ScrollView, Text, View } from 'react-native';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {useCallback, useEffect, useRef, useState} from 'react';
+import {useTranslation} from 'react-i18next';
+import {ScrollView, Text, View} from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { useDispatch, useSelector } from 'react-redux';
-import { Socket } from 'socket.io-client';
-import { CustomAlert } from '../../components/CustomAlert/CustomAlert';
-import { IndividualChatHeader } from '../../components/IndividualChatHeader/IndividualChatHeader';
-import { MessageInput } from '../../components/MessageInput/MessageInput';
-import { MessageStatusTicks } from '../../components/MessageStatusTicks/MessageStatusTicks';
-import { TimeStamp } from '../../components/TimeStamp/TimeStamp';
-import { getDBInstance } from '../../database/connection/connection';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useDispatch, useSelector} from 'react-redux';
+import {Socket} from 'socket.io-client';
+import {CustomAlert} from '../../components/CustomAlert/CustomAlert';
+import {IndividualChatHeader} from '../../components/IndividualChatHeader/IndividualChatHeader';
+import {MessageInput} from '../../components/MessageInput/MessageInput';
+import {MessageStatusTicks} from '../../components/MessageStatusTicks/MessageStatusTicks';
+import {TimeStamp} from '../../components/TimeStamp/TimeStamp';
+import {getDBInstance} from '../../database/connection/connection';
 import {
   getTotalUnreadCount,
   resetUnreadCount,
@@ -50,7 +51,7 @@ import {
   sendPrivateMessage,
   socketConnection,
 } from '../../socket/socket';
-import { hide } from '../../store/slices/loadingSlice';
+import {hide} from '../../store/slices/loadingSlice';
 import {
   setAlertMessage,
   setAlertTitle,
@@ -58,20 +59,21 @@ import {
   setAlertVisible,
   setReceivePhoneNumber,
 } from '../../store/slices/registrationSlice';
-import { setUnreadCount } from '../../store/slices/unreadChatSlice';
-import { RootState } from '../../store/store';
-import { useThemeColors } from '../../themes/colors';
+import {setUnreadCount} from '../../store/slices/unreadChatSlice';
+import {RootState} from '../../store/store';
+import {useThemeColors} from '../../themes/colors';
 import {
   AllMessages,
   PendingMessages,
   ReceivePrivateMessage,
   SentPrivateMessage,
 } from '../../types/messsage.types';
-import { HomeStackParamList } from '../../types/usenavigation.type';
-import { createChatId } from '../../utils/chatId';
-import { generateMessageId } from '../../utils/messageId';
-import { User } from '../Profile/Profile';
-import { individualChatStyles } from './IndividualChat.styles';
+import {HomeStackParamList} from '../../types/usenavigation.type';
+import {createChatId} from '../../utils/chatId';
+import {generateMessageId} from '../../utils/messageId';
+import {User} from '../Profile/Profile';
+import {individualChatStyles} from './IndividualChat.styles';
+
 
 type Props = NativeStackScreenProps<HomeStackParamList, 'individualChat'>;
 
@@ -540,6 +542,22 @@ export const IndividualChat = ({route}: Props) => {
     isBlocked,
     isConnected,
   ]);
+  useEffect(() => {
+    const clearMessageCount = async () => {
+      try {
+        if (user?.phoneNumber) {
+          const existingValue = await AsyncStorage.getItem(`msgCount_${user.phoneNumber}`);
+          if (existingValue !== null) {
+            await AsyncStorage.removeItem(`msgCount_${user.phoneNumber}`);
+          }
+        }
+      } catch (error) {
+        console.error('Error clearing message count:', error);
+      }
+    };
+
+    clearMessageCount();
+  }, [user?.phoneNumber]);
 
   const processQueueMessages = useCallback(async () => {
     const currentUser = await EncryptedStorage.getItem('user');
