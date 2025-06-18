@@ -187,7 +187,6 @@ export const updateSendMessageStatusToDelivered = async (details: {
   receiverPhoneNumber: string;
   messages: string[];
 }): Promise<void> => {
-  console.log('Details:', details);
   const db: SQLiteDatabase = await getDBInstance();
   const query = `
     UPDATE Messages
