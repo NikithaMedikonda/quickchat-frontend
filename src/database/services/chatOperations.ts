@@ -87,8 +87,8 @@ export const updateChatMetadata = async (
   const db = await getDBInstance();
   const ChatId = await createChatId(senderPhoneNumber, receiverPhoneNumber);
   const query =
-    'UPDATE Chats SET lastMessageStatus=? WHERE id=? AND lastMessage=?  ';
-  await db.executeSql(query, [status, ChatId, message]);
+    'UPDATE Chats SET lastMessageStatus=? , unreadCount =? WHERE id=? AND lastMessage=?  ';
+  await db.executeSql(query, [status,0, ChatId, message]);
 };
 export const resetUnreadCount = async (db: SQLiteDatabase, chatId: string) => {
   await db.executeSql('UPDATE Chats SET unReadCount = 0 WHERE id = ?', [
