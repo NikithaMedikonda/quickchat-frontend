@@ -1,5 +1,5 @@
 import {useNavigation} from '@react-navigation/native';
-import {useCallback, useState} from 'react';
+import {useCallback, useEffect, useState} from 'react';
 import {
   Image,
   Modal,
@@ -64,6 +64,25 @@ export const ChatOptionsModal = ({
   const [modalVisible, setModalVisible] = useState(false);
   const [messages, setMessage] = useState('');
   const [buttonTypes, setButtonTypes] = useState('');
+  const [isSelf, setIsSelf] = useState(false);
+
+ useEffect(() => {
+  const checkSelfUser = async () => {
+      const currentUser = await EncryptedStorage.getItem('user');
+      if (currentUser && receiverPhoneNumber) {
+        const userData = JSON.parse(currentUser);
+        setIsSelf(userData.phoneNumber === receiverPhoneNumber);
+      } else {
+        setIsSelf(false);
+      }
+  };
+
+  if (visible) {
+    checkSelfUser();
+  } else {
+    setIsSelf(false);
+  }
+}, [visible, receiverPhoneNumber]);
 
   const showConfirmation = (type: string, msg: string) => {
     onClose();
@@ -205,18 +224,20 @@ export const ChatOptionsModal = ({
           <View style={[styles.centeredView, modalStyle]}>
             <View style={styles.modalView}>
               <View style={styles.textContainer}>
-                <TouchableOpacity
-                  onPress={blockOrUnblockUser}
-                  style={styles.optionsView}>
-                  <Text style={styles.modalText}>
-                    {isUserBlocked ? 'Unblock User' : 'Block User'}
-                  </Text>
-                  <Image
-                    source={chatblockImage}
-                    style={styles.blockImage}
-                    accessibilityHint="block-user-icon"
-                  />
-                </TouchableOpacity>
+                {!isSelf && (
+                  <TouchableOpacity
+                    onPress={blockOrUnblockUser}
+                    style={styles.optionsView}>
+                    <Text style={styles.modalText}>
+                      {isUserBlocked ? 'Unblock User' : 'Block User'}
+                    </Text>
+                    <Image
+                      source={chatblockImage}
+                      style={styles.blockImage}
+                      accessibilityHint="block-user-icon"
+                    />
+                  </TouchableOpacity>
+                )}
                 <TouchableOpacity
                   onPress={() =>
                     showConfirmation(

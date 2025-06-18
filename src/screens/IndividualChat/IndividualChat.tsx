@@ -4,6 +4,7 @@ import {useFocusEffect} from '@react-navigation/native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {useTranslation} from 'react-i18next';
 import EncryptedStorage from 'react-native-encrypted-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useDispatch, useSelector} from 'react-redux';
 import {Socket} from 'socket.io-client';
 import {CustomAlert} from '../../components/CustomAlert/CustomAlert';
@@ -56,6 +57,7 @@ import {
   sendPrivateMessage,
   socketConnection,
 } from '../../socket/socket';
+  import {hide} from '../../store/slices/loadingSlice';
 import {
   setAlertMessage,
   setAlertTitle,
@@ -78,6 +80,7 @@ import {createChatId} from '../../utils/chatId';
 import {generateMessageId} from '../../utils/messageId';
 import {User} from '../Profile/Profile';
 import {individualChatStyles} from './IndividualChat.styles';
+
 
 type Props = NativeStackScreenProps<HomeStackParamList, 'individualChat'>;
 
@@ -634,6 +637,22 @@ export const IndividualChat = ({route}: Props) => {
     isBlocked,
     isConnected,
   ]);
+  useEffect(() => {
+    const clearMessageCount = async () => {
+      try {
+        if (user?.phoneNumber) {
+          const existingValue = await AsyncStorage.getItem(`msgCount_${user.phoneNumber}`);
+          if (existingValue !== null) {
+            await AsyncStorage.removeItem(`msgCount_${user.phoneNumber}`);
+          }
+        }
+      } catch (error) {
+        console.error('Error clearing message count:', error);
+      }
+    };
+
+    clearMessageCount();
+  }, [user?.phoneNumber]);
 
   const processQueueMessages = useCallback(async () => {
     if (processQueueRef.current || !isInIndividualChat) {

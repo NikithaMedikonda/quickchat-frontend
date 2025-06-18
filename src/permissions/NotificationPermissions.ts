@@ -5,8 +5,11 @@ import notifee, {
 import '@react-native-firebase/app';
 import messaging from '@react-native-firebase/messaging';
 import { PermissionsAndroid, Platform } from 'react-native';
-import { numberNameIndex } from '../helpers/nameNumberIndex';
-import { normalise } from '../helpers/normalisePhoneNumber';
+import {numberNameIndex} from '../helpers/nameNumberIndex';
+import {normalise} from '../helpers/normalisePhoneNumber';
+import {DEFAULT_PROFILE_IMAGE} from '../constants/defaultImage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 export const requestNotificationPermission = async (): Promise<boolean> => {
   if (Platform.OS === 'android') {
@@ -56,9 +59,9 @@ export const listenForForegroundMessages = () => {
   return messaging().onMessage(async remoteMessage => {
     const rawPhnoneNumber = remoteMessage.data?.senderPhoneNumber;
     const rawPhoto = remoteMessage.data?.profilePicture;
-    const senderPhoneNumber = typeof rawPhnoneNumber === 'string' ? rawPhnoneNumber : undefined;
+    const senderPhoneNumber =
+      typeof rawPhnoneNumber === 'string' ? rawPhnoneNumber : undefined;
     const profilePicture = typeof rawPhoto === 'string' ? rawPhoto : undefined;
-
 
     let contactName: string | undefined;
 
@@ -72,15 +75,29 @@ export const listenForForegroundMessages = () => {
       }
     }
 
+    let messageCount = 1;
 
+    if (senderPhoneNumber) {
+        const storedCount = await AsyncStorage.getItem(
+          `msgCount_${senderPhoneNumber}`,
+        );
+        if (storedCount) {
+          messageCount = parseInt(storedCount, 10) + 1;
+        }
+      await AsyncStorage.setItem(
+        `msgCount_${senderPhoneNumber}`,
+        messageCount.toString(),
+      );
+    }
     if (senderPhoneNumber || profilePicture) {
       await notifee.displayNotification({
-        title:contactName,
-        body: 'New message',
+        id: senderPhoneNumber,
+        title: contactName,
+        body: `${messageCount} new message${messageCount > 1 ? 's' : ''}`,
         android: {
           channelId: 'quickchat',
-          smallIcon:'ic_stat_notification',
-          largeIcon:profilePicture,
+          smallIcon: 'ic_stat_notification',
+          largeIcon: profilePicture || DEFAULT_PROFILE_IMAGE,
           pressAction: {
             id: 'default',
           },
