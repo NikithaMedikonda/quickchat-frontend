@@ -3,6 +3,7 @@ import * as connectionModule from '../connection/connection';
 import { upsertChatMetadata } from '../services/chatOperations';
 import {
   deleteFromQueue,
+  getAllQueuedMessages,
   getQueuedMessages,
   insertToQueue,
   updateLocalMessageStatus,
@@ -152,5 +153,37 @@ describe('deleteFromQueue', () => {
       expect.stringContaining('DELETE FROM Queue WHERE id = ?'),
       ['msg1'],
     );
+  });
+});
+describe('getAllQueuedMessages', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    (connectionModule.getDBInstance as jest.Mock).mockResolvedValue({
+      executeSql: mockExecuteSql,
+    });
+  });
+  it('should get all messages from the Queue in timestamp order', async () => {
+    const mockResults = {
+      rows: {
+        length: 2,
+        item: jest
+          .fn()
+          .mockReturnValueOnce({id: 'msg1', message: 'Hey'})
+          .mockReturnValueOnce({id: 'msg2', message: 'Yo'}),
+      },
+    };
+
+    mockExecuteSql.mockResolvedValueOnce([mockResults]);
+
+    const messages = await getAllQueuedMessages();
+
+    expect(mockExecuteSql).toHaveBeenCalledWith(
+      expect.stringContaining('SELECT * FROM Queue ORDER BY timestamp ASC'),
+    );
+
+    expect(messages).toEqual([
+      {id: 'msg1', message: 'Hey'},
+      {id: 'msg2', message: 'Yo'},
+    ]);
   });
 });
