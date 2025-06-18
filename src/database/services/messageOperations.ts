@@ -8,6 +8,7 @@ import { getDBInstance } from '../connection/connection';
 import { MessageType } from '../types/message';
 import { upsertChatMetadata } from './chatOperations';
 import { isUserStoredLocally, upsertUserInfo } from './userOperations';
+import { fetchAndConvertToBase64 } from './chatOperations';
 
 export const insertToMessages = async (message: MessageType) => {
   const db = await getDBInstance();
@@ -62,10 +63,13 @@ export const insertToMessages = async (message: MessageType) => {
         const remoteUser = await getUserByPhoneNumber(
           messagetoInsert.senderPhoneNumber,
         );
+         const profileBase64 = remoteUser?.profilePicture
+        ? await fetchAndConvertToBase64(remoteUser.profilePicture)
+        : null;
         if (remoteUser) {
           await upsertUserInfo(db, {
             phoneNumber: sender,
-            profilePicture: remoteUser.profilePicture,
+            profilePicture: profileBase64,
             publicKey: remoteUser.publicKey,
           });
         }
