@@ -11,8 +11,10 @@ import {individualChatHeaderStyles} from './IndividualChatHeader.styles';
 
 interface IndividualChatHeaderProps extends UserDetails {
   isBlocked: boolean;
+  socketId: String | null;
   onBlockStatusChange: (isBlocked: boolean) => void;
   setIsCleared: (isCleared: boolean) => void;
+  setSocketId: (socketId: string | null) => void;
 }
 
 export const IndividualChatHeader = ({
@@ -21,6 +23,7 @@ export const IndividualChatHeader = ({
   isBlocked,
   onBlockStatusChange,
   setIsCleared,
+  socketId,
 }: IndividualChatHeaderProps) => {
   const [modalVisible, setModalVisible] = useState(false);
   const colors = useThemeColors();
@@ -57,9 +60,18 @@ export const IndividualChatHeader = ({
           style={styles.profilePicture}
           accessibilityHint="profile-picture"
         />
-        <Text style={styles.username} accessibilityHint="username-text">
-          {name}
-        </Text>
+        <View style={styles.nameWithBadgeContainer}>
+          <Text style={styles.username} accessibilityHint="username-text">
+            {name}
+          </Text>
+          {socketId != null && (
+            <Text
+              accessibilityHint="online-status"
+              style={styles.onlineIndicator}>
+              online
+            </Text>
+          )}
+        </View>
       </View>
       <TouchableOpacity onPress={modelVisible}>
         <Image
