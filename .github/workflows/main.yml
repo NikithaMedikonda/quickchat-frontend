@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - custom-notification
+      - offline-profile-image-render
 
 jobs:
   lint-and-test:
