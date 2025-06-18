@@ -268,7 +268,6 @@ export const IndividualChat = ({route}: Props) => {
                 });
               }
             } catch (error) {
-              console.log('Decryption error:', error);
               dispatch(hide());
             }
           }
