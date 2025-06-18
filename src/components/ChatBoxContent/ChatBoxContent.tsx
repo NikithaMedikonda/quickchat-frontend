@@ -17,7 +17,6 @@ export const ChatBoxContent = ({
 }) => {
   const colors = useThemeColors();
   const styles = getStyles(colors);
-  console.log('ChatBoxContent rendered with image:', image);
 
   return (
     <View style={styles.container}>
@@ -26,11 +25,7 @@ export const ChatBoxContent = ({
           style={styles.profileImage}
           source={
             image
-              ? {
-                  uri: image.startsWith('data:image')
-                    ? image
-                    : `data:image/png;base64,${image}`,
-                }
+              ? {uri: `data:image/png;base64,${image}`}
               : {uri: DEFAULT_PROFILE_IMAGE}
           }
           accessibilityHint="profile-image"
