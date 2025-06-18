@@ -5,7 +5,7 @@ import {
   insertToMessages,
   updateLocalMessageStatusToRead,
 } from '../services/messageOperations';
-import { fetchAndConvertToBase64 } from '../services/chatOperations';
+import {fetchAndConvertToBase64} from '../services/chatOperations';
 
 const mockExecuteSql = jest.fn();
 
@@ -52,8 +52,6 @@ beforeEach(() => {
     executeSql: mockExecuteSql,
   });
 });
-
-
 
 describe('Tests for updateLocalMessageStatusToRead', () => {
   it('should update message status with correct SQL and params', async () => {
@@ -271,8 +269,6 @@ describe('Tests for insertToMesssages', () => {
     );
   });
 
-
-
   it('should handle sender is not current user, user not stored locally, remote user not found', async () => {
     mockExecuteSql.mockResolvedValueOnce([
       {rows: {length: 0, item: jest.fn()}},
@@ -300,7 +296,7 @@ describe('Tests for insertToMesssages', () => {
     expect(getUserByPhoneNumber).toHaveBeenCalledWith('123');
     expect(upsertUserInfo).not.toHaveBeenCalled();
   });
-    it('should handle sender is not current user, user not stored locally, remote user found', async () => {
+  it('should handle sender is not current user, user not stored locally, remote user found', async () => {
     mockExecuteSql.mockResolvedValueOnce([
       {rows: {length: 0, item: jest.fn()}},
     ]);

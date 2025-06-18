@@ -9,9 +9,8 @@ import {createChatId} from '../../utils/chatId';
 import {getDBInstance} from '../connection/connection';
 import {isUserStoredLocally, upsertUserInfo} from './userOperations';
 
-
 export const fetchAndConvertToBase64 = async (url: string) => {
-  const res = await RNFetchBlob.config({ fileCache: false }).fetch('GET', url);
+  const res = await RNFetchBlob.config({fileCache: false}).fetch('GET', url);
   return await res.base64();
 };
 
@@ -145,11 +144,11 @@ export const getAllChatsFromLocal = async (
     const exists = await isUserStoredLocally(db, contactPhone);
     if (!exists) {
       const remoteUser = await getUserByPhoneNumber(contactPhone);
-      console.log(remoteUser?.profilePicture)
+      console.log(remoteUser?.profilePicture);
       const profileBase64 = remoteUser?.profilePicture
         ? await fetchAndConvertToBase64(remoteUser.profilePicture)
         : null;
-        console.log(profileBase64)
+      console.log(profileBase64);
 
       if (remoteUser) {
         await upsertUserInfo(db, {
