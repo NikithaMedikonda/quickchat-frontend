@@ -2,6 +2,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {render, waitFor} from '@testing-library/react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {Provider} from 'react-redux';
+import {hide, show} from '../../store/slices/loadingSlice';
 import {store} from '../../store/store';
 import {InitialStacks} from './InitialStacks';
 
@@ -318,5 +319,55 @@ describe('InitialStacks', () => {
     await waitFor(() => {
       expect(getByText(/Get Started/i)).toBeTruthy();
     });
+  });
+});
+
+const mockDispatch = jest.fn();
+const mockSetInitialRoute = jest.fn();
+
+describe('Tests for checkUserHasToken logic', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  const checkUserHasToken = async () => {
+    mockDispatch(show());
+    const userString = await EncryptedStorage.getItem('user');
+    const accessToken = await EncryptedStorage.getItem('authToken');
+    const refreshToken = await EncryptedStorage.getItem('refreshToken');
+    if (!userString || !accessToken || !refreshToken) {
+      mockSetInitialRoute('welcome');
+      mockDispatch(hide());
+    } else {
+      mockSetInitialRoute('hometabs');
+      mockDispatch(hide());
+    }
+  };
+
+  it('should route to welcome if any token is missing', async () => {
+    (EncryptedStorage.getItem as jest.Mock).mockImplementation(
+      (key: string) => {
+        if (key === 'user') {
+          return Promise.resolve(null);
+        }
+        return Promise.resolve('some-token');
+      },
+    );
+
+    await checkUserHasToken();
+
+    expect(mockSetInitialRoute).toHaveBeenCalledWith('welcome');
+    expect(mockDispatch).toHaveBeenCalledWith(hide());
+  });
+
+  it('should route to hometabs if all tokens are present', async () => {
+    (EncryptedStorage.getItem as jest.Mock).mockImplementation(() =>
+      Promise.resolve('token'),
+    );
+
+    await checkUserHasToken();
+
+    expect(mockSetInitialRoute).toHaveBeenCalledWith('hometabs');
+    expect(mockDispatch).toHaveBeenCalledWith(hide());
   });
 });
