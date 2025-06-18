@@ -1,13 +1,13 @@
-import { useNavigation } from '@react-navigation/native';
-import { useState } from 'react';
-import { Image, Platform, Text, TouchableOpacity, View } from 'react-native';
-import { DEFAULT_PROFILE_IMAGE } from '../../constants/defaultImage';
-import { useThemeColors } from '../../themes/colors';
-import { useImagesColors } from '../../themes/images';
-import { HomeStackProps } from '../../types/usenavigation.type';
-import { UserDetails } from '../../types/user.types';
-import { ChatOptionsModal } from '../ChatOptionsModal/ChatOptionsModal';
-import { individualChatHeaderStyles } from './IndividualChatHeader.styles';
+import {useNavigation} from '@react-navigation/native';
+import {useState} from 'react';
+import {Image, Platform, Text, TouchableOpacity, View} from 'react-native';
+import {DEFAULT_PROFILE_IMAGE} from '../../constants/defaultImage';
+import {useThemeColors} from '../../themes/colors';
+import {useImagesColors} from '../../themes/images';
+import {HomeStackProps} from '../../types/usenavigation.type';
+import {UserDetails} from '../../types/user.types';
+import {ChatOptionsModal} from '../ChatOptionsModal/ChatOptionsModal';
+import {individualChatHeaderStyles} from './IndividualChatHeader.styles';
 
 interface IndividualChatHeaderProps extends UserDetails {
   isBlocked: boolean;
@@ -36,7 +36,6 @@ export const IndividualChatHeader = ({
   const onClose = () => {
     setModalVisible(false);
   };
-
   return (
     <View style={styles.content}>
       <View style={styles.container}>
@@ -51,7 +50,10 @@ export const IndividualChatHeader = ({
           />
         </TouchableOpacity>
         <Image
-          source={{uri: profilePicture || DEFAULT_PROFILE_IMAGE}}
+          source={
+            profilePicture ? profilePicture.startsWith('https:') ? {uri: profilePicture} : {uri: `data:image/png;base64,${profilePicture}`}
+              : {uri: DEFAULT_PROFILE_IMAGE}
+          }
           style={styles.profilePicture}
           accessibilityHint="profile-picture"
         />
