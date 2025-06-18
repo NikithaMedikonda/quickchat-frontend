@@ -156,8 +156,8 @@ export const IndividualChat = ({route}: Props) => {
       return;
     }
 
-    const handleStatusUpdate = (data: string[]) => {
-      updateSendMessageStatusToRead({
+    const handleStatusUpdate = async (data: string[]) => {
+     await updateSendMessageStatusToRead({
         senderPhoneNumber: currentUserPhoneNumberRef.current,
         receiverPhoneNumber: recipientPhoneNumber,
         messages: data,
@@ -343,8 +343,8 @@ export const IndividualChat = ({route}: Props) => {
       if (!socket || !currentUserPhoneNumberRef.current) {
         return;
       }
-      const handleUpdateToDeliver = (data: string[]) => {
-        updateSendMessageStatusToDelivered({
+      const handleUpdateToDeliver = async (data: string[]) => {
+       await updateSendMessageStatusToDelivered({
           senderPhoneNumber: currentUserPhoneNumberRef.current,
           receiverPhoneNumber: recipientPhoneNumber,
           messages: data,
@@ -397,7 +397,7 @@ export const IndividualChat = ({route}: Props) => {
         };
         await updateMessageStatus(details);
         await updateLocalMessageStatusToRead(details);
-         setCheck(prev => prev + 1);
+        setCheck(prev => prev + 1);
       };
       updateStatus();
       await newSocket.emit('offline_with', user.phoneNumber);
