@@ -189,7 +189,7 @@ export const ChatOptionsModal = ({
           showAlert('success', 'Deleted', 'Chat deleted successfully.');
           setTimeout(() => {
             dispatch(setAlertVisible(false));
-            homeNavigation.replace('hometabs');
+            homeNavigation.goBack();
           }, 1000);
         } else {
           showAlert('warning', 'Failed', 'Failed to delete the chat.');
