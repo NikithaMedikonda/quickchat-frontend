@@ -1,5 +1,5 @@
-import { useNavigation } from '@react-navigation/native';
-import { useCallback, useState } from 'react';
+import {useNavigation} from '@react-navigation/native';
+import {useCallback, useState} from 'react';
 import {
   Image,
   Modal,
@@ -10,29 +10,29 @@ import {
   View,
 } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { useDispatch, useSelector } from 'react-redux';
-import { clearChatLocally } from '../../database/services/chatOperations';
+import {useDispatch, useSelector} from 'react-redux';
+import {clearChatLocally} from '../../database/services/chatOperations';
 import {
   deleteUserRestriction,
   insertUserRestriction,
 } from '../../database/services/userRestriction';
-import { deleteChat } from '../../services/DeleteChat';
-import { blockUser } from '../../services/UserBlock';
-import { unblockUser } from '../../services/UserUnblock';
+import {deleteChat} from '../../services/DeleteChat';
+import {blockUser} from '../../services/UserBlock';
+import {unblockUser} from '../../services/UserUnblock';
 import {
   setAlertMessage,
   setAlertTitle,
   setAlertType,
   setAlertVisible,
 } from '../../store/slices/registrationSlice';
-import { RootState } from '../../store/store';
-import { useThemeColors } from '../../themes/colors';
-import { useImagesColors } from '../../themes/images';
-import { HomeTabsProps } from '../../types/usenavigation.type';
-import { createChatId } from '../../utils/chatId';
-import { CustomAlert } from '../CustomAlert/CustomAlert';
-import { ConfirmModal } from '../GenericConfirmModal/ConfirmModal';
-import { getStyles } from './ChatOptionsModal.styles';
+import {RootState} from '../../store/store';
+import {useThemeColors} from '../../themes/colors';
+import {useImagesColors} from '../../themes/images';
+import {HomeTabsProps} from '../../types/usenavigation.type';
+import {createChatId} from '../../utils/chatId';
+import {CustomAlert} from '../CustomAlert/CustomAlert';
+import {ConfirmModal} from '../GenericConfirmModal/ConfirmModal';
+import {getStyles} from './ChatOptionsModal.styles';
 
 type Props = {
   visible: boolean;
@@ -170,7 +170,7 @@ export const ChatOptionsModal = ({
           showAlert('success', 'Deleted', 'Chat deleted successfully.');
           setTimeout(() => {
             dispatch(setAlertVisible(false));
-            homeNavigation.replace('hometabs');
+            homeNavigation.goBack();
           }, 1000);
         } else {
           showAlert('warning', 'Failed', 'Failed to delete the chat.');
