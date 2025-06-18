@@ -3,6 +3,7 @@ import { chatReducer } from './slices/chatSlice';
 import { loadingReducer } from './slices/loadingSlice';
 import { loginReducer } from './slices/loginSlice';
 import { registrationReducer } from './slices/registrationSlice';
+import { screenContextReducer } from './slices/screenContextSlice';
 import { unreadChatReducer } from './slices/unreadChatSlice';
 
 export const store = configureStore({
@@ -12,6 +13,7 @@ export const store = configureStore({
     login: loginReducer,
     unread: unreadChatReducer,
     chat: chatReducer,
+    screenContext: screenContextReducer,
   },
 });
 
