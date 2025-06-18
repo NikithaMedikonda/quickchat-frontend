@@ -159,7 +159,6 @@ export const getAllChatsFromLocal = async (
       }
     }
     const userRow = userResult.rows.length > 0 ? userResult.rows.item(0) : null;
-    console.log('User row:', row);
     allChats.push({
       chatId: row.id,
       contactName: contactName,

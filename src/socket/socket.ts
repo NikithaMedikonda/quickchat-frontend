@@ -113,13 +113,11 @@ export async function receiveReadUpdate(
   receiverPhoneNumber: string,
   callback: (message: string[]) => void,
 ) {
-  console.log('In update read update:', receiverPhoneNumber);
   await newSocket.on(`status_${receiverPhoneNumber}`, callback);
 }
 export async function receiveDeliveredStatus(
   senderPhoneNumber: string,
   callback: (message: string[]) => void,
 ) {
-  console.log('senderPhone number', senderPhoneNumber);
   await newSocket.on(`delivered_status_${senderPhoneNumber}`, callback);
 }
