@@ -1,10 +1,10 @@
-import '@react-native-firebase/app';
-import messaging from '@react-native-firebase/messaging';
 import notifee, {
   AndroidImportance,
   AuthorizationStatus,
 } from '@notifee/react-native';
-import {PermissionsAndroid, Platform} from 'react-native';
+import '@react-native-firebase/app';
+import messaging from '@react-native-firebase/messaging';
+import { PermissionsAndroid, Platform } from 'react-native';
 import {numberNameIndex} from '../helpers/nameNumberIndex';
 import {normalise} from '../helpers/normalisePhoneNumber';
 import {DEFAULT_PROFILE_IMAGE} from '../constants/defaultImage';
