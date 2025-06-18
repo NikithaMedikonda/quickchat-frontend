@@ -53,7 +53,15 @@ const mockRoute: IndividualChatRouteProp = {
 
 jest.mock('../../database/connection/connection', () => ({
   getDBInstance: jest.fn(() => ({
-    executeSql: jest.fn().mockResolvedValue([]), // Mock return value
+    executeSql: jest.fn().mockResolvedValue([]),
+  })),
+}));
+
+jest.mock('rn-fetch-blob', () => ({
+  config: jest.fn(() => ({
+    fetch: jest.fn(() => Promise.resolve({
+      base64: jest.fn(() => Promise.resolve('mocked_base64_data')),
+    })),
   })),
 }));
 
