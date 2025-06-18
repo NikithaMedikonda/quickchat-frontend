@@ -54,7 +54,10 @@ export const IndividualChatHeader = ({
           />
         </TouchableOpacity>
         <Image
-          source={{uri: profilePicture || DEFAULT_PROFILE_IMAGE}}
+          source={
+            profilePicture ? profilePicture.startsWith('https:') ? {uri: profilePicture} : {uri: `data:image/png;base64,${profilePicture}`}
+              : {uri: DEFAULT_PROFILE_IMAGE}
+          }
           style={styles.profilePicture}
           accessibilityHint="profile-picture"
         />

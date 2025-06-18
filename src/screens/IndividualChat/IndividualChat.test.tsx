@@ -58,6 +58,14 @@ jest.mock('../../database/connection/connection', () => ({
   })),
 }));
 
+jest.mock('rn-fetch-blob', () => ({
+  config: jest.fn(() => ({
+    fetch: jest.fn(() => Promise.resolve({
+      base64: jest.fn(() => Promise.resolve('mocked_base64_data')),
+    })),
+  })),
+}));
+
 jest.mock('../../services/useDeviceCheck', () => ({
   useDeviceCheck: jest.fn(),
 }));

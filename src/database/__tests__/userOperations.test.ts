@@ -1,14 +1,25 @@
 import { getDBInstance } from '../connection/connection';
 import {
+  convertUrlToBase64,
   createUserInstance,
+  getAllUniquePhoneNumbers,
   getLastSyncedTime,
   isUserStoredLocally,
   updateLastSyncedTime,
+  updateUserProfilePictures,
   upsertUserInfo,
 } from '../services/userOperations';
 
 jest.mock('../connection/connection', () => ({
   getDBInstance: jest.fn(),
+}));
+
+jest.mock('rn-fetch-blob', () => ({
+  config: jest.fn(() => ({
+    fetch: jest.fn(() => Promise.resolve({
+      base64: jest.fn(() => Promise.resolve('mocked_base64_data')),
+    })),
+  })),
 }));
 
 const mockExecuteSql = jest.fn();
@@ -200,3 +211,97 @@ describe('userOperation DB functions', () => {
     ).rejects.toThrow('Update failed');
   });
 });
+
+describe('updateUserProfilePictures', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  test('updates profile picture when valid data provided', async () => {
+    const mockDb = await getDBInstance();
+    const profiles = [
+      { phoneNumber: '123', profilePicture: 'http://mock/image.png' },
+    ];
+
+    await updateUserProfilePictures(mockDb, profiles);
+
+    expect(mockExecuteSql).toHaveBeenCalledWith(
+      expect.stringContaining('INSERT OR REPLACE INTO LocalUsers'),
+      ['123', 'mocked_base64_data'],
+    );
+  });
+
+  test('skips update if profilePicture is missing', async () => {
+    const mockDb = await getDBInstance();
+    const profiles = [{ phoneNumber: '123', profilePicture: '' }];
+
+    await updateUserProfilePictures(mockDb, profiles);
+
+    expect(mockExecuteSql).not.toHaveBeenCalled();
+  });
+
+  test('does not crash if profiles are undefined or not an array', async () => {
+    const mockDb = await getDBInstance();
+
+    await expect(updateUserProfilePictures(mockDb, undefined)).resolves.not.toThrow();
+    await expect(updateUserProfilePictures(mockDb, null)).resolves.not.toThrow();
+  });
+
+  test('gracefully handles errors during DB update without crashing', async () => {
+    const mockDb = await getDBInstance();
+    const profiles = [
+      { phoneNumber: '123', profilePicture: 'http://mock/image.png' },
+    ];
+    mockExecuteSql.mockRejectedValueOnce(new Error('Update failed'));
+
+    await expect(updateUserProfilePictures(mockDb, profiles)).resolves.not.toThrow();
+
+    expect(mockExecuteSql).toHaveBeenCalled();
+  });
+});
+
+describe('convertUrlToBase64', () => {
+  test('returns base64 string on success', async () => {
+    const result = await convertUrlToBase64('http://mock-url.com/image.png');
+    expect(result).toBe('mocked_base64_data');
+  });
+});
+
+describe('getAllUniquePhoneNumbers', () => {
+  test('returns unique phone numbers when data exists', async () => {
+    const mockPhoneNumbers = ['123', '456'];
+    mockExecuteSql.mockResolvedValueOnce([
+      {
+        rows: {
+          length: mockPhoneNumbers.length,
+          item: (index: number) => ({ phoneNumber: mockPhoneNumbers[index] }),
+        },
+      },
+    ]);
+
+    const result = await getAllUniquePhoneNumbers();
+    expect(result).toEqual(mockPhoneNumbers);
+  });
+
+  test('returns empty array when no data found', async () => {
+    mockExecuteSql.mockResolvedValueOnce([
+      {
+        rows: {
+          length: 0,
+          item: jest.fn(),
+        },
+      },
+    ]);
+
+    const result = await getAllUniquePhoneNumbers();
+    expect(result).toEqual([]);
+  });
+
+  test('returns empty array on DB error', async () => {
+    mockExecuteSql.mockRejectedValueOnce(new Error('DB failed'));
+
+    const result = await getAllUniquePhoneNumbers();
+    expect(result).toEqual([]);
+  });
+});
+

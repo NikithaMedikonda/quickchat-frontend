@@ -119,14 +119,6 @@ export const ChatOptionsModal = ({
     try {
       const currentUser = await EncryptedStorage.getItem('user');
       const token = await EncryptedStorage.getItem('authToken');
-      if (!currentUser || !token) {
-        showAlert(
-          'info',
-          'Network Error',
-          'Unable to block or unblock the user',
-        );
-      }
-
       if (currentUser && token) {
         const userData = JSON.parse(currentUser);
 

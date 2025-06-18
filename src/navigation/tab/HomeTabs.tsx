@@ -7,7 +7,7 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import {useDispatch, useSelector} from 'react-redux';
 import {Badge} from '../../components/Badge/Badge.tsx';
 import {User} from '../../screens/Profile/Profile';
-import { getMissedChats} from '../../services/GetAllChats.ts';
+import {getMissedChats} from '../../services/GetAllChats.ts';
 import {
   newSocket,
   online,
@@ -121,7 +121,6 @@ export const HomeTabs = () => {
           await socketConnection(parsedUser.phoneNumber);
         }
       }
-
       const processQueueMessages = async () => {
         if (isProcessingQueue.current || !shouldProcessGlobalQueue) {
           return;
@@ -199,7 +198,6 @@ export const HomeTabs = () => {
           isProcessingQueue.current = false;
         }
       };
-
       connect();
       processQueueMessages();
     }

@@ -14,6 +14,7 @@ import {
 import {isUserStoredLocally, upsertUserInfo} from './userOperations';
 import {sendUpdatedMessages} from '../../socket/socket';
 import {setUnreadCount} from '../../store/slices/unreadChatSlice';
+import { fetchAndConvertToBase64 } from './chatOperations';
 
 export const insertToMessages = async (message: MessageType) => {
   const db = await getDBInstance();
@@ -68,10 +69,13 @@ export const insertToMessages = async (message: MessageType) => {
         const remoteUser = await getUserByPhoneNumber(
           messagetoInsert.senderPhoneNumber,
         );
+         const profileBase64 = remoteUser?.profilePicture
+        ? await fetchAndConvertToBase64(remoteUser.profilePicture)
+        : null;
         if (remoteUser) {
           await upsertUserInfo(db, {
             phoneNumber: sender,
-            profilePicture: remoteUser.profilePicture,
+            profilePicture: profileBase64,
             publicKey: remoteUser.publicKey,
           });
         }
