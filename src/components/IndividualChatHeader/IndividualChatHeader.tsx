@@ -1,18 +1,20 @@
-import { useNavigation } from '@react-navigation/native';
-import { useState } from 'react';
-import { Image, Platform, Text, TouchableOpacity, View } from 'react-native';
-import { DEFAULT_PROFILE_IMAGE } from '../../constants/defaultImage';
-import { useThemeColors } from '../../themes/colors';
-import { useImagesColors } from '../../themes/images';
-import { HomeStackProps } from '../../types/usenavigation.type';
-import { UserDetails } from '../../types/user.types';
-import { ChatOptionsModal } from '../ChatOptionsModal/ChatOptionsModal';
-import { individualChatHeaderStyles } from './IndividualChatHeader.styles';
+import {useNavigation} from '@react-navigation/native';
+import {useState} from 'react';
+import {Image, Platform, Text, TouchableOpacity, View} from 'react-native';
+import {DEFAULT_PROFILE_IMAGE} from '../../constants/defaultImage';
+import {useThemeColors} from '../../themes/colors';
+import {useImagesColors} from '../../themes/images';
+import {HomeStackProps} from '../../types/usenavigation.type';
+import {UserDetails} from '../../types/user.types';
+import {ChatOptionsModal} from '../ChatOptionsModal/ChatOptionsModal';
+import {individualChatHeaderStyles} from './IndividualChatHeader.styles';
 
 interface IndividualChatHeaderProps extends UserDetails {
   isBlocked: boolean;
+  socketId: String | null;
   onBlockStatusChange: (isBlocked: boolean) => void;
   setIsCleared: (isCleared: boolean) => void;
+  setSocketId: (socketId: string | null) => void;
 }
 
 export const IndividualChatHeader = ({
@@ -21,6 +23,7 @@ export const IndividualChatHeader = ({
   isBlocked,
   onBlockStatusChange,
   setIsCleared,
+  socketId,
 }: IndividualChatHeaderProps) => {
   const [modalVisible, setModalVisible] = useState(false);
   const colors = useThemeColors();
@@ -36,7 +39,6 @@ export const IndividualChatHeader = ({
   const onClose = () => {
     setModalVisible(false);
   };
-
   return (
     <View style={styles.content}>
       <View style={styles.container}>
@@ -55,9 +57,18 @@ export const IndividualChatHeader = ({
           style={styles.profilePicture}
           accessibilityHint="profile-picture"
         />
-        <Text style={styles.username} accessibilityHint="username-text">
-          {name}
-        </Text>
+        <View style={styles.nameWithBadgeContainer}>
+          <Text style={styles.username} accessibilityHint="username-text">
+            {name}
+          </Text>
+          {socketId != null && (
+            <Text
+              accessibilityHint="online-status"
+              style={styles.onlineIndicator}>
+              online
+            </Text>
+          )}
+        </View>
       </View>
       <TouchableOpacity onPress={modelVisible}>
         <Image
