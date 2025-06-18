@@ -1,38 +1,47 @@
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
-import { useEffect, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Image, View } from 'react-native';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
+import {useEffect, useRef, useState} from 'react';
+import {useTranslation} from 'react-i18next';
+import {Image, View} from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { useDispatch, useSelector } from 'react-redux';
-import { Badge } from '../../components/Badge/Badge.tsx';
-import { User } from '../../screens/Profile/Profile';
-import { getAllChats, getMissedChats } from '../../services/GetAllChats.ts';
-import { newSocket, online, sendPrivateMessage, socketConnection } from '../../socket/socket';
+import {useDispatch, useSelector} from 'react-redux';
+import {Badge} from '../../components/Badge/Badge.tsx';
+import {User} from '../../screens/Profile/Profile';
+import { getMissedChats} from '../../services/GetAllChats.ts';
+import {
+  newSocket,
+  online,
+  sendPrivateMessage,
+  socketConnection,
+} from '../../socket/socket';
 import {
   setNewMessageCount,
   setUnreadCount,
 } from '../../store/slices/unreadChatSlice.ts';
-import { useThemeColors } from '../../themes/colors';
-import { useImagesColors } from '../../themes/images';
-import { HomeStacks } from '../stack/HomeStacks';
-import { ProfileStack } from '../stack/ProfileStacks';
-import { UnreadStacks } from '../stack/UnreadStacks.tsx';
+import {useThemeColors} from '../../themes/colors';
+import {useImagesColors} from '../../themes/images';
+import {HomeStacks} from '../stack/HomeStacks';
+import {ProfileStack} from '../stack/ProfileStacks';
+import {UnreadStacks} from '../stack/UnreadStacks.tsx';
 
-import { getDBInstance } from '../../database/connection/connection.ts';
-import { getTotalUnreadCount } from '../../database/services/chatOperations.ts';
-import { insertToMessages } from '../../database/services/messageOperations.ts';
-import { deleteFromQueue, getAllQueuedMessages, updateLocalMessageStatus } from '../../database/services/queueOperations.ts';
+import {getDBInstance} from '../../database/connection/connection.ts';
+import {getTotalUnreadCount} from '../../database/services/chatOperations.ts';
+import {insertToMessages} from '../../database/services/messageOperations.ts';
+import {
+  deleteFromQueue,
+  getAllQueuedMessages,
+  updateLocalMessageStatus,
+} from '../../database/services/queueOperations.ts';
 import {
   getLastSyncedTime,
   updateLastSyncedTime,
 } from '../../database/services/userOperations.ts';
-import { useSocketConnection } from '../../hooks/useSocketConnection.ts';
-import { checkUserOnline } from '../../services/CheckUserOnline.ts';
-import { RootState } from '../../store/store.ts';
-import { SentPrivateMessage } from '../../types/messsage.types.ts';
-import { generateMessageId } from '../../utils/messageId.ts';
-import { styles } from './HomeTabs.styles';
+import {useSocketConnection} from '../../hooks/useSocketConnection.ts';
+import {checkUserOnline} from '../../services/CheckUserOnline.ts';
+import {RootState} from '../../store/store.ts';
+import {SentPrivateMessage} from '../../types/messsage.types.ts';
+import {generateMessageId} from '../../utils/messageId.ts';
+import {styles} from './HomeTabs.styles';
 
 const HomeTabIcon = ({focused}: {focused: boolean}) => {
   const {tabHome} = useImagesColors();
@@ -52,7 +61,9 @@ const HomeTabIcon = ({focused}: {focused: boolean}) => {
 
 const UnreadTabIcon = ({focused}: {focused: boolean}) => {
   const {tabUnread} = useImagesColors();
-  const unreadCount = useSelector((state: RootState) => state.unread?.count ?? 0);
+  const unreadCount = useSelector(
+    (state: RootState) => state.unread?.count ?? 0,
+  );
   return (
     <View style={styles.iconContainer}>
       {!focused ? (
@@ -106,7 +117,7 @@ export const HomeTabs = () => {
       async function connect() {
         const anotherUser = await EncryptedStorage.getItem('user');
         if (anotherUser) {
-           const parsedUser: User = JSON.parse(anotherUser);
+          const parsedUser: User = JSON.parse(anotherUser);
           await socketConnection(parsedUser.phoneNumber);
         }
       }
@@ -223,22 +234,19 @@ export const HomeTabs = () => {
   }, []);
 
   useEffect(() => {
-    const fetchChats = async () => {
-      const response = await getAllChats();
-      if (response.status === 200) {
-        const allChats = response.data.chats;
-        const unreadChats = allChats.filter(
-          (chat: {unreadCount: number}) => chat.unreadCount > 0,
-        );
-
-        const totalUnreadChats = unreadChats.length;
-        dispatch(setUnreadCount(totalUnreadChats));
-      }
-    };
+    // const fetchChats = async () => {
+    //   const response = await getAllChats();
+    //   if (response.status === 200) {
+    //     const allChats = response.data.chats;
+    //     // const unreadChats = allChats.filter(
+    //     //   (chat: {unreadCount: number}) => chat.unreadCount > 0,
+    //     // );
+    //   }
+    // };
     dispatch(setNewMessageCount(newMessageCount));
-    fetchChats();
 
     const syncMessages = async () => {
+      console.log('REceived message and syncing');
       const currentUser = await EncryptedStorage.getItem('user');
       if (!currentUser) {
         return;
