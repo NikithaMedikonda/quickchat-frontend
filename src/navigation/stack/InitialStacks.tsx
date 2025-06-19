@@ -11,9 +11,9 @@ import {Registration} from '../../screens/Registration/Registration';
 import {setLoginSuccess} from '../../store/slices/loginSlice';
 import {Welcome} from '../../screens/Welcome/Welcome';
 import {useSocketConnection} from '../../hooks/useSocketConnection';
-import { getDBInstance } from '../../database/connection/connection';
-import { fetchProfileUrls } from '../../services/getProfileUrl';
-import { updateUserProfilePictures } from '../../database/services/userOperations';
+import {getDBInstance} from '../../database/connection/connection';
+import {fetchProfileUrls} from '../../services/getProfileUrl';
+import {updateUserProfilePictures} from '../../database/services/userOperations';
 
 const Stack = createNativeStackNavigator();
 
@@ -85,27 +85,27 @@ export const InitialStacks = () => {
     if (isConnected) {
       getUser();
       const syncProfilePictures = async () => {
-      try {
-        const db = await getDBInstance();
-        const profiles = await fetchProfileUrls();
-        await updateUserProfilePictures(db, profiles);
-      } catch (error) {
-        console.error('Error in syncProfilePictures:', error);
-      }
-    };
-    syncProfilePictures();
+        try {
+          const db = await getDBInstance();
+          const profiles = await fetchProfileUrls();
+          await updateUserProfilePictures(db, profiles);
+        } catch (error) {
+          console.error('Error in syncProfilePictures:', error);
+        }
+      };
+      syncProfilePictures();
     } else {
       dispatch(show());
       async function checkUserHasToken() {
         const userString = await EncryptedStorage.getItem('user');
         const accessToken = await EncryptedStorage.getItem('authToken');
         const refreshToken = await EncryptedStorage.getItem('refreshToken');
-        if(!userString || !accessToken || !refreshToken){
+        if (!userString || !accessToken || !refreshToken) {
           setInitialRoute('welcome');
           dispatch(hide());
-        }else{
-        setInitialRoute('hometabs');
-        dispatch(hide());
+        } else {
+          setInitialRoute('hometabs');
+          dispatch(hide());
         }
       }
       checkUserHasToken();
