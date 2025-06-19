@@ -69,12 +69,32 @@ export const insertToMessages = async (message: MessageType) => {
         const remoteUser = await getUserByPhoneNumber(
           messagetoInsert.senderPhoneNumber,
         );
-         const profileBase64 = remoteUser?.profilePicture
-        ? await fetchAndConvertToBase64(remoteUser.profilePicture)
-        : null;
+        const profileBase64 = remoteUser?.profilePicture
+          ? await fetchAndConvertToBase64(remoteUser.profilePicture)
+          : null;
         if (remoteUser) {
           await upsertUserInfo(db, {
             phoneNumber: sender,
+            profilePicture: profileBase64,
+            publicKey: remoteUser.publicKey,
+          });
+        }
+      }
+    } else {
+      console.log('REceiving');
+
+      const exists = await isUserStoredLocally(db, sender);
+      if (!exists) {
+        console.log('Fetching from remote while sending');
+        const remoteUser = await getUserByPhoneNumber(
+          messagetoInsert.receiverPhoneNumber,
+        );
+        const profileBase64 = remoteUser?.profilePicture
+          ? await fetchAndConvertToBase64(remoteUser.profilePicture)
+          : null;
+        if (remoteUser) {
+          await upsertUserInfo(db, {
+            phoneNumber: messagetoInsert.receiverPhoneNumber,
             profilePicture: profileBase64,
             publicKey: remoteUser.publicKey,
           });
