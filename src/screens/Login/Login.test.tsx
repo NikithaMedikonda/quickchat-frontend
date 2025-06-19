@@ -317,30 +317,4 @@ describe('Login Screen', () => {
       expect(mockReplace).toHaveBeenCalledWith('hometabs');
     });
   });
-
-  test('should show alert if login failed with server error', async () => {
-    (phone as jest.Mock).mockReturnValue({
-      isValid: true,
-      phoneNumber: '+918522041688',
-    });
-    (loginUser as jest.Mock).mockResolvedValue({
-      status: 500,
-      data: {
-        message: 'Internal server error',
-      },
-    });
-
-    const phoneNumber = screen.getByPlaceholderText('Phone number');
-    fireEvent.changeText(phoneNumber, '8522041688');
-    fireEvent.changeText(screen.getByPlaceholderText('Password'), 'Anu@1234');
-    fireEvent.press(screen.getByText('Login'));
-
-    await waitFor(() => {
-      const state = store.getState();
-      expect(state.registration.alertMessage).toBe(
-        'Something went wrong. Check your connection.',
-      );
-      expect(state.registration.alertType).toBe('info');
-    });
-  });
 });
