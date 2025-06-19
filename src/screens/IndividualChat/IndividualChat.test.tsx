@@ -60,9 +60,11 @@ jest.mock('../../database/connection/connection', () => ({
 
 jest.mock('rn-fetch-blob', () => ({
   config: jest.fn(() => ({
-    fetch: jest.fn(() => Promise.resolve({
-      base64: jest.fn(() => Promise.resolve('mocked_base64_data')),
-    })),
+    fetch: jest.fn(() =>
+      Promise.resolve({
+        base64: jest.fn(() => Promise.resolve('mocked_base64_data')),
+      }),
+    ),
   })),
 }));
 
@@ -155,6 +157,7 @@ jest.mock('../../socket/socket', () => ({
   sendUpdatedMessages: jest.fn(),
   receiveReadUpdate: jest.fn(),
   receiveDeliveredStatus: jest.fn(),
+  receiveDeleted: jest.fn(),
   newSocket: {
     emit: jest.fn(),
     on: jest.fn(),
