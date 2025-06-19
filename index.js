@@ -11,13 +11,13 @@ import './src/i18n/i18n.config';
 import { numberNameIndex } from './src/helpers/nameNumberIndex';
 import { normalise } from './src/helpers/normalisePhoneNumber';
 import { DEFAULT_PROFILE_IMAGE } from './src/constants/defaultImage';
-// import EncryptedStorage from 'react-native-encrypted-storage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 messaging().setBackgroundMessageHandler(async (remoteMessage) => {
   await notifee.createChannel({
     id: 'quickchat',
     name: 'QuickChat Notifications',
     importance: AndroidImportance.HIGH,
+    sound : 'custom_notification',
   });
 
     const rawPhnoneNumber = remoteMessage.data?.senderPhoneNumber;
@@ -40,7 +40,9 @@ messaging().setBackgroundMessageHandler(async (remoteMessage) => {
     try {
       const storedCount = await AsyncStorage.getItem(`msgCount_${senderPhoneNumber}`);
       if (storedCount) {
-        messageCount = parseInt(storedCount, 10) + 1;
+        messageCount = parseInt(storedCount, 10);
+        messageCount = isNaN(messageCount) ? 1 : messageCount;
+        messageCount += 1;
       }
     } catch (e) {
       console.error('Error reading message count:', e);
