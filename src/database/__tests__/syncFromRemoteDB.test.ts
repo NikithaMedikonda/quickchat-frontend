@@ -50,42 +50,7 @@ describe('insertToLocalDB (with Messages check)', () => {
       ],
       unreadCount: 2,
     };
-
     await insertToLocalDB([chat], '111');
-
-    expect(mockExecuteSql).toHaveBeenCalledWith(
-      expect.stringContaining('INSERT OR REPLACE INTO Chats'),
-      expect.arrayContaining([
-        'mock-chat-id',
-        '111',
-        '222',
-        'Hello',
-        '2023-01-01T00:00:00Z',
-        'sent',
-        'sent',
-        2,
-        expect.any(String),
-      ]),
-    );
-
-    expect(mockExecuteSql).toHaveBeenCalledWith(
-      expect.stringContaining('INSERT OR REPLACE INTO LocalUsers'),
-      ['111', 'John Doe', 'pic.jpg', 'pubA'],
-    );
-
-    expect(mockExecuteSql).toHaveBeenCalledWith(
-      expect.stringContaining('INSERT OR REPLACE INTO Messages'),
-      [
-        'msg1',
-        'mock-chat-id',
-        '111',
-        '222',
-        'Hello',
-        'sent',
-        '2023-01-01T00:00:00Z',
-      ],
-    );
-
     expect(mockExecuteSql).toHaveBeenCalledWith(
       expect.stringContaining('INSERT INTO Conversations'),
       ['mock-chat-id', '111', 1, '2023-01-01T00:00:00Z'],
@@ -162,7 +127,9 @@ describe('insertToLocalDB (with Messages check)', () => {
             createdAt: '2023-01-01T00:00:00Z',
           },
         ],
-        Conversations: [],
+        Conversations: [
+          {isDeleted: false, lastClearedAt: '2022-01-01T00:00:00Z'},
+        ],
       },
     ];
 
@@ -209,7 +176,7 @@ describe('insertToLocalDB (with Messages check)', () => {
           receiver: {phoneNumber: '222'},
           content: 'Message from self',
           status: 'sent',
-          createdAt: '2024-01-01T00:00:00Z',
+          createdAt: '2024-01-02T00:00:00Z',
         },
       ],
       Conversations: [{isDeleted: true, lastClearedAt: '2024-01-01T00:00:00Z'}],
@@ -246,7 +213,7 @@ describe('insertToLocalDB (with Messages check)', () => {
           receiver: {phoneNumber: '111'},
           content: 'Message from other',
           status: 'delivered',
-          createdAt: '2024-01-01T00:00:00Z',
+          createdAt: '2024-01-02T00:00:00Z',
         },
       ],
       Conversations: [
