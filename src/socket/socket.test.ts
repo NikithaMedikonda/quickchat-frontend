@@ -2,6 +2,7 @@ import {
   checkDeviceStatus,
   offline,
   online,
+  receiveDeleted,
   receiveJoined,
   receiveOffline,
   receiveOnline,
@@ -24,10 +25,14 @@ jest.mock('socket.io-client', () => {
   mockEmit = jest.fn();
   mockOn = jest.fn();
   mockOff = jest.fn();
+  const mockConnect = jest.fn();
+  const mockConnected = false;
   return jest.fn(() => ({
     emit: mockEmit,
     on: mockOn,
     off: mockOff,
+    connect: mockConnect,
+    connected: mockConnected,
   }));
 });
 
@@ -229,7 +234,7 @@ describe('should test socket functions', () => {
     const setIsOnline = jest.fn();
     const phoneNumber = '+91 7777777777';
 
-    let handlerFn: (data: { online: boolean }) => void = () => {};
+    let handlerFn: (data: {online: boolean}) => void = () => {};
     mockOn.mockImplementation((event, callback) => {
       if (event === `isOnline_${phoneNumber}`) {
         handlerFn = callback;
@@ -247,7 +252,7 @@ describe('should test socket functions', () => {
     const setIsOnline = jest.fn();
     const phoneNumber = '+91 6666666666';
 
-    let handlerFn: (data: { online: boolean }) => void = () => {};
+    let handlerFn: (data: {online: boolean}) => void = () => {};
     mockOn.mockImplementation((event, callback) => {
       if (event === `isOffline_${phoneNumber}`) {
         handlerFn = callback;
@@ -308,4 +313,37 @@ describe('should test socket functions', () => {
       callback,
     );
   });
+
+test('should call setSocketId(null) when I-deleted event is received with matching phone number', async () => {
+  const userPhoneNumber = '+91 1234567890';
+  const setSocketId = jest.fn();
+
+  mockOn.mockImplementation((event, callback) => {
+    if (event === 'I-deleted') {
+      callback({socketId: 'socket456', phoneNumber: userPhoneNumber});
+    }
+  });
+
+  await receiveDeleted({userPhoneNumber, setSocketId});
+
+  expect(mockOn).toHaveBeenCalledWith('I-deleted', expect.any(Function));
+  expect(setSocketId).toHaveBeenCalledWith(null);
+});
+
+test('should NOT call setSocketId when I-deleted event is received with different phone number', async () => {
+  const userPhoneNumber = '+91 1234567890';
+  const setSocketId = jest.fn();
+
+  mockOn.mockImplementation((event, callback) => {
+    if (event === 'I-deleted') {
+      callback({socketId: 'socket456', phoneNumber: '+91 0987654321'});
+    }
+  });
+
+  await receiveDeleted({userPhoneNumber, setSocketId});
+
+  expect(mockOn).toHaveBeenCalledWith('I-deleted', expect.any(Function));
+  expect(setSocketId).not.toHaveBeenCalled();
+});
+
 });
