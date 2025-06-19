@@ -23,7 +23,8 @@ import {useImagesColors} from '../../themes/images';
 import {ContactDetails} from '../../types/contact.types';
 import {HomeStackProps, HomeTabsProps} from '../../types/usenavigation.type';
 import {getStyles} from './ContactsDisplay.styles';
-import { useDeviceCheck } from '../../services/useDeviceCheck';
+import {useDeviceCheck} from '../../services/useDeviceCheck';
+import {insertContactDetailsInLocal} from '../../database/services/userOperations';
 
 export const BackButton = () => {
   const colors = useThemeColors();
@@ -93,6 +94,7 @@ export const ContactsDisplay = () => {
               userDetails.phoneNumber,
           }));
         setAppContacts(sortByName(registeredUsersDetails));
+        await insertContactDetailsInLocal(registeredUsersDetails);
         const unRegisteredUserDetails: ContactDetails[] =
           result.unRegisteredUsers.map((phoneNumber: string) => ({
             phoneNumber: phoneNumber,
