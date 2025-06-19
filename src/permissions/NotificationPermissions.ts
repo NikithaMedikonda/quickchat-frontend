@@ -4,12 +4,11 @@ import notifee, {
 } from '@notifee/react-native';
 import '@react-native-firebase/app';
 import messaging from '@react-native-firebase/messaging';
-import { PermissionsAndroid, Platform } from 'react-native';
+import {PermissionsAndroid, Platform} from 'react-native';
 import {numberNameIndex} from '../helpers/nameNumberIndex';
 import {normalise} from '../helpers/normalisePhoneNumber';
 import {DEFAULT_PROFILE_IMAGE} from '../constants/defaultImage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
 
 export const requestNotificationPermission = async (): Promise<boolean> => {
   if (Platform.OS === 'android') {
@@ -37,7 +36,7 @@ export const setupNotificationChannel = async () => {
       id: 'quickchat',
       name: 'Default Channel',
       importance: AndroidImportance.HIGH,
-      sound : 'custom_notification',
+      sound: 'custom_notification',
     });
   }
 };
@@ -58,7 +57,7 @@ export const getFCMToken = async (): Promise<string | null> => {
 };
 export const listenForForegroundMessages = () => {
   return messaging().onMessage(async remoteMessage => {
-    console.log('You have recieved notificaton from backend',remoteMessage)
+    console.log('You have recieved notificaton from backend', remoteMessage);
     const rawPhnoneNumber = remoteMessage.data?.senderPhoneNumber;
     const rawPhoto = remoteMessage.data?.profilePicture;
     const senderPhoneNumber =
@@ -80,12 +79,12 @@ export const listenForForegroundMessages = () => {
     let messageCount = 1;
 
     if (senderPhoneNumber) {
-        const storedCount = await AsyncStorage.getItem(
-          `msgCount_${senderPhoneNumber}`,
-        );
-        if (storedCount) {
-          messageCount = parseInt(storedCount, 10) + 1;
-        }
+      const storedCount = await AsyncStorage.getItem(
+        `msgCount_${senderPhoneNumber}`,
+      );
+      if (storedCount) {
+        messageCount = parseInt(storedCount, 10) + 1;
+      }
       await AsyncStorage.setItem(
         `msgCount_${senderPhoneNumber}`,
         messageCount.toString(),
@@ -100,7 +99,7 @@ export const listenForForegroundMessages = () => {
           channelId: 'quickchat',
           smallIcon: 'ic_stat_notification',
           largeIcon: profilePicture || DEFAULT_PROFILE_IMAGE,
-          circularLargeIcon:true,
+          circularLargeIcon: true,
           pressAction: {
             id: 'default',
           },
