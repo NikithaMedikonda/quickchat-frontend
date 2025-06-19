@@ -53,4 +53,23 @@ export const getStyles = (colors: Colors) =>
       height: width * 0.04,
       resizeMode: 'contain',
     },
+    noContactsContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingHorizontal: 24,
+      paddingVertical: 60,
+      gap: 12,
+    },
+    noContactsText: {
+      fontSize: 16,
+      color: colors.text,
+      textAlign: 'center',
+      opacity: 0.8,
+      lineHeight: 22,
+    },
+    noContactsEmoji: {
+      fontSize: 48,
+      marginBottom: 8,
+    },
   });
