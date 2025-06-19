@@ -338,9 +338,9 @@ describe('Login Screen', () => {
     await waitFor(() => {
       const state = store.getState();
       expect(state.registration.alertMessage).toBe(
-        'Something went wrong while login',
+        'Something went wrong. Check your connection.',
       );
-      expect(state.registration.alertType).toBe('error');
+      expect(state.registration.alertType).toBe('info');
     });
   });
 });
