@@ -8,19 +8,20 @@
     android:id="@+id/launch_image"
     android:layout_width="match_parent"
     android:maxHeight="350dp"
-     android:layout_height="wrap_content" 
+    android:layout_height="wrap_content" 
+     android:layout_marginTop="80dp"
      android:src="@drawable/launch_screen" 
      android:scaleType="fitCenter" 
-     android:padding="30dp"/>
+     android:padding="40dp"/>
         <TextView
          android:id="@+id/app_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Quick Chat"
+        android:text="QuickChat"
         android:textColor="#FFFFFF"
         android:textSize="32sp"
         android:textStyle="bold"
-        android:layout_marginTop="420dp"
+        android:layout_marginTop="450dp"
         android:layout_centerHorizontal="true" />
 <TextView
         android:id="@+id/app_description"
@@ -29,7 +30,7 @@
         android:text="Connecting hearts"
         android:textColor="#FFFFFF"
         android:textSize="16sp"
-        android:layout_marginTop="480dp"
+        android:layout_marginTop="500dp"
         android:layout_marginStart="80dp"
         android:layout_centerHorizontal="true" />
 </RelativeLayout>
