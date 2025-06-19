@@ -1,6 +1,7 @@
 import {SQLiteDatabase} from 'react-native-sqlite-storage';
 import RNFetchBlob from 'rn-fetch-blob';
 import {getDBInstance} from '../connection/connection';
+import { ContactDetails } from '../../types/contact.types';
 
 export const upsertUserInfo = async (
   db: SQLiteDatabase,
@@ -93,7 +94,7 @@ export const getAllUniquePhoneNumbers = async (): Promise<string[]> => {
 
 export const convertUrlToBase64 = async (url: string): Promise<string> => {
   try {
-    const res = await RNFetchBlob.config({ fileCache: false }).fetch('GET', url);
+    const res = await RNFetchBlob.config({fileCache: false}).fetch('GET', url);
     const base64Image = await res.base64();
     return base64Image;
   } catch (error) {
@@ -101,35 +102,71 @@ export const convertUrlToBase64 = async (url: string): Promise<string> => {
   }
 };
 
-
 type UserProfile = {
   phoneNumber: string;
   profilePicture: string;
+  publicKey: string;
 };
 
 export const updateUserProfilePictures = async (
   db: SQLiteDatabase,
-  profiles: UserProfile[] | undefined | null
+  profiles: UserProfile[] | undefined | null,
 ): Promise<void> => {
   if (!profiles || !Array.isArray(profiles)) {
     return;
   }
 
-  for (const { phoneNumber, profilePicture } of profiles) {
+  for (const {phoneNumber, profilePicture, publicKey} of profiles) {
     try {
       if (!profilePicture) {
         continue;
       }
       const base64Image = await convertUrlToBase64(profilePicture);
       if (base64Image) {
-        await db.executeSql(
-          'INSERT OR REPLACE INTO LocalUsers (phoneNumber, profilePicture) VALUES (?, ?);',
-          [phoneNumber, base64Image]
+        const [result] = await db.executeSql(
+          'SELECT * FROM LocalUsers where phoneNumber = ?',
+          [phoneNumber],
         );
+        if (result.rows.length > 0) {
+          await db.executeSql(
+            'UPDATE LocalUsers set profilePicture = ? where phoneNumber= ?',
+            [base64Image, phoneNumber],
+          );
+        } else {
+          await db.executeSql(
+            'INSERT OR REPLACE INTO LocalUsers (phoneNumber, profilePicture) VALUES (?, ?, ?);',
+            [phoneNumber, base64Image, publicKey],
+          );
+        }
       }
-    } catch {
-    }
+    } catch {}
   }
 };
 
-
+export const insertContactDetailsInLocal = async (
+  contacts: ContactDetails[],
+) => {
+  const db = await getDBInstance();
+  for (const contact of contacts) {
+    const exists = await isUserStoredLocally(db, contact.phoneNumber);
+    if (exists) {
+      const base64Image = await convertUrlToBase64(contact.profilePicture);
+      await db.executeSql(
+        'UPDATE LocalUsers set profilePicture = ? where phoneNumber= ?',
+        [base64Image, contact.phoneNumber],
+      );
+    } else {
+      await db.executeSql(
+        `
+      INSERT OR REPLACE INTO LocalUsers (phoneNumber, name, profilePicture, publicKey)
+      VALUES (?, ?, ?, ?)`,
+        [
+          contact.phoneNumber,
+          `${contact.name}`,
+          contact.profilePicture,
+          contact.publicKey,
+        ],
+      );
+    }
+  }
+};
