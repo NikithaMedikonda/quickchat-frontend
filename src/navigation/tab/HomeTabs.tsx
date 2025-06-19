@@ -7,7 +7,7 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import {useDispatch, useSelector} from 'react-redux';
 import {Badge} from '../../components/Badge/Badge.tsx';
 import {User} from '../../screens/Profile/Profile';
-import {getMissedChats} from '../../services/GetAllChats.ts';
+import {getAllChats, getMissedChats} from '../../services/GetAllChats.ts';
 import {
   newSocket,
   online,
@@ -114,15 +114,6 @@ export const HomeTabs = () => {
 
   useEffect(() => {
     if (isConnected && !isProcessingQueue.current && shouldProcessGlobalQueue) {
-      // async function connect() {
-      //   const anotherUser = await EncryptedStorage.getItem('user');
-      //   if (anotherUser) {
-      //     const parsedUser: User = JSON.parse(anotherUser);
-      //     await socketConnection(parsedUser.phoneNumber);
-      //   }
-      // }
-      // ('');
-      // connect();
       const processQueueMessages = async () => {
         if (isProcessingQueue.current || !shouldProcessGlobalQueue) {
           return;
@@ -233,19 +224,17 @@ export const HomeTabs = () => {
   }, []);
 
   useEffect(() => {
-    // const fetchChats = async () => {
-    //   const response = await getAllChats();
-    //   if (response.status === 200) {
-    //     const allChats = response.data.chats;
-    //     // const unreadChats = allChats.filter(
-    //     //   (chat: {unreadCount: number}) => chat.unreadCount > 0,
-    //     // );
-    //   }
-    // };
+    const fetchChats = async () => {
+      const response = await getAllChats();
+      if (response.status === 200) {
+        const allChats = response.data.chats;
+        allChats.filter((chat: {unreadCount: number}) => chat.unreadCount > 0);
+      }
+    };
+    fetchChats();
     dispatch(setNewMessageCount(newMessageCount));
 
     const syncMessages = async () => {
-      console.log('REceived message and syncing');
       const currentUser = await EncryptedStorage.getItem('user');
       if (!currentUser) {
         return;
@@ -260,7 +249,9 @@ export const HomeTabs = () => {
       const response = await getMissedChats(lastSyncedTime);
       if (response.status === 200 && response.data) {
         const missedChats = response.data;
-        let latestTimestamp: string = new Date().toISOString();
+        let latestTimestamp: string = new Date(
+          Date.now() - 10 * 60 * 1000,
+        ).toISOString();
         for (const chat of missedChats) {
           for (const message of chat.messages) {
             if (message.senderPhoneNumber === parsedUser.phoneNumber) {
