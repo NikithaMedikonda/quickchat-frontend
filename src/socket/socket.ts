@@ -1,11 +1,15 @@
 import io from 'socket.io-client';
-import { API_URL } from '../constants/api';
-import { SentPrivateMessage } from '../types/messsage.types';
-export const newSocket = io(`${API_URL}`);
+import {API_URL} from '../constants/api';
+import {SentPrivateMessage} from '../types/messsage.types';
+export const newSocket = io(`${API_URL}`, {
+  autoConnect: false,
+});
 export async function socketConnection(userPhoneNumber: string) {
+  if (!newSocket.connected) {
+    newSocket.connect();
+  }
   newSocket.emit('join', userPhoneNumber);
 }
-
 export async function checkDeviceStatus(
   userPhoneNumber: string,
   deviceId: string,
@@ -44,9 +48,12 @@ export async function receiveOnline({
   withChattingNumber: string;
   setIsOnline: (isOnline: boolean) => void;
 }) {
-  await newSocket.on(`isOnline_with_${withChattingNumber}`, (data: {isOnline:boolean}) => {
-    setIsOnline(data.isOnline);
-  });
+  await newSocket.on(
+    `isOnline_with_${withChattingNumber}`,
+    (data: {isOnline: boolean}) => {
+      setIsOnline(data.isOnline);
+    },
+  );
 }
 export async function receiveOffline({
   withChattingNumber,
@@ -55,9 +62,12 @@ export async function receiveOffline({
   withChattingNumber: string;
   setIsOnline: (message: boolean) => void;
 }) {
-  await newSocket.on(`offline_with_${withChattingNumber}`, (data:  {online:boolean}) => {
-    setIsOnline(data.online);
-  });
+  await newSocket.on(
+    `offline_with_${withChattingNumber}`,
+    (data: {online: boolean}) => {
+      setIsOnline(data.online);
+    },
+  );
 }
 export async function sendPrivateMessage(payload: SentPrivateMessage) {
   newSocket.emit('send_private_message', {
@@ -74,11 +84,14 @@ export async function receiveJoined({
   userPhoneNumber: string;
   setSocketId: (si: string) => void;
 }) {
-  await newSocket.on('I-joined', (data: {socketId:string,phoneNumber:string}) => {
-    if (data.phoneNumber === userPhoneNumber) {
-      setSocketId(data.socketId);
-    }
-  });
+  await newSocket.on(
+    'I-joined',
+    (data: {socketId: string; phoneNumber: string}) => {
+      if (data.phoneNumber === userPhoneNumber) {
+        setSocketId(data.socketId);
+      }
+    },
+  );
 }
 export async function receiveDeleted({
   userPhoneNumber,
@@ -103,7 +116,7 @@ export async function offline({
   phoneNumber: string;
   setIsOnline: (message: boolean) => void;
 }) {
-  await newSocket.on(`isOffline_${phoneNumber}`, (data:  {online:boolean}) => {
+  await newSocket.on(`isOffline_${phoneNumber}`, (data: {online: boolean}) => {
     setIsOnline(data.online);
   });
 }
@@ -114,7 +127,7 @@ export async function online({
   phoneNumber: string;
   setIsOnline: (message: boolean) => void;
 }) {
-  await newSocket.on(`isOnline_${phoneNumber}`, (data: {online:boolean}) => {
+  await newSocket.on(`isOnline_${phoneNumber}`, (data: {online: boolean}) => {
     setIsOnline(data.online);
   });
 }
