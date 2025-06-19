@@ -24,7 +24,7 @@ export const fetchProfileUrls = async (): Promise<UserProfile[]> => {
     const data = await response.json();
     return data.data;
   } catch (error) {
-    console.error('Error fetching profile URLs:', error);
+    // console.error('Error fetching profile URLs:', error);
     return [];
   }
 };
