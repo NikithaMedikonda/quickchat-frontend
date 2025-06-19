@@ -141,7 +141,7 @@ export const ContactsDisplay = () => {
           </View>
         ) : (
           <View>
-            <Text style={styles.title}>{t('Contacts on Quick Chat')}</Text>
+            <Text style={styles.title}>{t('Contacts on QuickChat')}</Text>
             {appContacts.length > 0 ? (
               <View style={styles.contactDetailsContainer}>
                 {appContacts.map((contact: ContactDetails, index: number) => (
@@ -168,17 +168,17 @@ export const ContactsDisplay = () => {
               <View style={styles.loadingContactsDisplay}>
                 <Text style={styles.loadingContactsText}>
                   {t(
-                    "It's so sad that, we have no one on Quick Chat. Share about Quick Chat",
+                    "It's so sad that, we have no one on QuickChat. Share about QuickChat",
                   )}
                 </Text>
               </View>
             )}
-            <Text style={styles.title}>{t('Invite to Quick Chat')}</Text>
+            <Text style={styles.title}>{t('Invite to QuickChat')}</Text>
             {phoneContacts.length === 0 ? (
               <View style={styles.loadingContactsDisplay}>
                 <Text style={styles.loadingContactsText}>
                   {t(
-                    "It's good to see that, all of your contacts are on Quick Chat.",
+                    "It's good to see that, all of your contacts are on QuickChat.",
                   )}
                 </Text>
               </View>

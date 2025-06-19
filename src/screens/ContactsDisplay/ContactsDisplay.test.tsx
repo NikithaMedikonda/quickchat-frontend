@@ -94,8 +94,8 @@ describe('Tests for ContactsDisplay Component', () => {
     await waitFor(() => {
       expect(screen.queryByTestId('loader')).toBeNull();
     });
-    const title = await screen.getByText('Contacts on Quick Chat');
-    const inviteText = await screen.getByText('Invite to Quick Chat');
+    const title = await screen.getByText('Contacts on QuickChat');
+    const inviteText = await screen.getByText('Invite to QuickChat');
     const registeredUser = await screen.getByText('Usha');
     const unRegisteredUser = await screen.getByText('unknown');
     await waitFor(() => {

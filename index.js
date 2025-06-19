@@ -15,7 +15,7 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 messaging().setBackgroundMessageHandler(async (remoteMessage) => {
   await notifee.createChannel({
     id: 'quickchat',
-    name: 'Quick Chat Notifications',
+    name: 'QuickChat Notifications',
     importance: AndroidImportance.HIGH,
   });
 
