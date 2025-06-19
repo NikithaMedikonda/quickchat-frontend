@@ -25,7 +25,9 @@ export const ChatBoxContent = ({
           style={styles.profileImage}
           source={
             image
-              ? {uri: `data:image/png;base64,${image}`}
+              ? image.startsWith('https:')
+                ? {uri: image}
+                : {uri: `data:image/png;base64,${image}`}
               : {uri: DEFAULT_PROFILE_IMAGE}
           }
           accessibilityHint="profile-image"
