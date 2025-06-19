@@ -1,4 +1,4 @@
-import { getDBInstance } from '../connection/connection';
+import {getDBInstance} from '../connection/connection';
 import {
   convertUrlToBase64,
   createUserInstance,
@@ -16,9 +16,11 @@ jest.mock('../connection/connection', () => ({
 
 jest.mock('rn-fetch-blob', () => ({
   config: jest.fn(() => ({
-    fetch: jest.fn(() => Promise.resolve({
-      base64: jest.fn(() => Promise.resolve('mocked_base64_data')),
-    })),
+    fetch: jest.fn(() =>
+      Promise.resolve({
+        base64: jest.fn(() => Promise.resolve('mocked_base64_data')),
+      }),
+    ),
   })),
 }));
 
@@ -220,20 +222,68 @@ describe('updateUserProfilePictures', () => {
   test('updates profile picture when valid data provided', async () => {
     const mockDb = await getDBInstance();
     const profiles = [
-      { phoneNumber: '123', profilePicture: 'http://mock/image.png' },
+      {
+        phoneNumber: '123',
+        profilePicture: 'http://mock/image.png',
+        publicKey: 'pubKey123',
+      },
     ];
+
+    mockExecuteSql
+      .mockResolvedValueOnce([{rows: {length: 1}}])
+      .mockResolvedValueOnce([]);
 
     await updateUserProfilePictures(mockDb, profiles);
 
-    expect(mockExecuteSql).toHaveBeenCalledWith(
+    // First call: check SELECT
+    expect(mockExecuteSql).toHaveBeenNthCalledWith(
+      1,
+      expect.stringContaining('SELECT * FROM LocalUsers'),
+      ['123'],
+    );
+
+    // Second call: check UPDATE
+    expect(mockExecuteSql).toHaveBeenNthCalledWith(
+      2,
+      expect.stringContaining('UPDATE LocalUsers'),
+      ['mocked_base64_data', '123'],
+    );
+  });
+
+  test('inserts profile if not found in LocalUsers table', async () => {
+    const mockDb = await getDBInstance();
+    const profiles = [
+      {
+        phoneNumber: '321',
+        profilePicture: 'http://mock/new-img.png',
+        publicKey: 'pubKey321',
+      },
+    ];
+
+    mockExecuteSql
+      .mockResolvedValueOnce([{rows: {length: 0}}])
+      .mockResolvedValueOnce([]);
+
+    await updateUserProfilePictures(mockDb, profiles);
+
+    expect(mockExecuteSql).toHaveBeenNthCalledWith(
+      1,
+      expect.stringContaining('SELECT * FROM LocalUsers'),
+      ['321'],
+    );
+
+    expect(mockExecuteSql).toHaveBeenNthCalledWith(
+      2,
       expect.stringContaining('INSERT OR REPLACE INTO LocalUsers'),
-      ['123', 'mocked_base64_data'],
+      ['321', 'mocked_base64_data', 'pubKey321'],
     );
   });
 
   test('skips update if profilePicture is missing', async () => {
     const mockDb = await getDBInstance();
-    const profiles = [{ phoneNumber: '123', profilePicture: '' }];
+    const profiles = [
+      {phoneNumber: '123', profilePicture: '', publicKey: 'pubKey123'},
+    ];
 
     await updateUserProfilePictures(mockDb, profiles);
 
@@ -243,18 +293,28 @@ describe('updateUserProfilePictures', () => {
   test('does not crash if profiles are undefined or not an array', async () => {
     const mockDb = await getDBInstance();
 
-    await expect(updateUserProfilePictures(mockDb, undefined)).resolves.not.toThrow();
-    await expect(updateUserProfilePictures(mockDb, null)).resolves.not.toThrow();
+    await expect(
+      updateUserProfilePictures(mockDb, undefined),
+    ).resolves.not.toThrow();
+    await expect(
+      updateUserProfilePictures(mockDb, null),
+    ).resolves.not.toThrow();
   });
 
   test('gracefully handles errors during DB update without crashing', async () => {
     const mockDb = await getDBInstance();
     const profiles = [
-      { phoneNumber: '123', profilePicture: 'http://mock/image.png' },
+      {
+        phoneNumber: '123',
+        profilePicture: 'http://mock/image.png',
+        publicKey: 'pubKey123',
+      },
     ];
     mockExecuteSql.mockRejectedValueOnce(new Error('Update failed'));
 
-    await expect(updateUserProfilePictures(mockDb, profiles)).resolves.not.toThrow();
+    await expect(
+      updateUserProfilePictures(mockDb, profiles),
+    ).resolves.not.toThrow();
 
     expect(mockExecuteSql).toHaveBeenCalled();
   });
@@ -274,7 +334,7 @@ describe('getAllUniquePhoneNumbers', () => {
       {
         rows: {
           length: mockPhoneNumbers.length,
-          item: (index: number) => ({ phoneNumber: mockPhoneNumbers[index] }),
+          item: (index: number) => ({phoneNumber: mockPhoneNumbers[index]}),
         },
       },
     ]);
@@ -304,4 +364,3 @@ describe('getAllUniquePhoneNumbers', () => {
     expect(result).toEqual([]);
   });
 });
-
