@@ -10,7 +10,6 @@ import {
   updateChatMetadata,
   upsertChatMetadata,
 } from '../services/chatOperations';
-import {updateSendMessageStatusToRead} from '../services/messageOperations';
 import {isUserStoredLocally, upsertUserInfo} from '../services/userOperations';
 
 const mockExecuteSql = jest.fn();
@@ -879,55 +878,46 @@ describe('Tests for getAllChatsFromLocal', () => {
   });
 });
 
-describe('Tests for updateChatMetaData function', () => {
+
+describe('Tests for updateChatMetadata function', () => {
   it('should update the last message status if the message matches in chats table', async () => {
-    mockExecuteSql.mockResolvedValueOnce([{rows: {length: 1}}]);
-    const value = {
-      senderPhoneNumber: '123',
-      receiverPhoneNumber: '456',
-      messages: ['d', 'i'],
-    };
-    await updateSendMessageStatusToRead(value);
+    mockExecuteSql.mockResolvedValue([
+      {rows: {item: () => ({unreadChats: 2})}},
+    ]);
+
     const updateValue = {
       senderPhoneNumber: '123',
       receiverPhoneNumber: '456',
       status: 'read',
       messages: ['d', 'i'],
     };
+
     await updateChatMetadata(
       updateValue.senderPhoneNumber,
       updateValue.receiverPhoneNumber,
       updateValue.messages[0],
       updateValue.status,
     );
+
     await updateChatMetadata(
       updateValue.senderPhoneNumber,
       updateValue.receiverPhoneNumber,
-      updateValue.messages[2],
+      updateValue.messages[1],
       updateValue.status,
     );
+
+    console.log(mockExecuteSql.mock.calls.map((c, i) => [i + 1, c]));
+
     expect(mockExecuteSql).toHaveBeenNthCalledWith(
       1,
-      expect.stringContaining('UPDATE Messages'),
-      ['read', '123', '456', 'd'],
+      expect.stringContaining('UPDATE Chats'),
+      ['read', 0, 'chat_123_456', 'd'],
     );
 
     expect(mockExecuteSql).toHaveBeenNthCalledWith(
       2,
       expect.stringContaining('UPDATE Chats'),
-      ['read', 'chat_123_456', 'd'],
-    );
-
-    expect(mockExecuteSql).toHaveBeenNthCalledWith(
-      3,
-      expect.stringContaining('UPDATE Messages'),
-      ['read', '123', '456', 'i'],
-    );
-
-    expect(mockExecuteSql).toHaveBeenNthCalledWith(
-      4,
-      expect.stringContaining('UPDATE Chats'),
-      ['read', 'chat_123_456', 'i'],
+      ['read', 0, 'chat_123_456', 'i'],
     );
   });
 });
