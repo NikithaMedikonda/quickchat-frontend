@@ -29,10 +29,6 @@ jest.mock('rn-fetch-blob', () => ({
     ),
   })),
 }));
-jest.mock('../services/chatOperations', () => ({
-  upsertChatMetadata: jest.fn(),
-  fetchAndConvertToBase64: jest.fn(() => Promise.resolve('mocked_base64_data')),
-}));
 
 jest.mock('react-native-encrypted-storage', () => ({
   getItem: jest.fn(),
@@ -48,6 +44,8 @@ jest.mock('../services/chatOperations', () => ({
   upsertChatMetadata: jest.fn(),
   updateSendMessageStatusToRead: jest.fn(),
   updateChatMetadata: jest.fn(),
+  fetchAndConvertToBase64: jest.fn(() => Promise.resolve('mocked_base64_data')),
+  getTotalUnreadCount: jest.fn(() => Promise.resolve(5)),
 }));
 
 jest.mock('../../store/store', () => ({
