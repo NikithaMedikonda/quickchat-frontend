@@ -13,6 +13,7 @@ import {store} from '../../store/store';
 import {useThemeColors} from '../../themes/colors';
 import {useImagesColors} from '../../themes/images';
 import {ContactsDisplay} from './ContactsDisplay';
+import { Alert, Platform } from 'react-native';
 jest.setTimeout(10000);
 jest.mock('@react-navigation/native', () => ({
   useNavigation: jest.fn(),

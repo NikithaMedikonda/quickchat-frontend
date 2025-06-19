@@ -8,6 +8,7 @@ import {HomeStackProps} from '../../types/usenavigation.type';
 import {UserDetails} from '../../types/user.types';
 import {ChatOptionsModal} from '../ChatOptionsModal/ChatOptionsModal';
 import {individualChatHeaderStyles} from './IndividualChatHeader.styles';
+import {useSocketConnection} from '../../hooks/useSocketConnection';
 
 interface IndividualChatHeaderProps extends UserDetails {
   isBlocked: boolean;
@@ -31,7 +32,7 @@ export const IndividualChatHeader = ({
   const {androidBackArrow, iOSBackArrow} = useImagesColors();
   const navigation = useNavigation<HomeStackProps>();
   const styles = individualChatHeaderStyles(colors);
-
+  const {isConnected} = useSocketConnection();
   const modelVisible = () => {
     setModalVisible(true);
   };
@@ -61,7 +62,7 @@ export const IndividualChatHeader = ({
           <Text style={styles.username} accessibilityHint="username-text">
             {name}
           </Text>
-          {socketId != null && (
+          {socketId != null && isConnected && (
             <Text
               accessibilityHint="online-status"
               style={styles.onlineIndicator}>
