@@ -137,7 +137,16 @@ export const ContactsDisplay = () => {
               size="large"
               color="white"
             />
-
+          </View>
+        ) : appContacts.length === 0 && phoneContacts.length === 0 ? (
+          <View style={styles.noContactsContainer}>
+            <Text style={styles.noContactsEmoji}>:mailbox_with_no_mail:</Text>
+            <Text style={styles.noContactsText}>
+              {t("You don't have any contacts saved on your device.")}
+            </Text>
+            <Text style={styles.noContactsText}>
+              {t('Try saving some contacts and pull to refresh.')}
+            </Text>
           </View>
         ) : (
           <View>
@@ -155,7 +164,7 @@ export const ContactsDisplay = () => {
                           profilePicture: contact.profilePicture,
                           phoneNumber: contact.phoneNumber,
                           isBlocked: false,
-                          publicKey:contact.publicKey,
+                          publicKey: contact.publicKey,
                           onBlockStatusChange: () => {},
                         },
                       });
