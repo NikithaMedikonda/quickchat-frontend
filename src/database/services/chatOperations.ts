@@ -156,11 +156,9 @@ export const getAllChatsFromLocal = async (
     const exists = await isUserStoredLocally(db, contactPhone);
     if (!exists) {
       const remoteUser = await getUserByPhoneNumber(contactPhone);
-      console.log(remoteUser?.profilePicture);
       const profileBase64 = remoteUser?.profilePicture
         ? await fetchAndConvertToBase64(remoteUser.profilePicture)
         : null;
-      console.log(profileBase64);
 
       if (remoteUser) {
         await upsertUserInfo(db, {
