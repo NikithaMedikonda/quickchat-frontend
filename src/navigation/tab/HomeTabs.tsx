@@ -114,13 +114,15 @@ export const HomeTabs = () => {
 
   useEffect(() => {
     if (isConnected && !isProcessingQueue.current && shouldProcessGlobalQueue) {
-      async function connect() {
-        const anotherUser = await EncryptedStorage.getItem('user');
-        if (anotherUser) {
-          const parsedUser: User = JSON.parse(anotherUser);
-          await socketConnection(parsedUser.phoneNumber);
-        }
-      }
+      // async function connect() {
+      //   const anotherUser = await EncryptedStorage.getItem('user');
+      //   if (anotherUser) {
+      //     const parsedUser: User = JSON.parse(anotherUser);
+      //     await socketConnection(parsedUser.phoneNumber);
+      //   }
+      // }
+      // ('');
+      // connect();
       const processQueueMessages = async () => {
         if (isProcessingQueue.current || !shouldProcessGlobalQueue) {
           return;
@@ -198,7 +200,6 @@ export const HomeTabs = () => {
           isProcessingQueue.current = false;
         }
       };
-      connect();
       processQueueMessages();
     }
   }, [isConnected, newMessageCount, shouldProcessGlobalQueue]);
