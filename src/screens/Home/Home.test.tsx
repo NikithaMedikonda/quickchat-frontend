@@ -47,7 +47,7 @@ describe('Home Screen Tests', () => {
 
 
     expect(mockSetOptions).toHaveBeenCalledWith({
-      headerTitle: 'Quick Chat',
+      headerTitle: 'QuickChat',
       headerTitleAlign: 'center',
       headerStyle: {
         backgroundColor: useThemeColors().background,
@@ -69,7 +69,7 @@ describe('Home Screen Tests', () => {
       expect(mockNavigate).toHaveBeenCalledWith('contacts');
     });
     expect(mockSetOptions).toHaveBeenCalledWith({
-      headerTitle: 'Quick Chat',
+      headerTitle: 'QuickChat',
       headerTitleAlign: 'center',
       headerStyle: {
         backgroundColor: useThemeColors().background,

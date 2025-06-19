@@ -53,7 +53,7 @@ export const AllChats = () => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: 'Quick Chat',
+      headerTitle: 'QuickChat',
       headerTitleAlign: 'center',
       headerStyle: {
         backgroundColor: colors.background,

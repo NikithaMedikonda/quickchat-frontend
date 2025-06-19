@@ -13,7 +13,7 @@ export const PlusIcon = () => {
   const styles = getStyles(colors);
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: 'Quick Chat',
+      headerTitle: 'QuickChat',
       headerTitleAlign: 'center',
       headerStyle: {
         backgroundColor: colors.background,

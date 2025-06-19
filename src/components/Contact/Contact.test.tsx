@@ -71,14 +71,14 @@ describe('Contact Component', () => {
 
     const url = `sms:+911112223334${
       Platform.OS === 'android' ? '?body=' : '&body='
-    }Welcome to Quick Chat. Let's have fun with this chating app`;
+    }Welcome to QuickChat. Let's have fun with this chating app`;
     if (Platform.OS === 'android') {
       expect(url).toBe(
-        "sms:+911112223334?body=Welcome to Quick Chat. Let's have fun with this chating app",
+        "sms:+911112223334?body=Welcome to QuickChat. Let's have fun with this chating app",
       );
     } else {
       expect(url).toBe(
-        "sms:+911112223334&body=Welcome to Quick Chat. Let's have fun with this chating app",
+        "sms:+911112223334&body=Welcome to QuickChat. Let's have fun with this chating app",
       );
     }
     const {getByText} = render(
