@@ -64,7 +64,7 @@ export const Contact = ({contactDetails}: {contactDetails: ContactDetails}) => {
               await openSMS(
                 contactDetails.phoneNumber,
                 t(
-                  "Welcome to Quick Chat. Let's have fun with this chating app",
+                  "Welcome to QuickChat. Let's have fun with this chating app",
                 ),
               )
             }

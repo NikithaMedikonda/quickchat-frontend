@@ -225,7 +225,6 @@ export const IndividualChat = ({route}: Props) => {
           return;
         }
         const authToken = await EncryptedStorage.getItem('authToken');
-
         if (isConnected) {
           if (authToken) {
             const userStatus = await checkUserOnline({

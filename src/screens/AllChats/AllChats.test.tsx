@@ -145,7 +145,7 @@ describe('AllChats Component', () => {
     await waitFor(() => {
       expect(mockSetOptions).toHaveBeenCalledWith(
         expect.objectContaining({
-          headerTitle: 'Quick Chat',
+          headerTitle: 'QuickChat',
           headerTitleAlign: 'center',
         }),
       );
