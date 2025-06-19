@@ -3,6 +3,7 @@ import {getAllUniquePhoneNumbers} from '../database/services/userOperations';
 type UserProfile = {
   phoneNumber: string;
   profilePicture: string;
+  publicKey: string;
 };
 
 export const fetchProfileUrls = async (): Promise<UserProfile[]> => {
@@ -24,7 +25,6 @@ export const fetchProfileUrls = async (): Promise<UserProfile[]> => {
     const data = await response.json();
     return data.data;
   } catch (error) {
-    // console.error('Error fetching profile URLs:', error);
     return [];
   }
 };
