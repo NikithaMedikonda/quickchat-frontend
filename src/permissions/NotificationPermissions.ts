@@ -37,7 +37,7 @@ export const setupNotificationChannel = async () => {
       id: 'quickchat',
       name: 'Default Channel',
       importance: AndroidImportance.HIGH,
-      sound:'default',
+      sound : 'custom_notification',
     });
   }
 };
@@ -58,6 +58,7 @@ export const getFCMToken = async (): Promise<string | null> => {
 };
 export const listenForForegroundMessages = () => {
   return messaging().onMessage(async remoteMessage => {
+    console.log('You have recieved notificaton from backend',remoteMessage)
     const rawPhnoneNumber = remoteMessage.data?.senderPhoneNumber;
     const rawPhoto = remoteMessage.data?.profilePicture;
     const senderPhoneNumber =
