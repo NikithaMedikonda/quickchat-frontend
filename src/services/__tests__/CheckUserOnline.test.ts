@@ -28,7 +28,7 @@ describe('check user online', () => {
         'Content-Type': 'application/json',
         authorization: `Bearer token`,
       },
-      body: JSON.stringify({phoneNumber:payload.phoneNumber}),
+      body: JSON.stringify({phoneNumber:payload.phoneNumber, requestedUserPhoneNumber:payload.requestedUserPhoneNumber}),
     });
     expect(result.status).toBe(200);
     expect(result.data).toEqual(mockResponse);

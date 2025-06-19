@@ -1,7 +1,7 @@
-import {getUserByPhoneNumber} from './getUser';
+import { getUserByPhoneNumber } from '../GetUser';
 
 const mockGetItem = require('react-native-encrypted-storage').default.getItem;
-const API_URL = require('../constants/api').API_URL;
+const API_URL = require('../../constants/api').API_URL;
 
 jest.mock('react-native-encrypted-storage', () => ({
   __esModule: true,
