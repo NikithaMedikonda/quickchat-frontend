@@ -1,1 +1,1 @@
-export const API_URL = 'https://quickchat-backend-7pyd.onrender.com';
+export const API_URL = 'http://16.176.232.192:5050';
