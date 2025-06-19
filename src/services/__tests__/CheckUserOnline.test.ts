@@ -7,6 +7,7 @@ describe('check user online', () => {
   const payload = {
     phoneNumber: '9866349126',
     authToken: 'token',
+    requestedUserPhoneNumber: '9876543210',
   };
   afterEach(() => {
     jest.clearAllMocks();
