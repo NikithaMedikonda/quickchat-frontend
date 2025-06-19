@@ -30,7 +30,13 @@ jest.mock('rn-fetch-blob', () => ({
     })),
   })),
 }));
+let mockIsConnected = true;
 
+jest.mock('../../hooks/useSocketConnection', () => ({
+  useSocketConnection: () => ({
+    isConnected: mockIsConnected,
+  }),
+}));
 jest.mock('react-native-encrypted-storage', () => ({
   setItem: jest.fn(() => Promise.resolve()),
   getItem: jest.fn(() => Promise.resolve(null)),
