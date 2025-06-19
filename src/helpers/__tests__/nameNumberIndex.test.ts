@@ -138,13 +138,6 @@ describe('Testing nameNumberIndex function', () => {
       '+916303974914': 'unknown',
     });
   });
-    // it('should throw error if permission is denied', async () => {
-    //   (PermissionsAndroid.check as jest.Mock).mockResolvedValue(false);
-    //   (PermissionsAndroid.request as jest.Mock).mockResolvedValue('denied');
-    //   // await expect(getContacts(true)).rejects.toThrow(
-    //   //   'Contacts permission denied',
-    //   // );
-    // });
 });
 
 describe('Android Permissions', () => {
