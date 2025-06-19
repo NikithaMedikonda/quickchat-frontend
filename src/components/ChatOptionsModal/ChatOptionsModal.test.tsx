@@ -1,4 +1,4 @@
-import { NavigationContainer } from '@react-navigation/native';
+import {NavigationContainer} from '@react-navigation/native';
 import {
   act,
   fireEvent,
@@ -7,18 +7,18 @@ import {
   waitFor,
 } from '@testing-library/react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { Provider } from 'react-redux';
-import { getDBInstance } from '../../database/connection/connection';
-import { clearChatLocally } from '../../database/services/chatOperations';
+import {Provider} from 'react-redux';
+import {getDBInstance} from '../../database/connection/connection';
+import {clearChatLocally} from '../../database/services/chatOperations';
 import {
   deleteUserRestriction,
   insertUserRestriction,
 } from '../../database/services/userRestriction';
-import { deleteChat } from '../../services/DeleteChat';
-import { blockUser } from '../../services/UserBlock';
-import { unblockUser } from '../../services/UserUnblock';
-import { store } from '../../store/store';
-import { ChatOptionsModal } from './ChatOptionsModal';
+import {deleteChat} from '../../services/DeleteChat';
+import {blockUser} from '../../services/UserBlock';
+import {unblockUser} from '../../services/UserUnblock';
+import {store} from '../../store/store';
+import {ChatOptionsModal} from './ChatOptionsModal';
 
 jest.mock('../../themes/colors', () => ({
   useThemeColors: () => ({
@@ -69,12 +69,14 @@ jest.mock('../../database/services/chatOperations.ts', () => ({
 }));
 
 const mockReplace = jest.fn();
+const mockGoBack = jest.fn();
 jest.mock('@react-navigation/native', () => {
   const actualNavigationModule = jest.requireActual('@react-navigation/native');
   return {
     ...actualNavigationModule,
     useNavigation: () => ({
       replace: mockReplace,
+      goBack: mockGoBack,
     }),
   };
 });
@@ -322,7 +324,7 @@ describe('ChatOptionsModal', () => {
         'Chat deleted successfully.',
       );
       expect(state.registration.alertType).toBe('success');
-      expect(mockReplace).toHaveBeenCalledWith('hometabs');
+      expect(mockGoBack).toHaveBeenCalled();
     });
   });
 
