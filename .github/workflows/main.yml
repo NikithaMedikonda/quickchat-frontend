@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - integrate-status-update-sync-messages
 
 jobs:
   lint-and-test:
