@@ -14,7 +14,7 @@ import {
 import {isUserStoredLocally, upsertUserInfo} from './userOperations';
 import {sendUpdatedMessages} from '../../socket/socket';
 import {setUnreadCount} from '../../store/slices/unreadChatSlice';
-import { fetchAndConvertToBase64 } from './chatOperations';
+import {fetchAndConvertToBase64} from './chatOperations';
 
 export const insertToMessages = async (message: MessageType) => {
   const db = await getDBInstance();
@@ -81,11 +81,8 @@ export const insertToMessages = async (message: MessageType) => {
         }
       }
     } else {
-      console.log('REceiving');
-
       const exists = await isUserStoredLocally(db, sender);
       if (!exists) {
-        console.log('Fetching from remote while sending');
         const remoteUser = await getUserByPhoneNumber(
           messagetoInsert.receiverPhoneNumber,
         );
