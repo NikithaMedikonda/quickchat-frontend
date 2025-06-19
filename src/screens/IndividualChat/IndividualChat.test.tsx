@@ -155,7 +155,7 @@ jest.mock('../../socket/socket', () => ({
   sendUpdatedMessages: jest.fn(),
   receiveReadUpdate: jest.fn(),
   receiveDeliveredStatus: jest.fn(),
-  receiveDeleted:jest.fn(),
+  receiveDeleted: jest.fn(),
   newSocket: {
     emit: jest.fn(),
     on: jest.fn(),
