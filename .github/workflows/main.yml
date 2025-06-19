@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - update-push-notifications-sound
 
 jobs:
   lint-and-test:
