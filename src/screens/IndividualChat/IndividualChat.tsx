@@ -1,18 +1,18 @@
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { useCallback, useEffect, useRef, useState } from 'react';
-
-import { useTranslation } from 'react-i18next';
-import { ScrollView, Text, View } from 'react-native';
+import {useFocusEffect} from '@react-navigation/native';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {useCallback, useEffect, useRef, useState} from 'react';
+import {useTranslation} from 'react-i18next';
+import {ScrollView, Text, View} from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useDispatch, useSelector } from 'react-redux';
-import { Socket } from 'socket.io-client';
-import { CustomAlert } from '../../components/CustomAlert/CustomAlert';
-import { IndividualChatHeader } from '../../components/IndividualChatHeader/IndividualChatHeader';
-import { MessageInput } from '../../components/MessageInput/MessageInput';
-import { MessageStatusTicks } from '../../components/MessageStatusTicks/MessageStatusTicks';
-import { TimeStamp } from '../../components/TimeStamp/TimeStamp';
-import { getDBInstance } from '../../database/connection/connection';
+import {useDispatch, useSelector} from 'react-redux';
+import {Socket} from 'socket.io-client';
+import {CustomAlert} from '../../components/CustomAlert/CustomAlert';
+import {IndividualChatHeader} from '../../components/IndividualChatHeader/IndividualChatHeader';
+import {MessageInput} from '../../components/MessageInput/MessageInput';
+import {MessageStatusTicks} from '../../components/MessageStatusTicks/MessageStatusTicks';
+import {TimeStamp} from '../../components/TimeStamp/TimeStamp';
+import {getDBInstance} from '../../database/connection/connection';
 import {
   getTotalUnreadCount,
   resetUnreadCount,
@@ -35,16 +35,16 @@ import {
   insertDeletedUser,
   isUserDeletedLocal,
 } from '../../database/services/userRestriction';
-import { MessageType } from '../../database/types/message';
-import { GroupMessagesByDate } from '../../hooks/GroupMessagesByDate';
-import { useSocketConnection } from '../../hooks/useSocketConnection';
-import { checkBlockStatus } from '../../services/CheckBlockStatus';
-import { CheckUserDeleteStatus } from '../../services/CheckUserDeleteStatus';
-import { checkUserOnline } from '../../services/CheckUserOnline';
-import { messageDecryption } from '../../services/MessageDecryption';
-import { messageEncryption } from '../../services/MessageEncryption';
-import { updateMessageStatus } from '../../services/UpdateMessageStatus';
-import { useDeviceCheck } from '../../services/useDeviceCheck';
+import {MessageType} from '../../database/types/message';
+import {GroupMessagesByDate} from '../../hooks/GroupMessagesByDate';
+import {useSocketConnection} from '../../hooks/useSocketConnection';
+import {checkBlockStatus} from '../../services/CheckBlockStatus';
+import {CheckUserDeleteStatus} from '../../services/CheckUserDeleteStatus';
+import {checkUserOnline} from '../../services/CheckUserOnline';
+import {messageDecryption} from '../../services/MessageDecryption';
+import {messageEncryption} from '../../services/MessageEncryption';
+import {updateMessageStatus} from '../../services/UpdateMessageStatus';
+import {useDeviceCheck} from '../../services/useDeviceCheck';
 import {
   newSocket,
   receiveDeleted,
@@ -64,25 +64,21 @@ import {
   setAlertVisible,
   setReceivePhoneNumber,
 } from '../../store/slices/registrationSlice';
-import { setCurrentScreen } from '../../store/slices/screenContextSlice';
-import {  setUnreadCount  } from '../../store/slices/unreadChatSlice';
-
-import {  RootState  } from '../../store/store';
-import {  useThemeColors  } from '../../themes/colors';
+import {setCurrentScreen} from '../../store/slices/screenContextSlice';
+import {setUnreadCount} from '../../store/slices/unreadChatSlice';
+import {RootState} from '../../store/store';
+import {useThemeColors} from '../../themes/colors';
 import {
   AllMessages,
   PendingMessages,
   ReceivePrivateMessage,
   SentPrivateMessage,
 } from '../../types/messsage.types';
-import { HomeStackParamList } from '../../types/usenavigation.type';
-import { createChatId } from '../../utils/chatId';
-import { generateMessageId } from '../../utils/messageId';
-import { User } from '../Profile/Profile';
-import { individualChatStyles } from './IndividualChat.styles';
-import { useFocusEffect } from '@react-navigation/native';
-
-
+import {HomeStackParamList} from '../../types/usenavigation.type';
+import {createChatId} from '../../utils/chatId';
+import {generateMessageId} from '../../utils/messageId';
+import {User} from '../Profile/Profile';
+import {individualChatStyles} from './IndividualChat.styles';
 
 type Props = NativeStackScreenProps<HomeStackParamList, 'individualChat'>;
 
