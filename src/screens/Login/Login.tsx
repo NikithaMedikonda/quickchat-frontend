@@ -1,4 +1,5 @@
 import {useNavigation} from '@react-navigation/native';
+import { Keyboard } from 'react-native';
 import phone from 'phone';
 import {useTranslation} from 'react-i18next';
 import {
@@ -10,6 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import {useEffect, useRef} from 'react';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import PhoneInput from 'react-native-phone-input';
 import {useDispatch, useSelector} from 'react-redux';
@@ -44,6 +46,7 @@ import {loginStyles} from './Login.styles';
 export function Login() {
   const homeNavigation = useNavigation<HomeTabsProps>();
   const navigate = useNavigation<NavigationProps>();
+  const scrollViewRef = useRef<ScrollView>(null);
   const dispatch = useDispatch();
   const colors = useThemeColors();
   const {logo} = useImagesColors();
@@ -59,6 +62,17 @@ export function Login() {
     dispatch(setAlertMessage(message));
     dispatch(setAlertVisible(true));
   };
+  useEffect(() => {
+  const showSub = Keyboard.addListener('keyboardDidShow', () => {
+    setTimeout(() => {
+      scrollViewRef.current?.scrollToEnd({ animated: true });
+    }, 100); // slight delay to wait for layout shift
+  });
+
+  return () => {
+    showSub.remove();
+  };
+}, []);
 
   const handleInputChange = (key: keyof typeof form, value: string) => {
     dispatch(setLoginField({key, value}));
@@ -177,6 +191,7 @@ export function Login() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}>
       <ScrollView
+      ref={scrollViewRef}
         contentContainerStyle={styles.loginMainContainer}
         keyboardShouldPersistTaps="handled">
         <View style={styles.imageContainer}>
@@ -204,6 +219,9 @@ export function Login() {
         <Placeholder
           title="Password"
           value={form.password}
+          onFocus={() => {
+            scrollViewRef.current?.scrollToEnd({animated: true});
+          }}
           onChange={(text: string) => {
             handleInputChange('password', text);
           }}
