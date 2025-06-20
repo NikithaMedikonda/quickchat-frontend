@@ -1,10 +1,3 @@
-// import { act } from '@testing-library/react-native';
-// jest.useFakeTimers({ legacyFakeTimers: true });
-
-// await act(async () => {
-//   jest.runAllTimers();
-// });
-
 const originalError = console.error;
 console.error = (...args) => {
   if (
