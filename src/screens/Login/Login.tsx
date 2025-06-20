@@ -61,15 +61,17 @@ export function Login() {
     dispatch(setAlertVisible(true));
   };
   useEffect(() => {
-    const showSub = Keyboard.addListener('keyboardDidShow', () => {
-      setTimeout(() => {
-        scrollViewRef.current?.scrollToEnd({animated: true});
-      }, 100);
-    });
-    return () => {
-      showSub.remove();
-    };
-  }, []);
+  const showSub = Keyboard.addListener('keyboardDidShow', () => {
+    setTimeout(() => {
+      scrollViewRef.current?.scrollToEnd({ animated: true });
+    }, 100); // slight delay to wait for layout shift
+  });
+
+  return () => {
+    showSub.remove();
+  };
+}, []);
+
   const handleInputChange = (key: keyof typeof form, value: string) => {
     dispatch(setLoginField({key, value}));
   };
@@ -177,7 +179,7 @@ export function Login() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}>
       <ScrollView
-        ref={scrollViewRef}
+      ref={scrollViewRef}
         contentContainerStyle={styles.loginMainContainer}
         keyboardShouldPersistTaps="handled">
         <View style={styles.imageContainer}>

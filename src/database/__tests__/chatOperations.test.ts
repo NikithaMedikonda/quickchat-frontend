@@ -906,8 +906,6 @@ describe('Tests for updateChatMetadata function', () => {
       updateValue.status,
     );
 
-    console.log(mockExecuteSql.mock.calls.map((c, i) => [i + 1, c]));
-
     expect(mockExecuteSql).toHaveBeenNthCalledWith(
       1,
       expect.stringContaining('UPDATE Chats'),
