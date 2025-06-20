@@ -10,7 +10,7 @@ import './src/i18n/i18n.config';
 import { i18next } from './src/i18n/i18n.config';
 import { InitialStacks } from './src/navigation/stack/InitialStacks';
 import { store } from './src/store/store';
-import { getFCMToken, requestNotificationPermission, setupNotificationChannel } from './src/permissions/NotificationPermissions';
+import { getFCMToken, setupNotificationChannel } from './src/permissions/NotificationPermissions';
 import { listenForForegroundMessages } from './src/permissions/NotificationPermissions';
 
 export const App = () => {
@@ -25,17 +25,15 @@ export const App = () => {
     };
     initialiseDB();
   }, []);
-  useEffect(() => {
-    const setupNotifications = async () => {
-      getFCMToken();
-      listenForForegroundMessages();
-      const hasPermission = await requestNotificationPermission();
-      if (hasPermission) {
-        setupNotificationChannel();
-      }
-    };
-    setupNotifications();
-  }, []);
+useEffect(() => {
+  setupNotificationChannel();
+  const unsubscribe = listenForForegroundMessages();
+  getFCMToken();
+
+  return () => {
+    unsubscribe && unsubscribe();
+  };
+}, []);
   return (
     <Provider store={store}>
       <NavigationContainer>
