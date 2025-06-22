@@ -129,6 +129,7 @@ export function Login() {
         );
         await EncryptedStorage.setItem('user', JSON.stringify(user));
         await EncryptedStorage.setItem('privateKey', privateKey);
+        await EncryptedStorage.setItem('hardRefresh', 'false');
         const lastLoggedInUser = await EncryptedStorage.getItem(
           'lastLoggedInUser',
         );
