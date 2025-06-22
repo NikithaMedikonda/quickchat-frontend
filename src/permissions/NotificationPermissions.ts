@@ -5,10 +5,9 @@ import notifee, {
 import '@react-native-firebase/app';
 import messaging from '@react-native-firebase/messaging';
 import {PermissionsAndroid, Platform} from 'react-native';
-import {numberNameIndex} from '../helpers/nameNumberIndex';
-import {normalise} from '../helpers/normalisePhoneNumber';
 import {DEFAULT_PROFILE_IMAGE} from '../constants/defaultImage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getDBInstance } from '../database/connection/connection';
 
 export const requestNotificationPermission = async (): Promise<boolean> => {
   if (Platform.OS === 'android') {
@@ -55,9 +54,28 @@ export const getFCMToken = async (): Promise<string | null> => {
     return null;
   }
 };
+
+export const getContactNameFromDB = async (phoneNumber: string): Promise<string | undefined> => {
+  try {
+    const db = await getDBInstance();
+    const results = await db.executeSql(
+      'SELECT name FROM LocalUsers WHERE phoneNumber = ?',
+      [phoneNumber],
+    );
+    if (results[0].rows.length > 0) {
+      const row = results[0].rows.item(0);
+      return row.name;
+    }
+    return undefined;
+  } catch (error) {
+    console.error('Error fetching contact name from DB:', error);
+    return undefined;
+  }
+};
+
+
 export const listenForForegroundMessages = () => {
   return messaging().onMessage(async remoteMessage => {
-    console.log('You have recieved notificaton from backend', remoteMessage);
     const rawPhnoneNumber = remoteMessage.data?.senderPhoneNumber;
     const rawPhoto = remoteMessage.data?.profilePicture;
     const senderPhoneNumber =
@@ -68,9 +86,7 @@ export const listenForForegroundMessages = () => {
 
     if (senderPhoneNumber) {
       try {
-        const nameIndex = await numberNameIndex();
-        const normalizedSender = normalise(senderPhoneNumber);
-        contactName = nameIndex?.[normalizedSender] || senderPhoneNumber;
+        contactName = await getContactNameFromDB(senderPhoneNumber) || senderPhoneNumber;
       } catch (error) {
         contactName = senderPhoneNumber;
       }
