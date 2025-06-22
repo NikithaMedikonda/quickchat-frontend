@@ -825,6 +825,7 @@ export const IndividualChat = ({route}: Props) => {
                             <TimeStamp
                               messageTime={msg.timestamp}
                               isSent={isSent}
+                              showFullTime={true}
                             />
                             {isSent && (
                               <MessageStatusTicks
