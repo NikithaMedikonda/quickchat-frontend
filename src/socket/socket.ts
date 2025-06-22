@@ -140,9 +140,10 @@ export async function sendUpdatedMessages(data: {
 }
 export async function receiveReadUpdate(
   receiverPhoneNumber: string,
+  senderPhoneNumber:string,
   callback: (message: string[]) => void,
 ) {
-  await newSocket.on(`status_${receiverPhoneNumber}`, callback);
+  await newSocket.on(`status_${receiverPhoneNumber}_${senderPhoneNumber}`, callback);
 }
 export async function receiveDeliveredStatus(
   senderPhoneNumber: string,

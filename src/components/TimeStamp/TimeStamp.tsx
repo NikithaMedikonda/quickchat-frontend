@@ -26,15 +26,15 @@ export const TimeStamp = ({
     )
   ) {
     displayTime = showFullTime
-      ? `Yesterday, ${messageReceivedTime.format('h:mm A')}`
+      ? `${messageReceivedTime.format('h:mm A')}`
       : 'Yesterday';
   } else if (messageReceivedTime.isAfter(moment().subtract(7, 'days'))) {
     displayTime = showFullTime
-      ? messageReceivedTime.format('dddd, h:mm A')
+      ? messageReceivedTime.format('h:mm A')
       : messageReceivedTime.format('dddd');
   } else {
      displayTime = showFullTime
-      ? messageReceivedTime.format('MMM D, YYYY, h:mm A')
+      ? messageReceivedTime.format('h:mm A')
       : messageReceivedTime.format('MMM D, YYYY');
   }
   return (

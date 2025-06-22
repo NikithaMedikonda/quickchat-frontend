@@ -107,6 +107,10 @@ jest.mock('react-native-phone-input', () => {
   );
   return MockPhoneInput;
 });
+jest.mock('../../database/services/userOperations', () => ({
+  updateUserProfilePictures: jest.fn(),
+  getLastSyncedTime: jest.fn(),
+}));
 
 jest.mock('react-native-libsodium', () => ({
   crypto_box_keypair: jest.fn(),

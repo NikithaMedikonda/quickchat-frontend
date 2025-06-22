@@ -151,17 +151,28 @@ export const IndividualChat = ({route}: Props) => {
     if (!socket || !recipientPhoneNumber) {
       return;
     }
+    async function ReadUpdate() {
+      const currentUser = await EncryptedStorage.getItem('user');
+      if (currentUser) {
+        const parsedUser: User = JSON.parse(currentUser);
+        currentUserPhoneNumberRef.current = parsedUser.phoneNumber;
+      }
+      const handleStatusUpdate = async (data: string[]) => {
+        await updateSendMessageStatusToRead({
+          senderPhoneNumber: currentUserPhoneNumberRef.current,
+          receiverPhoneNumber: recipientPhoneNumber,
+          messages: data,
+        });
+        setNewUpdateCount(prev => prev + 1);
+      };
 
-    const handleStatusUpdate = async (data: string[]) => {
-      await updateSendMessageStatusToRead({
-        senderPhoneNumber: currentUserPhoneNumberRef.current,
-        receiverPhoneNumber: recipientPhoneNumber,
-        messages: data,
-      });
-      setNewUpdateCount(prev => prev + 1);
-    };
-
-    receiveReadUpdate(recipientPhoneNumber, handleStatusUpdate);
+      receiveReadUpdate(
+        recipientPhoneNumber,
+        currentUserPhoneNumberRef.current,
+        handleStatusUpdate,
+      );
+    }
+    ReadUpdate();
   }, [recipientPhoneNumber, socket]);
   useEffect(() => {
     dispatch(setReceivePhoneNumber(user.phoneNumber));
@@ -281,8 +292,7 @@ export const IndividualChat = ({route}: Props) => {
                 timestamp: msg.timestamp,
                 status: msg.status,
               });
-            } catch (error) {
-            }
+            } catch (error) {}
           }
           setFetchMessages(formattedMessages);
           setReceivedMessages([]);
@@ -293,13 +303,7 @@ export const IndividualChat = ({route}: Props) => {
       }
     }
     getMessages();
-  }, [
-    user.phoneNumber,
-    isCleared,
-    dispatch,
-    user.publicKey,
-    newUpdateCount,
-  ]);
+  }, [user.phoneNumber, isCleared, dispatch, user.publicKey, newUpdateCount]);
   useEffect(() => {
     async function updateToDelivered() {
       const currentUser = await EncryptedStorage.getItem('user');
@@ -643,7 +647,7 @@ export const IndividualChat = ({route}: Props) => {
         if (userStatus.status === 200 || userStatus.status === 203) {
           duplicateSocketId = userStatus.data.data.socketId;
           duplicateSocketId = userStatus.data.data.socketId;
-        setSocketId(userStatus.data.data.socketId);
+          setSocketId(userStatus.data.data.socketId);
         }
       }
       async function checkOffline() {
@@ -825,6 +829,7 @@ export const IndividualChat = ({route}: Props) => {
                             <TimeStamp
                               messageTime={msg.timestamp}
                               isSent={isSent}
+                              showFullTime={true}
                             />
                             {isSent && (
                               <MessageStatusTicks

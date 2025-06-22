@@ -7,6 +7,13 @@ jest.mock('react-native-contacts', () => ({
   getAllWithoutPhotos: jest.fn(),
 }));
 
+
+jest.mock('react-native-encrypted-storage', () => ({
+  setItem: jest.fn(),
+  getItem: jest.fn(),
+}));
+
+
 jest.mock('react-native', () => ({
   PermissionsAndroid: {
     check: jest.fn(() => Promise.resolve(true)),
@@ -15,10 +22,6 @@ jest.mock('react-native', () => ({
     RESULTS: {GRANTED: 'granted'},
   },
   Platform: {OS: 'android'},
-}));
-
-jest.mock('react-native-encrypted-storage', () => ({
-  getItem: jest.fn(),
 }));
 
 describe('Testing nameNumberIndex function', () => {

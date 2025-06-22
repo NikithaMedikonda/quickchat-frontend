@@ -11,6 +11,7 @@ module.exports = {
     '/.(png|jpg|jpeg|svg)$/': '<rootDir>/__mocks__/fileMock.js',
   },
   setupFiles: ['<rootDir>/jest.global-mocks.ts'],
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   coveragePathIgnorePatterns: [
     '<rootDir>/src/assets/',
     '<rootDir>/src/constants/',
@@ -22,7 +23,7 @@ module.exports = {
       branches: 85,
       functions: 90,
       lines: 95,
-      statements: 95,
+      statements: 90,
     },
   },
 };

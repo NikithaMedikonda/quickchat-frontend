@@ -25,6 +25,7 @@ import {HomeStackProps, HomeTabsProps} from '../../types/usenavigation.type';
 import {getStyles} from './ContactsDisplay.styles';
 import {useDeviceCheck} from '../../services/useDeviceCheck';
 import {insertContactDetailsInLocal} from '../../database/services/userOperations';
+import EncryptedStorage from 'react-native-encrypted-storage';
 
 export const BackButton = () => {
   const colors = useThemeColors();
@@ -75,7 +76,9 @@ export const ContactsDisplay = () => {
     async (hardRefresh: boolean) => {
       if (hardRefresh) {
         setRefreshing(true);
+        await EncryptedStorage.setItem('hardRefresh','true');
       } else {
+        await EncryptedStorage.setItem('hardRefresh','false');
         setLoading(true);
       }
       try {

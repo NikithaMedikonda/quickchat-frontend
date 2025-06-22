@@ -1,8 +1,10 @@
 import {useNavigation} from '@react-navigation/native';
 import phone from 'phone';
+import {useEffect, useRef} from 'react';
 import {useTranslation} from 'react-i18next';
 import {
   Image,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -16,8 +18,11 @@ import {useDispatch, useSelector} from 'react-redux';
 import {Button} from '../../components/Button/Button';
 import {CustomAlert} from '../../components/CustomAlert/CustomAlert';
 import {Placeholder} from '../../components/InputField/InputField';
+import {clearLocalStorage} from '../../database/services/clearStorage';
+import {getDeviceId} from '../../services/GenerateDeviceId';
 import {keyDecryption} from '../../services/KeyDecryption';
 import {loginUser} from '../../services/LoginUser';
+import {syncFromRemote} from '../../services/SyncFromRemote';
 import {hide, show} from '../../store/slices/loadingSlice';
 import {
   resetLoginForm,
@@ -35,15 +40,11 @@ import {RootState} from '../../store/store';
 import {useThemeColors} from '../../themes/colors';
 import {useImagesColors} from '../../themes/images';
 import {HomeTabsProps, NavigationProps} from '../../types/usenavigation.type';
-
-import {clearLocalStorage} from '../../database/services/clearStorage';
-import {getDeviceId} from '../../services/GenerateDeviceId';
-import {syncFromRemote} from '../../services/SyncFromRemote';
 import {loginStyles} from './Login.styles';
-
 export function Login() {
   const homeNavigation = useNavigation<HomeTabsProps>();
   const navigate = useNavigation<NavigationProps>();
+  const scrollViewRef = useRef<ScrollView>(null);
   const dispatch = useDispatch();
   const colors = useThemeColors();
   const {logo} = useImagesColors();
@@ -59,11 +60,21 @@ export function Login() {
     dispatch(setAlertMessage(message));
     dispatch(setAlertVisible(true));
   };
+  useEffect(() => {
+  const showSub = Keyboard.addListener('keyboardDidShow', () => {
+    setTimeout(() => {
+      scrollViewRef.current?.scrollToEnd({ animated: true });
+    }, 100); // slight delay to wait for layout shift
+  });
+
+  return () => {
+    showSub.remove();
+  };
+}, []);
 
   const handleInputChange = (key: keyof typeof form, value: string) => {
     dispatch(setLoginField({key, value}));
   };
-
   const validateForm = () => {
     const newErrors: Partial<typeof form> = {};
     let isValid = true;
@@ -81,16 +92,13 @@ export function Login() {
     dispatch(setLoginErrors(newErrors));
     return isValid;
   };
-
   async function handleLogin() {
     dispatch(setLoginErrors({}));
     dispatch(show());
-
     if (!validateForm()) {
       dispatch(hide());
       return;
     }
-
     try {
       const deviceId = await getDeviceId();
       const result = await loginUser(form, deviceId);
@@ -100,11 +108,9 @@ export function Login() {
           encryptedPrivateKeyData: user.privateKey,
           password: form.password,
         });
-
         dispatch(hide());
         dispatch(setAlertVisible(true));
         showAlert('success', 'Login', 'Successfully Logged in');
-
         dispatch(
           setLoginSuccess({
             accessToken: result.data.accessToken,
@@ -112,12 +118,10 @@ export function Login() {
             user,
           }),
         );
-
         setTimeout(() => {
           dispatch(setAlertVisible(false));
           homeNavigation.replace('hometabs');
         }, 1000);
-
         await EncryptedStorage.setItem('authToken', result.data.accessToken);
         await EncryptedStorage.setItem(
           'refreshToken',
@@ -125,6 +129,7 @@ export function Login() {
         );
         await EncryptedStorage.setItem('user', JSON.stringify(user));
         await EncryptedStorage.setItem('privateKey', privateKey);
+        await EncryptedStorage.setItem('hardRefresh', 'false');
         const lastLoggedInUser = await EncryptedStorage.getItem(
           'lastLoggedInUser',
         );
@@ -134,7 +139,6 @@ export function Login() {
           await syncFromRemote(user.phoneNumber);
           await EncryptedStorage.setItem('firstSync', 'true');
         }
-
         dispatch(resetLoginForm());
       } else if (result.status === 404) {
         dispatch(hide());
@@ -170,13 +174,13 @@ export function Login() {
       );
     }
   }
-
   return (
     <KeyboardAvoidingView
       style={styles.keyboardAvoidView}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}>
       <ScrollView
+      ref={scrollViewRef}
         contentContainerStyle={styles.loginMainContainer}
         keyboardShouldPersistTaps="handled">
         <View style={styles.imageContainer}>
@@ -204,6 +208,9 @@ export function Login() {
         <Placeholder
           title="Password"
           value={form.password}
+          onFocus={() => {
+            scrollViewRef.current?.scrollToEnd({animated: true});
+          }}
           onChange={(text: string) => {
             handleInputChange('password', text);
           }}

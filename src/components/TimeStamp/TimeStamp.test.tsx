@@ -60,11 +60,10 @@ describe('TimeStamp component', () => {
         showFullTime
       />,
     );
-    expect(getByText('Yesterday, 8:00 AM')).toBeTruthy();
+    expect(getByText('8:00 AM')).toBeTruthy();
   });
 
   test('Should display "Day, time" within last 7 days when showFullTime is true', () => {
-    const fullTime = moment('2025-05-09T09:00:00').format('dddd, h:mm A');
     const {getByText} = render(
       <TimeStamp
         messageTime="2025-05-09T09:00:00"
@@ -72,6 +71,6 @@ describe('TimeStamp component', () => {
         showFullTime
       />,
     );
-    expect(getByText(fullTime)).toBeTruthy();
+    expect(getByText('9:00 AM')).toBeTruthy();
   });
 });

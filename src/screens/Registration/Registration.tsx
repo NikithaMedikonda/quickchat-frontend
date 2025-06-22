@@ -168,6 +168,7 @@ export const Registration = () => {
           'user',
           JSON.stringify(result.data.user),
         );
+        await EncryptedStorage.setItem('hardRefresh', 'false');
         await EncryptedStorage.setItem('privateKey', keys.privateKey);
         showAlert(
           'success',
