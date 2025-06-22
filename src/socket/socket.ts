@@ -143,7 +143,7 @@ export async function receiveReadUpdate(
   senderPhoneNumber:string,
   callback: (message: string[]) => void,
 ) {
-  await newSocket.on(`status_${receiverPhoneNumber}_${senderPhoneNumber}`, callback);
+  await newSocket.on(`read_${senderPhoneNumber}_${receiverPhoneNumber}`, callback);
 }
 export async function receiveDeliveredStatus(
   senderPhoneNumber: string,

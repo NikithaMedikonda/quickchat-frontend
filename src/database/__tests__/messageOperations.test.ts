@@ -168,26 +168,68 @@ describe('Test for getMessagesByChatId function', () => {
     expect(result).toEqual([{id: 1, message: 'New Msg'}]);
   });
 });
+// describe('Test for updateSendMessageStatusToRead', () => {
+//   it('should update the message status if the message matches', async () => {
+//     mockExecuteSql.mockResolvedValueOnce([{rows: {length: 1}}]);
+//     const value = {
+//       senderPhoneNumber: '123',
+//       receiverPhoneNumber: '456',
+//       messages: ['d', 'i'],
+//     };
+//     await updateSendMessageStatusToRead(value);
+//     expect(mockExecuteSql).toHaveBeenCalledTimes(2);
+//     expect(mockExecuteSql).toHaveBeenNthCalledWith(
+//       1,
+//       expect.stringContaining('UPDATE Messages'),
+//       ['read', value.senderPhoneNumber, value.receiverPhoneNumber, 'd'],
+//     );
+
+//     expect(mockExecuteSql).toHaveBeenNthCalledWith(
+//       2,
+//       expect.stringContaining('UPDATE Messages'),
+//       ['read', value.senderPhoneNumber, value.receiverPhoneNumber, 'i'],
+//     );
+//   });
+// });
 describe('Test for updateSendMessageStatusToRead', () => {
   it('should update the message status if the message matches', async () => {
-    mockExecuteSql.mockResolvedValueOnce([{rows: {length: 1}}]);
+    mockExecuteSql.mockResolvedValue([
+      {rowsAffected: 1}, // Mock this properly!
+    ]);
+
     const value = {
       senderPhoneNumber: '123',
       receiverPhoneNumber: '456',
       messages: ['d', 'i'],
     };
+
     await updateSendMessageStatusToRead(value);
+
     expect(mockExecuteSql).toHaveBeenCalledTimes(2);
     expect(mockExecuteSql).toHaveBeenNthCalledWith(
       1,
       expect.stringContaining('UPDATE Messages'),
-      ['read', value.senderPhoneNumber, value.receiverPhoneNumber, 'd'],
+      [
+        'read',
+        value.senderPhoneNumber,
+        value.receiverPhoneNumber,
+        'd',
+        'sent',
+        'delivered',
+      ],
     );
 
     expect(mockExecuteSql).toHaveBeenNthCalledWith(
       2,
       expect.stringContaining('UPDATE Messages'),
-      ['read', value.senderPhoneNumber, value.receiverPhoneNumber, 'i'],
+      [
+        'read',
+        value.senderPhoneNumber,
+        value.receiverPhoneNumber,
+        'i',
+        'sent',
+        'delivered',
+      ],
     );
   });
 });

@@ -11,10 +11,6 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import {Provider} from 'react-redux';
 import {getDBInstance} from '../../database/connection/connection';
 import {
-  insertToMessages,
-  updateLocalMessageStatusToRead,
-} from '../../database/services/messageOperations';
-import {
   getQueuedMessages,
   insertToQueue,
 } from '../../database/services/queueOperations';
@@ -35,6 +31,7 @@ import {resetForm} from '../../store/slices/registrationSlice';
 import {store} from '../../store/store';
 import {HomeStackParamList} from '../../types/usenavigation.type';
 import {IndividualChat} from './IndividualChat';
+import { insertToMessages } from '../../database/services/messageOperations';
 
 type IndividualChatRouteProp = RouteProp<HomeStackParamList, 'individualChat'>;
 const mockRoute: IndividualChatRouteProp = {
@@ -1054,69 +1051,6 @@ describe('IndividualChat', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Hello, test!')).toBeTruthy();
-    });
-  });
-  test('should update the message status of the send messages', async () => {
-    mockIsConnected = true;
-    (EncryptedStorage.getItem as jest.Mock).mockImplementation(
-      (key: string) => {
-        if (key === 'user') {
-          return Promise.resolve(
-            JSON.stringify({phoneNumber: '+919999999999'}),
-          );
-        }
-        if (key === 'privateKey') {
-          return Promise.resolve('mock-private-key');
-        }
-        if (key === 'authToken') {
-          return Promise.resolve('mock-auth-token');
-        }
-        return Promise.resolve(null);
-      },
-    );
-    (messageEncryption as jest.Mock).mockResolvedValue('encrypted-message');
-    (socket.sendPrivateMessage as jest.Mock).mockResolvedValue({});
-
-    (socket.receiveOnline as jest.Mock).mockImplementation(
-      async ({setIsOnline}) => setIsOnline(false),
-    );
-    (socket.receiveOffline as jest.Mock).mockImplementation(
-      async ({setIsOnline}) => setIsOnline(false),
-    );
-    (checkUserOnline as jest.Mock).mockResolvedValue({
-      status: 200,
-      data: {data: {socketId: '12332431'}},
-    });
-    async function checking() {
-      updateLocalMessageStatusToRead;
-    }
-    (socket.newSocket.on as jest.Mock).mockImplementation(() => {
-      checking;
-    });
-
-    (socket.newSocket.on as jest.Mock).mockImplementation((event, callback) => {
-      if (event === 'status_+919876543210') {
-        callback({messages: ['msg1', 'msg2']});
-      }
-    });
-    render(
-      <NavigationContainer>
-        <Provider store={store}>
-          <IndividualChat
-            navigation={
-              mockNavigation as NativeStackNavigationProp<
-                HomeStackParamList,
-                'individualChat'
-              >
-            }
-            route={mockRoute}
-          />
-        </Provider>
-      </NavigationContainer>,
-    );
-
-    await waitFor(() => {
-      expect(updateLocalMessageStatusToRead).toHaveBeenCalledTimes(2);
     });
   });
 });

@@ -43,7 +43,6 @@ import {CheckUserDeleteStatus} from '../../services/CheckUserDeleteStatus';
 import {checkUserOnline} from '../../services/CheckUserOnline';
 import {messageDecryption} from '../../services/MessageDecryption';
 import {messageEncryption} from '../../services/MessageEncryption';
-import {updateMessageStatus} from '../../services/UpdateMessageStatus';
 import {useDeviceCheck} from '../../services/useDeviceCheck';
 import {
   newSocket,
@@ -158,12 +157,16 @@ export const IndividualChat = ({route}: Props) => {
         currentUserPhoneNumberRef.current = parsedUser.phoneNumber;
       }
       const handleStatusUpdate = async (data: string[]) => {
-        await updateSendMessageStatusToRead({
-          senderPhoneNumber: currentUserPhoneNumberRef.current,
-          receiverPhoneNumber: recipientPhoneNumber,
-          messages: data,
-        });
-        setNewUpdateCount(prev => prev + 1);
+        if (data) {
+          const result = await updateSendMessageStatusToRead({
+            senderPhoneNumber: currentUserPhoneNumberRef.current,
+            receiverPhoneNumber: recipientPhoneNumber,
+            messages: data,
+          });
+          if (result) {
+            setNewUpdateCount(prev => prev + 1);
+          }
+        }
       };
 
       receiveReadUpdate(
@@ -304,6 +307,7 @@ export const IndividualChat = ({route}: Props) => {
     }
     getMessages();
   }, [user.phoneNumber, isCleared, dispatch, user.publicKey, newUpdateCount]);
+
   useEffect(() => {
     async function updateToDelivered() {
       const currentUser = await EncryptedStorage.getItem('user');
@@ -330,12 +334,14 @@ export const IndividualChat = ({route}: Props) => {
     }
     updateToDelivered();
   }, [socket, socketId, recipientPhoneNumber]);
+
   useEffect(() => {
     newSocket.emit('online', user.phoneNumber);
     return () => {
       newSocket.emit('offline', user.phoneNumber);
     };
   });
+
   useEffect(() => {
     setSocket(newSocket);
     const withChattingPhoneNumber = user.phoneNumber;
@@ -357,26 +363,17 @@ export const IndividualChat = ({route}: Props) => {
     checkJoined();
     checkDeletedSocketId();
   }, [user.phoneNumber, isBlocked]);
+
   useEffect(() => {
     async function offline() {
-      const updateStatus = async () => {
-        const currentUser = await EncryptedStorage.getItem('user');
-
-        if (currentUser) {
-          const parsedUser: User = JSON.parse(currentUser);
-          currentUserPhoneNumberRef.current = parsedUser.phoneNumber;
-        }
-        const details = {
-          senderPhoneNumber: user.phoneNumber,
-          receiverPhoneNumber: currentUserPhoneNumberRef.current,
-          timestamp: Date.now(),
-          previousStatus: 'delivered',
-          currentStatus: 'read',
-        };
-        await updateMessageStatus(details);
-        await updateLocalMessageStatusToRead(details);
+      const details = {
+        senderPhoneNumber: user.phoneNumber,
+        receiverPhoneNumber: currentUserPhoneNumberRef.current,
+        timestamp: Date.now(),
+        previousStatus: 'delivered',
+        currentStatus: 'read',
       };
-      updateStatus();
+      await updateLocalMessageStatusToRead(details);
       await newSocket.emit('offline_with', user.phoneNumber);
       await resetUnreadCount(
         await getDBInstance(),
@@ -418,25 +415,95 @@ export const IndividualChat = ({route}: Props) => {
     user.phoneNumber,
   ]);
 
-  useEffect(() => {
-    const updateStatus = async () => {
-      const currentUser = await EncryptedStorage.getItem('user');
-
-      if (currentUser) {
-        const parsedUser: User = JSON.parse(currentUser);
-        currentUserPhoneNumberRef.current = parsedUser.phoneNumber;
+  const sendMessage = useCallback(async () => {
+    if (socket) {
+      const privateKey = await EncryptedStorage.getItem('privateKey');
+      let encryptedMessage = message.trim();
+      if (privateKey) {
+        encryptedMessage = await messageEncryption({
+          message: message.trim(),
+          myPrivateKey: privateKey,
+          recipientPublicKey: user.publicKey,
+        });
       }
-      const details = {
-        senderPhoneNumber: user.phoneNumber,
-        receiverPhoneNumber: currentUserPhoneNumberRef.current,
-        previousStatus: 'delivered',
-        currentStatus: 'read',
+      const timestamp = new Date().toISOString();
+      let status = 'sent';
+      let duplicateSocketId = null;
+      const authToken = await EncryptedStorage.getItem('authToken');
+      if (authToken && isConnected) {
+        const userStatus = await checkUserOnline({
+          phoneNumber: user.phoneNumber,
+          authToken: authToken,
+          requestedUserPhoneNumber: currentUserPhoneNumberRef.current,
+        });
+        if (userStatus.status === 200 || userStatus.status === 203) {
+          duplicateSocketId = userStatus.data.data.socketId;
+          setSocketId(userStatus.data.data.socketId);
+        }
+      }
+      if (duplicateSocketId && !isOnlineWith) {
+        status = 'delivered';
+      } else if (duplicateSocketId && isOnlineWith) {
+        status = 'read';
+      } else {
+        status = 'sent';
+      }
+      const payload: SentPrivateMessage = {
+        recipientPhoneNumber,
+        senderPhoneNumber: currentUserPhoneNumberRef.current,
+        message: encryptedMessage,
+        timestamp,
+        status: status,
       };
-      await updateMessageStatus(details);
-      await updateLocalMessageStatusToRead(details);
-    };
-    updateStatus();
+      const id = generateMessageId(
+        currentUserPhoneNumberRef.current,
+        recipientPhoneNumber,
+        timestamp,
+      );
+      if (isConnected && message.trim() !== '') {
+        setMessage('');
+        await sendPrivateMessage(payload);
+        const localMessage: MessageType = {
+          ...payload,
+          id: id,
+          receiverPhoneNumber: recipientPhoneNumber,
+        };
+        await insertToMessages(localMessage);
+        setSendMessages(prev => [
+          ...prev,
+          {...payload, message: message.trim()},
+        ]);
+      } else {
+        payload.status = 'pending';
+        const localMessage: MessageType = {
+          ...payload,
+          id: id,
+          receiverPhoneNumber: recipientPhoneNumber,
+        };
+        if (message.trim() !== '') {
+          setMessage('');
+          await insertToQueue(localMessage);
+          await insertToMessages(localMessage);
+          setPendingMessages(prev => [
+            ...prev,
+            {...payload, message: message.trim()},
+          ]);
+        }
+      }
 
+      setMessage('');
+    }
+  }, [
+    isConnected,
+    isOnlineWith,
+    message,
+    recipientPhoneNumber,
+    socket,
+    user.phoneNumber,
+    user.publicKey,
+  ]);
+
+  useEffect(() => {
     async function checkOnline() {
       const currentUser = await EncryptedStorage.getItem('user');
 
@@ -457,85 +524,6 @@ export const IndividualChat = ({route}: Props) => {
     ) {
       newSocket.emit('online_with', withChattingPhoneNumber);
     }
-    const sendMessage = async () => {
-      if (socket) {
-        const privateKey = await EncryptedStorage.getItem('privateKey');
-        let encryptedMessage = message.trim();
-        if (privateKey) {
-          encryptedMessage = await messageEncryption({
-            message: message.trim(),
-            myPrivateKey: privateKey,
-            recipientPublicKey: user.publicKey,
-          });
-        }
-        const timestamp = new Date().toISOString();
-        let status = 'sent';
-        let duplicateSocketId = null;
-        const authToken = await EncryptedStorage.getItem('authToken');
-        if (authToken && isConnected) {
-          const userStatus = await checkUserOnline({
-            phoneNumber: user.phoneNumber,
-            authToken: authToken,
-            requestedUserPhoneNumber: currentUserPhoneNumberRef.current,
-          });
-          if (userStatus.status === 200 || userStatus.status === 203) {
-            duplicateSocketId = userStatus.data.data.socketId;
-            setSocketId(userStatus.data.data.socketId);
-          }
-        }
-        if (duplicateSocketId && !isOnlineWith) {
-          status = 'delivered';
-        } else if (duplicateSocketId && isOnlineWith) {
-          status = 'read';
-        } else {
-          status = 'sent';
-        }
-        const payload: SentPrivateMessage = {
-          recipientPhoneNumber,
-          senderPhoneNumber: currentUserPhoneNumberRef.current,
-          message: encryptedMessage,
-          timestamp,
-          status: status,
-        };
-        const id = generateMessageId(
-          currentUserPhoneNumberRef.current,
-          recipientPhoneNumber,
-          timestamp,
-        );
-        if (isConnected && message.trim() !== '') {
-          setMessage('');
-          await sendPrivateMessage(payload);
-          const localMessage: MessageType = {
-            ...payload,
-            id: id,
-            receiverPhoneNumber: recipientPhoneNumber,
-          };
-          await insertToMessages(localMessage);
-          setSendMessages(prev => [
-            ...prev,
-            {...payload, message: message.trim()},
-          ]);
-        } else {
-          payload.status = 'pending';
-          const localMessage: MessageType = {
-            ...payload,
-            id: id,
-            receiverPhoneNumber: recipientPhoneNumber,
-          };
-          if (message.trim() !== '') {
-            setMessage('');
-            await insertToQueue(localMessage);
-            await insertToMessages(localMessage);
-            setPendingMessages(prev => [
-              ...prev,
-              {...payload, message: message.trim()},
-            ]);
-          }
-        }
-
-        setMessage('');
-      }
-    };
 
     if (message) {
       async function selfChat() {
@@ -594,8 +582,8 @@ export const IndividualChat = ({route}: Props) => {
     user.publicKey,
     isBlocked,
     isConnected,
+    sendMessage,
   ]);
-
   useEffect(() => {
     const clearMessageCount = async () => {
       try {
@@ -614,7 +602,6 @@ export const IndividualChat = ({route}: Props) => {
 
     clearMessageCount();
   }, [user?.phoneNumber]);
-
   const processQueueMessages = useCallback(async () => {
     if (processQueueRef.current || !isInIndividualChat) {
       return;
@@ -723,7 +710,6 @@ export const IndividualChat = ({route}: Props) => {
     user.phoneNumber,
     user.publicKey,
   ]);
-
   useEffect(() => {
     if (isConnected && !wasConnectedRef.current) {
       wasConnectedRef.current = true;
