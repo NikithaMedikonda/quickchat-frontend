@@ -298,7 +298,7 @@ describe('should test socket functions', () => {
     await receiveReadUpdate(receiverPhoneNumber, senderPhoneNumber, callback);
 
     expect(mockOn).toHaveBeenCalledWith(
-      `status_${receiverPhoneNumber}_${senderPhoneNumber}`,
+      `read_${senderPhoneNumber}_${receiverPhoneNumber}`,
       callback,
     );
   });

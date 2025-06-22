@@ -186,21 +186,26 @@ export const updateSendMessageStatusToRead = async (details: {
   senderPhoneNumber: string;
   receiverPhoneNumber: string;
   messages: string[];
-}): Promise<void> => {
+}): Promise<boolean> => {
   const db: SQLiteDatabase = await getDBInstance();
   const query = `
     UPDATE Messages
     SET status = ?
-    WHERE senderPhoneNumber = ? AND receiverPhoneNumber = ? AND message = ?
+    WHERE senderPhoneNumber = ? AND receiverPhoneNumber = ? AND message = ? AND status IN (?,?)
   `;
-
+  let c = 0;
   for (let i = 0; i < details.messages.length; i++) {
-    await db.executeSql(query, [
+    const val = await db.executeSql(query, [
       'read',
       details.senderPhoneNumber,
       details.receiverPhoneNumber,
       details.messages[i],
+      'sent',
+      'delivered',
     ]);
+    if (val[0].rowsAffected > 0) {
+      c++;
+    }
     await updateChatMetadata(
       details.senderPhoneNumber,
       details.receiverPhoneNumber,
@@ -208,9 +213,13 @@ export const updateSendMessageStatusToRead = async (details: {
       'read',
     );
   }
-  const totalUnread = await getTotalUnreadCount(await getDBInstance());
-  store.dispatch(setUnreadCount(totalUnread));
-  store.dispatch(incrementTrigger());
+  if (c > 0) {
+    const totalUnread = await getTotalUnreadCount(await getDBInstance());
+    store.dispatch(setUnreadCount(totalUnread));
+    store.dispatch(incrementTrigger());
+    return true;
+  }
+  return false;
 };
 export const updateSendMessageStatusToDelivered = async (details: {
   senderPhoneNumber: string;
