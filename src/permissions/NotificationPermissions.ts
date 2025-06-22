@@ -5,8 +5,6 @@ import notifee, {
 import '@react-native-firebase/app';
 import messaging from '@react-native-firebase/messaging';
 import {PermissionsAndroid, Platform} from 'react-native';
-import {numberNameIndex} from '../helpers/nameNumberIndex';
-import {normalise} from '../helpers/normalisePhoneNumber';
 import {DEFAULT_PROFILE_IMAGE} from '../constants/defaultImage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getDBInstance } from '../database/connection/connection';
@@ -78,7 +76,6 @@ export const getContactNameFromDB = async (phoneNumber: string): Promise<string 
 
 export const listenForForegroundMessages = () => {
   return messaging().onMessage(async remoteMessage => {
-    console.log('You have recieved notificaton from backend', remoteMessage);
     const rawPhnoneNumber = remoteMessage.data?.senderPhoneNumber;
     const rawPhoto = remoteMessage.data?.profilePicture;
     const senderPhoneNumber =
@@ -89,9 +86,7 @@ export const listenForForegroundMessages = () => {
 
     if (senderPhoneNumber) {
       try {
-        const nameIndex = await numberNameIndex();
-        const normalizedSender = normalise(senderPhoneNumber);
-        contactName = nameIndex?.[normalizedSender] || senderPhoneNumber;
+        contactName = await getContactNameFromDB(senderPhoneNumber) || senderPhoneNumber;
       } catch (error) {
         contactName = senderPhoneNumber;
       }
