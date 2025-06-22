@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - fix-message-status
 
 jobs:
   lint-and-test:
