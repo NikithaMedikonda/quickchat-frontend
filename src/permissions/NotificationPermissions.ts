@@ -8,6 +8,8 @@ import {PermissionsAndroid, Platform} from 'react-native';
 import {DEFAULT_PROFILE_IMAGE} from '../constants/defaultImage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getDBInstance } from '../database/connection/connection';
+import { numberNameIndex } from '../helpers/nameNumberIndex';
+import { normalise } from '../helpers/normalisePhoneNumber';
 
 export const requestNotificationPermission = async (): Promise<boolean> => {
   if (Platform.OS === 'android') {
@@ -86,7 +88,8 @@ export const listenForForegroundMessages = () => {
 
     if (senderPhoneNumber) {
       try {
-        contactName = await getContactNameFromDB(senderPhoneNumber) || senderPhoneNumber;
+        const index = await numberNameIndex();
+        contactName = index[normalise(senderPhoneNumber)] || senderPhoneNumber;
       } catch (error) {
         contactName = senderPhoneNumber;
       }
