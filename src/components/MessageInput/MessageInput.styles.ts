@@ -1,12 +1,10 @@
-import {Dimensions, Platform, StyleSheet} from 'react-native';
+import {Dimensions, StyleSheet} from 'react-native';
 import {Colors} from '../../themes/colors';
 
 const {width, height} = Dimensions.get('window');
 
 export const messageInputStyles = (colors: Colors) => {
-  const inputBoxHeight = height * 0.05;
   const fontSize = 16;
-  const verticalPadding = (inputBoxHeight - fontSize) / 2;
 
   return StyleSheet.create({
     messageInput: {
@@ -16,16 +14,16 @@ export const messageInputStyles = (colors: Colors) => {
       paddingLeft: 15,
     },
     inputBox: {
-      height: inputBoxHeight,
+      minHeight: 40,
+      maxHeight: 120,
       width: width * 0.65,
       fontSize: fontSize,
       borderRadius: 10,
       color: colors.inputText,
       backgroundColor: colors.messageTextBox,
       textAlign: 'left',
-      textAlignVertical: Platform.OS === 'android' ? 'center' : 'top',
-      paddingTop: Platform.OS === 'ios' ? verticalPadding : 0,
-      paddingBottom: 0,
+      textAlignVertical: 'top',
+      paddingVertical: 8,
       paddingHorizontal: 16,
       margin: 0,
     },
