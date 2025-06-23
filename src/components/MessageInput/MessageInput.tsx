@@ -24,6 +24,7 @@ export const MessageInput = ({
         onChangeText={(text: string) => setInputText(text)}
         style={styles.inputBox}
         multiline
+        numberOfLines={5}
       />
       <TouchableOpacity
         onPress={() => {
