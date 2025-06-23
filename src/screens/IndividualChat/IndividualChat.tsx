@@ -116,6 +116,7 @@ export const IndividualChat = ({route}: Props) => {
   const wasConnectedRef = useRef(false);
   const screenContext = useSelector((state: RootState) => state.screenContext);
   const isInIndividualChat = screenContext?.isInIndividualChat ?? false;
+  const chatTrigger = useSelector((state: RootState) => state.chat);
   useFocusEffect(
     useCallback(() => {
       dispatch(setCurrentScreen('individualChat'));
@@ -147,9 +148,6 @@ export const IndividualChat = ({route}: Props) => {
   );
 
   useEffect(() => {
-    if (!socket || !recipientPhoneNumber) {
-      return;
-    }
     async function ReadUpdate() {
       const currentUser = await EncryptedStorage.getItem('user');
       if (currentUser) {
@@ -157,13 +155,13 @@ export const IndividualChat = ({route}: Props) => {
         currentUserPhoneNumberRef.current = parsedUser.phoneNumber;
       }
       const handleStatusUpdate = async (data: string[]) => {
-        if (data) {
+        if (data.length > 0) {
           const result = await updateSendMessageStatusToRead({
             senderPhoneNumber: currentUserPhoneNumberRef.current,
             receiverPhoneNumber: recipientPhoneNumber,
             messages: data,
           });
-          if (result) {
+          if (result > 0) {
             setNewUpdateCount(prev => prev + 1);
           }
         }
@@ -176,7 +174,7 @@ export const IndividualChat = ({route}: Props) => {
       );
     }
     ReadUpdate();
-  }, [recipientPhoneNumber, socket]);
+  }, [recipientPhoneNumber]);
   useEffect(() => {
     dispatch(setReceivePhoneNumber(user.phoneNumber));
   }, [dispatch, user.phoneNumber]);
@@ -306,7 +304,14 @@ export const IndividualChat = ({route}: Props) => {
       }
     }
     getMessages();
-  }, [user.phoneNumber, isCleared, dispatch, user.publicKey, newUpdateCount]);
+  }, [
+    user.phoneNumber,
+    isCleared,
+    dispatch,
+    user.publicKey,
+    newUpdateCount,
+    chatTrigger,
+  ]);
 
   useEffect(() => {
     async function updateToDelivered() {
