@@ -186,7 +186,7 @@ export const updateSendMessageStatusToRead = async (details: {
   senderPhoneNumber: string;
   receiverPhoneNumber: string;
   messages: string[];
-}): Promise<boolean> => {
+}): Promise<number> => {
   const db: SQLiteDatabase = await getDBInstance();
   const query = `
     UPDATE Messages
@@ -215,11 +215,10 @@ export const updateSendMessageStatusToRead = async (details: {
   }
   if (c > 0) {
     const totalUnread = await getTotalUnreadCount(await getDBInstance());
-    store.dispatch(setUnreadCount(totalUnread));
-    store.dispatch(incrementTrigger());
-    return true;
+    await store.dispatch(setUnreadCount(totalUnread));
+    await store.dispatch(incrementTrigger());
   }
-  return false;
+  return c;
 };
 export const updateSendMessageStatusToDelivered = async (details: {
   senderPhoneNumber: string;
