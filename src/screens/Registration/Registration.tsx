@@ -196,7 +196,7 @@ export const Registration = () => {
     {key: 'lastName', title: 'Last Name'},
     {key: 'password', title: 'Password', secure: true},
     {key: 'confirmPassword', title: 'Confirm Password', secure: true},
-    {key: 'email', title: 'Email (Optional)'},
+    {key: 'email', title: 'Email'},
   ] as const;
 
   return (
