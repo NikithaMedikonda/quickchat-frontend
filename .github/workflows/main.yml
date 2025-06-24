@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-
+      - single-time-emission
 jobs:
   lint-and-test:
     uses: ./.github/workflows/lint-and-test.yml
