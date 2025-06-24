@@ -388,7 +388,7 @@ export const IndividualChat = ({route}: Props) => {
     return () => {
       offline();
     };
-  }, [user.phoneNumber]);
+  }, [user.phoneNumber, isConnected]);
   useEffect(() => {
     async function receiveMessage() {
       const handleNewMessage = async (data: any) => {
