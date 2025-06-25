@@ -92,7 +92,6 @@ describe('EditProfile Component', () => {
     await waitFor(() => {
       expect(getByText('First Name')).toBeTruthy();
       expect(getByText('Last Name')).toBeTruthy();
-      expect(getByText('Email')).toBeTruthy();
       expect(getByText('Save')).toBeTruthy();
     });
   });
@@ -108,38 +107,12 @@ describe('EditProfile Component', () => {
 
     fireEvent.changeText(getByDisplayValue('test'), '');
     fireEvent.changeText(getByDisplayValue('user'), '');
-    fireEvent.changeText(
-      getByDisplayValue('testuser@gmail.com'),
-      'testuser@gmail.com',
-    );
 
     fireEvent.press(getByText('Save'));
 
     await waitFor(() => {
       expect(getByText('First name required!')).toBeTruthy();
       expect(getByText('Last name required!')).toBeTruthy();
-    });
-  });
-
-  test('shows alert for invalid email format', async () => {
-    const {getByText, getByDisplayValue} = render(
-      <Provider store={store}>
-        <EditProfile />
-      </Provider>,
-    );
-    await waitFor(() => getByText('Save'));
-
-    fireEvent.changeText(getByDisplayValue('test'), 'test1');
-    fireEvent.changeText(getByDisplayValue('user'), 'user1');
-    fireEvent.changeText(
-      getByDisplayValue('testuser@gmail.com'),
-      'invalid@email.',
-    );
-
-    fireEvent.press(getByText('Save'));
-
-    await waitFor(() => {
-      expect(getByText('Invalid email format!')).toBeTruthy();
     });
   });
 
@@ -153,10 +126,6 @@ describe('EditProfile Component', () => {
 
     fireEvent.changeText(getByDisplayValue('test'), 'test1');
     fireEvent.changeText(getByDisplayValue('user'), '');
-    fireEvent.changeText(
-      getByDisplayValue('testuser@gmail.com'),
-      'testuser@gmail.com',
-    );
 
     fireEvent.press(getByText('Save'));
 
@@ -199,10 +168,6 @@ describe('EditProfile Component', () => {
 
     fireEvent.changeText(getByDisplayValue('test'), 'test1');
     fireEvent.changeText(getByDisplayValue('user'), 'user1');
-    fireEvent.changeText(
-      getByDisplayValue('testuser@gmail.com'),
-      'testuser@gmail.com',
-    );
 
     fireEvent.press(getByText('Save'));
 
@@ -238,10 +203,6 @@ describe('EditProfile Component', () => {
 
     fireEvent.changeText(getByDisplayValue('test'), 'test1');
     fireEvent.changeText(getByDisplayValue('user'), 'user1');
-    fireEvent.changeText(
-      getByDisplayValue('testuser@gmail.com'),
-      'testuser1@gmail.com',
-    );
 
     fireEvent.press(getByText('Save'));
 
@@ -252,7 +213,7 @@ describe('EditProfile Component', () => {
           image: '',
           firstName: 'test1',
           lastName: 'user1',
-          email: 'testuser1@gmail.com',
+          email: 'testuser@gmail.com',
           token: 'mock-token',
         },
         expect.any(Object),
@@ -278,10 +239,6 @@ describe('EditProfile Component', () => {
 
     fireEvent.changeText(getByDisplayValue('test'), 'test1');
     fireEvent.changeText(getByDisplayValue('user'), 'user1');
-    fireEvent.changeText(
-      getByDisplayValue('testuser@gmail.com'),
-      'test1@example.com',
-    );
 
     fireEvent.press(getByText('Save'));
 
@@ -307,10 +264,6 @@ describe('EditProfile Component', () => {
 
     fireEvent.changeText(getByDisplayValue('test'), 'test1');
     fireEvent.changeText(getByDisplayValue('user'), 'user1');
-    fireEvent.changeText(
-      getByDisplayValue('testuser@gmail.com'),
-      'test1@example.com',
-    );
 
     fireEvent.press(getByText('Save'));
 
@@ -334,10 +287,6 @@ describe('EditProfile Component', () => {
 
     fireEvent.changeText(getByDisplayValue('test'), '');
     fireEvent.changeText(getByDisplayValue('user'), 'user1');
-    fireEvent.changeText(
-      getByDisplayValue('testuser@gmail.com'),
-      'testuser1@gmail.com',
-    );
 
     fireEvent.press(getByText('Save'));
     await waitFor(() => {
@@ -562,7 +511,6 @@ describe('EditProfile Component', () => {
     await waitFor(() => {
       expect(getByText('First Name')).toBeTruthy();
       expect(getByText('Last Name')).toBeTruthy();
-      expect(getByText('Email')).toBeTruthy();
     });
   });
 
@@ -591,10 +539,6 @@ describe('EditProfile Component', () => {
 
     fireEvent.changeText(getByDisplayValue('test'), 'test1');
     fireEvent.changeText(getByDisplayValue('user'), 'user1');
-    fireEvent.changeText(
-      getByDisplayValue('testuser@gmail.com'),
-      'testuser1@gmail.com',
-    );
 
     fireEvent.press(getByText('Save'));
 
@@ -643,12 +587,9 @@ describe('EditProfile Component', () => {
     );
 
     await waitFor(() => getByText('Save'));
-    fireEvent.changeText(getByDisplayValue('test'), 'test');
-    fireEvent.changeText(getByDisplayValue('user'), 'user');
-    fireEvent.changeText(
-      getByDisplayValue('testuser@gmail.com'),
-      'test@example.com',
-    );
+    fireEvent.changeText(getByDisplayValue('test'), 'test1');
+    fireEvent.changeText(getByDisplayValue('user'), 'user1');
+
     fireEvent.press(getByText('Save'));
 
     await waitFor(() => {
