@@ -1,8 +1,8 @@
-import React, {useState} from 'react';
-import {Modal, View, Text, TouchableOpacity} from 'react-native';
-import {OtpInput} from 'react-native-otp-entry';
-import {otpInputStyles} from './OtpInputModal.styles';
-import {useThemeColors} from '../../themes/colors';
+import { useState } from 'react';
+import { Modal, Text, TouchableOpacity, View } from 'react-native';
+import { OtpInput } from 'react-native-otp-entry';
+import { useThemeColors } from '../../themes/colors';
+import { otpInputStyles } from './OtpInputModal.styles';
 interface OtpInputModalProps {
   visible: boolean;
 }
