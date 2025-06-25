@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - otp-input-modal
 
 jobs:
   lint-and-test:
