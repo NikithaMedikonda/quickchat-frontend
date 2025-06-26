@@ -1,4 +1,4 @@
-import {NavigationContainer} from '@react-navigation/native';
+import {NavigationContainer, useRoute} from '@react-navigation/native';
 import {
   fireEvent,
   render,
@@ -68,6 +68,10 @@ jest.mock('@react-navigation/native', () => {
       navigate: mockNavigate,
       replace: mockReplace,
     }),
+    useRoute: jest.fn(() => ({
+      name: 'register',
+      params: {},
+    })),
   };
 });
 const mockNavigate = jest.fn();
@@ -132,6 +136,7 @@ jest.useFakeTimers();
 const mockExecuteSql = jest.fn();
 describe('Login Screen', () => {
   beforeEach(() => {
+    (useRoute as jest.Mock).mockReturnValue({ name: 'login' });
     (connectionModule.getDBInstance as jest.Mock).mockResolvedValue({
       executeSql: mockExecuteSql,
     });
