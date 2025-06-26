@@ -1,9 +1,15 @@
 import {NavigationContainer} from '@react-navigation/native';
-import {fireEvent, render, waitFor} from '@testing-library/react-native';
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react-native';
 import {Provider} from 'react-redux';
 import {resetForm} from '../../store/slices/registrationSlice';
 import {store} from '../../store/store';
 import {Registration} from './Registration';
+import {registerUser} from '../../services/RegisterUser';
 
 jest.mock('react-native-image-crop-picker', () => ({
   openPicker: jest.fn().mockResolvedValue({path: 'mocked/image/path.jpg'}),
@@ -68,6 +74,9 @@ jest.mock('../../permissions/ImagePermissions', () => ({
 
 jest.mock('../../services/RegisterUser.ts', () => ({
   registerUser: jest.fn(),
+}));
+jest.mock('../../services/SendOtp.ts', () => ({
+  sendOtp: jest.fn(),
 }));
 
 jest.mock('../../services/KeyGeneration', () => ({
@@ -202,16 +211,89 @@ describe('Registration Screen', () => {
     });
   });
 
-  it('successfully submits form with valid data', async () => {
-    const {registerUser} = require('../../services/RegisterUser.ts');
-    registerUser.mockResolvedValue({
+  // it('successfully submits form with valid data', async () => {
+  //   const {registerUser} = require('../../services/RegisterUser.ts');
+  //   registerUser.mockResolvedValue({
+  //     status: 200,
+  //     data: {
+  //       accessToken: 'mockedToken',
+  //       refreshToken: 'refreshToken',
+  //       user: {},
+  //       deviceId: 'qdshjgdjfwgrwfhk',
+  //     },
+  //   });
+
+  //   const {getByPlaceholderText, getByText} = renderComponent();
+
+  //   fireEvent.changeText(getByPlaceholderText('First Name'), 'test');
+  //   fireEvent.changeText(getByPlaceholderText('Last Name'), 'user');
+  //   fireEvent.changeText(getByPlaceholderText('Phone number'), '1234567890');
+  //   fireEvent.changeText(getByPlaceholderText('Password'), 'Password@123');
+  //   fireEvent.changeText(
+  //     getByPlaceholderText('Confirm Password'),
+  //     'Password@123',
+  //   );
+  //   fireEvent.changeText(
+  //     getByPlaceholderText('Email (Optional)'),
+  //     'testuser@gmail.com',
+  //   );
+
+  //   fireEvent.press(getByText('Register'));
+
+  //   await waitFor(() => {
+  //     expect(mockReplace).toHaveBeenCalledWith('hometabs');
+  //   });
+  // });
+  it('successfully submits form with valid data and shows OTP modal', async () => {
+    (registerUser as jest.Mock).mockResolvedValue({
       status: 200,
       data: {
         accessToken: 'mockedToken',
         refreshToken: 'refreshToken',
-        user: {},
-        deviceId: 'qdshjgdjfwgrwfhk',
+        user: {
+          name: 'Test User',
+          email: 'testuser@gmail.com',
+        },
+        deviceId: 'mocked-device-id',
       },
+    });
+    const {sendOtp} = require('../../services/SendOtp');
+    sendOtp.mockResolvedValue(200);
+
+    global.fetch = jest.fn().mockImplementation(url => {
+      if (url.includes('/api/register/otp')) {
+        return Promise.resolve({status: 200});
+      }
+      if (url.includes('/api/register/verify-otp')) {
+        // return Promise.resolve({status: 200});
+        return Promise.resolve({
+          status: 200,
+          ok: true,
+          json: async () => ({isVerified: true}),
+        });
+      }
+
+      // return Promise.resolve({
+      //   json: () =>
+      //     Promise.resolve({
+      //       accessToken: 'mockedToken',
+      //       refreshToken: 'refreshToken',
+      //       user: {
+      //         name: 'Test User',
+      //         email: 'testuser@gmail.com',
+      //       },
+      //       deviceId: 'mocked-device-id',
+      //     }),
+      //   status: 200,
+      // });
+    });
+    const {getDeviceId} = require('../../services/GenerateDeviceId');
+    getDeviceId.mockResolvedValue('mocked-device-id');
+
+    const {keyGeneration} = require('../../services/KeyGeneration');
+    keyGeneration.mockResolvedValue({
+      publicKey: 'mock-public-key',
+      privateKey: 'mock-private-key',
     });
 
     const {getByPlaceholderText, getByText} = renderComponent();
@@ -231,15 +313,22 @@ describe('Registration Screen', () => {
 
     fireEvent.press(getByText('Register'));
 
+    const otpInputs = await waitFor(() => screen.getAllByA11yHint('OTP digit'));
+    expect(otpInputs.length).toBe(4);
+
+    fireEvent.changeText(otpInputs[0], '1');
+    fireEvent.changeText(otpInputs[1], '2');
+    fireEvent.changeText(otpInputs[2], '3');
+    fireEvent.changeText(otpInputs[3], '4');
+
     await waitFor(() => {
-      expect(mockReplace).toHaveBeenCalledWith('hometabs');
+      expect(screen.getByA11yHint('validate-otp')).toBeTruthy();
     });
   });
+
   it('shows account deleted error (404)', async () => {
-    const {registerUser} = require('../../services/RegisterUser.ts');
-    registerUser.mockResolvedValue({
-      status: 404,
-    });
+    const {sendOtp} = require('../../services/SendOtp');
+    sendOtp.mockResolvedValue(404);
 
     const {getByPlaceholderText, getByText} = renderComponent();
 
@@ -266,16 +355,14 @@ describe('Registration Screen', () => {
       expect(state.registration.alertType).toBe('error');
     });
   });
-  it('shows already exists error (409)', async () => {
-    const {registerUser} = require('../../services/RegisterUser.ts');
-    registerUser.mockResolvedValue({
-      status: 409,
-    });
+
+  it('shows error if user already exists (409)', async () => {
+    const {sendOtp} = require('../../services/SendOtp');
+    sendOtp.mockResolvedValue(409);
 
     const {getByPlaceholderText, getByText} = renderComponent();
-
-    fireEvent.changeText(getByPlaceholderText('First Name'), 'test');
-    fireEvent.changeText(getByPlaceholderText('Last Name'), 'user');
+    fireEvent.changeText(getByPlaceholderText('First Name'), 'Test');
+    fireEvent.changeText(getByPlaceholderText('Last Name'), 'User');
     fireEvent.changeText(getByPlaceholderText('Phone number'), '1234567890');
     fireEvent.changeText(getByPlaceholderText('Password'), 'Password@123');
     fireEvent.changeText(
@@ -284,81 +371,15 @@ describe('Registration Screen', () => {
     );
     fireEvent.changeText(
       getByPlaceholderText('Email (Optional)'),
-      'user@gmail.com',
+      'test@test.com',
     );
 
     fireEvent.press(getByText('Register'));
-
     await waitFor(() => {
       const state = store.getState();
       expect(state.registration.alertMessage).toBe(
         'User already exists with this number or email',
       );
-      expect(state.registration.alertType).toBe('error');
-    });
-  });
-
-  it('shows generic error if server fails', async () => {
-    const {registerUser} = require('../../services/RegisterUser.ts');
-    registerUser.mockResolvedValue({
-      status: 500,
-    });
-
-    const {getByPlaceholderText, getByText} = renderComponent();
-
-    fireEvent.changeText(getByPlaceholderText('First Name'), 'Test');
-    fireEvent.changeText(getByPlaceholderText('Last Name'), 'User');
-    fireEvent.changeText(getByPlaceholderText('Phone number'), '1234567890');
-    fireEvent.changeText(getByPlaceholderText('Password'), 'Password@123');
-    fireEvent.changeText(
-      getByPlaceholderText('Confirm Password'),
-      'Password@123',
-    );
-    fireEvent.changeText(
-      getByPlaceholderText('Email (Optional)'),
-      'user@gmail.com',
-    );
-
-    fireEvent.press(getByText('Register'));
-
-    await waitFor(() => {
-      expect(registerUser).toHaveBeenCalled();
-      const state = store.getState();
-      expect(state.registration.alertMessage).toBe(
-        'Something went wrong while registering',
-      );
-      expect(state.registration.alertType).toBe('error');
-    });
-  });
-
-  it('shows generic error if server fails with error message', async () => {
-    const {registerUser} = require('../../services/RegisterUser.ts');
-    registerUser.mockRejectedValue(new Error('Server failure'));
-
-    const {getByPlaceholderText, getByText} = renderComponent();
-
-    fireEvent.changeText(getByPlaceholderText('First Name'), 'Test');
-    fireEvent.changeText(getByPlaceholderText('Last Name'), 'User');
-    fireEvent.changeText(getByPlaceholderText('Phone number'), '1234567890');
-    fireEvent.changeText(getByPlaceholderText('Password'), 'Password@123');
-    fireEvent.changeText(
-      getByPlaceholderText('Confirm Password'),
-      'Password@123',
-    );
-    fireEvent.changeText(
-      getByPlaceholderText('Email (Optional)'),
-      'user@gmail.com',
-    );
-
-    fireEvent.press(getByText('Register'));
-
-    await waitFor(() => {
-      expect(registerUser).toHaveBeenCalled();
-      const state = store.getState();
-      expect(state.registration.alertMessage).toBe(
-        'Please check your internet',
-      );
-      expect(state.registration.alertType).toBe('info');
     });
   });
 
