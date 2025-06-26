@@ -1,7 +1,8 @@
-import { useNavigation } from '@react-navigation/native';
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import {useNavigation} from '@react-navigation/native';
+import {useState} from 'react';
+import {useTranslation} from 'react-i18next';
 import {
+  ActivityIndicator,
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -12,17 +13,17 @@ import {
 } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import PhoneInput from 'react-native-phone-input';
-import { useDispatch, useSelector } from 'react-redux';
-import { Button } from '../../components/Button/Button';
-import { CustomAlert } from '../../components/CustomAlert/CustomAlert';
-import { ImagePickerModal } from '../../components/ImagePickerModal/ImagePickerModal';
-import { Placeholder } from '../../components/InputField/InputField';
-import { DEFAULT_PROFILE_IMAGE } from '../../constants/defaultImage';
-import { getDeviceId } from '../../services/GenerateDeviceId';
-import { keyGeneration } from '../../services/KeyGeneration';
-import { registerUser } from '../../services/RegisterUser';
-import { hide, show } from '../../store/slices/loadingSlice';
-import { setLoginSuccess } from '../../store/slices/loginSlice';
+import {useDispatch, useSelector} from 'react-redux';
+import {Button} from '../../components/Button/Button';
+import {CustomAlert} from '../../components/CustomAlert/CustomAlert';
+import {ImagePickerModal} from '../../components/ImagePickerModal/ImagePickerModal';
+import {Placeholder} from '../../components/InputField/InputField';
+import {DEFAULT_PROFILE_IMAGE} from '../../constants/defaultImage';
+import {getDeviceId} from '../../services/GenerateDeviceId';
+import {keyGeneration} from '../../services/KeyGeneration';
+import {registerUser} from '../../services/RegisterUser';
+import {hide, show} from '../../store/slices/loadingSlice';
+import {setLoginSuccess} from '../../store/slices/loginSlice';
 import {
   resetForm,
   setAlertMessage,
@@ -33,10 +34,12 @@ import {
   setFormField,
   setIsVisible,
 } from '../../store/slices/registrationSlice';
-import { RootState } from '../../store/store';
-import { useThemeColors } from '../../themes/colors';
-import { HomeTabsProps, NavigationProps } from '../../types/usenavigation.type';
-import { getStyles } from './Registration.styles';
+import {RootState} from '../../store/store';
+import {useThemeColors} from '../../themes/colors';
+import {HomeTabsProps, NavigationProps} from '../../types/usenavigation.type';
+import {getStyles} from './Registration.styles';
+import {sendOtp} from '../../services/SendOtp';
+import {OtpInputModal} from '../../components/OtpInput/OtpInputModal';
 
 export const Registration = () => {
   const [isPasswordFocused, setIsPasswordFocused] = useState(false);
@@ -52,6 +55,9 @@ export const Registration = () => {
   const colors = useThemeColors();
   const styles = getStyles(colors);
   const {t} = useTranslation('auth');
+  const [otp, setOtp] = useState('');
+  const [showOTPModal, setShowOTPModal] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const showAlert = (type: string, title: string, message: string) => {
     dispatch(setAlertType(type));
@@ -108,7 +114,56 @@ export const Registration = () => {
     dispatch(setErrors(newErrors));
     return isValid;
   };
+  const resendOtpHandler = async () => {
+    await sendOtp(
+      `${form.phoneNumber}`,
+      `${form.firstName} ${form.lastName}`,
+      `${form.email}`,
+    );
+  };
 
+  const otpVerification = async () => {
+    if (!validateForm()) {
+      dispatch(hide());
+      return;
+    }
+    setLoading(true);
+    try {
+      const responseStatus = await sendOtp(
+        `${form.phoneNumber}`,
+        `${form.firstName} ${form.lastName}`,
+        `${form.email}`,
+      );
+      if (responseStatus === 200) {
+        setShowOTPModal(true);
+      } else if (responseStatus === 404) {
+        dispatch(hide());
+        dispatch(setAlertVisible(true));
+        showAlert(
+          'error',
+          'Registration failed',
+          'Sorry, this account is deleted',
+        );
+      } else if (responseStatus === 409) {
+        dispatch(hide());
+        dispatch(setAlertVisible(true));
+        showAlert(
+          'error',
+          'Registration failed',
+          'User already exists with this number or email',
+        );
+      }
+    } catch (error) {
+      dispatch(hide());
+      showAlert(
+        'error',
+        'Registration failed',
+        'Something went wrong while registering',
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
   const handleRegister = async () => {
     dispatch(setErrors({}));
     dispatch(show());
@@ -129,23 +184,7 @@ export const Registration = () => {
         },
         {deviceId: deviceId},
       );
-      if (result.status === 404) {
-        dispatch(hide());
-        dispatch(setAlertVisible(true));
-        showAlert(
-          'error',
-          'Registration failed',
-          'Sorry, this account is deleted',
-        );
-      } else if (result.status === 409) {
-        dispatch(hide());
-        dispatch(setAlertVisible(true));
-        showAlert(
-          'error',
-          'Registration failed',
-          'User already exists with this number or email',
-        );
-      } else if (result.status === 200) {
+      if (result.status === 200) {
         dispatch(hide());
         showAlert('success', 'Success', 'Successfully registered');
         dispatch(setAlertVisible(true));
@@ -269,7 +308,11 @@ export const Registration = () => {
           </View>
         ))}
         <View style={styles.registerButtonContainer}>
-          <Button title="Register" onPress={handleRegister} />
+          {loading ? (
+            <ActivityIndicator size="large" color="white" />
+          ) : (
+            <Button title="Register" onPress={otpVerification} />
+          )}
         </View>
         <View style={styles.loginButtonContainer}>
           <Text style={styles.loginButtontext}>
@@ -282,6 +325,15 @@ export const Registration = () => {
         {isVisible && <ImagePickerModal />}
       </ScrollView>
       <CustomAlert type={alertType} title={alertTitle} message={alertMessage} />
+      <OtpInputModal
+        visible={showOTPModal}
+        setIsVisible={setShowOTPModal}
+        otp={otp}
+        setOtp={setOtp}
+        email={form.email}
+        onSuccess={handleRegister}
+        resendHandler={resendOtpHandler}
+      />
     </KeyboardAvoidingView>
   );
 };
