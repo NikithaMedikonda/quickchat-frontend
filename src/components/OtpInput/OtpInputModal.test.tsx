@@ -11,7 +11,13 @@ jest.mock('react-redux', () => ({
 }));
 
 jest.mock('@react-navigation/native', () => ({
-  useNavigation: jest.fn(() => ({replace: jest.fn()})),
+  useNavigation: jest.fn(() => ({
+    replace: jest.fn(),
+  })),
+  useRoute: jest.fn(() => ({
+    name: 'register',
+    params: {},
+  })),
 }));
 
 describe('Test for OtpInputModal', () => {
