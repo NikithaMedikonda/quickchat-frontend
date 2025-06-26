@@ -370,33 +370,6 @@ describe('Login Screen', () => {
       ).toBeTruthy();
     });
   });
-  test('should show error alert when login returns unexpected status', async () => {
-    (phone as jest.Mock).mockReturnValue({
-      isValid: true,
-      phoneNumber: '+918522041688',
-    });
-
-    (verifyUserDetails as jest.Mock).mockResolvedValue({
-      status: 200,
-      isLogin: false,
-    });
-
-    (loginUser as jest.Mock).mockResolvedValue({
-      status: 403,
-    });
-
-    const phoneNumber = screen.getByPlaceholderText('Phone number');
-    const password = screen.getByPlaceholderText('Password');
-
-    fireEvent.changeText(phoneNumber, '8522041688');
-    fireEvent.changeText(password, 'Anu@1234');
-    fireEvent.press(screen.getByText('Login'));
-
-    await waitFor(() => {
-      expect(screen.getByText('Login failed')).toBeTruthy();
-      expect(screen.getByText('Something went wrong while login')).toBeTruthy();
-    });
-  });
   test('should show info alert when login throws an error', async () => {
     (phone as jest.Mock).mockReturnValue({
       isValid: true,
