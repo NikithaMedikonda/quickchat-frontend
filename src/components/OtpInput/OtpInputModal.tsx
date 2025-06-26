@@ -53,7 +53,6 @@ export const OtpInputModal = ({
   const navigation = useNavigation<NavigationProps>();
   const otpRef = useRef<OtpInputRef>(null);
   const dispatch = useDispatch();
-  console.log('otp', 'came to otp modal');
 
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60)
@@ -99,9 +98,7 @@ export const OtpInputModal = ({
     setIsValidating(true);
     setError('');
     setInfo('');
-console.log('otp', 'came to verify1');
     try {
-      console.log('otp', 'came to verify');
       const response = await fetch(`${API_URL}/api/verify-otp`, {
         method: 'POST',
         headers: {
