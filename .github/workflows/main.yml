@@ -5,7 +5,7 @@ on:
     branches:
       - main
       - fix-push-notifications-bugs
-      - fix-message-status
+      - email-otp-verification
 
 jobs:
   lint-and-test:
