@@ -45,6 +45,10 @@ jest.mock('@react-navigation/native', () => {
   };
 });
 
+jest.mock('../../services/useDeviceCheck', () => ({
+  useDeviceCheck: jest.fn(),
+}));
+
 jest.mock('react-native-encrypted-storage', () => ({
   clear: jest.fn(),
   getItem: jest.fn().mockResolvedValue('mock-private-key'),
