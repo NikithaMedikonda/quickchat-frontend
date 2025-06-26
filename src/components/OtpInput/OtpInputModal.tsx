@@ -1,27 +1,28 @@
+import {useNavigation} from '@react-navigation/native';
 import {useEffect, useRef, useState} from 'react';
 import {
+  ActivityIndicator,
   Modal,
-  View,
   Text,
   TouchableOpacity,
-  ActivityIndicator,
   TouchableWithoutFeedback,
+  View,
 } from 'react-native';
 import {OtpInput, OtpInputRef} from 'react-native-otp-entry';
-import {useThemeColors} from '../../themes/colors';
-import {otpInputStyles} from './OtpInputModal.styles';
-import {API_URL} from '../../constants/api';
-import {useNavigation} from '@react-navigation/native';
-import {NavigationProps} from '../../types/usenavigation.type';
-import {
-  setAlertType,
-  setAlertTitle,
-  setAlertMessage,
-  setAlertVisible,
-  resetForm,
-} from '../../store/slices/registrationSlice';
 import {useDispatch} from 'react-redux';
+import {API_URL} from '../../constants/api';
 import {resetLoginForm} from '../../store/slices/loginSlice';
+import {
+  resetForm,
+  setAlertMessage,
+  setAlertTitle,
+  setAlertType,
+  setAlertVisible,
+} from '../../store/slices/registrationSlice';
+import {useThemeColors} from '../../themes/colors';
+import {NavigationProps} from '../../types/usenavigation.type';
+import {otpInputStyles} from './OtpInputModal.styles';
+import {useRoute} from '@react-navigation/native';
 
 interface OtpInputModalProps {
   visible: boolean;
@@ -53,7 +54,12 @@ export const OtpInputModal = ({
   const navigation = useNavigation<NavigationProps>();
   const otpRef = useRef<OtpInputRef>(null);
   const dispatch = useDispatch();
+  const route = useRoute();
 
+  const otpMessage =
+    route.name === 'login'
+      ? 'Your account is already logged in on another device.\nPlease enter OTP to login here and log out there.'
+      : 'Please enter the OTP sent to email';
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60)
       .toString()
@@ -166,7 +172,7 @@ export const OtpInputModal = ({
           <View style={styles.modalTextView}>
             <Text style={styles.header}>Verification code required</Text>
             <Text style={styles.otpHeader}>
-              Please enter the OTP sent to email
+              {otpMessage}
             </Text>
             {error && (
               <Text style={styles.error} numberOfLines={2}>
