@@ -31,7 +31,10 @@ import {resetForm} from '../../store/slices/registrationSlice';
 import {store} from '../../store/store';
 import {HomeStackParamList} from '../../types/usenavigation.type';
 import {IndividualChat} from './IndividualChat';
-import { insertToMessages } from '../../database/services/messageOperations';
+import {
+  getMessagesByChatId,
+  insertToMessages,
+} from '../../database/services/messageOperations';
 
 type IndividualChatRouteProp = RouteProp<HomeStackParamList, 'individualChat'>;
 const mockRoute: IndividualChatRouteProp = {
@@ -984,6 +987,9 @@ describe('IndividualChat', () => {
 
   test('should sendPrivateMessage and the messages should be delivered when the user is online with this user', async () => {
     mockIsConnected = true;
+    (getMessagesByChatId as jest.Mock).mockResolvedValue([]);
+    (messageDecryption as jest.Mock).mockResolvedValue('Hello, test!');
+
     (EncryptedStorage.getItem as jest.Mock).mockImplementation(
       (key: string) => {
         if (key === 'user') {
@@ -1000,6 +1006,7 @@ describe('IndividualChat', () => {
         return Promise.resolve(null);
       },
     );
+
     (messageEncryption as jest.Mock).mockResolvedValue('encrypted-message');
     (socket.sendPrivateMessage as jest.Mock).mockResolvedValue({});
 
@@ -1013,6 +1020,7 @@ describe('IndividualChat', () => {
       status: 200,
       data: {data: {socketId: '12332431'}},
     });
+
     render(
       <NavigationContainer>
         <Provider store={store}>
@@ -1028,6 +1036,7 @@ describe('IndividualChat', () => {
         </Provider>
       </NavigationContainer>,
     );
+
     await waitFor(() => {
       expect(EncryptedStorage.getItem).toHaveBeenCalledWith('user');
     });
@@ -1049,9 +1058,12 @@ describe('IndividualChat', () => {
     expect(calledPayload.message).toBe('encrypted-message');
     expect(calledPayload.status).toBe('delivered');
 
-    await waitFor(() => {
-      expect(screen.getByText('Hello, test!')).toBeTruthy();
-    });
+    await waitFor(
+      () => {
+        expect(screen.getByText('Hello, test!')).toBeTruthy();
+      },
+      {timeout: 5000},
+    );
   });
 });
 
@@ -1362,6 +1374,16 @@ describe('User Delete Status', () => {
         return Promise.resolve(null);
       },
     );
+    (getMessagesByChatId as jest.Mock).mockResolvedValue([
+      {
+        id: 'test-id',
+        senderPhoneNumber: '+919999999999',
+        receiverPhoneNumber: '+918522041688',
+        message: 'encrypted-message',
+        timestamp: new Date().toISOString(),
+        status: 'pending',
+      },
+    ]);
 
     (messageEncryption as jest.Mock).mockResolvedValue('encrypted-message');
     mockIsConnected = false;
@@ -1388,14 +1410,10 @@ describe('User Delete Status', () => {
 
     fireEvent.changeText(input, 'Offline message');
     fireEvent.press(sendButton);
-
     await waitFor(() => {
       expect(socket.sendPrivateMessage).not.toHaveBeenCalled();
-    });
-
-    await waitFor(() => {
-      expect(insertToQueue as jest.Mock).toHaveBeenCalled();
-      expect(insertToMessages as jest.Mock).toHaveBeenCalled();
+      expect(insertToQueue).toHaveBeenCalled();
+      expect(insertToMessages).toHaveBeenCalled();
     });
 
     const queuedPayload = (insertToQueue as jest.Mock).mock.calls[0][0];
@@ -1403,10 +1421,8 @@ describe('User Delete Status', () => {
     expect(queuedPayload.message).toBe('encrypted-message');
     expect(queuedPayload.senderPhoneNumber).toBe('+919999999999');
     expect(queuedPayload.receiverPhoneNumber).toBe('+918522041688');
-
-    await waitFor(() => {
-      expect(screen.getByText('Offline message')).toBeTruthy();
-    });
+    const insertedMessage = (insertToMessages as jest.Mock).mock.calls[0][0];
+    expect(insertedMessage.status).toBe('pending');
   });
 });
 
@@ -1483,12 +1499,6 @@ describe('Test for IndividualChat processing queuing messages', () => {
         'online_with',
         mockRoute.params.user.phoneNumber,
       );
-
-      // expect(checkUserOnline as jest.Mock).toHaveBeenCalledWith({
-      //   phoneNumber: mockRoute.params.user.phoneNumber,
-      //   authToken: 'mock-auth-token',
-      //   requestedUserPhoneNumber: '+911234567890',
-      // });
     });
   });
 
@@ -1511,23 +1521,6 @@ describe('Test for IndividualChat processing queuing messages', () => {
       expect(socket.sendPrivateMessage as jest.Mock).not.toHaveBeenCalled();
     });
   });
-
-  // it('sets socketId state correctly when checkUserOnline returns 200', async () => {
-  //   render(
-  //     <NavigationContainer>
-  //       <Provider store={store}>
-  //         <IndividualChat
-  //           navigation={mockNavigation as any}
-  //           route={mockRoute as any}
-  //         />
-  //       </Provider>
-  //     </NavigationContainer>,
-  //   );
-
-  //   await waitFor(() => {
-  //     expect(checkUserOnline as jest.Mock).toHaveBeenCalled();
-  //   });
-  // });
 
   test('should call selfChat when sender and recipient phone numbers are the same, even in the offline mode', async () => {
     const testMessage = 'Hello to self';

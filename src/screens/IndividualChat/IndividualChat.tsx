@@ -174,7 +174,7 @@ export const IndividualChat = ({route}: Props) => {
       );
     }
     ReadUpdate();
-  }, [recipientPhoneNumber]);
+  }, [recipientPhoneNumber, newUpdateCount]);
   useEffect(() => {
     dispatch(setReceivePhoneNumber(user.phoneNumber));
   }, [dispatch, user.phoneNumber]);
@@ -253,6 +253,28 @@ export const IndividualChat = ({route}: Props) => {
   }, [isConnected, showAlert, user.phoneNumber]);
 
   useEffect(() => {
+    setSocket(newSocket);
+    const withChattingPhoneNumber = user.phoneNumber;
+    if (!isBlocked && currentUserPhoneNumberRef.current !== user.phoneNumber) {
+      newSocket.emit('online_with', withChattingPhoneNumber);
+    }
+    async function checkJoined() {
+      receiveJoined({
+        userPhoneNumber: user.phoneNumber,
+        setSocketId: setSocketId,
+      });
+    }
+    async function checkDeletedSocketId() {
+      receiveDeleted({
+        userPhoneNumber: user.phoneNumber,
+        setSocketId: setSocketId,
+      });
+    }
+    checkJoined();
+    checkDeletedSocketId();
+  }, [user.phoneNumber, isBlocked]);
+
+  useEffect(() => {
     async function getMessages() {
       const currentUser = await EncryptedStorage.getItem('user');
       if (currentUser) {
@@ -298,6 +320,7 @@ export const IndividualChat = ({route}: Props) => {
           setFetchMessages(formattedMessages);
           setReceivedMessages([]);
           setSendMessages([]);
+          setPendingMessages([]);
         }
       } catch (e) {
         setFetchMessages([]);
@@ -311,6 +334,7 @@ export const IndividualChat = ({route}: Props) => {
     user.publicKey,
     newUpdateCount,
     chatTrigger,
+    socketId,
   ]);
 
   useEffect(() => {
@@ -348,28 +372,6 @@ export const IndividualChat = ({route}: Props) => {
   });
 
   useEffect(() => {
-    setSocket(newSocket);
-    const withChattingPhoneNumber = user.phoneNumber;
-    if (!isBlocked && currentUserPhoneNumberRef.current !== user.phoneNumber) {
-      newSocket.emit('online_with', withChattingPhoneNumber);
-    }
-    async function checkJoined() {
-      receiveJoined({
-        userPhoneNumber: user.phoneNumber,
-        setSocketId: setSocketId,
-      });
-    }
-    async function checkDeletedSocketId() {
-      receiveDeleted({
-        userPhoneNumber: user.phoneNumber,
-        setSocketId: setSocketId,
-      });
-    }
-    checkJoined();
-    checkDeletedSocketId();
-  }, [user.phoneNumber, isBlocked]);
-
-  useEffect(() => {
     async function offline() {
       const details = {
         senderPhoneNumber: user.phoneNumber,
@@ -388,7 +390,7 @@ export const IndividualChat = ({route}: Props) => {
     return () => {
       offline();
     };
-  }, [user.phoneNumber]);
+  }, [user.phoneNumber, isConnected]);
   useEffect(() => {
     async function receiveMessage() {
       const handleNewMessage = async (data: any) => {
@@ -511,7 +513,6 @@ export const IndividualChat = ({route}: Props) => {
   useEffect(() => {
     async function checkOnline() {
       const currentUser = await EncryptedStorage.getItem('user');
-
       if (currentUser) {
         const parsedUser: User = JSON.parse(currentUser);
         currentUserPhoneNumberRef.current = parsedUser.phoneNumber;
@@ -588,6 +589,7 @@ export const IndividualChat = ({route}: Props) => {
     isBlocked,
     isConnected,
     sendMessage,
+    dispatch,
   ]);
   useEffect(() => {
     const clearMessageCount = async () => {
@@ -751,19 +753,24 @@ export const IndividualChat = ({route}: Props) => {
     isInIndividualChat,
   ]);
   useEffect(() => {
-    const all = [
+    const messageMap = new Map<string, AllMessages>();
+    [
       ...fetchMessages,
+      ...pendingMessages,
       ...sendMessages,
       ...receivedMessages,
-      ...pendingMessages,
-    ];
-    const Messages = all.sort(
+    ].forEach(msg => {
+      if (msg.timestamp) {
+        messageMap.set(msg.timestamp, msg);
+      }
+    });
+
+    const Messages = Array.from(messageMap.values()).sort(
       (a, b) =>
         new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
     );
     setAllMessages(Messages);
   }, [receivedMessages, sendMessages, fetchMessages, pendingMessages]);
-
   return (
     <View style={styles.container}>
       <View style={styles.chatHeaderContainer}>

@@ -222,6 +222,20 @@ export const HomeTabs = () => {
       newSocket.disconnect();
     };
   }, []);
+  useEffect(() => {
+    const socketReConnection = async () => {
+      if (isConnected) {
+        const currentUser = await EncryptedStorage.getItem('user');
+        if (!currentUser) {
+          return;
+        }
+        const parsedUser: User = JSON.parse(currentUser);
+        currentUserPhoneNumberRef.current = parsedUser.phoneNumber;
+        await socketConnection(parsedUser.phoneNumber);
+      }
+    };
+    socketReConnection();
+  }, [isConnected]);
 
   useEffect(() => {
     const fetchChats = async () => {
@@ -278,7 +292,7 @@ export const HomeTabs = () => {
       }
     };
     syncMessages();
-  }, [dispatch, newMessageCount, chatTrigger]);
+  }, [dispatch, newMessageCount, chatTrigger, isConnected]);
 
   const Tab = createBottomTabNavigator();
   const colors = useThemeColors();
