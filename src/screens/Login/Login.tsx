@@ -219,7 +219,6 @@ export function Login() {
         );
       } else {
         dispatch(hide());
-        showAlert('error', 'Login failed', 'Something went wrong while login');
       }
     } catch (error) {
       dispatch(hide());
