@@ -26,6 +26,8 @@ import {getStyles} from './ContactsDisplay.styles';
 import {useDeviceCheck} from '../../services/useDeviceCheck';
 import {insertContactDetailsInLocal} from '../../database/services/userOperations';
 import EncryptedStorage from 'react-native-encrypted-storage';
+import { UserContacts } from '../../types/contacts.types';
+import { addContacts } from '../../services/AddContacts';
 
 export const BackButton = () => {
   const colors = useThemeColors();
@@ -123,6 +125,38 @@ export const ContactsDisplay = () => {
   useEffect(() => {
     fetchContacts(false);
   }, [fetchContacts]);
+
+   useEffect(() => {
+    async function addContactsToRemote() {
+      const contactDetails: UserContacts[] = [];
+      appContacts.forEach((contact: ContactDetails) => {
+        contactDetails.push({
+          phoneNumber: contact.phoneNumber,
+          savedAs: contact.name,
+        });
+      });
+      const hardRefresh = await EncryptedStorage.getItem('hardRefresh');
+      if (contactDetails.length > 0 && hardRefresh) {
+        const currentUser = await EncryptedStorage.getItem('user');
+        const authToken = await EncryptedStorage.getItem('authToken');
+        if (!currentUser || !authToken) {
+          return;
+        }
+        const parsedUser = JSON.parse(currentUser);
+        const currentUserPhoneNumber = parsedUser.phoneNumber;
+        console.log('hardRefresh', hardRefresh);
+        const response = await addContacts({
+          currentUserPhoneNumber: currentUserPhoneNumber,
+          contacts: contactDetails,
+          authToken: authToken,
+        });
+        if (response.status === 'success') {
+          console.log('Contacts added successfully to remote server');
+        }
+      }
+    }
+    addContactsToRemote();
+  }, [appContacts]);
 
   return (
     <View style={styles.contactsContainer}>
