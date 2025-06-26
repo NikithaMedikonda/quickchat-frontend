@@ -1,8 +1,9 @@
 import {useNavigation} from '@react-navigation/native';
 import phone from 'phone';
-import {useEffect, useRef} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {
+  ActivityIndicator,
   Image,
   Keyboard,
   KeyboardAvoidingView,
@@ -18,11 +19,14 @@ import {useDispatch, useSelector} from 'react-redux';
 import {Button} from '../../components/Button/Button';
 import {CustomAlert} from '../../components/CustomAlert/CustomAlert';
 import {Placeholder} from '../../components/InputField/InputField';
+import {OtpInputModal} from '../../components/OtpInput/OtpInputModal';
 import {clearLocalStorage} from '../../database/services/clearStorage';
 import {getDeviceId} from '../../services/GenerateDeviceId';
 import {keyDecryption} from '../../services/KeyDecryption';
 import {loginUser} from '../../services/LoginUser';
+import {sendLoginOtp} from '../../services/SendOtp';
 import {syncFromRemote} from '../../services/SyncFromRemote';
+import {verifyUserDetails} from '../../services/UserLoginStatus';
 import {hide, show} from '../../store/slices/loadingSlice';
 import {
   resetLoginForm,
@@ -41,6 +45,7 @@ import {useThemeColors} from '../../themes/colors';
 import {useImagesColors} from '../../themes/images';
 import {HomeTabsProps, NavigationProps} from '../../types/usenavigation.type';
 import {loginStyles} from './Login.styles';
+
 export function Login() {
   const homeNavigation = useNavigation<HomeTabsProps>();
   const navigate = useNavigation<NavigationProps>();
@@ -54,6 +59,11 @@ export function Login() {
   const {alertType, alertTitle, alertMessage} = useSelector(
     (state: RootState) => state.registration,
   );
+  const [otp, setOtp] = useState('');
+  const [showOTPModal, setShowOTPModal] = useState(false);
+  const [userData, setUserData] = useState({name: '', email: ''});
+  const [loading, setLoading] = useState(false);
+
   const showAlert = (type: string, title: string, message: string) => {
     dispatch(setAlertType(type));
     dispatch(setAlertTitle(title));
@@ -61,16 +71,16 @@ export function Login() {
     dispatch(setAlertVisible(true));
   };
   useEffect(() => {
-  const showSub = Keyboard.addListener('keyboardDidShow', () => {
-    setTimeout(() => {
-      scrollViewRef.current?.scrollToEnd({ animated: true });
-    }, 100); // slight delay to wait for layout shift
-  });
+    const showSub = Keyboard.addListener('keyboardDidShow', () => {
+      setTimeout(() => {
+        scrollViewRef.current?.scrollToEnd({animated: true});
+      }, 100);
+    });
 
-  return () => {
-    showSub.remove();
-  };
-}, []);
+    return () => {
+      showSub.remove();
+    };
+  }, []);
 
   const handleInputChange = (key: keyof typeof form, value: string) => {
     dispatch(setLoginField({key, value}));
@@ -92,6 +102,66 @@ export function Login() {
     dispatch(setLoginErrors(newErrors));
     return isValid;
   };
+
+  const resendOtpHandler = async () => {
+    await sendLoginOtp(userData.name, userData.email);
+  };
+
+  async function checkLoginDetails() {
+    if (!validateForm()) {
+      dispatch(hide());
+      return;
+    }
+    setLoading(true);
+    try {
+      const details = await verifyUserDetails(form.phoneNumber, form.password);
+      if (details.status === 410) {
+        dispatch(hide());
+        dispatch(setAlertVisible(true));
+        showAlert(
+          'error',
+          'Registration failed',
+          'Sorry, this account is deleted',
+        );
+      } else if (details.status === 404) {
+        dispatch(hide());
+        showAlert(
+          'error',
+          'Login failed',
+          'No account exists with this phone number',
+        );
+      } else if (details.status === 401) {
+        dispatch(hide());
+        showAlert(
+          'warning',
+          'Login failed',
+          'Incorrect phone number or password. Please try again.',
+        );
+      }
+      if (details.isLogin) {
+        const otpResult = await sendLoginOtp(
+          `${details.name}`,
+          `${details.email}`,
+        );
+        if (otpResult) {
+          setUserData({name: details.name, email: details.email});
+          setShowOTPModal(true);
+        }
+      } else {
+        handleLogin();
+      }
+    } catch (e) {
+      dispatch(hide());
+      showAlert(
+        'info',
+        'Login failed',
+        'Something went wrong. Check your connection.',
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
   async function handleLogin() {
     dispatch(setLoginErrors({}));
     dispatch(show());
@@ -140,20 +210,6 @@ export function Login() {
           await EncryptedStorage.setItem('firstSync', 'true');
         }
         dispatch(resetLoginForm());
-      } else if (result.status === 404) {
-        dispatch(hide());
-        showAlert(
-          'error',
-          'Login failed',
-          'No account exists with this phone number',
-        );
-      } else if (result.status === 401) {
-        dispatch(hide());
-        showAlert(
-          'warning',
-          'Login failed',
-          'Incorrect phone number or password. Please try again.',
-        );
       } else if (result.status === 409) {
         dispatch(hide());
         showAlert(
@@ -180,7 +236,7 @@ export function Login() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}>
       <ScrollView
-      ref={scrollViewRef}
+        ref={scrollViewRef}
         contentContainerStyle={styles.loginMainContainer}
         keyboardShouldPersistTaps="handled">
         <View style={styles.imageContainer}>
@@ -219,9 +275,11 @@ export function Login() {
         {errors.password && (
           <Text style={styles.error}>{t(`${errors.password}`)}</Text>
         )}
-        <View style={styles.loginButtonContainer}>
-          <Button title="Login" onPress={handleLogin} />
-        </View>
+        {loading ? (
+          <ActivityIndicator size="large" color="white" />
+        ) : (
+          <Button title="Login" onPress={checkLoginDetails}/>
+        )}
         <View style={styles.messageView}>
           <Text style={styles.messageText}>{t("Don't have an account?")}</Text>
           <TouchableOpacity
@@ -234,6 +292,15 @@ export function Login() {
         </View>
       </ScrollView>
       <CustomAlert type={alertType} title={alertTitle} message={alertMessage} />
+      <OtpInputModal
+        visible={showOTPModal}
+        setIsVisible={setShowOTPModal}
+        otp={otp}
+        setOtp={setOtp}
+        email={userData.email}
+        onSuccess={handleLogin}
+        resendHandler={resendOtpHandler}
+      />
     </KeyboardAvoidingView>
   );
 }
