@@ -60,10 +60,10 @@ export const Registration = () => {
   const [loading, setLoading] = useState(false);
 
   const showAlert = (type: string, title: string, message: string) => {
+    dispatch(setAlertVisible(true));
     dispatch(setAlertType(type));
     dispatch(setAlertTitle(title));
     dispatch(setAlertMessage(message));
-    dispatch(setAlertVisible(true));
   };
   const handleOpenImageSelector = async () => {
     dispatch(setIsVisible(true));
@@ -155,6 +155,7 @@ export const Registration = () => {
       }
     } catch (error) {
       dispatch(hide());
+      dispatch(setAlertVisible(true));
       showAlert(
         'error',
         'Registration failed',
@@ -185,9 +186,20 @@ export const Registration = () => {
         {deviceId: deviceId},
       );
       if (result.status === 200) {
-        dispatch(hide());
-        showAlert('success', 'Success', 'Successfully registered');
+        console.log('successs');
+        dispatch(show());
         dispatch(setAlertVisible(true));
+        showAlert('success', 'Success', 'Successfully registered');
+
+        // dispatch(setAlertVisible(true));
+        console.log('set alert true');
+        // showAlert(
+        //   'success',
+        //   'Registration success',
+        //   'Registration completed successfully',
+        // );
+        console.log('show true');
+
         dispatch(
           setLoginSuccess({
             accessToken: result.data.accessToken,
@@ -195,9 +207,9 @@ export const Registration = () => {
             user: result.data.user,
           }),
         );
-        setTimeout(() => {
-          dispatch(setAlertVisible(false));
-        }, 2000);
+
+        console.log('set login variables');
+
         await EncryptedStorage.setItem('authToken', result.data.accessToken);
         await EncryptedStorage.setItem(
           'refreshToken',
@@ -209,13 +221,15 @@ export const Registration = () => {
         );
         await EncryptedStorage.setItem('hardRefresh', 'false');
         await EncryptedStorage.setItem('privateKey', keys.privateKey);
-        showAlert(
-          'success',
-          'Registration success',
-          'Registration completed successfully',
-        );
-        homeNavigation.replace('hometabs');
-        dispatch(resetForm());
+        console.log('set async vars');
+
+        setTimeout(() => {
+          dispatch(setAlertVisible(false));
+          homeNavigation.replace('hometabs');
+          dispatch(resetForm());
+        }, 2000);
+
+        console.log('navigate');
       } else {
         dispatch(hide());
         showAlert(
@@ -227,6 +241,9 @@ export const Registration = () => {
     } catch (error) {
       dispatch(hide());
       showAlert('info', 'Network error', 'Please check your internet');
+    }
+    finally{
+      dispatch(hide());
     }
   };
 
