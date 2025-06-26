@@ -13,6 +13,8 @@ import {store} from '../../store/store';
 import {useThemeColors} from '../../themes/colors';
 import {useImagesColors} from '../../themes/images';
 import {ContactsDisplay} from './ContactsDisplay';
+import * as AddContactsService from '../../services/AddContacts';
+
 jest.mock('rn-fetch-blob', () => ({
   config: jest.fn(() => ({
     fetch: jest.fn(() =>
@@ -212,4 +214,51 @@ describe('Tests for ContactsDisplay Component', () => {
       );
     });
   });
+it('should call addContacts when hardRefresh is true and appContacts is populated', async () => {
+  const mockContacts = {
+    registeredUsers: [
+      { phoneNumber: '+916303961097', profilePicture: '', name: 'Usha' },
+    ],
+    unRegisteredUsers: [],
+  };
+
+  (getContacts as jest.Mock).mockResolvedValue(mockContacts);
+  (numberNameIndex as jest.Mock).mockResolvedValue({
+    '+916303961097': 'Usha',
+  });
+
+  const mockUser = {
+    phoneNumber: '+919999999999',
+  };
+
+  const EncryptedStorage = require('react-native-encrypted-storage');
+  EncryptedStorage.getItem.mockImplementation(async (key: string) => {
+    if (key === 'user') {return JSON.stringify(mockUser);}
+    if (key === 'authToken') {return 'mocked-auth-token';}
+    if (key === 'hardRefresh') {return 'true';}
+    return null;
+  });
+
+  const addContactsSpy = jest
+    .spyOn(AddContactsService, 'addContacts')
+    .mockResolvedValue({ status: 'success' });
+
+  renderComponent();
+
+  await waitFor(() => {
+    expect(addContactsSpy).toHaveBeenCalledWith({
+      currentUserPhoneNumber: mockUser.phoneNumber,
+      contacts: [
+        {
+          phoneNumber: '+916303961097',
+          savedAs: 'Usha',
+        },
+      ],
+      authToken: 'mocked-auth-token',
+    });
+  });
 });
+
+
+});
+
