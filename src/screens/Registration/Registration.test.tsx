@@ -211,39 +211,6 @@ describe('Registration Screen', () => {
     });
   });
 
-  // it('successfully submits form with valid data', async () => {
-  //   const {registerUser} = require('../../services/RegisterUser.ts');
-  //   registerUser.mockResolvedValue({
-  //     status: 200,
-  //     data: {
-  //       accessToken: 'mockedToken',
-  //       refreshToken: 'refreshToken',
-  //       user: {},
-  //       deviceId: 'qdshjgdjfwgrwfhk',
-  //     },
-  //   });
-
-  //   const {getByPlaceholderText, getByText} = renderComponent();
-
-  //   fireEvent.changeText(getByPlaceholderText('First Name'), 'test');
-  //   fireEvent.changeText(getByPlaceholderText('Last Name'), 'user');
-  //   fireEvent.changeText(getByPlaceholderText('Phone number'), '1234567890');
-  //   fireEvent.changeText(getByPlaceholderText('Password'), 'Password@123');
-  //   fireEvent.changeText(
-  //     getByPlaceholderText('Confirm Password'),
-  //     'Password@123',
-  //   );
-  //   fireEvent.changeText(
-  //     getByPlaceholderText('Email (Optional)'),
-  //     'testuser@gmail.com',
-  //   );
-
-  //   fireEvent.press(getByText('Register'));
-
-  //   await waitFor(() => {
-  //     expect(mockReplace).toHaveBeenCalledWith('hometabs');
-  //   });
-  // });
   it('successfully submits form with valid data and shows OTP modal', async () => {
     (registerUser as jest.Mock).mockResolvedValue({
       status: 200,
@@ -272,20 +239,6 @@ describe('Registration Screen', () => {
           json: async () => ({isVerified: true}),
         });
       }
-
-      // return Promise.resolve({
-      //   json: () =>
-      //     Promise.resolve({
-      //       accessToken: 'mockedToken',
-      //       refreshToken: 'refreshToken',
-      //       user: {
-      //         name: 'Test User',
-      //         email: 'testuser@gmail.com',
-      //       },
-      //       deviceId: 'mocked-device-id',
-      //     }),
-      //   status: 200,
-      // });
     });
     const {getDeviceId} = require('../../services/GenerateDeviceId');
     getDeviceId.mockResolvedValue('mocked-device-id');
