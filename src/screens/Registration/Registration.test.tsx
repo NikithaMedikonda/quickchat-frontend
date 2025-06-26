@@ -132,7 +132,7 @@ describe('Registration Screen', () => {
     expect(getByPlaceholderText('Phone number')).toBeTruthy();
     expect(getByPlaceholderText('Password')).toBeTruthy();
     expect(getByPlaceholderText('Confirm Password')).toBeTruthy();
-    expect(getByPlaceholderText('Email (Optional)')).toBeTruthy();
+    expect(getByPlaceholderText('Email')).toBeTruthy();
     expect(getByText('Register')).toBeTruthy();
     expect(getByText('Sign in')).toBeTruthy();
   });
@@ -199,7 +199,7 @@ describe('Registration Screen', () => {
   it('shows invalid email error', async () => {
     const {getByPlaceholderText, getByText} = renderComponent();
     fireEvent.changeText(
-      getByPlaceholderText('Email (Optional)'),
+      getByPlaceholderText('Email'),
       'invalid-email',
     );
     fireEvent.press(getByText('Register'));
@@ -265,7 +265,7 @@ describe('Registration Screen', () => {
       'Password@123',
     );
     fireEvent.changeText(
-      getByPlaceholderText('Email (Optional)'),
+      getByPlaceholderText('Email'),
       'testuser@gmail.com',
     );
 
@@ -299,7 +299,7 @@ describe('Registration Screen', () => {
       'Password@123',
     );
     fireEvent.changeText(
-      getByPlaceholderText('Email (Optional)'),
+      getByPlaceholderText('Email'),
       'user@gmail.com',
     );
 
@@ -328,8 +328,8 @@ describe('Registration Screen', () => {
       'Password@123',
     );
     fireEvent.changeText(
-      getByPlaceholderText('Email (Optional)'),
-      'test@test.com',
+      getByPlaceholderText('Email'),
+      'user@gmail.com',
     );
 
     fireEvent.press(getByText('Register'));
@@ -347,7 +347,7 @@ describe('Registration Screen', () => {
     expect(getByPlaceholderText('Last Name')).toBeTruthy();
     expect(getByPlaceholderText('Password')).toBeTruthy();
     expect(getByPlaceholderText('Confirm Password')).toBeTruthy();
-    expect(getByPlaceholderText('Email (Optional)')).toBeTruthy();
+    expect(getByPlaceholderText('Email')).toBeTruthy();
   });
 
   it('updates form value in Redux store on input change', async () => {

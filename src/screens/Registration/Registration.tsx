@@ -98,10 +98,12 @@ export const Registration = () => {
       newErrors.confirmPassword = 'Passwords do not match!';
       isValid = false;
     }
-
-    if (form.email && !validateEmail(form.email)) {
+    if (!form.email) {
+      newErrors.email = 'Email required!';
+       isValid = false;
+    } else if (!validateEmail(form.email)) {
       newErrors.email = 'Invalid email format!';
-      isValid = false;
+     isValid = false;
     }
     if (!form.phoneNumber) {
       newErrors.phoneNumber = 'Phone number required!';
@@ -252,7 +254,7 @@ export const Registration = () => {
     {key: 'lastName', title: 'Last Name'},
     {key: 'password', title: 'Password', secure: true},
     {key: 'confirmPassword', title: 'Confirm Password', secure: true},
-    {key: 'email', title: 'Email (Optional)'},
+    {key: 'email', title: 'Email'},
   ] as const;
 
   return (

@@ -93,7 +93,7 @@ export const EditProfile = () => {
     profilePicture: string;
     firstName: string;
     lastName: string;
-    email?: string;
+    email: string;
     token: string;
   }>();
 
@@ -125,7 +125,7 @@ export const EditProfile = () => {
         setEditProfileForm({key: 'lastName', value: userData.lastName || ''}),
       );
       dispatch(
-        setEditProfileForm({key: 'email', value: userData.email || null}),
+        setEditProfileForm({key: 'email', value: userData.email || ''}),
       );
       dispatch(
         setEditProfileForm({
@@ -139,7 +139,7 @@ export const EditProfile = () => {
       setInitialValues({
         firstName: userData.firstName || '',
         lastName: userData.lastName || '',
-        email: userData.email || null,
+        email: userData.email || '',
         phoneNumber: userData.phoneNumber || '',
         token: AccessToken,
         image: initialImage,
@@ -163,8 +163,6 @@ export const EditProfile = () => {
     });
   }, [profileNavigation, renderHeaderLeft]);
 
-  const validateEmail = (email: string) =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   const validateForm = () => {
     const newErrors: Partial<typeof editProfileForm> = {};
@@ -175,10 +173,6 @@ export const EditProfile = () => {
     }
     if (!editProfileForm.lastName) {
       newErrors.lastName = 'Last name required!';
-      isValid = false;
-    }
-    if (editProfileForm.email && !validateEmail(editProfileForm.email)) {
-      newErrors.email = 'Invalid email format!';
       isValid = false;
     }
     dispatch(setErrors(newErrors));
@@ -245,10 +239,6 @@ export const EditProfile = () => {
       key: 'lastName',
       title: 'Last Name',
     },
-    {
-      key: 'email',
-      title: 'Email',
-    },
   ] as const;
   const renderedImage =
     imageUri || user?.profilePicture || DEFAULT_PROFILE_IMAGE;
@@ -261,7 +251,6 @@ export const EditProfile = () => {
     return (
       initialValues.firstName !== editProfileForm.firstName ||
       initialValues.lastName !== editProfileForm.lastName ||
-      initialValues.email !== editProfileForm.email ||
       imageChanged
     );
   }, [initialValues, editProfileForm, editedImage]);
