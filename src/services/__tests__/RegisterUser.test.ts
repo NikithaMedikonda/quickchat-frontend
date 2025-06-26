@@ -140,4 +140,45 @@ describe('registerUser', () => {
       'Network Error',
     );
   });
+
+  it('should handle null email and fallback to null in payload', async () => {
+    const payloadWithNullEmail = {
+      ...payload,
+      email: null,
+    };
+
+    const encryptedPrivateKey = await keyEncryption({
+      privateKey: keys.privateKey,
+      password: payload.password,
+    });
+
+    const expectedUserData = {
+      phoneNumber: payload.phoneNumber,
+      firstName: payload.firstName.trim(),
+      lastName: payload.lastName.trim(),
+      profilePicture: payload.image,
+      email: null,
+      password: payload.password,
+      publicKey: keys.publicKey,
+      privateKey: encryptedPrivateKey,
+      deviceId: deviceId.deviceId,
+      fcmToken: 'mocked-token',
+    };
+
+    mockedFetch.mockResolvedValueOnce({
+      status: 201,
+      json: jest.fn().mockResolvedValue({success: true}),
+    });
+
+    const result = await registerUser(payloadWithNullEmail, keys, deviceId);
+
+    expect(mockedFetch).toHaveBeenCalledWith(`${API_URL}/api/users`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(expectedUserData),
+    });
+
+    expect(result.status).toBe(201);
+    expect(result.data).toEqual({success: true});
+  });
 });

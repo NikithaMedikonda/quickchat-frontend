@@ -9,7 +9,7 @@ export const registerUser = async (
     lastName: string;
     phoneNumber: string;
     password: string;
-    email: string;
+    email: string | null;
   },
   keys: {
     publicKey: string;
@@ -27,7 +27,7 @@ export const registerUser = async (
     firstName: payload.firstName.trim(),
     lastName: payload.lastName.trim(),
     profilePicture: payload.image,
-    email: payload.email.trim(),
+    email: payload.email?.trim() || null,
     password: payload.password,
     publicKey: keys.publicKey,
     privateKey: encryptedPrivateKey,
