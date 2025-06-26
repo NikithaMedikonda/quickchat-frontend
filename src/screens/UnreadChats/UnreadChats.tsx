@@ -26,6 +26,7 @@ import {
   UnreadStacKProps,
 } from '../../types/usenavigation.type';
 import { getStyles } from './UnreadChats.style';
+import { useDeviceCheck } from '../../services/useDeviceCheck';
 export interface Chat {
   chatId: string;
   contactName: string | null;
@@ -51,6 +52,7 @@ export const UnreadChats = () => {
   const [chats, setChats] = useState<Chat[]>([]);
   const [contactNameMap, setContactNameMap] = useState<ContactNameMap>({});
   const {msgCount} = useSelector((state: RootState) => state.unread);
+  useDeviceCheck();
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: t('App Name'),
