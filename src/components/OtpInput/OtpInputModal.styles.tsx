@@ -128,6 +128,7 @@ export const otpInputStyles = (colors: Colors) =>
       fontSize: 20,
       fontWeight: 'bold',
       marginBottom: 12,
+      color:colors.primaryBlue
     },
     info: {
       color: colors.primaryBlue,
