@@ -1,4 +1,4 @@
-import {NavigationContainer} from '@react-navigation/native';
+import {NavigationContainer, useRoute} from '@react-navigation/native';
 import {
   fireEvent,
   render,
@@ -6,10 +6,10 @@ import {
   waitFor,
 } from '@testing-library/react-native';
 import {Provider} from 'react-redux';
+import {registerUser} from '../../services/RegisterUser';
 import {resetForm} from '../../store/slices/registrationSlice';
 import {store} from '../../store/store';
 import {Registration} from './Registration';
-import {registerUser} from '../../services/RegisterUser';
 
 jest.mock('react-native-image-crop-picker', () => ({
   openPicker: jest.fn().mockResolvedValue({path: 'mocked/image/path.jpg'}),
@@ -65,6 +65,10 @@ jest.mock('@react-navigation/native', () => {
       navigate: mockNavigate,
       replace: mockReplace,
     }),
+    useRoute: jest.fn(() => ({
+      name: 'register',
+      params: {},
+    })),
   };
 });
 
@@ -107,6 +111,7 @@ const mockReplace = jest.fn();
 
 describe('Registration Screen', () => {
   beforeEach(() => {
+    (useRoute as jest.Mock).mockReturnValue({ name: 'login' });
     jest.clearAllMocks();
     store.dispatch(resetForm());
   });
