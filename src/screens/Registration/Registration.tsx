@@ -1,6 +1,6 @@
-import { useNavigation } from '@react-navigation/native';
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import {useNavigation} from '@react-navigation/native';
+import {useState} from 'react';
+import {useTranslation} from 'react-i18next';
 import {
   Image,
   KeyboardAvoidingView,
@@ -12,17 +12,17 @@ import {
 } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import PhoneInput from 'react-native-phone-input';
-import { useDispatch, useSelector } from 'react-redux';
-import { Button } from '../../components/Button/Button';
-import { CustomAlert } from '../../components/CustomAlert/CustomAlert';
-import { ImagePickerModal } from '../../components/ImagePickerModal/ImagePickerModal';
-import { Placeholder } from '../../components/InputField/InputField';
-import { DEFAULT_PROFILE_IMAGE } from '../../constants/defaultImage';
-import { getDeviceId } from '../../services/GenerateDeviceId';
-import { keyGeneration } from '../../services/KeyGeneration';
-import { registerUser } from '../../services/RegisterUser';
-import { hide, show } from '../../store/slices/loadingSlice';
-import { setLoginSuccess } from '../../store/slices/loginSlice';
+import {useDispatch, useSelector} from 'react-redux';
+import {Button} from '../../components/Button/Button';
+import {CustomAlert} from '../../components/CustomAlert/CustomAlert';
+import {ImagePickerModal} from '../../components/ImagePickerModal/ImagePickerModal';
+import {Placeholder} from '../../components/InputField/InputField';
+import {DEFAULT_PROFILE_IMAGE} from '../../constants/defaultImage';
+import {getDeviceId} from '../../services/GenerateDeviceId';
+import {keyGeneration} from '../../services/KeyGeneration';
+import {registerUser} from '../../services/RegisterUser';
+import {hide, show} from '../../store/slices/loadingSlice';
+import {setLoginSuccess} from '../../store/slices/loginSlice';
 import {
   resetForm,
   setAlertMessage,
@@ -33,10 +33,10 @@ import {
   setFormField,
   setIsVisible,
 } from '../../store/slices/registrationSlice';
-import { RootState } from '../../store/store';
-import { useThemeColors } from '../../themes/colors';
-import { HomeTabsProps, NavigationProps } from '../../types/usenavigation.type';
-import { getStyles } from './Registration.styles';
+import {RootState} from '../../store/store';
+import {useThemeColors} from '../../themes/colors';
+import {HomeTabsProps, NavigationProps} from '../../types/usenavigation.type';
+import {getStyles} from './Registration.styles';
 
 export const Registration = () => {
   const [isPasswordFocused, setIsPasswordFocused] = useState(false);
@@ -92,10 +92,12 @@ export const Registration = () => {
       newErrors.confirmPassword = 'Passwords do not match!';
       isValid = false;
     }
-
-    if (form.email && !validateEmail(form.email)) {
+    if (!form.email) {
+      newErrors.email = 'Email required!';
+       isValid = false;
+    } else if (!validateEmail(form.email)) {
       newErrors.email = 'Invalid email format!';
-      isValid = false;
+     isValid = false;
     }
     if (!form.phoneNumber) {
       newErrors.phoneNumber = 'Phone number required!';
@@ -196,7 +198,7 @@ export const Registration = () => {
     {key: 'lastName', title: 'Last Name'},
     {key: 'password', title: 'Password', secure: true},
     {key: 'confirmPassword', title: 'Confirm Password', secure: true},
-    {key: 'email', title: 'Email (Optional)'},
+    {key: 'email', title: 'Email'},
   ] as const;
 
   return (
