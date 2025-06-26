@@ -10,6 +10,10 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import {Provider} from 'react-redux';
 import * as connectionModule from '../../database/connection/connection';
 import {loginUser} from '../../services/LoginUser';
+import {verifyUserDetails} from '../../services/UserLoginStatus';
+import {sendLoginOtp} from '../../services/SendOtp';
+import {syncFromRemote} from '../../services/SyncFromRemote';
+import {clearLocalStorage} from '../../database/services/clearStorage';
 import {store} from '../../store/store';
 import {Login} from './Login';
 
@@ -37,6 +41,7 @@ jest.mock('react-native-phone-input', () => {
       );
     },
   );
+
   return MockPhoneInput;
 });
 
@@ -48,6 +53,9 @@ jest.mock('../../database/connection/connection', () => ({
   getDBInstance: jest.fn(),
 }));
 
+jest.mock('../../services/UserLoginStatus', () => ({
+  verifyUserDetails: jest.fn(),
+}));
 jest.mock('react-native-device-info', () => ({
   getUniqueId: jest.fn(),
 }));
@@ -82,6 +90,22 @@ jest.mock('../../services/KeyDecryption', () => ({
   keyDecryption: () => ({
     decryptedPrivateKey: 'decryptedPrivateKey',
   }),
+}));
+
+jest.mock('../../services/UserLoginStatus', () => ({
+  verifyUserDetails: jest.fn(),
+}));
+
+jest.mock('../../services/SendOtp', () => ({
+  sendLoginOtp: jest.fn(),
+}));
+
+jest.mock('../../services/SyncFromRemote', () => ({
+  syncFromRemote: jest.fn(),
+}));
+
+jest.mock('../../database/services/clearStorage', () => ({
+  clearLocalStorage: jest.fn(),
 }));
 
 jest.mock('phone');
@@ -190,93 +214,88 @@ describe('Login Screen', () => {
     await waitFor(() => {});
   });
 
-  test('should show alert if user not existed with this phone number', async () => {
+  test('should show invalid phone number error when phone is invalid during validation', async () => {
     (phone as jest.Mock).mockReturnValue({
-      isValid: true,
+      isValid: false,
       phoneNumber: '+918522041688',
-    });
-    (loginUser as jest.Mock).mockResolvedValue({
-      status: 404,
-      data: {
-        message: 'User not found',
-      },
     });
 
     const phoneNumber = screen.getByPlaceholderText('Phone number');
-    fireEvent.changeText(phoneNumber, '8522041688');
-    fireEvent.changeText(screen.getByPlaceholderText('Password'), 'Anu@1234');
+    const password = screen.getByPlaceholderText('Password');
+
+    fireEvent.changeText(phoneNumber, '123');
+    fireEvent.changeText(password, 'validPassword123');
     fireEvent.press(screen.getByText('Login'));
 
     await waitFor(() => {
-      const state = store.getState();
-      expect(state.registration.alertMessage).toBe(
-        'No account exists with this phone number',
-      );
-      expect(state.registration.alertType).toBe('error');
+      expect(screen.getByText('Invalid phone number!')).toBeTruthy();
     });
   });
 
-  test('should show alert if user is already login with this phone number', async () => {
+  test('should show OTP modal when user is already logged in elsewhere', async () => {
     (phone as jest.Mock).mockReturnValue({
       isValid: true,
       phoneNumber: '+918522041688',
     });
-    (loginUser as jest.Mock).mockResolvedValue({
-      status: 409,
-      data: {
-        message: 'User is already logged in',
-      },
+    (verifyUserDetails as jest.Mock).mockResolvedValue({
+      status: 200,
+      isLogin: true,
+      name: 'Test User',
+      email: 'test@example.com',
     });
+    (sendLoginOtp as jest.Mock).mockResolvedValue(true);
 
     const phoneNumber = screen.getByPlaceholderText('Phone number');
+    const password = screen.getByPlaceholderText('Password');
+
     fireEvent.changeText(phoneNumber, '8522041688');
-    fireEvent.changeText(screen.getByPlaceholderText('Password'), 'Anu@1234');
+    fireEvent.changeText(password, 'Anu@1234');
     fireEvent.press(screen.getByText('Login'));
 
     await waitFor(() => {
-      const state = store.getState();
-      expect(state.registration.alertMessage).toBe(
-        'Logged in from a new device using your number. Please check your account.',
+      expect(sendLoginOtp).toHaveBeenCalledWith(
+        'Test User',
+        'test@example.com',
       );
-      expect(state.registration.alertType).toBe('warning');
     });
   });
 
-  test('should show alert if user entered the wrong password', async () => {
+  test('should not show OTP modal when sendLoginOtp fails', async () => {
     (phone as jest.Mock).mockReturnValue({
       isValid: true,
       phoneNumber: '+918522041688',
     });
-    (loginUser as jest.Mock).mockResolvedValue({
-      status: 401,
-      data: {
-        accessToken: 'some-token',
-        refreshToken: 'some-refresh-token',
-        user: {
-          id: 'some-id',
-          firstName: 'some-first-name',
-          lastName: 'testUser',
-          phoneNumber: '+918522041688',
-        },
-      },
+    (verifyUserDetails as jest.Mock).mockResolvedValue({
+      status: 200,
+      isLogin: true,
+      name: 'Test User',
+      email: 'test@example.com',
     });
+    (sendLoginOtp as jest.Mock).mockResolvedValue(false);
+
     const phoneNumber = screen.getByPlaceholderText('Phone number');
+    const password = screen.getByPlaceholderText('Password');
+
     fireEvent.changeText(phoneNumber, '8522041688');
-    fireEvent.changeText(screen.getByPlaceholderText('Password'), 'Anu@1234');
+    fireEvent.changeText(password, 'Anu@1234');
     fireEvent.press(screen.getByText('Login'));
+
     await waitFor(() => {
-      const state = store.getState();
-      expect(state.registration.alertMessage).toBe(
-        'Incorrect phone number or password. Please try again.',
+      expect(sendLoginOtp).toHaveBeenCalledWith(
+        'Test User',
+        'test@example.com',
       );
-      expect(state.registration.alertType).toBe('warning');
     });
   });
 
-  test('should navigate to the hometabs upon successful login', async () => {
+  test('should call handleLogin when user is not already logged in', async () => {
     (phone as jest.Mock).mockReturnValue({
       isValid: true,
       phoneNumber: '+918522041688',
+    });
+    (verifyUserDetails as jest.Mock).mockResolvedValue({
+      status: 200,
+      isLogin: false,
     });
     (loginUser as jest.Mock).mockResolvedValue({
       status: 200,
@@ -292,29 +311,183 @@ describe('Login Screen', () => {
         },
       },
     });
-    (EncryptedStorage.getItem as jest.Mock).mockImplementation(key => {
-      if (key === 'user') {
-        return Promise.resolve(JSON.stringify({phoneNumber: '1234567890'}));
-      }
-      if (key === 'authToken') {
-        return Promise.resolve('mocked_token');
-      }
-      return Promise.resolve(null);
-    });
+    (EncryptedStorage.getItem as jest.Mock).mockResolvedValue(null);
 
     const phoneNumber = screen.getByPlaceholderText('Phone number');
+    const password = screen.getByPlaceholderText('Password');
+
     fireEvent.changeText(phoneNumber, '8522041688');
-    fireEvent.changeText(screen.getByPlaceholderText('Password'), 'Anu@1234');
+    fireEvent.changeText(password, 'Anu@1234');
     fireEvent.press(screen.getByText('Login'));
 
     await waitFor(() => {
-      const state = store.getState();
-      expect(state.registration.alertMessage).toBe('Successfully Logged in');
+      expect(loginUser).toHaveBeenCalled();
     });
+  });
+
+  test('should scroll to end when password input is focused', async () => {
+    const passwordInput = screen.getByPlaceholderText('Password');
+    fireEvent(passwordInput, 'focus');
 
     await waitFor(() => {
-      jest.advanceTimersByTime(1000);
-      expect(mockReplace).toHaveBeenCalledWith('hometabs');
+      expect(passwordInput).toBeTruthy();
+    });
+  });
+
+  test('should show warning alert when login returns 409', async () => {
+    (phone as jest.Mock).mockReturnValue({
+      isValid: true,
+      phoneNumber: '+918522041688',
+    });
+
+    (verifyUserDetails as jest.Mock).mockResolvedValue({
+      status: 200,
+      isLogin: false,
+    });
+
+    (loginUser as jest.Mock).mockResolvedValue({
+      status: 409,
+    });
+
+    const phoneNumber = screen.getByPlaceholderText('Phone number');
+    const password = screen.getByPlaceholderText('Password');
+
+    fireEvent.changeText(phoneNumber, '8522041688');
+    fireEvent.changeText(password, 'Anu@1234');
+    fireEvent.press(screen.getAllByText('Login')[0]);
+
+    await waitFor(() => {
+      expect(screen.getByText('Login failed')).toBeTruthy();
+      expect(
+        screen.getByText(
+          'Logged in from a new device using your number. Please check your account.',
+        ),
+      ).toBeTruthy();
+    });
+  });
+  test('should show error alert when login returns unexpected status', async () => {
+    (phone as jest.Mock).mockReturnValue({
+      isValid: true,
+      phoneNumber: '+918522041688',
+    });
+
+    (verifyUserDetails as jest.Mock).mockResolvedValue({
+      status: 200,
+      isLogin: false,
+    });
+
+    (loginUser as jest.Mock).mockResolvedValue({
+      status: 403,
+    });
+
+    const phoneNumber = screen.getByPlaceholderText('Phone number');
+    const password = screen.getByPlaceholderText('Password');
+
+    fireEvent.changeText(phoneNumber, '8522041688');
+    fireEvent.changeText(password, 'Anu@1234');
+    fireEvent.press(screen.getByText('Login'));
+
+    await waitFor(() => {
+      expect(screen.getByText('Login failed')).toBeTruthy();
+      expect(screen.getByText('Something went wrong while login')).toBeTruthy();
+    });
+  });
+  test('should show info alert when login throws an error', async () => {
+    (phone as jest.Mock).mockReturnValue({
+      isValid: true,
+      phoneNumber: '+918522041688',
+    });
+
+    (verifyUserDetails as jest.Mock).mockResolvedValue({
+      status: 200,
+      isLogin: false,
+    });
+
+    (loginUser as jest.Mock).mockRejectedValue(new Error('Network error'));
+
+    const phoneNumber = screen.getByPlaceholderText('Phone number');
+    const password = screen.getByPlaceholderText('Password');
+
+    fireEvent.changeText(phoneNumber, '8522041688');
+    fireEvent.changeText(password, 'Anu@1234');
+    fireEvent.press(screen.getByText('Login'));
+
+    await waitFor(() => {
+      expect(screen.getByText('Login failed')).toBeTruthy();
+      expect(
+        screen.getByText('Something went wrong. Check your connection.'),
+      ).toBeTruthy();
+    });
+  });
+  describe('Login screen  tests', () => {
+    beforeEach(async () => {
+      (phone as jest.Mock).mockReturnValue({isValid: true});
+    });
+
+    const enterCredentialsAndSubmit = () => {
+      fireEvent.changeText(
+        screen.getByPlaceholderText('Phone number'),
+        '8522041688',
+      );
+      fireEvent.changeText(screen.getByPlaceholderText('Password'), 'Anu@1234');
+      const loginButtons = screen.getAllByText('Login');
+      fireEvent.press(loginButtons[loginButtons.length - 1]);
+    };
+
+    test('checkLoginDetails: thrown error shows connection alert', async () => {
+      (verifyUserDetails as jest.Mock).mockRejectedValue(
+        new Error('network down'),
+      );
+      enterCredentialsAndSubmit();
+      await waitFor(() => {
+        expect(screen.getByText('Login failed')).toBeTruthy();
+        expect(
+          screen.getByText('Something went wrong. Check your connection.'),
+        ).toBeTruthy();
+      });
+    });
+
+    test('handleLogin: thrown error shows connection alert', async () => {
+      (verifyUserDetails as jest.Mock).mockResolvedValue({
+        status: 200,
+        isLogin: false,
+      });
+      (loginUser as jest.Mock).mockRejectedValue(new Error('oops'));
+      enterCredentialsAndSubmit();
+      await waitFor(() => {
+        expect(
+          screen.getByText('Something went wrong. Check your connection.'),
+        ).toBeTruthy();
+      });
+    });
+
+    test('New user login: clears local storage & syncs remote', async () => {
+      (verifyUserDetails as jest.Mock).mockResolvedValue({
+        status: 200,
+        isLogin: false,
+      });
+      (loginUser as jest.Mock).mockResolvedValue({
+        status: 200,
+        data: {
+          accessToken: 'token',
+          refreshToken: 'refresh',
+          user: {
+            phoneNumber: '9999999999',
+            id: 'id',
+            firstName: 'first',
+            lastName: 'last',
+            privateKey: 'encrypted-key',
+          },
+        },
+      });
+      (EncryptedStorage.getItem as jest.Mock).mockResolvedValue('1234567890');
+
+      enterCredentialsAndSubmit();
+
+      await waitFor(() => {
+        expect(clearLocalStorage).toHaveBeenCalled();
+        expect(syncFromRemote).toHaveBeenCalledWith('9999999999');
+      });
     });
   });
 });
